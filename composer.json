@@ -48,5 +48,5 @@
     },
     "autoload": {
         "psr-0": { "CampaignChain\\CoreBundle": "" }
-    },
+    }
 }
