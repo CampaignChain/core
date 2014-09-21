@@ -40,8 +40,8 @@
         "ivaynberg/select2": "3.5.0",
         "h4cc/alice-fixtures-bundle": "dev-master",
         "friendsofsymfony/jsrouting-bundle": "dev-master",
-        "symfony/stopwatch": "dev-master",
-        "symfony/process": "dev-master",
+        "symfony/stopwatch": ">=2.5",
+        "symfony/process": ">=2.5",
         "hpatoio/bitly-bundle": "dev-master",
         "sp/bower-bundle": "dev-master"
     },
