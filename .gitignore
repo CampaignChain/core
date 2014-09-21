@@ -1,1 +1,15 @@
 Resources/public/components
+
+## Mac OS X
+.DS_Store
+
+## Backup files created by editor
+*~
+
+## PHPStorm
+.idea/
+*.ipr
+*.iml
+*.iws
+.idea_modules/
+atlassian-ide-plugin.xml
