@@ -47,6 +47,6 @@
         "sp/bower-bundle": "dev-master"
     },
     "autoload": {
-        "psr-4": { "CampaignChain\\CoreBundle": "" }
+        "psr-4": { "CampaignChain\\CoreBundle\\": "" }
     }
 }
