@@ -1,0 +1,100 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) Sandro Groganz <sandro@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+{% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% javascripts '@fullcalendar_js' combine=true %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {% stylesheets '@fullcalendar_css' %}
+    <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
+    {% endstylesheets %}
+{% endblock %}
+
+{% block bodytabs %}
+    {{ knp_menu_render('CampaignChainCoreBundle:Builder:planListTab', { 'style': 'tabs' }) }}
+{% endblock %}
+
+{% block body %}
+<style type="text/css">
+    .campaignchain_activity_twitter_update_status {
+        background-image: url('{{ asset( 'bundles/campaignchainchanneltwitter/images/icons/16x16/twitter.png' ) }}');
+    }
+
+    .campaignchain_activity_facebook_publish_status {
+        background-image: url('{{ asset( 'bundles/campaignchainchannelfacebook/images/icons/16x16/facebook.png' ) }}');
+    }
+
+    .campaignchain_milestone {
+        background-image: url('{{ asset('bundles/campaignchainmilestonescheduledmilestone/images/icons/16x16/milestone.png' ) }}');
+    }
+
+    .campaignchain_activity_twitter_update_status,
+    .campaignchain_activity_facebook_publish status,
+    .campaignchain_milestone {
+        background-repeat: no-repeat;
+        background-position: 2px 2px;
+        background-color: #ffffff !important;
+        color: #000;
+        padding-left: 20px;
+        min-height: 22px;
+        height: auto !important;
+    }
+
+    .fc-event-inner .fc-event-time {
+        display: block;
+    }
+
+    .fc-event-vert .fc-event-time {
+        white-space: normal;
+    }
+</style>
+<script>
+
+        $(document).ready(function() {
+
+            $('#calendar').fullCalendar({
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'month,agendaWeek,agendaDay'
+                },
+                timeFormat: {
+                    month: 'H:mm',
+                    agendaWeek: 'H:mm',
+                    agendaDay: 'H:mm'
+                },
+                defaultDate: new Date(),
+                editable: true,
+                defaultTimedEventDuration: '00:01:00',
+                eventSources: [
+                    {% if events and events is iterable %}
+                        {% for event_type, event in events %}
+                        {
+                            events: {{ event.data|raw }},
+                            {% for option_key, option_val in event.options %}
+                                {{ option_key }}: '{{ option_val }}',
+                            {% endfor %}
+                        },
+                        {% endfor %}
+                    {% endif %}
+                ]
+            });
+
+        });
+
+    </script>
+    <div id='calendar'></div>
+{% endblock %}

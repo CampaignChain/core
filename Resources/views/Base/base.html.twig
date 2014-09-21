@@ -1,0 +1,91 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) Sandro Groganz <sandro@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>{{ page_title }} - CampaignChain</title>
+        {% block javascripts %}
+            {% javascripts '@jquery_js' '@bootstrap_js' filter='?yui_js' combine=true %}
+                <script src="{{ asset_url }}"></script>
+            {% endjavascripts %}
+            <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+            <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
+            {% javascripts '@moment_js' combine=true %}
+            <script src="{{ asset_url }}"></script>
+            {% endjavascripts %}
+            {% javascripts '@campaignchain_base_js' combine=true %}
+                <script src="{{ asset_url }}"></script>
+            {% endjavascripts %}
+            <script type="text/javascript">
+                window.campaignchainDatetimeFormat = "{{ campaignchain_user_datetime_format.moment_js }}";
+                window.campaignchainTimezone = "{{ app.session.get('campaignchain.timezone') }}";
+                window.campaignchainTimezoneOffset = "{{ campaignchain_user_timezone_offset }}";
+                window.campaignchainTimezoneAbbreviation = "{{ campaignchain_user_timezone_abbreviation }}";
+            </script>
+        {% endblock %}
+
+        {% block stylesheets %}
+            {% stylesheets '@bootstrap_less' combine=true %}
+                <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
+            {% endstylesheets %}
+            {% stylesheets '@campaignchain_base_css' filter="cssrewrite"
+            'bundles/campaignchaincore/css/*'%}
+                <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
+            {% endstylesheets %}
+        {% endblock %}
+
+        <!-- Add Fonta Awesome Glyphicons -->
+        <link rel="stylesheet" type="text/css" href="{{ asset('bundles/bmatznerfontawesome/css/font-awesome.min.css') }}" />
+
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <body>
+        {% include 'CampaignChainCoreBundle:Base:navbar.html.twig' %}
+        <div class="container">
+            <div class="page-header">
+                <h1>{{ page_title }}{% if page_secondary_title is defined and page_secondary_title is not empty %} <small>{{ page_secondary_title }}</small>{% endif %}</h1>
+            </div>
+
+            {% block bodytabs %}{% endblock %}
+
+            {% include 'CampaignChainCoreBundle:Base:flashbag.html.twig' %}
+
+            {% block body %}{% endblock %}
+        </div>
+        <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+            <div class="container-fluid">
+                <p class="navbar-text text-muted">Powered by <a href="{% if (campaignchain_system is not null) and (campaignchain_system.homepage is not null)   %}
+                            {{ campaignchain_system.homepage }}
+                        {% else %}
+                            http://www.campaignchain.com
+                        {% endif %}" rel="external">
+                        {% if (campaignchain_system is not null) and (campaignchain_system.name is not null) %}
+                            {{ campaignchain_system.name }}
+                        {% else %}
+                            CampaignChain
+                        {% endif %}</a>
+                        {% if (campaignchain_system is not null) and (campaignchain_system.version is not null) %}
+                            &nbsp;({{ campaignchain_system.version }})
+                        {% endif %}</p>
+            </div>
+        </nav>
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+        <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>-->
+        {% block javascripts_footer %}{% endblock %}
+    </body>
+</html>

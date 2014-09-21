@@ -1,0 +1,102 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) Sandro Groganz <sandro@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>{{ page_title }} - CampaignChain</title>
+        {% block javascripts %}
+            {% javascripts '@jquery_js' '@bootstrap_js' filter='?yui_js' combine=true %}
+                <script src="{{ asset_url }}"></script>
+            {% endjavascripts %}
+            <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+            <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
+            {% javascripts '@moment_js' combine=true %}
+            <script src="{{ asset_url }}"></script>
+            {% endjavascripts %}
+            {% javascripts '@campaignchain_base_js' combine=true %}
+                <script src="{{ asset_url }}"></script>
+            {% endjavascripts %}
+            <script type="text/javascript">
+                window.campaignchainDatetimeFormat = "{{ campaignchain_user_datetime_format.moment_js }}";
+                window.campaignchainTimezone = "{{ app.session.get('campaignchain.timezone') }}";
+                window.campaignchainTimezoneOffset = "{{ campaignchain_user_timezone_offset }}";
+                window.campaignchainTimezoneAbbreviation = "{{ campaignchain_user_timezone_abbreviation }}";
+            </script>{% endblock %}
+
+        {% block stylesheets %}
+            {% stylesheets '@bootstrap_less' combine=true %}
+            <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
+            {% endstylesheets %}
+            {% stylesheets '@campaignchain_base_css' filter="cssrewrite"
+            'bundles/campaignchaincore/css/*'%}
+            <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
+            {% endstylesheets %}
+        {% endblock %}
+
+        <style type="text/css">
+            /* Fix overlapping of content by Bootstrap's fixed top navbar */
+            body { padding-top: 40px; padding-bottom: 70px; }
+            /* Fix Glyphicons path */
+            @font-face {
+                font-family: 'Glyphicons Halflings';
+                src: url('/fonts/glyphicons-halflings-regular.eot');
+                src: url('/fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('/fonts/glyphicons-halflings-regular.woff') format('woff'), url('/fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
+            }
+            @font-face{
+                font-family:'FontAwesome';
+                src:url('/bundles/bmatznerfontawesome/fonts/fontawesome-webfont.eot?v=4.0.3');
+                src:url('/bundles/bmatznerfontawesome/fonts/fontawesome-webfont.eot?#iefix&v=4.0.3') format('embedded-opentype'),
+                url('/bundles/bmatznerfontawesome/fonts/fontawesome-webfont.woff?v=4.0.3') format('woff'),
+                url('/bundles/bmatznerfontawesome/fonts/fontawesome-webfont.ttf?v=4.0.3') format('truetype'),
+                url('/bundles/bmatznerfontawesome/fonts/fontawesome-webfont.svg?v=4.0.3#fontawesomeregular') format('svg');
+                font-weight:normal;font-style:normal
+            }
+
+            #footer {
+                background-color: #F5F5F5;
+                bottom: 0;
+                height: 60px;
+                position: absolute;
+                width: 100%;
+            }
+
+            .btn-toolbar {
+                margin-bottom: 30px;
+            }
+        </style>
+        <!-- Add Fonta Awesome Glyphicons -->
+        <link rel="stylesheet" type="text/css" href="{{ asset('bundles/bmatznerfontawesome/css/font-awesome.min.css') }}" />
+
+        <script type="text/javascript">
+                function popupwindow(url, title, w, h) {
+                var left = (screen.width/2)-(w/2);
+                //var top = (screen.height/2)-(h/2);
+                var top = 200;
+                return window.open(url, title, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=yes, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left);
+            }
+        </script>
+
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <body>
+            {% block body %}{% endblock %}
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+        <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>-->
+
+    </body>
+</html>

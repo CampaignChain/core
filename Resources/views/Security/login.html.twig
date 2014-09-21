@@ -1,0 +1,72 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) Sandro Groganz <sandro@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+{#{% extends "FOSUserBundle::layout.html.twig" %}#}
+
+{% set page_title = 'Login' %}
+
+{% extends 'CampaignChainCoreBundle:Base:base_fullscreen.html.twig' %}
+
+{% trans_default_domain 'FOSUserBundle' %}
+
+{% block body %}
+    <!-- Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">CampaignChain</h3>
+            <h4 class="modal-title"><span class="fa fa-sign-in"></span> {{ page_title }}</h4>
+        </div>
+        <div class="modal-body">
+            {% block fos_user_content %}
+            {% if error %}
+                <div>{{ error|trans }}</div>
+            {% endif %}
+
+            <form action="{{ path("fos_user_security_check") }}" method="post" class="form-horizontal" role="form">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
+            <div class="form-group">
+                <label for="username" class="control-label col-lg-2 required">{{ 'security.login.username'|trans }}</label>
+                <div class="col-lg-6">
+                    <input type="text" id="username" name="_username" value="{{ last_username }}" required="required" class="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="password" class="control-label col-lg-2 required">{{ 'security.login.password'|trans }}</label>
+                <div class="col-lg-6">
+                    <input type="password" id="password" name="_password" required="required"class="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-lg-6 col-lg-offset-2">
+                    <div class="checkbox">
+                        <label for="remember_me">
+                <input type="checkbox" id="remember_me" name="_remember_me" value="on" align_with_widget="1" />
+                {{ 'security.login.remember_me'|trans }}</label>
+                </div>
+                    </div>
+            </div>
+                <div class="form-group">
+                    <div class="col-lg-offset-2 col-lg-6">
+                <button type="submit" id="_submit" class="btn btn-primary" name="_submit">{{ 'security.login.submit'|trans }}</button>
+                        </div>
+            </div>
+            </form>
+            {% endblock fos_user_content %}
+        </div>
+        <div class="modal-footer">
+            <p class="navbar-text text-muted">Powered by <a href="#" rel="external">CampaignChain</a>. &copy; {{ "now"|date("Y") }} <a href="http://www.campaignchain.com" rel="author">Sandro Groganz</a>.</p>
+        </div>
+    </div>
+    </div>
+<script type="text/javascript">
+    $('#loginModal').modal('show');
+</script>
+{% endblock %}

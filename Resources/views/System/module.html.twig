@@ -1,0 +1,69 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) Sandro Groganz <sandro@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+{% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
+
+{% block body %}
+    {% if new_bundles and new_bundles is iterable %}
+    <div class="alert alert-info">
+        <h2>Ready to be installed</h2>
+        <!--<div class="table-responsive">-->
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>License</th>
+                    <th>Homepage</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for module in new_bundles %}
+                    <tr>
+                        <td>{{ module.name }}</td>
+                        <td>{{ module.description }}</td>
+                        <td>{{ module.license }}</td>
+                        <td><a href="{{ module.homepage }}">{{ module.homepage }}</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% if form %}
+            {{ form(form, { 'style': 'inline' }) }}
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if installed_bundles and installed_bundles is iterable %}
+        <h2>Installed</h2>
+        <!--<div class="table-responsive">-->
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>License</th>
+                <th>Homepage</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for module in installed_bundles %}
+                <tr>
+                    <td>{{ module.name }}</td>
+                    <td>{{ module.description }}</td>
+                    <td>{{ module.license }}</td>
+                    <td><a href="{{ module.homepage }}">{{ module.homepage }}</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}

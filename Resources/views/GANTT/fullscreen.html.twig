@@ -1,0 +1,74 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) Sandro Groganz <sandro@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+{% extends 'CampaignChainCoreBundle:Base:base_fullscreen.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% javascripts '@dhtmlxgantt_js' combine=true %}
+    <!-- @dhtmlxgantt_js --><script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    {% javascripts '@dhtmlxgantt_tooltip_js' combine=true %}
+    <!-- @dhtmlxgantt_tooltip_js --><script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {% stylesheets '@dhtmlxgantt_css' %}
+        <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
+    {% endstylesheets %}
+    <style type="text/css" media="screen">
+        html, body{
+            margin:0px !important;
+            padding:0px !important;
+            height:100% !important;
+            overflow:hidden !important;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {% set gantt_toolbar_status = 'fullscreen' %}
+
+    {% include 'CampaignChainCoreBundle:GANTT:toolbar.html.twig' %}
+
+    {% include 'CampaignChainCoreBundle:GANTT:css.html.twig' %}
+
+    <div id="gantt_here" style='width:100%; height:100%;'></div>
+
+    {% javascripts '@campaignchain_dhtmlxgantt_pre_init_js' combine=true %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    <script type="text/javascript">
+        var tasks = {{ gantt_tasks|raw }}
+                gantt.init("gantt_here");
+    </script>
+    {% javascripts '@campaignchain_dhtmlxgantt_post_init_js' combine=true %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    <script type="text/javascript">
+        // Adjust height of GANTT chart to take into account height of toolbar, so that vertical scrollbar shows up properly.
+        modToolbarHeight();
+        gantt.parse (tasks);
+
+        scrollToToday();
+    </script>
+
+    <!-- Modal -->
+    <div class="modal fade" id="ganttModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+{% endblock %}

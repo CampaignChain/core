@@ -1,0 +1,68 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) Sandro Groganz <sandro@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+{% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
+
+{% block bodytabs %}
+    {{ knp_menu_render('CampaignChainCoreBundle:Builder:activityListTab', { 'style': 'tabs' }) }}
+{% endblock %}
+
+{% block body %}
+    {% include 'CampaignChainCoreBundle:Base:datatable.html.twig' %}
+
+    <!--<div class="table-responsive">-->
+        <table id="example" class="table table-striped table-bordered dataTable">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Operations</th>
+                    <th>Campaign</th>
+                    <th>Execution</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for activity in activities %}
+                    <tr class="
+                            {% if activity.status == "paused" %}text-muted {% endif %}
+                            ">
+                        <td><img src="{{ asset( activity|campaignchain_channel_asset_path~'/images/icons/16x16/'~activity|campaignchain_channel_icon_name ) }}" /></td>
+                        <td>{{ activity.name }}</td>
+                        <td>{% set operations = activity.getOperations() %}
+                            {% for operation in operations %}
+                            {{ operation.getOperationModule().getDisplayName() }}{{ loop.last ? '' : ', ' }}
+                            {% endfor %}</td>
+                        <td>{{ activity.getCampaign().getName() }}</td>
+                        <td>
+                            {{ activity|campaignchain_tpl_trigger_hook_inline }}
+                        </td>
+                        <td>
+                            <a role="button" class="btn btn-default btn-xs"
+                               href="{{ path('campaignchain_core_activity_edit',{'id':activity.id}) }}">
+                                <span class="fa fa-pencil"></span></a>
+                            {#{% if activity.status == "paused" %}#}
+                                {#<button type="button" class="btn btn-default btn-xs">#}
+                                    {#<a href="#"><span class="fa fa-play"></span></a>#}
+                                {#</button>#}
+                            {#{% else %}#}
+                                {#<button type="button" class="btn btn-default btn-xs">#}
+                                    {#<a href="#"><span class="fa fa-pause"></span></a>#}
+                                {#</button>#}
+                            {#{% endif %}#}
+                            {#<button type="button" class="btn btn-default btn-xs">#}
+                                {#<a href="#"><span class="fa fa-trash-o"></span></a>#}
+                            {#</button>#}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    <!--</div>-->
+{% endblock %}

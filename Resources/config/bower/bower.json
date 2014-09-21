@@ -1,0 +1,14 @@
+{
+    "name": "campaignchain-core",
+    "dependencies": {
+        "bootstrap-daterangepicker": "*",
+        "flot": "*",
+        "flot.tooltip": "*",
+        "jquery.flot.comments": "https://github.com/Jeff-Tian/jquery.flot.comments.js/archive/master.zip",
+        "moment": "*",
+        "moment-timezone": "*",
+        "ScrollToFixed": "*",
+        "gantt": "2.1",
+        "fullcalendar": "*"
+    }
+}

@@ -1,0 +1,20 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) Sandro Groganz <sandro@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+{% extends 'CampaignChainCoreBundle:Base:new.html.twig' %}
+
+{% block form_header %}
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="campaignchain-location-image"><img class="campaignchain-location-image" src="{{ location.getImage() }}"></div>
+            <div class="campaignchain-location-name"><label>Name:</label>{{ location.getName() }}</div>
+            <div class="campaignchain-location-name"><label>URL:</label><a href="{{ location.getUrl() }}">{{ location.getUrl() }}</a></div>
+        </div>
+    </div>
+{% endblock %}

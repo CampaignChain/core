@@ -1,0 +1,56 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) Sandro Groganz <sandro@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+{% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ form_javascript(form) }}
+    <script>
+        $(":required")
+                .closest(".control-group")
+                .children("label")
+                .prepend("<span class='icon-asterisk'></span> ");
+    </script>
+    {% javascripts '@daterangepicker_js' combine=false %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ form_stylesheet(form) }}
+    {% stylesheets '@select2_css' combine=true %}
+        <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
+    {% endstylesheets %}
+    {% stylesheets '@daterangepicker_css' %}
+        <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
+    {% endstylesheets %}
+{% endblock %}
+
+{% block body %}
+    {% javascripts '@select2_js' %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+    {% for flashMessage in app.session.flashbag.get('success') %}
+        <div class="alert alert-success">
+            {{ flashMessage|raw }}
+        </div>
+    {% endfor %}
+
+    {% block form_header %}{% endblock %}
+
+    {% block form %}
+    {{ form(form, { 'style': 'horizontal', 'label_col': 2, 'widget_col': 6 }) }}
+    {% endblock %}
+
+    {% block form_footer %}{% endblock %}
+
+{% endblock %}

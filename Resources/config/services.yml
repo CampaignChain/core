@@ -1,0 +1,98 @@
+# This file is part of the CampaignChain package.
+#
+# (c) Sandro Groganz <sandro@campaignchain.com>
+#
+# For the full copyright and license information, please view the LICENSE
+# file that was distributed with this source code.
+
+parameters:
+    campaignchain_core:
+        display_name: Core Bundle
+        formats:
+            # Date and time formats as per http://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table
+            date: ['yyyy-MM-dd', 'd. MMMM, yyyy', 'EEEE, d. MMMM, yyyy', 'EEE, d. MMMM, yyyy']
+            time: ['hh:mm a', 'HH:mm', 'HH:mm:ss']
+        style:
+            ongoing:
+                text: "#ffffff"
+                background: "#F0AD4E"
+                border: "##EEA236"
+            upcoming:
+                text: "#ffffff"
+                background: "#5BC0DE"
+                border: "#46B8DA"
+            done:
+                text: "#ffffff"
+                background: "#cccccc"
+                border: "#777777"
+services:
+    campaignchain.core.channel.wizard:
+        class: CampaignChain\CoreBundle\Wizard\ChannelWizard
+        calls:
+            - [setContainer, ["@service_container"]]
+    campaignchain.core.activity.wizard:
+        class: CampaignChain\CoreBundle\Wizard\ActivityWizard
+        calls:
+            - [setContainer, ["@service_container"]]
+    campaignchain.core.twig.campaignchain_core_extension:
+        class: CampaignChain\CoreBundle\Twig\CampaignChainCoreExtension
+        arguments: [@doctrine.orm.entity_manager, "@service_container"]
+        tags:
+            - { name: twig.extension }
+    campaignchain.core.listener.login:
+        class: CampaignChain\CoreBundle\EventListener\LoginListener
+        arguments: ["@security.context", "@session"]
+        tags:
+            - { name: kernel.event_listener, event: security.interactive_login, method: onSecurityInteractiveLogin }
+            - { name: kernel.event_listener, event: kernel.request, method: setLocale }
+    campaignchain.core.listener.datetime:
+        class: CampaignChain\CoreBundle\EventListener\DatetimeListener
+        arguments: ["@service_container"]
+        tags:
+            - { name: doctrine.event_listener, event: postLoad }
+            - { name: doctrine.event_listener, event: prePersist }
+            - { name: doctrine.event_listener, event: preUpdate }
+    campaignchain.core.util.datetime:
+        class: CampaignChain\CoreBundle\Util\DateTimeUtil
+        arguments: ["@service_container"]
+    campaignchain.core.form.type.campaign:
+        class: CampaignChain\CoreBundle\Form\Type\CampaignType
+        arguments: [ @doctrine.orm.entity_manager, @service_container ]
+    campaignchain.core.form.type.milestone:
+        class: CampaignChain\CoreBundle\Form\Type\MilestoneType
+        arguments: [ @doctrine.orm.entity_manager, @service_container ]
+    campaignchain.core.form.type.location:
+        class: CampaignChain\CoreBundle\Form\Type\LocationType
+        arguments: [ @doctrine.orm.entity_manager, @service_container ]
+    campaignchain.core.location:
+        class: CampaignChain\CoreBundle\EntityService\LocationService
+        arguments: [ @doctrine.orm.entity_manager, @service_container ]
+    campaignchain.core.form.type.location:
+        class: CampaignChain\CoreBundle\Form\Type\LocationType
+    campaignchain.core.form.type.activity:
+        class: CampaignChain\CoreBundle\Form\Type\ActivityType
+        arguments: [ @doctrine.orm.entity_manager, @service_container ]
+    campaignchain.core.channel:
+        class: CampaignChain\CoreBundle\EntityService\ChannelService
+        arguments: [ @doctrine.orm.entity_manager, @service_container ]
+    campaignchain.core.operation:
+        class: CampaignChain\CoreBundle\EntityService\OperationService
+        arguments: [ @doctrine.orm.entity_manager, @service_container ]
+    campaignchain.core.campaign:
+        class: CampaignChain\CoreBundle\EntityService\CampaignService
+        arguments: [ @doctrine.orm.entity_manager, @service_container ]
+    campaignchain.core.milestone:
+        class: CampaignChain\CoreBundle\EntityService\MilestoneService
+        arguments: [ @doctrine.orm.entity_manager, @service_container ]
+    campaignchain.core.activity:
+        class: CampaignChain\CoreBundle\EntityService\ActivityService
+        arguments: [ @doctrine.orm.entity_manager, @service_container ]
+    campaignchain.core.hook:
+        class: CampaignChain\CoreBundle\EntityService\HookService
+        arguments: [ @doctrine.orm.entity_manager, @service_container ]
+    campaignchain.core.cta:
+        class: CampaignChain\CoreBundle\EntityService\CTAService
+        arguments: [ @doctrine.orm.entity_manager, @service_container ]
+    campaignchain.core.listener.hook:
+        class: CampaignChain\CoreBundle\EventListener\HookListener
+        arguments: [ @doctrine.orm.entity_manager, @service_container ]

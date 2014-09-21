@@ -1,0 +1,18 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) Sandro Groganz <sandro@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+{% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
+
+{% block bodytabs %}
+    {{ knp_menu_render('CampaignChainCoreBundle:Builder:planListTab', { 'style': 'tabs' }) }}
+{% endblock %}
+
+{% block body %}
+    {% include 'CampaignChainCoreBundle:GANTT:inline.html.twig' %}
+{% endblock %}

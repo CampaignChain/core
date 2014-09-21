@@ -1,0 +1,81 @@
+/*
+This file is part of the CampaignChain package.
+
+(c) Sandro Groganz <sandro@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+*/
+
+#flotTip
+{
+    padding: 3px 5px;
+    background-color: #fff !important;
+    z-index: 100;
+    color: #333333 !important;
+    font-size: small !important;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.176) !important;
+    background-clip: padding-box !important;
+    border: 1px solid rgba(0, 0, 0, 0.15) !important;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+.jquery-flot-comment .callout {
+    color: #A94442;
+    border: 1px solid #EBCCD1 !important;
+    -webkit-border-radius: 3px !important;
+    -moz-border-radius: 3px !important;
+    border-radius: 3px !important;
+}
+
+.jquery-flot-comment .callout {
+    position: absolute;
+    width: 100px !important;
+    display: block;
+    margin: 0;
+    padding: 2px;
+    padding-left: 20px !important;
+    text-align: left;
+    font-size: 11px !important;
+    border-bottom-right-radius: 3px;
+    border-right-width: 1px;
+    border-top-right-radius: 3px;
+    background-color: #FFFFFF !important;
+    background-position: 2px 2px;
+    background-repeat: no-repeat;
+    color: #000000;
+    height: auto !important;
+    min-height: 22px;
+    padding-left: 20px;
+    background-image: url('/bundles/campaignchainmilestonescheduledmilestone/images/icons/16x16/milestone.png');
+    z-index: 2 !important;
+}
+
+.jquery-flot-comment .callout .notch {
+    border-top: 10px solid #EBCCD1 !important;
+}
+
+.legendLabel {
+    padding-left: 2px;
+}
+
+.campaignchain-chart-dashboard {
+    padding-top: 10px;
+    text-align: center;
+}
+.campaignchain-chart-dashboard .entity {
+    font-weight: bold;
+}
+.campaignchain-chart-dashboard .percent-positive {
+    color: #008000;
+    font-size: large;
+}
+.campaignchain-chart-dashboard .percent-negative {
+    color: #FF0000;
+    font-size: large;
+}
+.campaignchain-chart-dashboard label {
+    font-weight: normal;
+}

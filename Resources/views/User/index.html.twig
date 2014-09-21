@@ -1,0 +1,36 @@
+{% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
+
+{% block bodytabs %}
+    {{ knp_menu_render('CampaignChainCoreBundle:Builder:userListTab', { 'style': 'tabs' }) }}
+{% endblock %}
+
+{% block body %}
+    {% include 'CampaignChainCoreBundle:Base:datatable.html.twig' %}
+
+    <!--<div class="table-responsive">-->
+        <table id="example" class="table table-striped table-bordered dataTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr class="
+                            {% if user.expired == true %}text-muted {% endif %}
+                            ">
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            <a role="button" class="btn btn-default btn-xs"
+                               href="{{ path('campaignchain_core_profile_edit',{'id':user.id}) }}">
+                                <span class="fa fa-pencil"></span></a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    <!--</div>-->
+{% endblock %}

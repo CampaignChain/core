@@ -1,0 +1,55 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) Sandro Groganz <sandro@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+{% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
+
+{% block body %}
+    {% include 'CampaignChainCoreBundle:Base:datatable.html.twig' %}
+
+    <!--<div class="table-responsive">-->
+    <table id="example" class="table table-striped table-bordered dataTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Campaign</th>
+                    <th>Due</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for milestone in milestones %}
+                    <tr class="
+                            {% if milestone.status == "paused" %}text-muted {% endif %}
+                            ">
+                        <td>{{ milestone.name }}</td>
+                        <td>{{ milestone.getCampaign().getName() }}</td>
+                        <td>{{ milestone.startDate|date('Y-m-d H:i:s') }}</td>
+                        <td>
+                            <a role="button" class="btn btn-default btn-xs"
+                               href="{{ path('campaignchain_core_milestone_edit',{'id':milestone.id}) }}">
+                                <span class="fa fa-pencil"></span></a>
+                            {#{% if milestone.status == "paused" %}#}
+                                {#<button type="button" class="btn btn-default btn-xs">#}
+                                    {#<a href="#"><span class="fa fa-play"></span></a>#}
+                                {#</button>#}
+                            {#{% else %}#}
+                                {#<button type="button" class="btn btn-default btn-xs">#}
+                                    {#<a href="#"><span class="fa fa-pause"></span></a>#}
+                                {#</button>#}
+                            {#{% endif %}#}
+                            {#<button type="button" class="btn btn-default btn-xs">#}
+                                {#<a href="#"><span class="fa fa-trash-o"></span></a>#}
+                            {#</button>#}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    <!--</div>-->
+{% endblock %}

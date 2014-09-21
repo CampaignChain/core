@@ -1,0 +1,25 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) Sandro Groganz <sandro@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+{% block javascripts %}
+    {% javascripts '@datatables_js' combine=true %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {
+            $('#example').dataTable();
+        } );
+    </script>
+{% endblock %}
+
+{% block stylesheets %}
+    {% stylesheets '@datatables_css' output="media/css/*.css" %}
+    <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
+    {% endstylesheets %}
+{% endblock %}
