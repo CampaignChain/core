@@ -27,7 +27,7 @@ class Bundle
     const TYPE_LOCATION = 'campaignchain-location';
     const TYPE_SECURITY = 'campaignchain-security';
     const TYPE_REPORT = 'campaignchain-report';
-    const TYPE_REPORT_ANALYTICS = 'campaignchain-report/analytics';
+    const TYPE_REPORT_ANALYTICS = 'campaignchain-report-analytics';
     const TYPE_REPORT_BUDGET = 'campaignchain-report/budget';
     const TYPE_REPORT_SALES = 'campaignchain-report/sales';
     const TYPE_HOOK = 'campaignchain-hook';

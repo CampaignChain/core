@@ -140,9 +140,9 @@ class ModuleController extends Controller
                                     $moduleEntity = 'OperationModule';
                                     break;
                                 case 'campaignchain-report':
-                                case 'campaignchain-report/analytics':
-                                case 'campaignchain-report/budget':
-                                case 'campaignchain-report/sales':
+                                case 'campaignchain-report-analytics':
+                                case 'campaignchain-report-budget':
+                                case 'campaignchain-report-sales':
                                     $moduleEntity = 'ReportModule';
                                     break;
                                 case 'campaignchain-security':
