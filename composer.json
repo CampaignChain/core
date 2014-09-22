@@ -45,5 +45,8 @@
         "friendsofsymfony/jsrouting-bundle": "dev-master",
         "hpatoio/bitly-bundle": "dev-master",
         "sp/bower-bundle": "dev-master"
+    },
+    "autoload": {
+        "psr-4": { "CampaignChain\\CoreBundle\\": "" }
     }
 }
