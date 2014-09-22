@@ -23,13 +23,8 @@ class DevelopmentController extends Controller
 {
     public function sampleDataAction(Request $request){
         // TODO: Test whether finding all data files also works if CampaignChain is in src/ as well as vendors/.
-        $dataRoot = realpath(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR);
+        $dataRoot = realpath(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR);
         $dataFiles = $this->getDataFiles($dataRoot);
-
-        // TODO: Temporarily hardcoded.
-        $fixtureDir = '/Users/ordnas/src/campaignchain:distribution-amariki/Resources/data';
-        //$fixtureDir = $this->get('kernel')->getBundle('CampaignChainDistributionCeBundle')->getPath().DIRECTORY_SEPARATOR.'Resources'.DIRECTORY_SEPARATOR.'data';
-        $defaultFixtureFile = $fixtureDir.DIRECTORY_SEPARATOR.'ce.yml';
 
         $formData = array();
         $form = $this->createFormBuilder($formData)
@@ -162,7 +157,7 @@ class DevelopmentController extends Controller
     protected function getDataFiles($rootDir){
         $finder = new Finder();
         // Find all the data files.
-        $finder->files()->in($rootDir)->path('Resources/data')->name('/\.yml$/');
+        $finder->files()->in($rootDir)->path('Resources/data/campaignchain')->name('/\.yml$/');
 
         $dataFiles = array();
 
@@ -172,25 +167,4 @@ class DevelopmentController extends Controller
 
         return $dataFiles;
     }
-
-//    private function updateDates(){
-//        $campaigns = $this->getDoctrine()
-//            ->getRepository('CampaignChainCoreBundle:Campaign')
-//            ->findAll();
-//        $this->updateEntitiesDates($campaigns);
-//
-//        $milestones = $this->getDoctrine()
-//            ->getRepository('CampaignChainCoreBundle:Milestone')
-//            ->findAll();
-//        $this->updateEntitiesDates($milestones);
-//
-//        // Get all activities.
-//        $activities = $this->getDoctrine()
-//            ->getRepository('CampaignChainCoreBundle:Activity')
-//            ->findAll();
-//        $this->updateEntitiesDates($activities);
-//
-//        $repository = $this->getDoctrine()->getManager();
-//        $repository->flush();
-//    }
 }
