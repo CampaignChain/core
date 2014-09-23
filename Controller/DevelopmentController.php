@@ -77,7 +77,7 @@ class DevelopmentController extends Controller
             if($form['includeFile']->getData()){
                 $includeFileName = mt_rand().'.yml';
                 $form['includeFile']->getData()->move(sys_get_temp_dir(), $includeFileName);
-                echo $includeFile = sys_get_temp_dir().DIRECTORY_SEPARATOR.$includeFileName;
+                $includeFile = sys_get_temp_dir().DIRECTORY_SEPARATOR.$includeFileName;
                 $set->addFile($includeFile, 'yaml');
             }
 

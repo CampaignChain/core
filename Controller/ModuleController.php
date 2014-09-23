@@ -112,10 +112,10 @@ class ModuleController extends Controller
                                     ->getUrl($params['assets_path'].$params['logo'],null);
                                 $system->setLogo($logoPath);
                             }
-                            if(isset($params['css']) && !empty($params['css'])){
+                            if(isset($params['style']) && !empty($params['style'])){
                                 $cssPath = $this->get('templating.helper.assets')
-                                    ->getUrl($params['assets_path'].$params['css'],null);
-                                $system->setLogo($cssPath);
+                                    ->getUrl($params['assets_path'].$params['style'],null);
+                                $system->setStyle($cssPath);
                             }
 
                             $repository->persist($system);
