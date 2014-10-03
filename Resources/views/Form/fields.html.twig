@@ -131,14 +131,20 @@ file that was distributed with this source code.
                                 timePicker: true,
                                 timePickerIncrement: 5,
                                 format: window.campaignchainDatetimeFormat,
-                                timePicker12Hour: false,
+                                timePicker12Hour: false
                             },
                         function(start, end, label) {
-                            startElement.val(start.format(window.campaignchainDatetimeFormat));
-                            endElement.val(end.format(window.campaignchainDatetimeFormat));
-                            // Set start and end date for endDate field.
+                            console.log('startElement');
+                            console.log(start);
+                            console.log(end);
+                            console.log('startDate: ' + start.format(window.campaignchainDatetimeFormat));
+                            console.log('endDate:' + end.format(window.campaignchainDatetimeFormat));
+                            // Set dates for daterangepicker of end date field.
                             endElement.data('daterangepicker').setStartDate(start.format(window.campaignchainDatetimeFormat));
                             endElement.data('daterangepicker').setEndDate(end.format(window.campaignchainDatetimeFormat));
+                            // Set dates for form fields.
+                            startElement.val(start.format(window.campaignchainDatetimeFormat));
+                            endElement.val(end.format(window.campaignchainDatetimeFormat));
                         }
                     );
 
@@ -154,11 +160,14 @@ file that was distributed with this source code.
                             },
                             function(start, end, label) {
                                 console.log('endElement');
-                                startElement.val(start.format(window.campaignchainDatetimeFormat));
-                                endElement.val(end.format(window.campaignchainDatetimeFormat));
-                                // Set start and end date for startDate field.
+                                console.log('startDate: ' + start.format(window.campaignchainDatetimeFormat));
+                                console.log('endDate:' + end.format(window.campaignchainDatetimeFormat));
+                                // Set dates for daterangepicker of start date form field.
                                 startElement.data('daterangepicker').setStartDate(start.format(window.campaignchainDatetimeFormat));
                                 startElement.data('daterangepicker').setEndDate(end.format(window.campaignchainDatetimeFormat));
+                                // Set dates for both form fields.
+                                startElement.val(start.format(window.campaignchainDatetimeFormat));
+                                endElement.val(end.format(window.campaignchainDatetimeFormat));
                             }
                     );
                 });
