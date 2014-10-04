@@ -35,7 +35,7 @@
         "knplabs/knp-menu": "~2.0",
         "knplabs/knp-paginator-bundle": "~2.4",
         "knplabs/knp-menu-bundle":"~2.0",
-        "stephanecollot/datetimepicker-bundle": "~1.0",
+        "stephanecollot/datetimepicker-bundle": "dev-master",
         "datatables/datatables": "~1.10",
         "friendsofsymfony/user-bundle": "~2.0",
         "bmatzner/fontawesome-bundle": "~4.2",
