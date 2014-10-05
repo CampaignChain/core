@@ -103,8 +103,8 @@ class ModuleController extends Controller
                                 $system = new System();
                             }
                             $system->setName($params['name']);
-                            if($newBundle->getVersion()){
-                                $system->setVersion($newBundle->getVersion());
+                            if(isset($params['version']) && !empty($params['version'])){
+                                $system->setVersion($params['version']);
                             }
                             $system->setHomepage($newBundle->getHomepage());
                             if(isset($params['logo']) && !empty($params['logo'])){
