@@ -71,6 +71,9 @@ class ModuleController extends Controller
                 try {
                     $repository->getConnection()->beginTransaction();
 
+                    // Prepare array where we store system parameters.
+                    $systemParams = array();
+
                     foreach($newBundles as $newBundle){
                         // Skip the core bundle
                         if($newBundle->getType() == 'campaignchain-core'){
@@ -168,6 +171,9 @@ class ModuleController extends Controller
                                         // TODO: Check that there's only 1 trigger hook included.
                                         $module->setHooks($moduleParams['hooks']);
                                     }
+                                    if(isset($moduleParams['system']) && is_array($moduleParams['system']) && count($moduleParams['system'])){
+                                        $systemParams = array_merge($systemParams, $moduleParams['system']);
+                                    }
 
                                     // Process the params specific to a module type.
                                     $params = array();
@@ -204,7 +210,7 @@ class ModuleController extends Controller
                     if(isset($activityChannels) && count($activityChannels)){
                         foreach($activityChannels as $activityBundleIdentifier => $activityModules){
                             $activityBundle = $repository->getRepository('CampaignChainCoreBundle:Bundle')
-                                                    ->findOneByName($activityBundleIdentifier);
+                                ->findOneByName($activityBundleIdentifier);
                             foreach($activityModules as $activityModuleIdentifier => $activityModuleChannels){
                                 $activityModule = $repository->getRepository('CampaignChainCoreBundle:ActivityModule')
                                     ->findOneBy(array(
@@ -227,6 +233,27 @@ class ModuleController extends Controller
                                     $activityModule->addChannelModule($channelModule);
                                     $repository->persist($activityModule);
                                 }
+                            }
+                        }
+
+                        $repository->flush();
+                    }
+
+                    // Store the system parameters.
+                    if(count($systemParams)){
+                        foreach($systemParams as $key => $params){
+                            switch($key){
+                                case 'navigation':
+                                    /*
+                                     * If a system entry already exists, then update it. Otherwise, create a new one.
+                                     */
+                                    $system = $repository->getRepository('CampaignChainCoreBundle:System')->find(1);
+
+                                    if(!$system){
+                                        $system = new System();
+                                    }
+                                    $system->setNavigation($params);
+                                    break;
                             }
                         }
 
@@ -306,7 +333,7 @@ class ModuleController extends Controller
                 ->getRepository('CampaignChainCoreBundle:Bundle')
                 ->findOneByName($bundle->getName())){
                 $bundle->setPath(
-                    // Remove the root directory to get the relative path
+                // Remove the root directory to get the relative path
                     str_replace($rootDir.DIRECTORY_SEPARATOR, '',
                         // Remove the composer file from the path
                         str_replace(DIRECTORY_SEPARATOR.'composer.json', '', $bundleComposer)

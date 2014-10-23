@@ -51,14 +51,19 @@ class System
      */
     protected $style;
     /**
-    * @ORM\Column(type="string", nullable=true)
-    */
+     * @ORM\Column(type="string", nullable=true)
+     */
     protected $homepage;
+
+    /**
+     * @ORM\Column(type="array", nullable=true)
+     */
+    protected $navigation;
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -81,7 +86,7 @@ class System
     /**
      * Get currency
      *
-     * @return string 
+     * @return string
      */
     public function getCurrency()
     {
@@ -104,7 +109,7 @@ class System
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -127,7 +132,7 @@ class System
     /**
      * Get version
      *
-     * @return string 
+     * @return string
      */
     public function getVersion()
     {
@@ -150,7 +155,7 @@ class System
     /**
      * Get logo
      *
-     * @return string 
+     * @return string
      */
     public function getLogo()
     {
@@ -173,7 +178,7 @@ class System
     /**
      * Get style
      *
-     * @return string 
+     * @return string
      */
     public function getStyle()
     {
@@ -196,10 +201,33 @@ class System
     /**
      * Get homepage
      *
-     * @return string 
+     * @return string
      */
     public function getHomepage()
     {
         return $this->homepage;
+    }
+
+    /**
+     * Set navigation
+     *
+     * @param array $navigation
+     * @return System
+     */
+    public function setNavigation($navigation)
+    {
+        $this->navigation = $navigation;
+
+        return $this;
+    }
+
+    /**
+     * Get navigation
+     *
+     * @return array
+     */
+    public function getNavigation()
+    {
+        return $this->navigation;
     }
 }
