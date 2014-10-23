@@ -69,6 +69,12 @@ file that was distributed with this source code.
                         <li><a href="{{ path('campaignchain_core_location') }}">Locations</a></li>
                         <li class="divider"></li>
                         <li><a href="{{ path('campaignchain_core_system_module') }}">Modules</a></li>
+                        {% if (campaignchain_system is not null) and (campaignchain_system.navigation is not null)  and (campaignchain_system.navigation.settings is not null) %}
+                            <li class="divider"></li>
+                            {% for nav_setting in campaignchain_system.navigation.settings  %}
+                                <li><a href="{{ path(nav_setting.1) }}">{{ nav_setting.0 }}</a></li>
+                            {% endfor %}
+                        {% endif %}
                     </ul>
                 </li>
             </ul>
