@@ -213,9 +213,15 @@ class PlanController extends Controller
             $ganttTasks['data'] = array_merge($ganttCampaignData, array_merge($ganttMilestoneData, $ganttActivityData));
             $ganttTasks['links'] = array_merge($ganttActivityLinks, $ganttMilestoneLinks);
         } else {
+            $docUrl = $this->container->get('templating.helper.assets')
+                ->getUrl(
+                    'bundles/campaignchaindochtml/user/get_started.html#create-a-campaign',
+                    null
+                );
+
             $this->get('session')->getFlashBag()->add(
                 'warning',
-                'No campaigns defined yet.'
+                'No campaigns defined yet. To learn how to create one, please <a href="#" onclick="popupwindow(\''.$docUrl.'\',\'\',900,600)">consult the documentation</a>.'
             );
         }
 
@@ -296,9 +302,15 @@ class PlanController extends Controller
                 'durationEditable' => false,
             );
         } else {
+            $docUrl = $this->container->get('templating.helper.assets')
+                ->getUrl(
+                    'bundles/campaignchaindochtml/user/get_started.html#create-a-campaign',
+                    null
+                );
+
             $this->get('session')->getFlashBag()->add(
                 'warning',
-                'No campaigns defined yet.'
+                'No campaigns defined yet. To learn how to create one, please <a href="#" onclick="popupwindow(\''.$docUrl.'\',\'\',900,600)">consult the documentation</a>.'
             );
         }
 
