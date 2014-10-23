@@ -31,6 +31,19 @@ class ChannelController extends Controller
 
         $repository_channels = $query->getResult();
 
+        if(!count($repository_channels)){
+            $docUrl = $this->container->get('templating.helper.assets')
+                ->getUrl(
+                    'bundles/campaignchaindochtml/user/get_started.html#connect-to-a-channel',
+                    null
+                );
+
+            $this->get('session')->getFlashBag()->add(
+                'warning',
+                'No channels defined yet. To learn how to create one, please <a href="#" onclick="popupwindow(\''.$docUrl.'\',\'\',900,600)">consult the documentation</a>.'
+            );
+        }
+
         return $this->render(
             'CampaignChainCoreBundle:Channel:index.html.twig',
             array(
