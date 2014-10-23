@@ -207,8 +207,17 @@ class PlanController extends Controller
             }
         }
 
-        $ganttTasks['data'] = array_merge($ganttCampaignData, array_merge($ganttMilestoneData, $ganttActivityData));
-        $ganttTasks['links'] = array_merge($ganttActivityLinks, $ganttMilestoneLinks);
+        $ganttTasks = array();
+
+        if(isset($ganttCampaignData) && is_array($ganttCampaignData)){
+            $ganttTasks['data'] = array_merge($ganttCampaignData, array_merge($ganttMilestoneData, $ganttActivityData));
+            $ganttTasks['links'] = array_merge($ganttActivityLinks, $ganttMilestoneLinks);
+        } else {
+            $this->get('session')->getFlashBag()->add(
+                'warning',
+                'No campaigns defined yet.'
+            );
+        }
 
         $encoders = array(new JsonEncoder());
         $normalizers = array(new GetSetMethodNormalizer());
@@ -239,11 +248,12 @@ class PlanController extends Controller
             $campaignEvents[] = $campaignEvent;
         }
 
-        $calendarEvents['campaign']['data'] = $serializer->serialize($campaignEvents, 'json');
-        $calendarEvents['campaign']['options'] = array(
-            'className' => 'campaignchain_campaign',
-        );
-
+        if(isset($ganttCampaignData) && is_array($campaignEvents)){
+            $calendarEvents['campaign']['data'] = $serializer->serialize($campaignEvents, 'json');
+            $calendarEvents['campaign']['options'] = array(
+                'className' => 'campaignchain_campaign',
+            );
+        }
 
         // Retrieve all activities
         $repository = $this->getDoctrine()->getRepository('CampaignChainCoreBundle:Activity');
@@ -259,11 +269,13 @@ class PlanController extends Controller
             $activityEvents[] = $activityEvent;
         }
 
-        $calendarEvents['activity']['data'] = $serializer->serialize($activityEvents, 'json');
-        $calendarEvents['activity']['options'] = array(
-            'className' => $activity->getActivityModule()->getBundle()->getParameterIdentifier().'_'.strtolower($activity->getActivityModule()->getIdentifier()),
-            'durationEditable' => false,
-        );
+        if(isset($ganttCampaignData) && is_array($activityEvents)){
+            $calendarEvents['activity']['data'] = $serializer->serialize($activityEvents, 'json');
+            $calendarEvents['activity']['options'] = array(
+                'className' => $activity->getActivityModule()->getBundle()->getParameterIdentifier().'_'.strtolower($activity->getActivityModule()->getIdentifier()),
+                'durationEditable' => false,
+            );
+        }
 
         // Retrieve all milestones
         $repository = $this->getDoctrine()->getRepository('CampaignChainCoreBundle:Milestone');
@@ -277,11 +289,18 @@ class PlanController extends Controller
             $milestoneEvents[] = $milestoneEvent;
         }
 
-        $calendarEvents['milestone']['data'] = $serializer->serialize($milestoneEvents, 'json');
-        $calendarEvents['milestone']['options'] = array(
-            'className' => 'campaignchain_milestone',
-            'durationEditable' => false,
-        );
+        if(isset($ganttCampaignData) && is_array($milestoneEvents)){
+            $calendarEvents['milestone']['data'] = $serializer->serialize($milestoneEvents, 'json');
+            $calendarEvents['milestone']['options'] = array(
+                'className' => 'campaignchain_milestone',
+                'durationEditable' => false,
+            );
+        } else {
+            $this->get('session')->getFlashBag()->add(
+                'warning',
+                'No campaigns defined yet.'
+            );
+        }
 
         return $calendarEvents;
     }
