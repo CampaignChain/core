@@ -60,7 +60,7 @@ class LocationService
         // Check if the URL is in CampaignChain as a Location.
         $location = $this->em
             ->getRepository('CampaignChainCoreBundle:Location')
-            ->findOneBy(array('URL' => $url));
+            ->findOneBy(array('url' => $url));
 
         /*
          * If not a Location, then see if the URL is inside a connected
@@ -85,11 +85,11 @@ class LocationService
 
                 $query = $repository->createQueryBuilder('location')
                     ->where(
-                        "(:url LIKE CONCAT('%', location.URL, '%')) OR ".
+                        "(:url LIKE CONCAT('%', location.url, '%')) OR ".
                         "(".
                         "location.identifier IS NOT NULL AND ".
                         ":url LIKE CONCAT('%', location.identifier, '%') AND ".
-                        "location.URL LIKE :host".
+                        "location.url LIKE :host".
                         ")"
                     )
                     ->andWhere('location.channel IS NOT NULL')
