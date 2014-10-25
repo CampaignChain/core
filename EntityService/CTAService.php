@@ -74,11 +74,19 @@ class CTAService
                         self::TRACKING_ID_NAME,
                         $trackingId);
 
-                    // Shorten Tracking URL
-                    $bitlyService = $this->container->get('hpatoio_bitly.client');
-                    $response = $bitlyService->Shorten(array("longUrl" => $trackingUrl));
+                    // Shorten Tracking URL, but only if not on localhost.
+                    $trackingUrlParts = parse_url($trackingUrl);
 
-                    $shortenedUrl = $response['url'];
+                    if( $trackingUrlParts['host'] != 'localhost' &&
+                        $trackingUrlParts['host'] != '127.0.0.1'
+                    ){
+                        $bitlyService = $this->container->get('hpatoio_bitly.client');
+                        $response = $bitlyService->Shorten(array("longUrl" => $trackingUrl));
+
+                        $shortenedUrl = $response['url'];
+                    } else {
+                        $shortenedUrl = $trackingUrl;
+                    }
 
                     // Save the URL as a CTA
                     $cta = new CTA();
