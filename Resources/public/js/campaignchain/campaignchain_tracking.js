@@ -110,6 +110,10 @@ CampaignChain.prototype.sendUrlReport = function(target)
 
     // Check if the CampaignChain Tracking ID exists.
     if(this.getTrackingId()){
+        if(this.mode == 'dev' || this.mode == 'dev-stay'){
+            console.log('Tracking ID does exist.');
+        }
+
         // Use Symfony dev environment if dev mode for API URL.
         if(this.mode == 'dev' || this.mode == 'dev-stay'){
             var ajaxUrlMode = 'app_dev.php/';
@@ -157,6 +161,10 @@ CampaignChain.prototype.sendUrlReport = function(target)
                 }
             }
         });
+    } else {
+        if(this.mode == 'dev' || this.mode == 'dev-stay'){
+            console.log('No Tracking ID exists.');
+        }
     }
 }
 
