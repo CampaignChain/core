@@ -92,7 +92,7 @@ class LocationService
                         "location.url LIKE :host".
                         ")"
                     )
-                    ->andWhere('location.channel IS NOT NULL')
+                    ->andWhere('location.parent IS NULL')
                     ->setParameter('url', $url)
                     ->setParameter('host', $urlParts['host'].'%')
                     ->getQuery();
@@ -115,6 +115,8 @@ class LocationService
                                 $location = new Location();
                                 $location->setUrl($url);
                                 $location->setOperation($operation);
+                                $location->setChannel($matchingLocation->getChannel());
+                                $location->setParent($matchingLocation);
                             }
                             // Update the Location module to be the current
                             // one.

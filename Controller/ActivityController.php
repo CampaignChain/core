@@ -63,7 +63,7 @@ class ActivityController extends Controller
                 'query_builder' => function(EntityRepository $er) {
                         return $er->createQueryBuilder('location')
                                     ->where('location.status != :status_unpublished AND location.status != :status_inactive')
-                                    ->andWhere('location.operation IS NULL')
+                                    ->andWhere('location.parent IS NULL')
                                     ->orderBy('location.name', 'ASC')
                                     ->setParameter('status_unpublished', Medium::STATUS_UNPUBLISHED)
                                     ->setParameter('status_inactive', Medium::STATUS_INACTIVE);

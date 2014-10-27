@@ -188,8 +188,32 @@ class TrackingController extends Controller
             $logger->info('-------');
             $logger->info('Done tracking');
 
+            /*
+             * Set the target's affiliation with CampaignChain in the
+             * response. Options are:
+             *
+             * - current:   The target URL resides within the current
+             *              Location.
+             * - connected: The target URL resides within another
+             *              Location which is connected with
+             *              CampaignChain.
+             * - unknown:   The target URL resides within another
+             *              Location which is _not_ connected with
+             *              CampaignChain.
+             */
+            if($reportCTA->getTargetLocation()){
+                if($reportCTA->getTargetLocation()->getChannel()->getTrackingId()
+                    ==
+                    $reportCTA->getSourceLocation()->getChannel()->getTrackingId()){
+                    $targetAffiliation = 'current';
+                } else {
+                    $targetAffiliation = 'connected';
+                }
+            } else {
+                $targetAffiliation = 'unknown';
+            }
 
-            $response = array('status' => 'OK');
+            $response = array('target_affiliation' => $targetAffiliation);
             $response = new JsonResponse($response, 200, array());
             $response->setCallback($request->get('callback'));
             return $response;

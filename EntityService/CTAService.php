@@ -40,14 +40,14 @@ class CTAService
         // - Manage links to Locations that will be created by CampaignChain once
         //   an Operation gets executed
 
+        $ctaParserData = new CTAParserData();
+
         // Replace the URLs with the tracking URLs in the message.
         $originalUrls = array();
         // Find all URLs
         $originalUrls = ParserUtil::extractURLsFromText($content);
 
         if(count($originalUrls)){
-            $ctaParserData = new CTAParserData();
-
             $trackingUrls = array();
             foreach($originalUrls as $originalUrl){
                 // If a shortened URL, then expand it.
@@ -110,9 +110,13 @@ class CTAService
             $this->em->flush();
 
             $newText = ParserUtil::replaceURLsInText($content, $replaceUrls);
+
+            $ctaParserData->setContent($newText);
+
+            return $ctaParserData;
         }
 
-        $ctaParserData->setContent($newText);
+        $ctaParserData->setContent($content);
 
         return $ctaParserData;
     }
