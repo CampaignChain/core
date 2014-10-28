@@ -36,6 +36,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
             new \Twig_SimpleFilter('campaignchain_timezone', array($this, 'timezone')),
             new \Twig_SimpleFilter('campaignchain_data_trigger_hook', array($this, 'dataTriggerHook')),
             new \Twig_SimpleFilter('campaignchain_tpl_trigger_hook_inline', array($this, 'tplTriggerHookInline')),
+            new \Twig_SimpleFilter('campaignchain_channel_root_locations', array($this, 'channelRootLocations')),
         );
     }
 
@@ -120,6 +121,20 @@ class CampaignChainCoreExtension extends \Twig_Extension
         $hookConfig = $this->em->getRepository('CampaignChainCoreBundle:Hook')->find($object->getTriggerHook());
         $hookService = $this->container->get($hookConfig->getServices()['entity']);
         return $hookService->tplInline($object);
+    }
+
+    public function channelRootLocations($object)
+    {
+        $repository = $this->em->getRepository('CampaignChainCoreBundle:Location');
+
+        $query = $repository->createQueryBuilder('l')
+            ->where('l.channel = :channel')
+            ->andWhere('l.parent IS NULL')
+            ->orderBy('l.name', 'ASC')
+            ->setParameter('channel', $object)
+            ->getQuery();
+
+        return $query->getResult();
     }
 
     public function getGlobals()
