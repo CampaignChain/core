@@ -100,11 +100,24 @@ class TrackingController extends Controller
             return $response->setStatusCode(Response::HTTP_BAD_REQUEST);
         }
 
-        // Extract the Tracking ID from the source URL.
-        $query_str = parse_url($request->get('source'), PHP_URL_QUERY);
-        parse_str($query_str, $query_params);
-        if(isset($query_params[CTAService::TRACKING_ID_NAME])){
-            $trackingId = $query_params[CTAService::TRACKING_ID_NAME];
+        // Check whether the Tracking ID name has been provided.
+        if($request->get('id_name') == null){
+            $msg = 'No Tracking ID name provided.';
+            $logger->error($msg);
+            $response = new Response($msg);
+            return $response->setStatusCode(Response::HTTP_BAD_REQUEST);
+        }
+
+        // Check whether the Tracking ID name is correct.
+        if($request->get('id_name') != CTAService::TRACKING_ID_NAME){
+            $msg = 'Provided Tracking ID name ("'.$request->get('id_name').'") does not match, should be "'.CTAService::TRACKING_ID_NAME.'".';
+            $logger->error($msg);
+            $response = new Response($msg);
+            return $response->setStatusCode(Response::HTTP_BAD_REQUEST);
+        }
+
+        if($request->get('id_value') != null){
+            $trackingId = $request->get('id_value');
 
             // Does the CTA for the provided Tracking ID exist?
             $cta = $this->getDoctrine()

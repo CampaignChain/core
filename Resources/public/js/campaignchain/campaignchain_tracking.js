@@ -96,7 +96,7 @@ function CampaignChain(){
      *
      * @type {string} prod|dev|dev-stay
      */
-    this.mode = 'dev-stay';
+    this.mode = 'dev';
 }
 
 /**
@@ -133,7 +133,7 @@ CampaignChain.prototype.sendUrlReport = function(target)
         // Pass the tracking data to the CampaignChain API.
         jQuery.ajax({
             url: ajaxUrl,
-            data: { source: this.source, target: this.target },
+            data: { id_name: this.idName, id_value: this.idValue, source: this.source, target: this.target },
             dataType: 'jsonp',
             cache: false,
             context: this,
@@ -144,7 +144,7 @@ CampaignChain.prototype.sendUrlReport = function(target)
                  If an external target URL, then append the Tracking ID if it is not
                  already appended.
                  */
-                this.continueTracking();
+                this.continueTracking(data.target_affiliation);
 
                 if(this.mode != 'dev-stay'){
                     window.location.href = this.target;
@@ -207,42 +207,63 @@ CampaignChain.prototype.getTrackingId = function()
  *
  * @returns {CampaignChain.target}
  */
-CampaignChain.prototype.continueTracking = function()
+CampaignChain.prototype.continueTracking = function(affiliation)
 {
     // If Tracking ID is already in URL, then return as is.
     if(this.target.toLowerCase().indexOf(this.idName) >= 0){
-        return this.target;
+        return true;
     }
 
     /*
-        No Tracking ID yet, so proceed depending on if the target location:
+        No Tracking ID yet, so proceed depending on the target's affiliation:
 
-        1. is within the current channel, then store the Tracking ID
+        1. 'current': If target is within the current channel, then store the Tracking ID
            in a cookie.
 
-        2. is outside the current channel, but within another channel registered
-           with CampaignChain, then append the Tracking ID to the URL.
+        2. 'connected': If target is outside the current channel, but within another
+           Channel registered with CampaignChain, then append the Tracking ID to the URL.
 
-        3. is outside the current channel and not within a Channel connected with
-           CampaignChain, then keep the target URL as is.
+        3. 'unknown': If target is outside the current channel and not within a Channel
+           connected with CampaignChain, then keep the target URL as is.
      */
-    if (this.target.indexOf(this.idName + "=") >= 0)
-    {
-        var prefix = this.target.substring(0, this.target.indexOf(this.idName));
-        var suffix = this.target.substring(this.target.indexOf(this.idName));
-        suffix = suffix.substring(suffix.indexOf("=") + 1);
-        suffix = (suffix.indexOf("&") >= 0) ? suffix.substring(suffix.indexOf("&")) : "";
-        this.target = prefix + this.idName + "=" + this.idValue + suffix;
-    }
-    else
-    {
-        if (this.target.indexOf("?") < 0)
-            this.target += "?" + this.idName + "=" + this.idValue;
-        else
-            this.target += "&" + this.idName + "=" + this.idValue;
-    }
+    switch (affiliation){
+        case 'current':
+            jQuery.cookie(this.idName, this.idValue);
 
-    return this.target;
+            if(this.mode == 'dev' || this.mode == 'dev-stay'){
+                console.log('Stored in cookie: Tracking ID with affiliation "' + affiliation + '", name "' + this.idName + '" and value "' + this.idValue + '".' );
+            }
+
+            break
+        case 'connected':
+            if (this.target.indexOf(this.idName + "=") >= 0)
+            {
+                var prefix = this.target.substring(0, this.target.indexOf(this.idName));
+                var suffix = this.target.substring(this.target.indexOf(this.idName));
+                suffix = suffix.substring(suffix.indexOf("=") + 1);
+                suffix = (suffix.indexOf("&") >= 0) ? suffix.substring(suffix.indexOf("&")) : "";
+                this.target = prefix + this.idName + "=" + this.idValue + suffix;
+            }
+            else
+            {
+                if (this.target.indexOf("?") < 0)
+                    this.target += "?" + this.idName + "=" + this.idValue;
+                else
+                    this.target += "&" + this.idName + "=" + this.idValue;
+            }
+
+            if(this.mode == 'dev' || this.mode == 'dev-stay'){
+                console.log('Appended to URL: Tracking ID with affiliation "' + affiliation + '", name "' + this.idName + '" and value "' + this.idValue + '".' );
+            }
+
+            break;
+        case 'unknown':
+            if(this.mode == 'dev' || this.mode == 'dev-stay'){
+                console.log('Untouched target URL "' + this.target + '" due to affiliation "' + affiliation + '".' );
+            }
+
+            break;
+    }
 }
 
 /**
