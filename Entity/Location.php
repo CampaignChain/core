@@ -246,7 +246,7 @@ class Location extends Medium
      */
     public function setUrl($url)
     {
-        $this->url = $url;
+        $this->url = rtrim($url, '/');
 
         return $this;
     }
