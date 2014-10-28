@@ -42,11 +42,6 @@ class Channel extends Medium
     protected $locations;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    protected $userId;
-
-    /**
      * @ORM\Column(type="string", length=255, nullable=false)
      */
     protected $trackingId;
@@ -68,29 +63,6 @@ class Channel extends Medium
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set userId
-     *
-     * @param integer $userId
-     * @return Channel
-     */
-    public function setUserId($userId)
-    {
-        $this->userId = $userId;
-
-        return $this;
-    }
-
-    /**
-     * Get userId
-     *
-     * @return integer 
-     */
-    public function getUserId()
-    {
-        return $this->userId;
     }
 
     /**

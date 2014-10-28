@@ -69,13 +69,6 @@ class ChannelController extends Controller
                     'show_image' => true,
                 )
             ))
-            ->add('is_personal', 'checkbox', array(
-                'label'     => 'Is this your personal channel?',
-                'required'  => false,
-                'attr' => array(
-                    'align_with_widget' => true,
-                ),
-            ))
             ->add('save', 'submit', array(
                 'label' => 'Next'
             ))
@@ -85,14 +78,6 @@ class ChannelController extends Controller
 
         if ($form->isValid()) {
             $channel = new Channel();
-//            $channel->setName($form->getData()['name']);
-
-            // Is this a personal channel of the currently logged in user?
-            if($form->getData()['is_personal']){
-                $user = $this->container->get('security.context')->getToken()->getUser();
-                // Store user ID for channel
-                $channel->setUserId($user->getId());
-            }
 
             $module = $form->getData()['module'];
             $wizard = $this->get('campaignchain.core.channel.wizard');
