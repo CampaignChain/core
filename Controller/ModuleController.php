@@ -20,6 +20,7 @@ use CampaignChain\CoreBundle\Entity\Bundle,
     CampaignChain\CoreBundle\Entity\OperationModule,
     CampaignChain\CoreBundle\Entity\Report;
 use CampaignChain\CoreBundle\Entity\System;
+use Symfony\Bundle\FrameworkBundle\Command\CacheClearCommand;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Finder\Finder;
@@ -32,10 +33,15 @@ use Symfony\Bundle\FrameworkBundle\Console\Application,
     Symfony\Component\Console\Input\ArrayInput,
     Symfony\Component\Console\Output\NullOutput;
 use Doctrine\Bundle\DoctrineBundle\Command\Proxy\UpdateSchemaDoctrineCommand;
+use Symfony\Bundle\FrameworkBundle\Command\AssetsInstallCommand;
+use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Bundle\AsseticBundle\Command\DumpCommand;
 
 class ModuleController extends Controller
 {
     public function indexAction(Request $request){
+        $logger = $this->get('logger');
+
         // TODO: Test whether module installation also works if CampaignChain is in src/ as well as in vendors/.
         $campaignchainRoot = realpath(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR);
 
@@ -51,6 +57,9 @@ class ModuleController extends Controller
             $form->handleRequest($request);
 
             if ($form->isValid()) {
+                // Increase timeout limit to run this script.
+                set_time_limit(20);
+
                 // Load schemas of entities into database
                 $application = new Application($this->container->get( 'kernel' ));
                 $application->add(new UpdateSchemaDoctrineCommand());
@@ -266,6 +275,40 @@ class ModuleController extends Controller
                     throw $e;
                 }
 
+                // Install assets to web/ directory and dump assetic files.
+                $application = new Application($this->container->get( 'kernel' ));
+                $application->add(new CacheClearCommand());
+                $application->add(new AssetsInstallCommand());
+                $application->add(new DumpCommand());
+
+                // app/console assets:install web
+                $command = $application->find('assets:install');
+                $arguments = array(
+                    'assets:install',
+                    'target' => $this->get('kernel')->getRootDir() . '/../web',
+                );
+                $input = new ArrayInput($arguments);
+                $output = new BufferedOutput();
+                $command->run($input, $output);
+                $logger->info('Output of assets:install:');
+                $logger->info($output->fetch());
+
+                // app/console assetic:dump --no-debug
+                $command = $application->find('assetic:dump');
+                $arguments = array(
+                    'assets:install',
+                    '--no-debug' => true,
+                );
+                $input = new ArrayInput($arguments);
+                $output = new BufferedOutput();
+                $command->run($input, $output);
+                $logger->info('Output of assetic:dump:');
+                $logger->info($output->fetch());
+
+                $this->get('session')->getFlashBag()->add(
+                    'success',
+                    'Modules installed successfully.'
+                );
             }
 
             $tplVariables['new_bundles'] = $this->getNewBundles($campaignchainRoot);
