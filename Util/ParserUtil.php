@@ -82,8 +82,20 @@ class ParserUtil
      */
     static function addUrlParam($url, $key, $val)
     {
+        // Separate the anchor element from the URL if it exists.
+        $urlParts = parse_url($url);
+        if(isset($urlParts['fragment'])){
+            $url = str_replace('#'.$urlParts['fragment'], '', $url);
+        }
+
         $separator = (parse_url($url, PHP_URL_QUERY) == NULL) ? '?' : '&';
         $url .= $separator.$key.'='.$val;
+
+        // Add the anchor back to the URL.
+        if(isset($urlParts['fragment'])){
+            $url .= '#'.$urlParts['fragment'];
+        }
+
         return $url;
     }
 
