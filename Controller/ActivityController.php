@@ -64,6 +64,19 @@ class ActivityController extends Controller
                         return $er->createQueryBuilder('location')
                                     ->where('location.status != :status_unpublished AND location.status != :status_inactive')
                                     ->andWhere('location.parent IS NULL')
+                                    ->andWhere( // Skip Locations that don't provide Activities.
+                                        'EXISTS ('
+                                            .'SELECT channelModule.id FROM '
+                                            .'CampaignChain\CoreBundle\Entity\Channel channel, '
+                                            .'CampaignChain\CoreBundle\Entity\ChannelModule channelModule '
+                                            .'WHERE '
+                                            .'location.channel = channel.id AND '
+                                            .'channel.channelModule = channelModule.id AND '
+                                            .'SIZE(channelModule.activityModules) != 0'
+                                        .')'
+
+
+                                    )
                                     ->orderBy('location.name', 'ASC')
                                     ->setParameter('status_unpublished', Medium::STATUS_UNPUBLISHED)
                                     ->setParameter('status_inactive', Medium::STATUS_INACTIVE);
