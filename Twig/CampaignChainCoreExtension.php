@@ -69,7 +69,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
             $bundlePath = $object->getChannel()->getChannelModule()->getBundle()->getPath();
         }
 
-        $path = 'bundles/campaignchain'.strtolower(str_replace(DIRECTORY_SEPARATOR, '', str_replace('Bundle', '', $bundlePath)));
+        $path = 'bundles/campaignchain'.strtolower(str_replace(DIRECTORY_SEPARATOR, '', str_replace('Bundle', '', str_replace('-', '', $bundlePath))));
 
         return $path;
     }
