@@ -26,13 +26,14 @@ file that was distributed with this source code.
             {% else %}
                 <h3 class="modal-title">CampaignChain</h3>
             {% endif %}
-            <h4 class="modal-title"><span class="fa fa-sign-in"></span> {{ page_title }}</h4>
         </div>
         <div class="modal-body">
             {% block fos_user_content %}
-            {% if error %}
-                <div>{{ error|trans }}</div>
-            {% endif %}
+                {% if error %}
+                <div class="alert alert-warning alert-dismissable">
+                    <p><span class="fa fa-exclamation-triangle"></span> {{ error.messageKey|trans(error.messageData, 'security') }}</p>
+                </div>
+                {% endif %}
 
             <form action="{{ path("fos_user_security_check") }}" method="post" class="form-horizontal" role="form">
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
