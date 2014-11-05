@@ -12,6 +12,8 @@ namespace CampaignChain\CoreBundle\Util;
 
 use Guzzle\Http\Client;
 use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Exception\IOException;
 
 class ParserUtil
 {
@@ -126,5 +128,41 @@ class ParserUtil
         }
 
         return true;
+    }
+
+    static function getFavicon($websiteUrl){
+        // Get Website's HTML
+        $websiteHtml = file_get_contents($websiteUrl);
+
+        // Extract the favicon URL from the HTML.
+        $regex_pattern = "/rel=\"shortcut icon\" (?:href=[\'\"]([^\'\"]+)[\'\"])?/";
+        preg_match_all($regex_pattern, $websiteHtml, $matches);
+
+        if(isset($matches[1][0])){
+            // Favicon's URL was specified in HTML.
+            $faviconUrl = $matches[1][0];
+
+            # check if absolute url or relative path
+            $faviconUrlParts = parse_url($faviconUrl);
+
+            # if relative
+            if(!isset($faviconUrlParts['host'])){
+                $faviconUrl = rtrim($websiteUrl, '/').'/'.$favicon;
+            }
+
+            return $faviconUrl;
+        } else {
+            // Not specified in HTML, so try to get it from Website root.
+            $faviconUrl = rtrim($websiteUrl, '/').'/'.$favicon;
+
+            $fs = new Filesystem();
+
+            if($fs->exists($faviconUrl)){
+                return $faviconUrl;
+            }
+
+        }
+
+        return false;
     }
 }
