@@ -96,11 +96,25 @@ services:
     campaignchain.core.listener.hook:
         class: CampaignChain\CoreBundle\EventListener\HookListener
         arguments: [ @doctrine.orm.entity_manager, @service_container ]
+    campaignchain.block.campaign.ongoing.listgroup:
+        class: CampaignChain\CoreBundle\Block\CampaignOngoingListGroupBlockService
+        arguments: [ 'campaignchain.block.campaign.ongoing.listgroup', @templating ]
+        calls:
+            - [ setService, [ @campaignchain.core.campaign ] ]
+        tags:
+            - {name: "sonata.block"}
     campaignchain.block.activity.upcoming.listgroup:
         class: CampaignChain\CoreBundle\Block\ActivityUpcomingListGroupBlockService
         arguments: [ 'campaignchain.block.activity.upcoming.listgroup', @templating ]
         calls:
-            - [ setContainer, [ @service_container ] ]
+            - [ setService, [ @campaignchain.core.activity ] ]
+        tags:
+            - {name: "sonata.block"}
+    campaignchain.block.milestone.upcoming.listgroup:
+        class: CampaignChain\CoreBundle\Block\MilestoneUpcomingListGroupBlockService
+        arguments: [ 'campaignchain.block.milestone.upcoming.listgroup', @templating ]
+        calls:
+            - [ setService, [ @campaignchain.core.milestone ] ]
         tags:
             - {name: "sonata.block"}
     campaignchain.block.rss:

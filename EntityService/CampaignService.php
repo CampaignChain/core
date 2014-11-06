@@ -36,6 +36,21 @@ class CampaignService
         return $query->getResult();
     }
 
+    public function getOngoingCampaigns($options = array()){
+        $qb = $this->em->createQueryBuilder();
+        $qb->select('c')
+            ->from('CampaignChain\CoreBundle\Entity\Campaign', 'c')
+            ->where('c.startDate < :now')
+            ->andWhere('c.endDate > :now')
+            ->orderBy('c.endDate', 'DESC')
+            ->setParameter('now', new \DateTime('now'));
+        if(isset($options['limit'])){
+            $qb->setMaxResults($options['limit']);
+        }
+        $query = $qb->getQuery();
+        return $query->getResult();
+    }
+
     public function getCampaign($id){
         $campaign = $this->em
             ->getRepository('CampaignChainCoreBundle:Campaign')

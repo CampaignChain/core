@@ -1,0 +1,26 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) Sandro Groganz <sandro@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+<h3>{{ settings.title }}</h3>
+<ul class="list-group">
+{% for campaign in campaigns %}
+    <li class="list-group-item">
+        <h5 class="list-group-item-heading">
+        <a href="{{ path('campaignchain_core_campaign_edit',{'id':campaign.id}) }}">{{ campaign.name }}</a>
+        </h5>
+        <p class="list-group-item-text">
+            <i class="fa fa-clock-o fa-fw"></i> {{ campaign.startDate|date('Y-m-d H:i:s') }} - {{ campaign.endDate|date('Y-m-d H:i:s') }}
+        </p>
+    </li>
+{% else %}
+    <li class="list-group-item">
+        <h5 class="list-group-item-heading">No campaigns.</h5>
+    </li>
+{% endfor %}
+</ul>

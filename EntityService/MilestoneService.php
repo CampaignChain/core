@@ -33,6 +33,20 @@ class MilestoneService
         return $query->getResult();
     }
 
+    public function getUpcomingMilestones($options = array()){
+        $qb = $this->em->createQueryBuilder();
+        $qb->select('m')
+            ->from('CampaignChain\CoreBundle\Entity\Milestone', 'm')
+            ->where('m.startDate > :now')
+            ->orderBy('m.startDate', 'ASC')
+            ->setParameter('now', new \DateTime('now'));
+        if(isset($options['limit'])){
+            $qb->setMaxResults($options['limit']);
+        }
+        $query = $qb->getQuery();
+        return $query->getResult();
+    }
+
     public function getMilestone($id){
         $milestone = $this->em
             ->getRepository('CampaignChainCoreBundle:Milestone')

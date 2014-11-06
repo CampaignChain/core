@@ -10,7 +10,7 @@
 
 namespace CampaignChain\CoreBundle\Block;
 
-use CampaignChain\CoreBundle\EntityService\ActivityService;
+use CampaignChain\CoreBundle\EntityService\CampaignService;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
@@ -21,11 +21,11 @@ use Sonata\BlockBundle\Model\BlockInterface;
 use Sonata\BlockBundle\Block\BlockContextInterface;
 use Sonata\BlockBundle\Block\BaseBlockService;
 
-class ActivityUpcomingListGroupBlockService extends BaseBlockService
+class CampaignOngoingListGroupBlockService extends BaseBlockService
 {
     protected $service;
 
-    public function setService(ActivityService $service)
+    public function setService(CampaignService $service)
     {
         $this->service = $service;
     }
@@ -35,7 +35,7 @@ class ActivityUpcomingListGroupBlockService extends BaseBlockService
      */
     public function getName()
     {
-        return 'List of upcoming Activities';
+        return 'List of ongoing Campaigns';
     }
 
     /**
@@ -44,10 +44,10 @@ class ActivityUpcomingListGroupBlockService extends BaseBlockService
     public function setDefaultSettings(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'title'    => 'Upcoming Activities',
+            'title'    => 'Ongoing Campaigns',
             'limit'      => 5,
             'sort'    => 'DESC',
-            'template' => 'CampaignChainCoreBundle:Block:activity_upcoming_listgroup.html.twig',
+            'template' => 'CampaignChainCoreBundle:Block:campaign_ongoing_listgroup.html.twig',
         ));
     }
 
@@ -89,10 +89,10 @@ class ActivityUpcomingListGroupBlockService extends BaseBlockService
         // merge settings
         $settings = $blockContext->getSettings();
 
-        $activities = $this->service->getUpcomingActivities(array('limit' => $settings['limit']));
+        $campaigns = $this->service->getOngoingCampaigns(array('limit' => $settings['limit']));
 
         return $this->renderResponse($blockContext->getTemplate(), array(
-            'activities'     => $activities,
+            'campaigns'     => $campaigns,
             'block'     => $blockContext->getBlock(),
             'settings'  => $settings
         ), $response);
