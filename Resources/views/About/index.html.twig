@@ -1,0 +1,45 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) Sandro Groganz <sandro@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+{% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
+
+{% block body %}
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="jumbotron">
+            <div><img src="{{ asset('bundles/campaignchaincore/images/campaignchain_logo.png') }}" height="60" /></div>
+            <h3>Open Source Marketing Campaign Management</h3>
+            <p>Manage digital marketing campaigns with CampaignChain. It lets you connect to multiple online channels to plan, execute and monitor all marketing activities. Available under an open-source license, CampaignChain can be integrated with existing marketing and sales tools to become the hub of your corporate communications. </p>
+            <p><a href="http://www.campaignchain.com">www.campaignchain.com</a></p>
+        </div>
+    </div>
+    <div class="col-md-6">
+        {{ sonata_block_render({ 'type': 'campaignchain.block.rss' }, {
+        'title': 'News',
+        'limit': 2,
+        'url': 'http://www.campaignchain.com/feed/'
+        }) }}
+        <h3>Newsletter</h3>
+        <!-- Begin MailChimp Signup Form -->
+        <link href="//cdn-images.mailchimp.com/embedcode/slim-081711.css" rel="stylesheet" type="text/css">
+        <form action="//campaignchain.us8.list-manage.com/subscribe/post?u=4e7e7de144345854a29ad254d&amp;id=83c2f1416a" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate form-inline" target="_blank" role="form" novalidate>
+            <div class="input-group">
+                <div class="input-group-addon"><i class="fa fa-at"></i></div>
+                <input type="email" value="" name="EMAIL" class="form-control" id="mce-EMAIL" placeholder="email address" required>
+            </div>
+            <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+            <div style="position: absolute; left: -5000px;"><input type="text" name="b_4e7e7de144345854a29ad254d_83c2f1416a" tabindex="-1" value=""></div>
+            <button type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="btn btn-primary">Subscribe</button>
+        </form>
+
+        <!--End mc_embed_signup-->
+    </div>
+</div>
+ {% endblock %}

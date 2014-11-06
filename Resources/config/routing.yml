@@ -7,11 +7,11 @@
 
 campaignchain_core_homepage:
     pattern:  /
-    defaults: { _controller: CampaignChainCoreBundle:Dashboard:index }
+    defaults: { _controller: CampaignChainCoreBundle:About:index }
 
-campaignchain_core_dashboard:
-    pattern:  /dashboards/
-    defaults: { _controller: CampaignChainCoreBundle:Dashboard:index }
+campaignchain_core_about:
+    pattern:  /about/
+    defaults: { _controller: CampaignChainCoreBundle:About:index }
 
 campaignchain_core_plan:
     pattern:  /plan/gantt
@@ -24,6 +24,10 @@ campaignchain_core_plan_gantt_fullscreen:
 campaignchain_core_plan_calendar:
     pattern:  /plan/calendar
     defaults: { _controller: CampaignChainCoreBundle:Plan:calendar }
+
+campaignchain_core_execute:
+    pattern:  /execute/
+    defaults: { _controller: CampaignChainCoreBundle:Execute:index }
 
 campaignchain_core_campaign:
     pattern:  /campaigns/

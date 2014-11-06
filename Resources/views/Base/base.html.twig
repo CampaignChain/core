@@ -72,16 +72,9 @@ file that was distributed with this source code.
         </div>
         <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
             <div class="container-fluid">
-                <p class="navbar-text text-muted"><i class="fa fa-book"></i> <a href="#" onclick="popupwindow('{{ asset('bundles/campaignchaindochtml/index.html') }}','',900,600)">Documentation</a> &middot; Powered by <a href="{% if (campaignchain_system is not null) and (campaignchain_system.homepage is not null)   %}
-                            {{ campaignchain_system.homepage }}
-                        {% else %}
-                            http://www.campaignchain.com
-                        {% endif %}" rel="external">
-                        {% if (campaignchain_system is not null) and (campaignchain_system.name is not null) %}
-                            {{ campaignchain_system.name }}
-                        {% else %}
-                            CampaignChain
-                        {% endif %}</a>
+                <p class="navbar-text text-muted">
+                    <i class="fa fa-book"></i> <a href="#" onclick="popupwindow('{{ asset('bundles/campaignchaindochtml/index.html') }}','',900,600)">Help</a> &middot;
+                    Powered by <a href="{{ path('campaignchain_core_homepage') }}" rel="external">CampaignChain</a>
                         {% if (campaignchain_system is not null) and (campaignchain_system.version is not null) %}
                             &nbsp;({{ campaignchain_system.version }})
                         {% endif %}</p>
