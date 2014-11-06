@@ -56,7 +56,7 @@ file that was distributed with this source code.
             <!-- User -->
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="You"><span class="fa fa-user"></span> {{ app.security.getToken().getUser().getUsername() }} <span class="caret"></span></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="You"><span class="fa fa-user"></span> <span class="visible-md-inline visible-lg-inline">{{ app.security.getToken().getUser().getUsername() }} </span><span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         {#<li><span id="campaignchain_user_datetime"></span></li>#}
                         {#<li class="divider"></li>#}
