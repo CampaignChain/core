@@ -96,3 +96,15 @@ services:
     campaignchain.core.listener.hook:
         class: CampaignChain\CoreBundle\EventListener\HookListener
         arguments: [ @doctrine.orm.entity_manager, @service_container ]
+    campaignchain.block.activity.upcoming.listgroup:
+        class: CampaignChain\CoreBundle\Block\ActivityUpcomingListGroupBlockService
+        arguments: [ 'campaignchain.block.activity.upcoming.listgroup', @templating ]
+        calls:
+            - [ setContainer, [ @service_container ] ]
+        tags:
+            - {name: "sonata.block"}
+    campaignchain.block.rss:
+        class: CampaignChain\CoreBundle\Block\RssBlockService
+        arguments: [ 'campaignchain.block.rss', @templating ]
+        tags:
+            - {name: "sonata.block"}

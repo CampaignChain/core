@@ -12,14 +12,14 @@ namespace CampaignChain\CoreBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-class DashboardController extends Controller
+class ExecuteController extends Controller
 {
     public function indexAction()
     {
         return $this->render(
-            'CampaignChainCoreBundle:Dashboard:index.html.twig',
+            'CampaignChainCoreBundle:Execute:index.html.twig',
             array(
-                'page_title' => 'Dashboard'
+                'page_title' => 'Execute'
             )
         );
     }

@@ -10,11 +10,13 @@ file that was distributed with this source code.
 {% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
 
 {% block body %}
-
-     <div class="jumbotron">
-         <h1>Welcome to CampaignChain!</h1>
-         <p>Manage digital marketing campaigns by integrating online communication channels into one platform.</p>
-         <p><a href="http://www.campaignchain.com">www.campaignchain.com</a></p>
-     </div>
+<div class="row">
+    <div class="col-md-4">
+    {{ sonata_block_render({ 'type': 'campaignchain.block.activity.upcoming.listgroup' }, {
+    'limit': '5',
+    'sort': 'DESC'
+    }) }}
+    </div>
+</div>
 
  {% endblock %}

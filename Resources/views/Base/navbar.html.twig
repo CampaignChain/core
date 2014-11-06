@@ -21,7 +21,7 @@ file that was distributed with this source code.
             {% if (campaignchain_system is not null) and (campaignchain_system.homepage is not null)   %}
                 {% set brand_url = campaignchain_system.homepage %}
             {% else %}
-                {% set brand_url = 'http://www.campaignchain.com' %}
+                {% set brand_url = path('campaignchain_core_homepage') %}
             {% endif %}
 
             {% if (campaignchain_system is not null) and (campaignchain_system.logo is not null) %}
@@ -36,7 +36,7 @@ file that was distributed with this source code.
 
             <ul class="navbar-nav nav campaignchain-navbar">
                 <li class="first"><a href="{{ path('campaignchain_core_plan') }}"><i class="fa fa-calendar"></i> <span class="visible-md-inline visible-lg-inline visible-sm-inline">Plan</span></a></li>
-                <li><a href="{{ path('campaignchain_core_campaign') }}"><i class="fa fa-dashboard"></i> <span class="visible-md-inline visible-lg-inline visible-sm-inline">Execute</span></a></li>
+                <li><a href="{{ path('campaignchain_core_execute') }}"><i class="fa fa-dashboard"></i> <span class="visible-md-inline visible-lg-inline visible-sm-inline">Execute</span></a></li>
                 <li class="last"><a href="{{ path('campaignchain_core_report') }}"><i class="fa fa-area-chart"></i> <span class="visible-md-inline visible-lg-inline visible-sm-inline">Monitor</span></a></li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="fa fa-plus"></span> <span class="visible-md-inline visible-lg-inline visible-sm-inline">Create </span><span class="caret visible-md-inline-block visible-lg-inline-block visible-sm-inline-block"></span></a>

@@ -25,11 +25,28 @@ class ActivityService
         $this->container = $container;
     }
 
-    public function getAllActivities(){
+    public function getAllActivities($options = array()){
         $qb = $this->em->createQueryBuilder();
         $qb->select('a')
             ->from('CampaignChain\CoreBundle\Entity\Activity', 'a')
             ->orderBy('a.startDate');
+        if(isset($options['limit'])){
+            $qb->setMaxResults($options['limit']);
+        }
+        $query = $qb->getQuery();
+        return $query->getResult();
+    }
+
+    public function getUpcomingActivities($options = array()){
+        $qb = $this->em->createQueryBuilder();
+        $qb->select('a')
+            ->from('CampaignChain\CoreBundle\Entity\Activity', 'a')
+            ->where('a.startDate < :now')
+            ->orderBy('a.startDate', 'DESC')
+            ->setParameter('now', new \DateTime('now'));
+        if(isset($options['limit'])){
+            $qb->setMaxResults($options['limit']);
+        }
         $query = $qb->getQuery();
         return $query->getResult();
     }
