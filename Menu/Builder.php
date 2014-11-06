@@ -25,21 +25,13 @@ class Builder extends ContainerAware
         return $menu;
     }
 
-    public function campaignListTab(FactoryInterface $factory, array $options)
+    public function executeListTab(FactoryInterface $factory, array $options)
     {
         $menu = $factory->createItem('root');
 
-        $menu->addChild('List', array('route' => 'campaignchain_core_campaign'));
-
-        return $menu;
-    }
-
-    public function activityListTab(FactoryInterface $factory, array $options)
-    {
-        $menu = $factory->createItem('root');
-
-        $menu->addChild('List', array('route' => 'campaignchain_core_activities'));
-        //$menu->addChild('GANTT', array('route' => 'campaignchain_core_activities_gantt'));
+        $menu->addChild('Campaigns', array('route' => 'campaignchain_core_campaign'));
+        $menu->addChild('Activities', array('route' => 'campaignchain_core_activities'));
+        $menu->addChild('Milestones', array('route' => 'campaignchain_core_milestone'));
 
         return $menu;
     }
