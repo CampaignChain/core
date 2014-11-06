@@ -15,21 +15,6 @@ use Symfony\Component\DependencyInjection\ContainerAware;
 
 class Builder extends ContainerAware
 {
-    public function leftNavbarMenu(FactoryInterface $factory, array $options)
-    {
-        $menu = $factory->createItem('root');
-
-//        $menu->addChild('Dashboards', array('route' => 'campaignchain_core_dashboard'));
-        $menu->addChild('Plan', array('route' => 'campaignchain_core_plan'));
-        $menu->addChild('Execute')
-            ->addChild('Campaigns', array('route' => 'campaignchain_core_campaign'))
-            ->addChild('Milestones', array('route' => 'campaignchain_core_milestone'))
-            ->addChild('Activities', array('route' => 'campaignchain_core_activities'));
-        $menu->addChild('Monitor', array('route' => 'campaignchain_core_report'));
-
-        return $menu;
-    }
-
     public function planListTab(FactoryInterface $factory, array $options)
     {
         $menu = $factory->createItem('root');

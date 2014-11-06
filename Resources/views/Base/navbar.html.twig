@@ -17,37 +17,46 @@ file that was distributed with this source code.
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">
-                {% if (campaignchain_system is not null) and (campaignchain_system.logo is not null) %}
-                    <img src="{{ campaignchain_system.logo }}" height="24">
-                {% else %}
-                    CampaignChain
+
+            {% if (campaignchain_system is not null) and (campaignchain_system.homepage is not null)   %}
+                {% set brand_url = campaignchain_system.homepage %}
+            {% else %}
+                {% set brand_url = 'http://www.campaignchain.com' %}
+            {% endif %}
+
+            {% if (campaignchain_system is not null) and (campaignchain_system.logo is not null) %}
+                <a class="navbar-brand" href="{{ brand_url }}"><img src="{{ campaignchain_system.logo }}" height="24" class="visible-md-block visible-lg-block visible-sm-block">
+                {% if campaignchain_system.icon is not null %}
+                    <img src="{{ campaignchain_system.icon }}" height="24" class="visible-xs-block">
                 {% endif %}
-            </a>
+                </a>
+            {% else %}
+                <a class="navbar-brand" href="{{ brand_url }}">CampaignChain</a>
+            {% endif %}
+
+            <ul class="navbar-nav nav campaignchain-navbar">
+                <li class="first"><a href="{{ path('campaignchain_core_plan') }}"><i class="fa fa-calendar"></i> <span class="visible-md-inline visible-lg-inline visible-sm-inline">Plan</span></a></li>
+                <li><a href="{{ path('campaignchain_core_campaign') }}"><i class="fa fa-dashboard"></i> <span class="visible-md-inline visible-lg-inline visible-sm-inline">Execute</span></a></li>
+                <li class="last"><a href="{{ path('campaignchain_core_report') }}"><i class="fa fa-area-chart"></i> <span class="visible-md-inline visible-lg-inline visible-sm-inline">Monitor</span></a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="fa fa-plus"></span> <span class="visible-md-inline visible-lg-inline visible-sm-inline">Create </span><span class="caret visible-md-inline-block visible-lg-inline-block visible-sm-inline-block"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="{{ path('campaignchain_core_activities_new') }}">Activity</a></li>
+                        <li><a href="{{ path('campaignchain_core_milestone_new') }}">Milestone</a></li>
+                        <li><a href="{{ path('campaignchain_core_campaign_new') }}">Campaign</a></li>
+                        <li><a href="{{ path('campaignchain_core_channel_new') }}">Location</a></li>
+                    </ul>
+                </li>
+            </ul>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 
-            {{ knp_menu_render('CampaignChainCoreBundle:Builder:leftNavbarMenu', { 'style': 'navbar' }) }}
-
-            <!-- Single button -->
-            <div class="btn-group">
-                <button type="button" class="btn btn-default dropdown-toggle navbar-btn" data-toggle="dropdown">
-                    Create New <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                    <li><a href="{{ path('campaignchain_core_activities_new') }}">Activity</a></li>
-                    <li><a href="{{ path('campaignchain_core_milestone_new') }}">Milestone</a></li>
-                    <li><a href="{{ path('campaignchain_core_campaign_new') }}">Campaign</a></li>
-                    <li><a href="{{ path('campaignchain_core_channel_new') }}">Location</a></li>
-                </ul>
-            </div>
-
             <!-- User -->
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="You">{{ app.security.getToken().getUser().getUsername() }} <b class="caret"></b></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="You"><span class="fa fa-user"></span> {{ app.security.getToken().getUser().getUsername() }} <span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         {#<li><span id="campaignchain_user_datetime"></span></li>#}
                         {#<li class="divider"></li>#}
@@ -60,7 +69,7 @@ file that was distributed with this source code.
             <!-- Settings -->
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Settings"><span class="fa fa-cog"></span> <b class="caret"></b></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Settings"><span class="fa fa-cog"></span> <span class="visible-xs-inline">Settings </span><b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li><a href="{{ path('campaignchain_core_user') }}">Users</a></li>
                         <li><a href="#">Teams</a></li>
@@ -82,7 +91,7 @@ file that was distributed with this source code.
             <!-- Developer Tools -->
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Developer Tools"><span class="fa fa-wrench"></span> <b class="caret"></b></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Developer Tools"><span class="fa fa-wrench"></span> <span class="visible-xs-inline">Developer Tools </span><b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li><a href="{{ path('campaignchain_development_sample_data') }}">Sample Data</a></li>
                     </ul>

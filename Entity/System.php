@@ -49,6 +49,11 @@ class System
     /**
      * @ORM\Column(type="string", nullable=true)
      */
+    protected $icon;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
     protected $style;
     /**
      * @ORM\Column(type="string", nullable=true)
@@ -160,6 +165,29 @@ class System
     public function getLogo()
     {
         return $this->logo;
+    }
+
+    /**
+     * Set icon
+     *
+     * @param string $icon
+     * @return System
+     */
+    public function setIcon($icon)
+    {
+        $this->icon = $icon;
+
+        return $this;
+    }
+
+    /**
+     * Get icon
+     *
+     * @return string
+     */
+    public function getIcon()
+    {
+        return $this->icon;
     }
 
     /**

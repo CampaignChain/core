@@ -124,6 +124,11 @@ class ModuleController extends Controller
                                     ->getUrl($params['assets_path'].$params['logo'],null);
                                 $system->setLogo($logoPath);
                             }
+                            if(isset($params['icon']) && !empty($params['icon'])){
+                                $iconPath = $this->get('templating.helper.assets')
+                                    ->getUrl($params['assets_path'].$params['icon'],null);
+                                $system->setIcon    ($iconPath);
+                            }
                             if(isset($params['style']) && !empty($params['style'])){
                                 $cssPath = $this->get('templating.helper.assets')
                                     ->getUrl($params['assets_path'].$params['style'],null);
