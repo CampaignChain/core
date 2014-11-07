@@ -73,7 +73,7 @@ class DateTimeUtil
         return $this->container->get('session')->get('campaignchain.timeFormat');
     }
 
-    public function getRemainingTime($futureDate){
+    public function getRemainingTime($futureDate, $format = 'string'){
         $now = new \DateTime('now', new \DateTimeZone($this->getUserTimezone()));
 
         if($futureDate <= $now){
@@ -82,63 +82,67 @@ class DateTimeUtil
 
         $interval = $futureDate->diff($now);
 
-        $dateStringParts = array();
+        if($format == 'string'){
+            $dateStringParts = array();
 
-        $year = $interval->format("%y");
-        if($year != '0'){
-            if($year == '1'){
-                $dateStringParts[] = $year.' year';
-            } else {
-                $dateStringParts[] = $year.' years';
+            $year = $interval->format("%y");
+            if($year != '0'){
+                if($year == '1'){
+                    $dateStringParts[] = $year.' year';
+                } else {
+                    $dateStringParts[] = $year.' years';
+                }
             }
-        }
 
-        $month = $interval->format("%m");
-        if($month != '0'){
-            if($month == '1'){
-                $dateStringParts[] = $month.' month';
-            } else {
-                $dateStringParts[] = $month.' months';
+            $month = $interval->format("%m");
+            if($month != '0'){
+                if($month == '1'){
+                    $dateStringParts[] = $month.' month';
+                } else {
+                    $dateStringParts[] = $month.' months';
+                }
             }
-        }
 
-        $day = $interval->format("%d");
-        if($day != '0' && $year == '0'){
-            if($day == '1'){
-                $dateStringParts[] = $day.' day';
-            } else {
-                $dateStringParts[] = $day.' days';
+            $day = $interval->format("%d");
+            if($day != '0' && $year == '0'){
+                if($day == '1'){
+                    $dateStringParts[] = $day.' day';
+                } else {
+                    $dateStringParts[] = $day.' days';
+                }
             }
-        }
 
-        $hour = $interval->format("%h");
-        if($hour != '0' && $year == '0' && $month == '0'){
-            if($hour == '1'){
-                $dateStringParts[] = $hour.' hour';
-            } else {
-                $dateStringParts[] = $hour.' hours';
+            $hour = $interval->format("%h");
+            if($hour != '0' && $year == '0' && $month == '0'){
+                if($hour == '1'){
+                    $dateStringParts[] = $hour.' hour';
+                } else {
+                    $dateStringParts[] = $hour.' hours';
+                }
             }
-        }
 
-        $minute = $interval->format("%s");
-        if($minute != '0' && $year == '0' && $month == '0' && $day == '0'){
-            if($minute == '1'){
-                $dateStringParts[] = $minute.' minute';
-            } else {
-                $dateStringParts[] = $minute.' minutes';
+            $minute = $interval->format("%i");
+            if($minute != '0' && $year == '0' && $month == '0' && $day == '0'){
+                if($minute == '1'){
+                    $dateStringParts[] = $minute.' minute';
+                } else {
+                    $dateStringParts[] = $minute.' minutes';
+                }
             }
-        }
 
-        $second = $interval->format("%s");
-        if($second != '0' && $year == '0' && $month == '0' && $day == '0' && $hour == '0'){
-            if($second == '1'){
-                $dateStringParts[] = $second.' second';
-            } else {
-                $dateStringParts[] = $second.' seconds';
+            $second = $interval->format("%s");
+            if($second != '0' && $year == '0' && $month == '0' && $day == '0' && $hour == '0'){
+                if($second == '1'){
+                    $dateStringParts[] = $second.' second';
+                } else {
+                    $dateStringParts[] = $second.' seconds';
+                }
             }
-        }
 
-        return implode(', ', $dateStringParts);
+            return implode(', ', $dateStringParts);
+        } else {
+            throw new \Exception('Unknown format "'.$format.'"');
+        }
     }
 
     static function roundMinutes($datetime){

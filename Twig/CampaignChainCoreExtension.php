@@ -37,7 +37,8 @@ class CampaignChainCoreExtension extends \Twig_Extension
             new \Twig_SimpleFilter('campaignchain_data_trigger_hook', array($this, 'dataTriggerHook')),
             new \Twig_SimpleFilter('campaignchain_tpl_trigger_hook_inline', array($this, 'tplTriggerHookInline')),
             new \Twig_SimpleFilter('campaignchain_channel_root_locations', array($this, 'channelRootLocations')),
-            new \Twig_SimpleFilter('campaignchain_time_remaining', array($this, 'timeRemaining')),
+            new \Twig_SimpleFilter('campaignchain_remaining_time', array($this, 'remainingTime')),
+            new \Twig_SimpleFilter('campaignchain_remaining_time_badge', array($this, 'remainingTimeBadge')),
         );
     }
 
@@ -94,10 +95,56 @@ class CampaignChainCoreExtension extends \Twig_Extension
         return $iconName;
     }
 
-    public function timeRemaining(\DateTime $object)
+    public function remainingTime(\DateTime $object)
     {
         $datetimeUtil = $this->container->get('campaignchain.core.util.datetime');
-        return $datetimeUtil->getRemainingTime($object);
+
+        // If less than 1 hour, then display as countdown.
+        $now = $datetimeUtil->getNow($this->container->get('session')->get('campaignchain.timezone'));
+        $totalMinutes = abs($object->getTimestamp() - $now->getTimestamp()) / 60;
+
+        if($totalMinutes < 60){
+            $id = rand();
+            return '<span id="campaignchain-countdown-'.$id.'"></span>
+                    <script type="text/javascript">
+                    $("#campaignchain-countdown-'.$id.'")
+                    .countdown(moment("'.$object->format(\DateTime::W3C).'").zone(window.campaignchainTimezoneOffset).format("YYYY/MM/DD HH:mm:ss"), function(event) {
+                        $(this).text(
+                            event.strftime(\'%M minutes, %S seconds\')
+                        );
+                    });
+                    </script>';
+        } elseif($totalMinutes < 1440){
+                $id = rand();
+                return '<span id="campaignchain-countdown-'.$id.'"></span>
+                    <script type="text/javascript">
+                    $("#campaignchain-countdown-'.$id.'")
+                    .countdown(moment("'.$object->format(\DateTime::W3C).'").zone(window.campaignchainTimezoneOffset).format("YYYY/MM/DD HH:mm:ss"), function(event) {
+                        $(this).text(
+                            event.strftime(\'%H hours, %M minutes\')
+                        );
+                    });
+                    </script>';
+        } else {
+            return $datetimeUtil->getRemainingTime($object);
+        }
+    }
+
+    public function remainingTimeBadge(\DateTime $object)
+    {
+        $datetimeUtil = $this->container->get('campaignchain.core.util.datetime');
+
+        // If less than 1 hour, then display as countdown.
+        $now = $datetimeUtil->getNow($this->container->get('session')->get('campaignchain.timezone'));
+        $totalMinutes = abs($object->getTimestamp() - $now->getTimestamp()) / 60;
+
+        if($totalMinutes < 60){
+            $id = rand();
+            return '<span class="badge alert-danger">< 1h</span>';
+        } elseif($totalMinutes < 1440){
+            $id = rand();
+            return '<span class="badge alert-warning">< 24h</span>';
+        }
     }
 
     public function datetime($object, $format = null){

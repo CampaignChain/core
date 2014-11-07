@@ -42,7 +42,7 @@ class CampaignService
             ->from('CampaignChain\CoreBundle\Entity\Campaign', 'c')
             ->where('c.startDate < :now')
             ->andWhere('c.endDate > :now')
-            ->orderBy('c.endDate', 'DESC')
+            ->orderBy('c.endDate', 'ASC')
             ->setParameter('now', new \DateTime('now'));
         if(isset($options['limit'])){
             $qb->setMaxResults($options['limit']);

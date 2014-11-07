@@ -11,6 +11,7 @@ file that was distributed with this source code.
 <ul class="list-group">
 {% for activity in activities %}
     <li class="list-group-item">
+        {{ activity.startDate|campaignchain_remaining_time_badge|raw }}
         <h5 class="list-group-item-heading">
             <img src="{{ asset(
                 activity|campaignchain_channel_asset_path~'/images/icons/16x16/'~activity|campaignchain_channel_icon_name
@@ -18,7 +19,7 @@ file that was distributed with this source code.
         <a href="{{ path('campaignchain_core_activity_edit',{'id':activity.id}) }}">{{ activity.name }}</a>
         </h5>
         <p class="list-group-item-text">
-            <i class="fa fa-clock-o fa-fw"></i> In {{ activity.startDate|campaignchain_time_remaining }}
+            <i class="fa fa-clock-o fa-fw"></i> In {{ activity.startDate|campaignchain_remaining_time|raw }}
         </p>
         <p class="list-group-item-text">
             <i class="fa fa-bullhorn fa-fw"></i>

@@ -13,12 +13,13 @@ file that was distributed with this source code.
     <li class="list-group-item" data-toggle="tooltip" data-placement="top"
         data-original-title="Start: {{ campaign.startDate|date('Y-m-d H:i:s') }}
 End: {{ campaign.endDate|date('Y-m-d H:i:s') }}">
+        {{ campaign.endDate|campaignchain_remaining_time_badge|raw }}
         <h5 class="list-group-item-heading">
             <i class="fa fa-bullhorn fa-fw"></i>
             <a href="{{ path('campaignchain_core_campaign_edit',{'id':campaign.id}) }}">{{ campaign.name }}</a>
         </h5>
         <p class="list-group-item-text">
-            <i class="fa fa-clock-o fa-fw"></i> Ends in {{ campaign.endDate|campaignchain_time_remaining }}
+            <i class="fa fa-clock-o fa-fw"></i> Ends in {{ campaign.endDate|campaignchain_remaining_time|raw }}
         </p>
     </li>
 {% else %}
