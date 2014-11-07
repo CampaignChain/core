@@ -37,6 +37,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
             new \Twig_SimpleFilter('campaignchain_data_trigger_hook', array($this, 'dataTriggerHook')),
             new \Twig_SimpleFilter('campaignchain_tpl_trigger_hook_inline', array($this, 'tplTriggerHookInline')),
             new \Twig_SimpleFilter('campaignchain_channel_root_locations', array($this, 'channelRootLocations')),
+            new \Twig_SimpleFilter('campaignchain_time_remaining', array($this, 'timeRemaining')),
         );
     }
 
@@ -91,6 +92,12 @@ class CampaignChainCoreExtension extends \Twig_Extension
         $iconName = str_replace('campaignchain/channel-', '', $bundleName).'.png';
 
         return $iconName;
+    }
+
+    public function timeRemaining(\DateTime $object)
+    {
+        $datetimeUtil = $this->container->get('campaignchain.core.util.datetime');
+        return $datetimeUtil->getRemainingTime($object);
     }
 
     public function datetime($object, $format = null){

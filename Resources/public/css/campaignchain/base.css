@@ -142,3 +142,8 @@ ul.nav-tabs {
 .panel-body label {
     padding-right: 5px;
 }
+
+.campaignchain-tooltip-text-left .tooltip-inner {
+    text-align:left;
+    white-space:pre-wrap;
+}

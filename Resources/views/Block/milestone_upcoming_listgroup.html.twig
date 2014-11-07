@@ -12,10 +12,11 @@ file that was distributed with this source code.
 {% for milestone in milestones %}
     <li class="list-group-item">
         <h5 class="list-group-item-heading">
-        <a href="{{ path('campaignchain_core_milestone_edit',{'id':milestone.id}) }}">{{ milestone.name }}</a>
+            <i class="fa fa-bullseye fa-fw"></i>
+            <a href="{{ path('campaignchain_core_milestone_edit',{'id':milestone.id}) }}">{{ milestone.name }}</a>
         </h5>
         <p class="list-group-item-text">
-            <i class="fa fa-clock-o fa-fw"></i> {{ milestone.startDate|date('Y-m-d H:i:s') }}
+            <i class="fa fa-clock-o fa-fw"></i> In {{ milestone.startDate|campaignchain_time_remaining }}
         </p>
         <p class="list-group-item-text">
             <i class="fa fa-bullhorn fa-fw"></i>

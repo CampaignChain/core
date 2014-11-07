@@ -56,4 +56,8 @@ $(document).ready(function() {
 
     // Wrap content of sticky heading into a div that allows us to stretch it across the whole screen width.
 //    $('.scroll-to-fixed-fixed').wrapInner( "<div class='campaignchain-sticky-heading-inside'></div>" );
+
+    $(".campaignchain-tooltip-top li").tooltip({
+        placement : 'top'
+    });
 });

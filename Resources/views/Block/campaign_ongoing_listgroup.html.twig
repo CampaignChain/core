@@ -8,14 +8,17 @@ file that was distributed with this source code.
 #}
 
 <h3>{{ settings.title }}</h3>
-<ul class="list-group">
+<ul class="list-group campaignchain-tooltip-top campaignchain-tooltip-text-left">
 {% for campaign in campaigns %}
-    <li class="list-group-item">
+    <li class="list-group-item" data-toggle="tooltip" data-placement="top"
+        data-original-title="Start: {{ campaign.startDate|date('Y-m-d H:i:s') }}
+End: {{ campaign.endDate|date('Y-m-d H:i:s') }}">
         <h5 class="list-group-item-heading">
-        <a href="{{ path('campaignchain_core_campaign_edit',{'id':campaign.id}) }}">{{ campaign.name }}</a>
+            <i class="fa fa-bullhorn fa-fw"></i>
+            <a href="{{ path('campaignchain_core_campaign_edit',{'id':campaign.id}) }}">{{ campaign.name }}</a>
         </h5>
         <p class="list-group-item-text">
-            <i class="fa fa-clock-o fa-fw"></i> {{ campaign.startDate|date('Y-m-d H:i:s') }} - {{ campaign.endDate|date('Y-m-d H:i:s') }}
+            <i class="fa fa-clock-o fa-fw"></i> Ends in {{ campaign.endDate|campaignchain_time_remaining }}
         </p>
     </li>
 {% else %}
