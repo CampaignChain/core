@@ -35,7 +35,7 @@ class UserType extends AbstractType
             $options['data']->getLocale(),
             \IntlDateFormatter::FULL,
             \IntlDateFormatter::FULL,
-            new \DateTimeZone($options['data']->getTimezone())
+            (new \DateTimeZone($options['data']->getTimezone()))->getName()
         );
 
         if(
