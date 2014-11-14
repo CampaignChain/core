@@ -113,6 +113,9 @@ class CampaignChainCoreExtension extends \Twig_Extension
                             event.strftime(\'%M minutes, %S seconds\')
                         );
                     });
+                    $("#campaignchain-countdown-'.$id.'").on("finish.countdown", function(event) {
+                        $(this).parent().parent().fadeOut("slow");
+                    });
                     </script>';
         } elseif($totalMinutes < 1440){
                 $id = rand();
