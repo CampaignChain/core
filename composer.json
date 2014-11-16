@@ -20,7 +20,7 @@
         "symfony/swiftmailer-bundle": "~2.3",
         "symfony/monolog-bundle": "~2.4",
         "symfony/finder": "~2.4",
-        "symfony/serializer": "dev-master",
+        "symfony/serializer": "~2.7",
         "symfony/stopwatch": "~2.5",
         "symfony/process": "~2.5",
         "sensio/distribution-bundle": "~3.0",
