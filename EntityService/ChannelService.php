@@ -55,7 +55,7 @@ class ChannelService
      * @param $channel
      * @return mixed
      */
-    public function getChannelIcons($channel)
+    public function getIcons($channel)
     {
         // Compose the channel icon path
         $modulePath = $channel->getChannelModule()->getBundle()->getPath();

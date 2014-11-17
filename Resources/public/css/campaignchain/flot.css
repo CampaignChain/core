@@ -49,7 +49,7 @@ file that was distributed with this source code.
     height: auto !important;
     min-height: 22px;
     padding-left: 20px;
-    background-image: url('/bundles/campaignchainmilestonescheduledmilestone/images/icons/16x16/milestone.png');
+    background-image: url('/bundles/campaignchainmilestonescheduledmilestone/images/icons/16x16/milestone-scheduled.png');
     z-index: 2 !important;
 }
 

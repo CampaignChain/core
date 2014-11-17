@@ -39,8 +39,6 @@ gantt.templates.task_text = function(start, end, task){
             return '<img src="/bundles/campaignchaincampaignscheduledcampaign/images/icons/24x24/scheduled_campaign_white.png" class="campaignchain_gantt_icon_timeline" />' + task.text;
             break;
         case 'milestone':
-            return '<img src="/bundles/campaignchainmilestonescheduledmilestone/images/icons/24x24/milestone.png" class="campaignchain_gantt_icon_timeline" />';
-            break;
         case 'activity':
             return "<img src='" + task.icon_path_24px + "' class='campaignchain_gantt_icon_timeline' />"
             break;

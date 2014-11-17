@@ -245,8 +245,6 @@ gantt.attachEvent("onBeforeLinkAdd", function(id,link){
 gantt.templates.grid_blank = function(item) {
     switch(item.type){
         case 'milestone':
-            return '<img src="/bundles/campaignchainmilestonescheduledmilestone/images/icons/16x16/milestone.png" class="campaignchain_gantt_icon_column" />';
-            break;
         case 'activity':
             return "<img src='" + item.icon_path_16px + "' class='campaignchain_gantt_icon_column' />";
             break;

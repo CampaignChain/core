@@ -141,7 +141,7 @@ class PlanController extends Controller
                     $activity_data['route_edit_api'] = $activity->getActivityModule()->getRoutes()['edit_api'];
                     // Get channel icons path
                     $channelService = $this->get('campaignchain.core.channel');
-                    $icons = $channelService->getChannelIcons($activity->getChannel());
+                    $icons = $channelService->getIcons($activity->getChannel());
                     $activity_data['icon_path_16px'] = $icons['16px'];
                     $activity_data['icon_path_24px'] = $icons['24px'];
 
@@ -192,6 +192,11 @@ class PlanController extends Controller
                     $milestone_data['parent'] = $campaign_data['id'];
                     $milestone_data['type'] = 'milestone';
                     $milestone_data['route_edit_api'] = $milestone->getMilestoneModule()->getRoutes()['edit_api'];
+                    // Get icons path
+                    $milestoneService = $this->get('campaignchain.core.milestone');
+                    $icons = $milestoneService->getIcons($milestone);
+                    $milestone_data['icon_path_16px'] = $icons['16px'];
+                    $milestone_data['icon_path_24px'] = $icons['24px'];
 
                     $ganttMilestoneData[] = $milestone_data;
                     $ganttMilestoneLinks[] = array(
@@ -283,11 +288,10 @@ class PlanController extends Controller
                 $activityEvent['start'] = $activity->getStartDate()->format(self::FORMAT_CALENDAR_DATE);
                 $activityEvent['id'] = $activity->getId();
                 $activityEvent['type'] = 'activity';
-                // Get channel icons path
+                // Get icons path
                 $channelService = $this->get('campaignchain.core.channel');
-                $icons = $channelService->getChannelIcons($activity->getChannel());
+                $icons = $channelService->getIcons($activity->getChannel());
                 $activityEvent['icon_path_16px'] = $icons['16px'];
-                $activityEvent['icon_path_24px'] = $icons['24px'];
 
                 $activityEvents[] = $activityEvent;
             }
@@ -308,6 +312,10 @@ class PlanController extends Controller
                 $milestoneEvent['title'] = $milestone->getName();
                 $milestoneEvent['start'] = $milestone->getStartDate()->format(self::FORMAT_CALENDAR_DATE);
                 $milestoneEvent['id'] = $milestone->getId();
+                // Get icons path
+                $milestoneService = $this->get('campaignchain.core.milestone');
+                $icons = $milestoneService->getIcons($milestone);
+                $milestoneEvent['icon_path_16px'] = $icons['16px'];
 
                 $milestoneEvents[] = $milestoneEvent;
             }
