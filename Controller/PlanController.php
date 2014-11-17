@@ -298,7 +298,7 @@ class PlanController extends Controller
 
             $calendarEvents['activity']['data'] = $serializer->serialize($activityEvents, 'json');
             $calendarEvents['activity']['options'] = array(
-                'className' => 'campaignchain_activity',
+                'className' => 'campaignchain-activity',
                 'durationEditable' => false,
             );
         }
@@ -322,7 +322,7 @@ class PlanController extends Controller
 
             $calendarEvents['milestone']['data'] = $serializer->serialize($milestoneEvents, 'json');
             $calendarEvents['milestone']['options'] = array(
-                'className' => 'campaignchain_milestone',
+                'className' => 'campaignchain-milestone',
                 'durationEditable' => false,
             );
         }

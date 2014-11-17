@@ -1,0 +1,31 @@
+/*
+This file is part of the CampaignChain package.
+
+(c) Sandro Groganz <sandro@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+*/
+
+.campaignchain-activity,
+.campaignchain-milestone {
+    background-repeat: no-repeat;
+    background-position: 2px 2px;
+    background-color: #ffffff !important;
+    color: #000;
+    padding-left: 20px;
+    min-height: 22px;
+    height: auto !important;
+}
+
+.fc-title {
+    white-space: normal;
+}
+
+.fc-event-inner .fc-event-time {
+    display: block;
+}
+
+.fc-event-vert .fc-event-time {
+    white-space: normal;
+}
