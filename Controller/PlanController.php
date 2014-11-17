@@ -244,6 +244,21 @@ class PlanController extends Controller
         $repository = $this->getDoctrine()->getRepository('CampaignChainCoreBundle:Campaign');
         $campaigns = $repository->findAll();
 
+        if(!count($campaigns)) {
+            $docUrl = $this->container->get('templating.helper.assets')
+                ->getUrl(
+                    'bundles/campaignchaindochtml/user/get_started.html#create-a-campaign',
+                    null
+                );
+
+            $this->get('session')->getFlashBag()->add(
+                'warning',
+                'No campaigns defined yet. To learn how to create one, please <a href="#" onclick="popupwindow(\''.$docUrl.'\',\'\',900,600)">consult the documentation</a>.'
+            );
+
+            return false;
+        }
+
         foreach($campaigns as $campaign){
             $campaignEvent['title'] = $campaign->getName();
             $campaignEvent['start'] = $campaign->getStartDate()->format(self::FORMAT_CALENDAR_DATE);
@@ -254,28 +269,26 @@ class PlanController extends Controller
             $campaignEvents[] = $campaignEvent;
         }
 
-        if(isset($ganttCampaignData) && is_array($campaignEvents)){
-            $calendarEvents['campaign']['data'] = $serializer->serialize($campaignEvents, 'json');
-            $calendarEvents['campaign']['options'] = array(
-                'className' => 'campaignchain_campaign',
-            );
-        }
+        $calendarEvents['campaign']['data'] = $serializer->serialize($campaignEvents, 'json');
+        $calendarEvents['campaign']['options'] = array(
+            'className' => 'campaignchain_campaign',
+        );
 
         // Retrieve all activities
         $repository = $this->getDoctrine()->getRepository('CampaignChainCoreBundle:Activity');
         $activities = $repository->findAll();
 
-        foreach($activities as $activity){
-            $activityEvent['title'] = $activity->getName();
-            // TODO: Use hook instead.
-            $activityEvent['start'] = $activity->getStartDate()->format(self::FORMAT_CALENDAR_DATE);
-            $activityEvent['id'] = $activity->getId();
-            $activityEvent['type'] = 'activity';
+        if(count($activities)){
+            foreach($activities as $activity){
+                $activityEvent['title'] = $activity->getName();
+                // TODO: Use hook instead.
+                $activityEvent['start'] = $activity->getStartDate()->format(self::FORMAT_CALENDAR_DATE);
+                $activityEvent['id'] = $activity->getId();
+                $activityEvent['type'] = 'activity';
 
-            $activityEvents[] = $activityEvent;
-        }
+                $activityEvents[] = $activityEvent;
+            }
 
-        if(isset($ganttCampaignData) && is_array($activityEvents)){
             $calendarEvents['activity']['data'] = $serializer->serialize($activityEvents, 'json');
             $calendarEvents['activity']['options'] = array(
                 'className' => $activity->getActivityModule()->getBundle()->getParameterIdentifier().'_'.strtolower($activity->getActivityModule()->getIdentifier()),
@@ -287,30 +300,19 @@ class PlanController extends Controller
         $repository = $this->getDoctrine()->getRepository('CampaignChainCoreBundle:Milestone');
         $milestones = $repository->findAll();
 
-        foreach($milestones as $milestone){
-            $milestoneEvent['title'] = $milestone->getName();
-            $milestoneEvent['start'] = $milestone->getStartDate()->format(self::FORMAT_CALENDAR_DATE);
-            $milestoneEvent['id'] = $milestone->getId();
+        if(count($milestones)){
+            foreach($milestones as $milestone){
+                $milestoneEvent['title'] = $milestone->getName();
+                $milestoneEvent['start'] = $milestone->getStartDate()->format(self::FORMAT_CALENDAR_DATE);
+                $milestoneEvent['id'] = $milestone->getId();
 
-            $milestoneEvents[] = $milestoneEvent;
-        }
+                $milestoneEvents[] = $milestoneEvent;
+            }
 
-        if(isset($ganttCampaignData) && is_array($milestoneEvents)){
             $calendarEvents['milestone']['data'] = $serializer->serialize($milestoneEvents, 'json');
             $calendarEvents['milestone']['options'] = array(
                 'className' => 'campaignchain_milestone',
                 'durationEditable' => false,
-            );
-        } else {
-            $docUrl = $this->container->get('templating.helper.assets')
-                ->getUrl(
-                    'bundles/campaignchaindochtml/user/get_started.html#create-a-campaign',
-                    null
-                );
-
-            $this->get('session')->getFlashBag()->add(
-                'warning',
-                'No campaigns defined yet. To learn how to create one, please <a href="#" onclick="popupwindow(\''.$docUrl.'\',\'\',900,600)">consult the documentation</a>.'
             );
         }
 
