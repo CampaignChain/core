@@ -29,20 +29,11 @@ file that was distributed with this source code.
 
 {% block body %}
 <style type="text/css">
-    .campaignchain_activity_twitter_update_status {
-        background-image: url('{{ asset( 'bundles/campaignchainchanneltwitter/images/icons/16x16/twitter.png' ) }}');
-    }
-
-    .campaignchain_activity_facebook_publish_status {
-        background-image: url('{{ asset( 'bundles/campaignchainchannelfacebook/images/icons/16x16/facebook.png' ) }}');
-    }
-
     .campaignchain_milestone {
         background-image: url('{{ asset('bundles/campaignchainmilestonescheduledmilestone/images/icons/16x16/milestone.png' ) }}');
     }
 
-    .campaignchain_activity_twitter_update_status,
-    .campaignchain_activity_facebook_publish status,
+    .campaignchain_activity,
     .campaignchain_milestone {
         background-repeat: no-repeat;
         background-position: 2px 2px;
@@ -51,6 +42,10 @@ file that was distributed with this source code.
         padding-left: 20px;
         min-height: 22px;
         height: auto !important;
+    }
+
+    .fc-title {
+        white-space: normal;
     }
 
     .fc-event-inner .fc-event-time {
@@ -79,6 +74,13 @@ file that was distributed with this source code.
                 defaultDate: new Date(),
                 editable: true,
                 defaultTimedEventDuration: '00:01:00',
+                eventRender: function(event, eventElement) {
+                    console.log(eventElement);
+                    if (event.icon_path_16px)
+                    {
+                        eventElement.css({"background-image":"url('" + event.icon_path_16px +"')"});
+                    }
+                },
                 eventSources: [
                     {% if events and events is iterable %}
                         {% for event_type, event in events %}

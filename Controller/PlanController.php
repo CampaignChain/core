@@ -139,13 +139,11 @@ class PlanController extends Controller
                     $activity_data['type'] = 'activity';
 //                    $activity_data['form_root_name'] = $activity->getActivityModule()->getFormRootName();
                     $activity_data['route_edit_api'] = $activity->getActivityModule()->getRoutes()['edit_api'];
-                    // Compose the channel icon path
-                    $modulePath = $activity->getChannel()->getChannelModule()->getBundle()->getPath();
-                    $bundlePath = 'bundles/campaignchain'.strtolower(str_replace(DIRECTORY_SEPARATOR, '', str_replace('Bundle', '', $modulePath)));
-                    $bundleName = $activity->getChannel()->getChannelModule()->getBundle()->getName();
-                    $iconName = str_replace('campaignchain/channel-', '', $bundleName).'.png';
-                    $activity_data['icon_path_16px'] = '/'.$bundlePath.'/images/icons/16x16/'.$iconName;
-                    $activity_data['icon_path_24px'] = '/'.$bundlePath.'/images/icons/24x24/'.$iconName;
+                    // Get channel icons path
+                    $channelService = $this->get('campaignchain.core.channel');
+                    $icons = $channelService->getChannelIcons($activity->getChannel());
+                    $activity_data['icon_path_16px'] = $icons['16px'];
+                    $activity_data['icon_path_24px'] = $icons['24px'];
 
                     $ganttActivityData[] = $activity_data;
                     $ganttActivityLinks[] = array(
@@ -285,13 +283,18 @@ class PlanController extends Controller
                 $activityEvent['start'] = $activity->getStartDate()->format(self::FORMAT_CALENDAR_DATE);
                 $activityEvent['id'] = $activity->getId();
                 $activityEvent['type'] = 'activity';
+                // Get channel icons path
+                $channelService = $this->get('campaignchain.core.channel');
+                $icons = $channelService->getChannelIcons($activity->getChannel());
+                $activityEvent['icon_path_16px'] = $icons['16px'];
+                $activityEvent['icon_path_24px'] = $icons['24px'];
 
                 $activityEvents[] = $activityEvent;
             }
 
             $calendarEvents['activity']['data'] = $serializer->serialize($activityEvents, 'json');
             $calendarEvents['activity']['options'] = array(
-                'className' => $activity->getActivityModule()->getBundle()->getParameterIdentifier().'_'.strtolower($activity->getActivityModule()->getIdentifier()),
+                'className' => 'campaignchain_activity',
                 'durationEditable' => false,
             );
         }
