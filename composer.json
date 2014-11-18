@@ -43,7 +43,9 @@
         "h4cc/alice-fixtures-bundle": "dev-master",
         "friendsofsymfony/jsrouting-bundle": "dev-master",
         "hpatoio/bitly-bundle": "dev-master",
-        "sp/bower-bundle": "dev-master"
+        "sp/bower-bundle": "dev-master",
+        "sonata-project/admin-bundle": "~2.2",
+        "sonata-project/block-bundle": "~2.2"
     },
     "autoload": {
         "psr-4": { "CampaignChain\\CoreBundle\\": "" }
