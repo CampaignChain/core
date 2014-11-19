@@ -93,6 +93,12 @@ services:
     campaignchain.core.cta:
         class: CampaignChain\CoreBundle\EntityService\CTAService
         arguments: [ @doctrine.orm.entity_manager, @service_container ]
+    campaignchain.core.model.dhtmlxgantt:
+        class: CampaignChain\CoreBundle\Model\DhtmlxGantt
+        arguments: [ @doctrine.orm.entity_manager, @service_container ]
+    campaignchain.core.model.fullcalendar:
+        class: CampaignChain\CoreBundle\Model\FullCalendar
+        arguments: [ @doctrine.orm.entity_manager, @service_container ]
     campaignchain.core.listener.hook:
         class: CampaignChain\CoreBundle\EventListener\HookListener
         arguments: [ @doctrine.orm.entity_manager, @service_container ]
