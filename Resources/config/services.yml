@@ -12,19 +12,7 @@ parameters:
             # Date and time formats as per http://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table
             date: ['yyyy-MM-dd', 'd. MMMM, yyyy', 'EEEE, d. MMMM, yyyy', 'EEE, d. MMMM, yyyy']
             time: ['hh:mm a', 'HH:mm', 'HH:mm:ss']
-        style:
-            ongoing:
-                text: "#ffffff"
-                background: "#F0AD4E"
-                border: "##EEA236"
-            upcoming:
-                text: "#ffffff"
-                background: "#5BC0DE"
-                border: "#46B8DA"
-            done:
-                text: "#ffffff"
-                background: "#cccccc"
-                border: "#777777"
+
 services:
     campaignchain.core.channel.wizard:
         class: CampaignChain\CoreBundle\Wizard\ChannelWizard

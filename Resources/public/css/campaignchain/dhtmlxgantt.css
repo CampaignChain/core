@@ -1,0 +1,146 @@
+/*
+This file is part of the CampaignChain package.
+
+(c) Sandro Groganz <sandro@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+*/
+
+/*
+ongoing:
+text: "#ffffff"
+background: "#F0AD4E"
+border: "#EEA236"
+
+upcoming:
+text: "#ffffff"
+background: "#5BC0DE"
+border: "#46B8DA"
+
+done:
+text: "#ffffff"
+background: "#cccccc"
+border: "#777777"
+*/
+
+.campaignchain_gantt_weekend{
+    background: #f4f7f4;
+}
+.gantt_selected .campaignchain_gantt_weekend{
+    background: #f7eb91;
+}
+
+#campaignchain_gantt_today {
+    /* TODO: This is a hack. Height should be calculated by height of gantt_ver_scroll class's height. */
+    height: 20000px;
+    width: 3px;
+    top:0;
+    position: absolute;
+    background-color: rgba(255, 0, 0, 0.4);
+}
+
+.campaignchain_gantt_done {
+    background-color: #cccccc !important;
+    border: 1px solid #777777 !important;
+}
+.campaignchain_gantt_done .gantt_task_content {
+    color: #ffffff;
+}
+
+.campaignchain_gantt_done .gantt_task_content img {
+    opacity:0.4;
+    filter:alpha(opacity=40); /* For IE8 and earlier */
+}
+
+.campaignchain_gantt_ongoing {
+    background-color: #F0AD4E;
+    border: 1px solid #EEA236;
+}
+.campaignchain_gantt_ongoing .gantt_task_content {
+    color: #ffffff;
+}
+
+.campaignchain_gantt_upcoming {
+    background-color: #5BC0DE;
+    border: 1px solid #46B8DA;
+}
+.campaignchain_gantt_upcoming .gantt_task_content {
+    color: #ffffff;
+}
+
+.gantt_tree_icon.gantt_file {
+    display: none;
+}
+
+.campaignchain_gantt_icon_column {
+    margin-top: -28px;
+    padding: 10px;
+}
+
+.campaignchain_gantt_icon_column_campaign {
+    margin-top: -4px;
+    margin-left: -6px;
+    padding: 10px;
+    padding-right: 5px;
+}
+
+.campaignchain_gantt_icon_timeline {
+    margin-top: -1px;
+    padding-left: 1px;
+}
+
+.campaignchain_gantt_activity .gantt_side_content.gantt_right,
+.campaignchain_gantt_milestone .gantt_side_content.gantt_right{
+    padding-top: 7px;
+    padding-left: 5px;
+}
+
+.gantt_task_line.campaignchain_gantt_activity,
+.gantt_task_line.campaignchain_gantt_milestone {
+    visibility: hidden;
+    background-color: transparent;
+    border: none;
+    box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    width:24px !important;
+}
+
+.gantt_task_line.campaignchain_gantt_activity div,
+.gantt_task_line.campaignchain_gantt_milestone div {
+    visibility: visible
+}
+
+.modal-header {
+    padding: 3px 15px 0 15px;
+}
+.modal-body {
+    max-height: none !important;
+}
+
+.gantt_tooltip {
+    position: fixed !important;
+    margin-top: -70px !important;
+    margin-left: 10px !important;
+    padding: 3px 5px;
+    background-color: #fff !important;
+    color: #333333 !important;
+    font-size: small !important;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.176) !important;
+    background-clip: padding-box !important;
+    border: 1px solid rgba(0, 0, 0, 0.15) !important;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    overflow: hidden;
+    display: block;
+}
+
+/* Don't show resize and progress controls for Activity and Milestone. */
+.campaignchain_gantt_campaign .gantt_task_progress_drag,
+.campaignchain_gantt_milestone .gantt_task_drag,
+.campaignchain_gantt_milestone .gantt_task_progress_drag,
+.campaignchain_gantt_activity .gantt_task_drag,
+.campaignchain_gantt_activity .gantt_task_progress_drag {
+    display: none !important;
+}

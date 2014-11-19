@@ -21,7 +21,7 @@ file that was distributed with this source code.
 
 {% block stylesheets %}
     {{ parent() }}
-    {% stylesheets '@dhtmlxgantt_css' %}
+    {% stylesheets '@dhtmlxgantt_css' combine=true %}
         <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
     {% endstylesheets %}
     <style type="text/css" media="screen">
@@ -38,8 +38,6 @@ file that was distributed with this source code.
     {% set gantt_toolbar_status = 'fullscreen' %}
 
     {% include 'CampaignChainCoreBundle:Plan/Timeline:toolbar.html.twig' %}
-
-    {% include 'CampaignChainCoreBundle:Plan/Timeline:css.html.twig' %}
 
     <div id="gantt_here" style='width:100%; height:100%;'></div>
 
