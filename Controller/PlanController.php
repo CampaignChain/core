@@ -10,47 +10,49 @@
 
 namespace CampaignChain\CoreBundle\Controller;
 
-use Guzzle\Common\FromConfigInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use CampaignChain\CoreBundle\Entity\Activity;
-use CampaignChain\CoreBundle\Entity\Operation;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Finder\Finder;
 use Doctrine\ORM\EntityRepository;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 
 class PlanController extends Controller
 {
-    public function ganttAction(){
-        return $this->render(
-            'CampaignChainCoreBundle:Plan:gantt.html.twig',
-            array(
-                'page_title' => 'Timeline',
-                'gantt_tasks' => $this->get('campaignchain.core.model.dhtmlxgantt')->getTasks(),
-                'gantt_toolbar_status' => 'default',
-                'campaignchain_style' => $this->container->getParameter('campaignchain_core')['style'],
-            ));
-    }
+    public function indexAction(Request $request)
+    {
+        $form = $this->createFormBuilder()
+            ->add('campaign_module', 'entity', array(
+                'label' => 'Type',
+                'class' => 'CampaignChainCoreBundle:CampaignModule',
+                'query_builder' => function(EntityRepository $er) {
+                        return $er->createQueryBuilder('cm')
+                            ->orderBy('cm.displayName', 'ASC');
+                    },
+                'property' => 'displayName',
+                'empty_value' => 'Select the type of campaign',
+                'empty_data' => null,
+            ))
+            ->add('save', 'submit', array(
+                'label' => 'Next',
+            ))
+            ->getForm();
 
-    public function ganttFullScreenAction(){
-        return $this->render(
-            'CampaignChainCoreBundle:GANTT:fullscreen.html.twig',
-            array(
-                'page_title' => 'Timeline',
-                'gantt_tasks' => $this->get('campaignchain.core.model.dhtmlxgantt')->getTasks(),
-                'gantt_toolbar_status' => 'fullscreen',
-                'campaignchain_style' => $this->container->getParameter('campaignchain_core')['style'],
-            ));
-    }
+        $form->handleRequest($request);
 
-    public function calendarAction(){
+        if ($form->isValid()) {
+            // Get the activity module's activity.
+            $campaignService = $this->get('campaignchain.core.campaign');
+            $campaignModule = $campaignService->getCampaignModule($form->get('campaign_module')->getData());
+
+            $routes = $campaignModule->getRoutes();
+            return $this->redirect(
+                $this->generateUrl($routes['plan'])
+            );
+        }
+
         return $this->render(
-            'CampaignChainCoreBundle:Plan:calendar.html.twig',
+            'CampaignChainCoreBundle:Base:new.html.twig',
             array(
-                'page_title' => 'Calendar',
-                'events' => $this->get('campaignchain.core.model.fullcalendar')->getEvents(),
+                'page_title' => 'Plan Campaign',
+                'form' => $form->createView(),
             ));
     }
 }

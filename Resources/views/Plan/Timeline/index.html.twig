@@ -10,9 +10,9 @@ file that was distributed with this source code.
 {% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
 
 {% block bodytabs %}
-    {{ knp_menu_render('CampaignChainCoreBundle:Builder:planListTab', { 'style': 'tabs' }) }}
+    {{ knp_menu_render('CampaignChainCampaignScheduledCampaignBundle:Builder:planListTab', { 'style': 'tabs' }) }}
 {% endblock %}
 
 {% block body %}
-    {% include 'CampaignChainCoreBundle:GANTT:inline.html.twig' %}
+    {% include 'CampaignChainCoreBundle:Plan/Timeline:inline.html.twig' %}
 {% endblock %}

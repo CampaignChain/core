@@ -28,9 +28,9 @@ file that was distributed with this source code.
             <a href="#" onclick="scrollToToday()" class="btn btn-default btn-sm" role="button">Today</a>
             <div class="btn-group pull-right">
                 {% if gantt_toolbar_status == 'fullscreen' %}
-                    <a href="{{ path('campaignchain_core_plan') }}" class="btn btn-default btn-sm" role="button"><span class="fa fa-times"></a>
+                    <a href="{{ path_embedded }}" class="btn btn-default btn-sm" role="button"><span class="fa fa-times"></a>
                 {% else %}
-                    <a href="{{ path('campaignchain_core_plan_gantt_fullscreen') }}" class="btn btn-default btn-sm" role="button"><span class="fa fa-arrows-alt"></span></a>
+                    <a href="{{ path_fullscreen }}" class="btn btn-default btn-sm" role="button"><span class="fa fa-arrows-alt"></span></a>
                 {% endif %}
             </div>
         </div>

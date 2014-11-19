@@ -14,16 +14,8 @@ campaignchain_core_about:
     defaults: { _controller: CampaignChainCoreBundle:About:index }
 
 campaignchain_core_plan:
-    pattern:  /plan/gantt
-    defaults: { _controller: CampaignChainCoreBundle:Plan:gantt }
-
-campaignchain_core_plan_gantt_fullscreen:
-    pattern:  /plan/gantt/fullscreen
-    defaults: { _controller: CampaignChainCoreBundle:Plan:ganttFullScreen }
-
-campaignchain_core_plan_calendar:
-    pattern:  /plan/calendar
-    defaults: { _controller: CampaignChainCoreBundle:Plan:calendar }
+    pattern:  /plan/{id}
+    defaults: { _controller: CampaignChainCoreBundle:Plan:index, id: 0 }
 
 campaignchain_core_execute:
     pattern:  /execute/
@@ -59,14 +51,6 @@ campaignchain_core_campaign_move_api:
     methods:  [POST]
     options:
         expose: true
-
-campaignchain_core_campaign_gantt:
-    pattern:  /campaigns/gantt
-    defaults: { _controller: CampaignChainCoreBundle:Campaign:gantt }
-
-campaignchain_core_campaign_gantt_fullscreen:
-    pattern:  /campaigns/gantt/fullscreen
-    defaults: { _controller: CampaignChainCoreBundle:Campaign:ganttFullScreen }
 
 campaignchain_core_activities:
     pattern:  /activities/

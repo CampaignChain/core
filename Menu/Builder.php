@@ -15,16 +15,6 @@ use Symfony\Component\DependencyInjection\ContainerAware;
 
 class Builder extends ContainerAware
 {
-    public function planListTab(FactoryInterface $factory, array $options)
-    {
-        $menu = $factory->createItem('root');
-
-        $menu->addChild('Timeline', array('route' => 'campaignchain_core_plan'));
-        $menu->addChild('Calendar', array('route' => 'campaignchain_core_plan_calendar'));
-
-        return $menu;
-    }
-
     public function executeListTab(FactoryInterface $factory, array $options)
     {
         $menu = $factory->createItem('root');
