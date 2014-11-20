@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\MappedSuperclass
  */
-class Action
+class Action extends Meta
 {
     /**
      * Types of actions.
@@ -61,7 +61,7 @@ class Action
      * Set name
      *
      * @param string $name
-     * @return BaseTask
+     * @return Action
      */
     public function setName($name)
     {
@@ -84,7 +84,7 @@ class Action
      * Set startDate
      *
      * @param \DateTime $startDate
-     * @return BaseTask
+     * @return Action
      */
     public function setStartDate($startDate)
     {
@@ -107,7 +107,7 @@ class Action
      * Set endDate
      *
      * @param \DateTime $endDate
-     * @return BaseTask
+     * @return Action
      */
     public function setEndDate($endDate)
     {
@@ -130,7 +130,7 @@ class Action
      * Set status
      *
      * @param string $status
-     * @return BaseTask
+     * @return Action
      */
     public function setStatus($status)
     {
@@ -169,7 +169,7 @@ class Action
      * Set triggerHook
      *
      * @param \CampaignChain\CoreBundle\Entity\Hook $triggerHook
-     * @return BaseTask
+     * @return Action
      */
     public function setTriggerHook(\CampaignChain\CoreBundle\Entity\Hook $triggerHook = null)
     {

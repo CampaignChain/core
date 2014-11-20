@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  * @ORM\Table(name="campaignchain_scheduler")
  */
-class Scheduler
+class Scheduler extends Meta
 {
     const STATUS_RUNNING = 'running';
     const STATUS_CLOSED = 'closed';

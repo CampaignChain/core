@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\MappedSuperclass
  */
-class Medium
+class Medium extends Meta
 {
     /**
      * Types of media.
@@ -44,7 +44,7 @@ class Medium
      * Set name
      *
      * @param string $name
-     * @return BaseTask
+     * @return Medium
      */
     public function setName($name)
     {
@@ -67,7 +67,7 @@ class Medium
      * Set status
      *
      * @param string $status
-     * @return BaseTask
+     * @return Medium
      */
     public function setStatus($status)
     {

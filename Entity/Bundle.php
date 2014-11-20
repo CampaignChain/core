@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  * @ORM\Table(name="campaignchain_bundle")
  */
-class Bundle
+class Bundle extends Meta
 {
     const TYPE_DISTRIBUTION = 'campaignchain-distribution';
     const TYPE_CAMPAIGN = 'campaignchain-campaign';

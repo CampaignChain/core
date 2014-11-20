@@ -18,7 +18,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  * @ORM\Table(name="campaignchain_cta")
  */
-class CTA
+class CTA extends Meta
 {
     /**
      * @ORM\Column(type="integer")

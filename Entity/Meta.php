@@ -10,23 +10,14 @@
 
 namespace CampaignChain\CoreBundle\Entity;
 
-use FOS\UserBundle\Model\Group as BaseGroup;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
- * @ORM\Table(name="campaignchain_group")
+ * @ORM\MappedSuperclass
  * @ORM\HasLifecycleCallbacks
  */
-class Group extends BaseGroup
+class Meta
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
-
     /**
      * @ORM\Column(type="datetime", nullable=false)
      */
@@ -38,20 +29,10 @@ class Group extends BaseGroup
     protected $modifiedDate;
 
     /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
      * Set createdDate
      *
      * @param \DateTime $createdDate
-     * @return Group
+     * @return Meta
      */
     public function setCreatedDate($createdDate)
     {
@@ -74,7 +55,7 @@ class Group extends BaseGroup
      * Set modifiedDate
      *
      * @param \DateTime $modifiedDate
-     * @return Group
+     * @return Meta
      */
     public function setModifiedDate($modifiedDate)
     {

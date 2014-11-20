@@ -16,6 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity
  * @ORM\Table(name="campaignchain_user")
+ * @ORM\HasLifecycleCallbacks
  */
 class User extends BaseUser
 {
@@ -64,6 +65,16 @@ class User extends BaseUser
      * @ORM\Column(type="string", nullable=true)
      */
     protected $timeFormat = 'HH:mm';
+
+    /**
+     * @ORM\Column(type="datetime", nullable=false)
+     */
+    protected $createdDate;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    protected $modifiedDate;
 
     /**
      * Constructor
@@ -219,5 +230,65 @@ class User extends BaseUser
     public function getTimeFormat()
     {
         return $this->timeFormat;
+    }
+
+    /**
+     * Set createdDate
+     *
+     * @param \DateTime $createdDate
+     * @return User
+     */
+    public function setCreatedDate($createdDate)
+    {
+        $this->createdDate = $createdDate;
+
+        return $this;
+    }
+
+    /**
+     * Get createdDate
+     *
+     * @return \DateTime
+     */
+    public function getCreatedDate()
+    {
+        return $this->createdDate;
+    }
+
+    /**
+     * Set modifiedDate
+     *
+     * @param \DateTime $modifiedDate
+     * @return User
+     */
+    public function setModifiedDate($modifiedDate)
+    {
+        $this->modifiedDate = $modifiedDate;
+
+        return $this;
+    }
+
+    /**
+     * Get modifiedDate
+     *
+     * @return \DateTime
+     */
+    public function getModifiedDate()
+    {
+        return $this->modifiedDate;
+    }
+
+    /**
+     *
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function timestamps()
+    {
+        if ($this->getCreatedDate() == null) {
+            $this->setCreatedDate(new \DateTime('now', new \DateTimeZone('UTC')));
+        } else {
+            $this->setModifiedDate(new \DateTime('now', new \DateTimeZone('UTC')));
+        }
     }
 }

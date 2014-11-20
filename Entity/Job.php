@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  * @ORM\Table(name="campaignchain_job")
  */
-class Job
+class Job extends Meta
 {
     const STATUS_OPEN = 'open';
     const STATUS_RUNNING = 'running';

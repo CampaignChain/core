@@ -20,7 +20,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\DiscriminatorMap( { "activity" = "ActivityModule", "campaign" = "CampaignModule", "channel" = "ChannelModule", "location" = "LocationModule", "milestone" = "MilestoneModule", "operation" = "OperationModule", "report" = "ReportModule", "security" = "SecurityModule" } )
  */
 
-abstract class Module
+abstract class Module extends Meta
 {
     /**
      * @ORM\Column(type="integer")
