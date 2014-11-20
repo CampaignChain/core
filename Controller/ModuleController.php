@@ -48,11 +48,7 @@ class ModuleController extends Controller
         $newBundles = $this->getNewBundles($campaignchainRoot);
 
         if(is_array($newBundles) && count($newBundles)){
-            $form = $this->createFormBuilder()
-                ->add('save', 'submit', array(
-                    'label' => 'Install',
-                ))
-                ->getForm();
+            $form = $this->createFormBuilder()->getForm();
 
             $form->handleRequest($request);
 

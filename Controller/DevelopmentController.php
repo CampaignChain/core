@@ -52,9 +52,6 @@ class DevelopmentController extends Controller
                     'help_text' => 'Activating this checkbox will delete out all your data and replace it with the sample data!',
                 ),
             ))
-            ->add('save', 'submit', array(
-                'label' => 'Load data'
-            ))
             ->getForm();
 
         $form->handleRequest($request);
@@ -138,6 +135,7 @@ class DevelopmentController extends Controller
             array(
                 'page_title' => 'Load Sample Data',
                 'form' => $form->createView(),
+                'form_submit_label' => 'Upload',
             ));
     }
 

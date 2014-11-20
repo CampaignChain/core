@@ -93,14 +93,6 @@ class ActivityController extends Controller
                 'mapped' => false,
                 'attr' => array('placeholder' => 'Select an activity')
             ))
-//            ->add('name', 'text', array(
-//                'label' => 'Name',
-//                'data_class' => 'CampaignChain\CoreBundle\Entity\Activity',
-//                'attr' => array('placeholder' => 'What should be the name of the Activity?')
-//            ))
-            ->add('save', 'submit', array(
-                'label' => 'Next',
-            ))
             ->getForm();
 
         $form->handleRequest($request);

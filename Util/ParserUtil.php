@@ -138,7 +138,9 @@ class ParserUtil
         $regex_pattern = "/rel=\"shortcut icon\" (?:href=[\'\"]([^\'\"]+)[\'\"])?/";
         preg_match_all($regex_pattern, $websiteHtml, $matches);
 
-        if(isset($matches[1][0])){
+        $favicon = $matches[1][0];
+
+        if(isset($favicon)){
             // Favicon's URL was specified in HTML.
             $faviconUrl = $matches[1][0];
 

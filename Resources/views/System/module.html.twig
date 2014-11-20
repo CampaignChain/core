@@ -36,7 +36,17 @@ file that was distributed with this source code.
             </tbody>
         </table>
         {% if form %}
-            {{ form(form, { 'style': 'inline' }) }}
+            <form method="POST" class="form-horizontal" role="form" {{ form_enctype(form) }}>
+                {{ bootstrap_set_style('horizontal') }}
+                {{ form_widget(form) }}
+                <div class="form-group">
+                    <div class="col-lg-offset-6 col-lg-6">
+                        <div class="btn-group pull-right" role="group" aria-label="...">
+                            <button class="btn btn-primary" type="submit"><i class="fa fa-download"></i> Install</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
         {% endif %}
     </div>
     {% endif %}

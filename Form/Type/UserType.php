@@ -72,10 +72,6 @@ class UserType extends AbstractType
                 'choices'   => $timeFormats,
                 'multiple'  => false,
             ));
-
-        $builder->add('actions', 'form_actions');
-
-        $builder->get('actions')->add('save', 'submit', ['label' => 'Save']);
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)

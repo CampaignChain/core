@@ -69,9 +69,6 @@ class ChannelController extends Controller
                     'show_image' => true,
                 )
             ))
-            ->add('save', 'submit', array(
-                'label' => 'Next'
-            ))
             ->getForm();
 
         $form->handleRequest($request);

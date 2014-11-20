@@ -50,6 +50,7 @@ class ProfileController extends Controller
             array(
                 'page_title' => 'Profile',
                 'form' => $form->createView(),
+                'form_submit_label' => 'Save',
             ));
     }
 }

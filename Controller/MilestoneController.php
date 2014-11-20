@@ -55,9 +55,6 @@ class MilestoneController extends Controller
                 'empty_value' => 'Select the type of milestone',
                 'empty_data' => null,
             ))
-            ->add('save', 'submit', array(
-                'label' => 'Next',
-            ))
             ->getForm();
 
         $form->handleRequest($request);

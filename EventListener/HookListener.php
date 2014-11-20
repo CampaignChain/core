@@ -144,26 +144,5 @@ class HookListener implements EventSubscriberInterface
                 }
             }
         }
-
-        $form->add('actions', 'form_actions');
-
-        // Add a cancel button only in modal view
-        $cancelButtonAttr = array();
-        if($this->view == 'modal'){
-            $cancelButtonAttr['data-dismiss'] = 'modal';
-            $form->get('actions')->add('cancel', 'button', array(
-                'label' => 'Cancel',
-                'attr' => $cancelButtonAttr,
-            ));
-        }
-
-        $form->get('actions')->add('save', 'submit', ['label' => 'Save']);
-//        $form->get('actions')->add('schedule', 'submit', ['label' => 'Publish Later']);
     }
-
-//    public function onPreSubmit(FormEvent $event)
-//    {
-//        $user = $event->getData();
-//        $form = $event->getForm();
-//    }
 }

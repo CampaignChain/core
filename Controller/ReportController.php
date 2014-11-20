@@ -21,36 +21,12 @@ class ReportController extends Controller
         $repository = $this->getDoctrine()
             ->getRepository('CampaignChainCoreBundle:ReportModule');
 
-//        $campaign = array();
-//        $form = $this->createFormBuilder($campaign)
-//            ->setMethod('GET')
-//            ->add('report', 'entity', array(
-//                'label' => 'Report',
-//                'class' => 'CampaignChainCoreBundle:Report',
-//                'query_builder' => function(EntityRepository $er) {
-//                        return $er->createQueryBuilder('report')
-//                            ->orderBy('report.displayName', 'ASC');
-//                    },
-//                'property' => 'displayName',
-//                'empty_value' => 'Select a Report',
-//                'empty_data' => null,
-//            ))
-//            ->add('save', 'submit', array(
-//                'label' => 'Show Report'
-//            ))
-//            ->getForm();
-//
-//        $form->handleRequest($request);
-//
-//        if ($form->isValid()) {
-//            $report = $form->getData()['report'];
         if(!$id){
             $reports = $repository->findAll();
             return $this->render(
                 'CampaignChainCoreBundle:Report:index.html.twig',
                 array(
                     'page_title' => 'Reports',
-//                'form' => $form->createView(),
                     'reports' => $reports,
                 ));
         } else {
