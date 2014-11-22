@@ -182,16 +182,8 @@ class CampaignChainCoreExtension extends \Twig_Extension
 
     public function channelRootLocations($object)
     {
-        $repository = $this->em->getRepository('CampaignChainCoreBundle:Location');
-
-        $query = $repository->createQueryBuilder('l')
-            ->where('l.channel = :channel')
-            ->andWhere('l.parent IS NULL')
-            ->orderBy('l.name', 'ASC')
-            ->setParameter('channel', $object)
-            ->getQuery();
-
-        return $query->getResult();
+        $channelService = $this->container->get('campaignchain.core.channel');
+        return $channelService->getRootLocations($object);
     }
 
     public function getGlobals()

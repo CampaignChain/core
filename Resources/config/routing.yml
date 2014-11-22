@@ -130,6 +130,14 @@ campaignchain_core_channel_new:
     pattern:  /channel/new/
     defaults: { _controller: CampaignChainCoreBundle:Channel:new }
 
+campaignchain_core_channel_cta_test:
+    pattern: channel/{id}/cta-tracking/
+    defaults: { _controller: CampaignChainCoreBundle:Channel:ctaTracking, id: 0  }
+
+campaignchain_core_channel_cta_tracking_test:
+    pattern:  /api/v1/channel/{id}/cta-tracking/test
+    defaults: { _controller: CampaignChainCoreBundle:Channel:apiTestCtaTracking, id: 0 }
+
 campaignchain_core_location:
     pattern:  /locations/
     defaults: { _controller: CampaignChainCoreBundle:Location:index }

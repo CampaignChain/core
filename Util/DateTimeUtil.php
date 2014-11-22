@@ -26,7 +26,16 @@ class DateTimeUtil
     }
 
     public function setUserTimezone(\DateTime $dateTime){
-        return $dateTime->setTimezone(new \DateTimeZone($this->container->get('session')->get('campaignchain.timezone')));
+        if($this->container->get('session')->isStarted()){
+            $timezone = $this->container->get('session')->get('campaignchain.timezone');
+            if(empty($timezone)){
+                $timezone = 'UTC';
+            }
+        } else {
+            $timezone = 'UTC';
+        }
+
+        return $dateTime->setTimezone(new \DateTimeZone($timezone));
     }
 
     public function isUserTimezone(\DateTime $dateTime){

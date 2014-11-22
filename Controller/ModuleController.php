@@ -186,18 +186,15 @@ class ModuleController extends Controller
                                     }
 
                                     // Process the params specific to a module type.
-                                    $params = array();
 
-                                    // If an Operation, make sure the is_location flag is set.
-                                    if($newBundle->getType() == 'campaignchain-operation'){
-                                        if(!isset($moduleParams['owns_location'])){
-                                            throw new \Exception("You must set the 'owns_location' parameter in campaignchain.yml to 'true' or 'false' for module '".$identifier."' in bundle '".$newBundle->getName()."'.");
-                                        } else {
-                                            $params['owns_location'] = $moduleParams['owns_location'];
-                                        }
+                                    // Params that must be defined for Operation modules
+                                    if($newBundle->getType() == 'campaignchain-operation' && !isset($moduleParams['params']['owns_location'])){
+                                        throw new \Exception("You must set the 'owns_location' parameter in campaignchain.yml to 'true' or 'false' for module '".$identifier."' in bundle '".$newBundle->getName()."'.");
                                     }
 
-                                    $module->setParams($params);
+                                    if(isset($moduleParams['params'])){
+                                        $module->setParams($moduleParams['params']);
+                                    }
 
                                     // Add new module to new bundle.
                                     $addModuleMethod = 'add'.$moduleEntity;

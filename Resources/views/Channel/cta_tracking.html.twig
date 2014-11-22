@@ -1,0 +1,111 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) Sandro Groganz <sandro@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+{% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    {% javascripts '@ladda_js' combine=true %}
+    <!-- ladda JS --><script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+    <script>
+        $(document).ready(function() {
+            var button = Ladda.create( document.querySelector( '.cta-tracking-button' ) );
+            var apiUrl = "{{ path('campaignchain_core_channel_cta_tracking_test', {'id': channel.id}) }}";
+
+            $('.cta-tracking-button').on("click", function() {
+                $.ajax({
+                    type: "GET",
+                    url: apiUrl,
+                    cache: false,
+
+                    beforeSend: function(){
+                        button.start();
+                        $( '.cta-tracking-result' ).fadeOut();
+                    },
+                    success: function(data, status) {
+                        response=JSON.parse(data);
+                        console.log(response);
+                        $.each(response, function(key, val) {
+                            if(key == 'ok' && val == false){
+
+                                var alertMessage = '<ul>';
+
+                                $.each(response['root_location'], function(key, val) {
+                                    alertMessage = alertMessage.concat(
+                                            '<li>' + val + '</li>');
+                                });
+
+                                alertMessage = alertMessage.concat('</ul>');
+
+                                $( '<div class="alert alert-danger cta-tracking-result" role="alert"><h4><span class="fa fa-exclamation-triangle"></span> Tracking broken!</h4><p>Please make sure the tracking code is correct in Location(s):</p>' + alertMessage + '</div>' ).insertBefore( '.cta-tracking-button' );
+                            }
+                            if(key == 'ok' && val == true){
+                                $( '<div class="alert alert-success cta-tracking-result" role="alert"><h4><span class="fa fa-check-circle"></span> All good!</h4></div>' ).insertBefore( '.cta-tracking-button' );
+                            }
+                        });
+                        button.stop();
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        alert('URL: ' + apiUrl + ', status: ' + xhr.status + ', message: ' +thrownError);
+                        button.stop();
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    {% stylesheets '@ladda_css' combine=true %}
+    <!-- ladda CSS --><link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
+    {% endstylesheets %}
+{% endblock %}
+
+{% block body %}
+    <p>Follow the below steps to enable CTA tracking for a channel.</p>
+
+    <h2>1. Verify Channel</h2>
+    <p>Please double check based on below data, whether this is the Channel you'd like to enable CTA tracking for.</p>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title"><img src="{{ asset( channel.getChannelModule()|campaignchain_channel_asset_path~'/images/icons/16x16/'~channel.getChannelModule()|campaignchain_channel_icon_name ) }}" /> {{ channel.getName() }}</h3>
+        </div>
+        <div class="panel-body">
+            <div class="campaignchain-location-name"><label>Root Locations:</label></div>
+            <ul>
+                {% set locations = channel|campaignchain_channel_root_locations %}
+                {% for location in locations %}
+                    <li>{{ location.name }} ({{ location.getLocationModule().getDisplayName() }})<br/><a href="{{ location.url }}">{{ location.url }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <h2>2. Include Tracking Code</h2>
+    <p>Include below JavaScript code in the HTML of the channel. Make sure it appears in all pages below each root Location which you'd like to utilize for CTA tracking.</p>
+<pre>
+{% filter escape %}
+<script type="text/javascript" src="{{ app.request.getSchemeAndHttpHost() }}/bundles/campaignchaincore/js/campaignchain/campaignchain_tracking.js"></script>
+<script type="text/javascript">
+    var campaignchainChannel = '{{ channel.trackingId }}';
+</script>
+{% endfilter %}
+</pre>
+
+    <h2>3. Test Tracking Code</h2>
+    <p>Once you included the tracking code, you can test it.</p>
+
+    <button data-style="expand-left" class="btn btn-primary cta-tracking-button ladda-button"><span class="ladda-label">Test CTA tracking</span><span class="ladda-spinner"></span><span class="ladda-spinner"></span><div class="ladda-progress"></div></button>
+
+{% endblock %}

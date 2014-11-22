@@ -27,6 +27,20 @@ class ChannelService
         $this->container = $container;
     }
 
+    public function getChannel($id){
+        $channel = $this->em
+            ->getRepository('CampaignChainCoreBundle:Channel')
+            ->find($id);
+
+        if (!$channel) {
+            throw new \Exception(
+                'No Channel found for id '.$id
+            );
+        }
+
+        return $channel;
+    }
+
     /*
      * Generates a Tracking ID
      *
@@ -66,5 +80,19 @@ class ChannelService
         $icon['24px'] = '/'.$bundlePath.'/images/icons/24x24/'.$iconName;
 
         return $icon;
+    }
+
+    public function getRootLocations($channel)
+    {
+        $repository = $this->em->getRepository('CampaignChainCoreBundle:Location');
+
+        $query = $repository->createQueryBuilder('l')
+            ->where('l.channel = :channel')
+            ->andWhere('l.parent IS NULL')
+            ->orderBy('l.name', 'ASC')
+            ->setParameter('channel', $channel)
+            ->getQuery();
+
+        return $query->getResult();
     }
 }

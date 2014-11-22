@@ -19,7 +19,7 @@ file that was distributed with this source code.
                     <th>Name</th>
                     <th>Channel</th>
                     <th>Locations</th>
-                    <th>Tracking ID</th>
+                    <th>CTA Tracking</th>
                 </tr>
             </thead>
             <tbody>
@@ -35,10 +35,20 @@ file that was distributed with this source code.
                             {% endfor %}
                             </ul>
                         </td>
-                        <td>{{ channel.trackingId }}</td>
+                        <td>
+                            {% set module_params = channel.getChannelModule().getParams() %}
+                            {% if module_params is iterable and
+                                  module_params['cta_tracking'] is defined and
+                                  module_params['cta_tracking'] %}
+                                <a href="{{ path('campaignchain_core_channel_cta_test',{'id':channel.id}) }}" class="btn btn-primary" role="button">Enable & Test</a>
+                            {% else %}
+                                <p>Not available</p>
+                            {% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     <!--</div>-->
+
 {% endblock %}

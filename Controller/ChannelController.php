@@ -129,4 +129,59 @@ class ChannelController extends Controller
 
         return new Response($serializer->serialize($response, 'json'));
     }
+
+    public function ctaTrackingAction(Request $request, $id){
+        $channelService = $this->get('campaignchain.core.channel');
+        $channel = $channelService->getChannel($id);
+
+        return $this->render(
+            'CampaignChainCoreBundle:Channel:cta_tracking.html.twig',
+            array(
+                'page_title' => 'Enable CTA Tracking',
+                'channel' => $channel,
+            ));
+    }
+
+    public function apiTestCtaTrackingAction(Request $request, $id){
+        $response = array();
+
+        $channel = $this->getDoctrine()
+            ->getRepository('CampaignChainCoreBundle:Channel')
+            ->find($id);
+
+        if (!$channel) {
+            throw new \Exception(
+                'No channel found for id '.$id
+            );
+        }
+
+        $channelService = $this->get('campaignchain.core.channel');
+        $locations = $channelService->getRootLocations($channel);
+
+        if(count($locations)){
+            $trackingFileCode = '<script type="text/javascript" src="'.$request->getSchemeAndHttpHost().'/bundles/campaignchaincore/js/campaignchain/campaignchain_tracking.js"></script>';
+            $trackingIdCode = 'var campaignchainChannel = \''.$channel->getTrackingId().'\';';
+            $trackingStatus = true;
+
+            foreach($locations as $location){
+                $html = file_get_contents($location->getUrl());
+                if (strpos($html, $trackingFileCode) === false || strpos($html, $trackingIdCode) === false) {
+                    $trackingStatus = false;
+                    $response['root_location'][] = $location->getUrl();
+                }
+            }
+        } else {
+            // TODO: Throw exception if no location defined for channel.
+            $trackingStatus = false;
+        }
+
+        $response['ok'] = $trackingStatus;
+
+        $encoders = array(new JsonEncoder());
+        $normalizers = array(new GetSetMethodNormalizer());
+
+        $serializer = new Serializer($normalizers, $encoders);
+
+        return new Response($serializer->serialize($response, 'json'));
+    }
 }
