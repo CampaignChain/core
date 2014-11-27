@@ -1,0 +1,64 @@
+html, body {
+    background: none repeat scroll 0 0 #f8f8f8;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
+body {
+    padding-top: 0px;
+}
+
+#content {
+    margin: 0 auto;
+    width: 760px;
+}
+
+.block {
+    background-color: #ffffff;
+    border: 1px solid #dfdfdf;
+    border-radius: 16px;
+    margin-bottom: 20px;
+    padding: 40px 50px;
+}
+
+.page-header {
+    border-bottom: 1px solid #eeeeee;
+    margin: 40px 0 20px;
+    padding-bottom: 9px;
+}
+
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+    color: inherit;
+    font-family: inherit;
+    font-weight: 500;
+    line-height: 1.1;
+}
+
+h1 small, .h1 small, h2 small, .h2 small, h3 small, .h3 small, h1 .small, .h1 .small, h2 .small, .h2 .small, h3 .small, .h3 .small {
+    font-size: 65%;
+}
+
+h1 small, h2 small, h3 small, h4 small, h5 small, h6 small, .h1 small, .h2 small, .h3 small, .h4 small, .h5 small, .h6 small, h1 .small, h2 .small, h3 .small, h4 .small, h5 .small, h6 .small, .h1 .small, .h2 .small, .h3 .small, .h4 .small, .h5 .small, .h6 .small {
+    color: #777777;
+    font-weight: normal;
+    line-height: 1;
+}
+
+button {
+    background-color: #337ab7;
+    border-color: #2e6da4;
+    color: #ffffff;
+    -moz-user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 1.42857;
+    margin-bottom: 0;
+    padding: 6px 12px;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+}

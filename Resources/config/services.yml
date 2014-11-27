@@ -116,3 +116,33 @@ services:
         arguments: [ 'campaignchain.block.rss', @templating ]
         tags:
             - {name: "sonata.block"}
+    campaignchain.core.install.wizard:
+        class: CampaignChain\CoreBundle\Wizard\InstallWizard
+        arguments: [ %kernel.root_dir% ]
+    campaignchain.core.install.wizard.step.sfdoctrine:
+        class: CampaignChain\CoreBundle\Wizard\Install\Step\SfDoctrineStep
+        public: false
+        calls:
+            - [ setKernel, [ @kernel ] ]
+        tags:
+            - {name: "campaignchain.install.step", priority: '0'}
+    campaignchain.core.install.wizard.step.sfsecret:
+        class: CampaignChain\CoreBundle\Wizard\Install\Step\SfSecretStep
+        public: false
+        tags:
+            - {name: "campaignchain.install.step", priority: '100'}
+    campaignchain.core.install.wizard.step.bitly:
+        class: CampaignChain\CoreBundle\Wizard\Install\Step\BitlyStep
+        public: false
+        tags:
+            - {name: "campaignchain.install.step", priority: '200'}
+    campaignchain.core.install.wizard.step.admin:
+        class: CampaignChain\CoreBundle\Wizard\Install\Step\AdminStep
+        public: false
+        calls:
+            - [ setKernel, [ @kernel ] ]
+            - [ setTemplating, [ @templating ] ]
+            - [ setMailer, [ @mailer ] ]
+            - [ setEntityManager, [ @doctrine.orm.entity_manager ] ]
+        tags:
+            - {name: "campaignchain.install.step", priority: '300'}

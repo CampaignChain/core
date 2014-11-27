@@ -1,0 +1,26 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) Sandro Groganz <sandro@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+{% extends 'CampaignChainCoreBundle:Wizard/Install:form.html.twig' %}
+
+{% set page_title = 'Admin User' %}
+
+{% block description %}
+<p>Please provide the user data for the administrator.</p>
+<p>Use these credentials to log into CampaignChain after the installation wizard is done.</p>
+{% endblock %}
+
+{% block form %}
+    {{ form_row(form.user) }}
+    {{ form_row(form.first_name) }}
+    {{ form_row(form.last_name) }}
+    {{ form_row(form.password) }}
+    {{ form_row(form.email) }}
+    {{ form_row(form.support) }}
+{% endblock %}

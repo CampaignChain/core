@@ -1,0 +1,29 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) Sandro Groganz <sandro@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+{% extends 'CampaignChainCoreBundle:Wizard/Install:form.html.twig' %}
+
+{% set page_title = 'Bitly Access Token' %}
+
+{% block description %}
+<p>CampaignChain’s CTA tracking mechanism uses Bitly to shorten URLs that contain the tracking ID.</p>
+<p>Please request a Bitly access token here: <a href="https://bitly.com/a/oauth_apps">https://bitly.com/a/oauth_apps</a>.</p>
+{% endblock %}
+
+{% block form %}
+        <div class="symfony-form-row">
+            {{ form_label(form.access_token) }}
+            <div class="symfony-form-field">
+                {{ form_widget(form.access_token) }}
+                <div class="symfony-form-errors">
+                    {{ form_errors(form.access_token) }}
+                </div>
+            </div>
+        </div>
+{% endblock %}

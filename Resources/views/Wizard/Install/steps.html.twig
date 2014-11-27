@@ -1,0 +1,12 @@
+{% if index is not null %}
+<ol class="breadcrumb">
+    {% for i in 1..count %}
+
+      {% if i == index + 1 %}
+      <li class="active">Step {{ i }}</li>
+      {% else %}
+          <li>Step {{ i }}</li>
+      {% endif %}
+    {% endfor %}
+</ol>
+{% endif %}

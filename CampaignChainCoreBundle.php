@@ -11,11 +11,18 @@
 namespace CampaignChain\CoreBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use CampaignChain\CoreBundle\DependencyInjection\Compiler\InstallWizardPass;
 
 class CampaignChainCoreBundle extends Bundle
 {
     public function getParent()
     {
         return 'FOSUserBundle';
+    }
+
+    public function build(ContainerBuilder $container)
+    {
+        $container->addCompilerPass(new InstallWizardPass());
     }
 }

@@ -1,0 +1,24 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) Sandro Groganz <sandro@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+{% extends 'CampaignChainCoreBundle:Wizard/Install:form.html.twig' %}
+
+{% set page_title = 'Configure Database' %}
+
+{% block description %}
+<p>Please configure the database connection here.</p>
+{% endblock %}
+
+{% block form %}
+    {{ form_row(form.driver) }}
+    {{ form_row(form.host) }}
+    {{ form_row(form.name) }}
+    {{ form_row(form.user) }}
+    {{ form_row(form.password) }}
+{% endblock %}

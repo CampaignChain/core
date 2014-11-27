@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="robots" content="noindex,nofollow" />
+    <title>CampaignChain Installation</title>
+    <link rel="stylesheet" href="/bundles/framework/css/structure.css" media="all" />
+    <link rel="stylesheet" href="/bundles/framework/css/body.css" media="all" />
+    <link rel="stylesheet" href="/bundles/sensiodistribution/webconfigurator/css/install.css" media="all" />
+    {% block javascripts %}
+        {% javascripts '@jquery_js' '@bootstrap_js' filter='?yui_js' combine=true %}
+        <script src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+        <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+        <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
+        {% javascripts '@moment_js' combine=true %}
+        <script src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+        {% javascripts '@campaignchain_base_js' combine=true %}
+        <script src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+    {% endblock %}
+
+    {% block stylesheets %}
+        {% stylesheets '@bootstrap_less' combine=true %}
+        <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
+        {% endstylesheets %}
+        {% stylesheets '@campaignchain_base_css' filter="cssrewrite"
+        'bundles/campaignchaincore/css/*'%}
+        <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
+        {% endstylesheets %}
+    {% endblock %}
+    <link rel="stylesheet" href="/bundles/campaignchaincore/css/campaignchain/install.css" media="all" />
+
+    <!-- Add Fonta Awesome Glyphicons -->
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/bmatznerfontawesome/css/font-awesome.min.css') }}" />
+
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<div id="content">
+    <div class="header clear-fix">
+        <div class="header-logo">
+            <a href="http://www.campaignchain.com"><img style="height: 24px;" alt="CampaignChain" src="/bundles/campaignchaincore/images/campaignchain_logo.png"></a>
+        </div>
+    </div>
+
+    <div>
+        <div class="block">
+            <div class="symfony-block-content">
+                <div class="page-header">
+                    <h1>{{ page_title }} <small>Installation Wizard</small></h1>
+                </div>
+                {% include "CampaignChainCoreBundle:Wizard/Install:steps.html.twig" with { "index": index, "count": count } %}
+
+                {% block description %}{% endblock %}
+
+                {% block body %}{% endblock %}
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

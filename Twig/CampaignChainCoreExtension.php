@@ -188,6 +188,13 @@ class CampaignChainCoreExtension extends \Twig_Extension
 
     public function getGlobals()
     {
+        // Do not load globals during installation, which is when no
+        // tables exists yet in the database.
+        $schemaManager = $this->em->getConnection()->getSchemaManager();
+        if (!$schemaManager->listTables()) {
+            return array();
+        }
+
         return array(
             "campaignchain_user_datetime_format" => array(
                 'moment_js' => $this->datetime->getUserDatetimeFormat('moment_js'),
