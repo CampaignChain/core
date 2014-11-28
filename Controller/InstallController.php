@@ -45,7 +45,7 @@ class InstallController extends ContainerAware
                     return new RedirectResponse($this->container->get('router')->generate('campaignchain_core_install_step', array('index' => $index)));
                 }
 
-                return new RedirectResponse($this->container->get('router')->generate('campaignchain_core_install_final'));
+                return new RedirectResponse($this->container->get('router')->generate('campaignchain_core_system_module'));
             }
         }
 
@@ -74,23 +74,6 @@ class InstallController extends ContainerAware
             'majors'  => $majors,
             'minors'  => $minors,
             'url'     => $url,
-        ));
-    }
-
-    public function finalAction()
-    {
-        $installWizard = $this->container->get('campaignchain.core.install.wizard');
-        $installWizard->clean();
-
-        try {
-            $welcomeUrl = $this->container->get('router')->generate('_welcome');
-        } catch (\Exception $e) {
-            $welcomeUrl = null;
-        }
-
-        return $this->container->get('templating')->renderResponse('CampaignChainCoreBundle:Wizard/Install:final.html.twig', array(
-            'index'    => null,
-            'count' => null,
         ));
     }
 }

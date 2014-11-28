@@ -1,7 +1,14 @@
 <?php
-    $page_title = 'Check Server Environment';
+$page_title = 'Check Server Environment';
 
-    require_once 'header.php';
+require_once 'header.php';
+
+require_once dirname(__FILE__) . '/../../../../../../app/SymfonyRequirements.php';
+
+$symfonyRequirements = new SymfonyRequirements();
+
+$majorProblems = $symfonyRequirements->getFailedRequirements();
+$minorProblems = $symfonyRequirements->getFailedRecommendations();
 ?>
 
 <p>Welcome to your new CampaignChain application!</p>

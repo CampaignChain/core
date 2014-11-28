@@ -146,3 +146,9 @@ services:
             - [ setEntityManager, [ @doctrine.orm.entity_manager ] ]
         tags:
             - {name: "campaignchain.install.step", priority: '300'}
+    campaignchain.core.voter.install:
+        class: CampaignChain\CoreBundle\Security\Authorization\Voter\InstallVoter
+        public: false
+        arguments: [ @doctrine.orm.entity_manager ]
+        tags:
+            - { name: security.voter }

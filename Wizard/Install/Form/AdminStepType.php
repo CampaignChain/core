@@ -34,9 +34,12 @@ class AdminStepType extends AbstractType
             ))
             ->add('email', 'email')
             ->add('support', 'checkbox', array(
-                'label'     => 'Get 30 days of support for free',
+                'label'     => 'Free: 30 days product support',
                 'required'  => false,
                 'data'     => true,
+                'attr' => array(
+                    'help_text' => 'Get one month of free engineering support and important product updates from CampaignChain. ',
+                ),
             ));
     }
 

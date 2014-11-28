@@ -13,10 +13,6 @@ campaignchain_core_install_step:
     pattern: /install/step/{index}
     defaults: { _controller: CampaignChainCoreBundle:Install:step }
 
-campaignchain_core_install_final:
-    pattern: /install/final
-    defaults: { _controller: CampaignChainCoreBundle:Install:final }
-
 campaignchain_core_homepage:
     pattern:  /
     defaults: { _controller: CampaignChainCoreBundle:About:index }

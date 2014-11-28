@@ -143,13 +143,6 @@ class AdminStep implements StepInterface
 
     public function execute($parameters)
     {
-        // If admin user is already in DB, then delete it.
-        $admin = $this->em->getRepository('CampaignChainCoreBundle:User')->findOneByUsername('admin');
-        if($admin){
-            $this->em->remove($admin);
-            $this->em->flush();
-        }
-
         // Create admin user in database.
         $application = new Application($this->kernel);
         $application->add(new CreateUserCommand());
