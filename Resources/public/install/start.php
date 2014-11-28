@@ -1,5 +1,5 @@
 <?php
-$page_title = 'Check Server Environment';
+$page_title = 'Server Environment';
 
 require_once 'header.php';
 

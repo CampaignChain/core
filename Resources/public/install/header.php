@@ -17,7 +17,7 @@ if (!in_array(@$_SERVER['REMOTE_ADDR'], array(
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="robots" content="noindex,nofollow" />
-    <title>CampaignChain Installation</title>
+    <title><?php echo $page_title; ?> - Installation Wizard - CampaignChain</title>
     <link rel="stylesheet" href="/bundles/framework/css/structure.css" media="all" />
     <link rel="stylesheet" href="/bundles/framework/css/body.css" media="all" />
     <link rel="stylesheet" href="/bundles/sensiodistribution/webconfigurator/css/install.css" media="all" />
