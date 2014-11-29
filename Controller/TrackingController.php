@@ -22,10 +22,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class TrackingController extends Controller
 {
-    /**
-     * @Security("has_role('IS_AUTHENTICATED_ANONYMOUSLY')")
-     * @Security("has_role('ROLE_USER')")
-     */
     public function newApiAction(Request $request, $channel)
     {
         $hasError = false;
