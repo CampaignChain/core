@@ -48,13 +48,13 @@ campaignchain_core_campaign_edit_modal:
         expose: true
 
 campaignchain_core_campaign_edit_api:
-    pattern:  /api/v1/campaign/{id}/edit
+    pattern:  /api/private/campaign/{id}/edit
     defaults: { _controller: CampaignChainCoreBundle:Campaign:editApi }
     options:
         expose: true
 
 campaignchain_core_campaign_move_api:
-    pattern:  /api/v1/campaign/move
+    pattern:  /api/private/campaign/move
     defaults: { _controller: CampaignChainCoreBundle:Campaign:moveApi }
     methods:  [POST]
     options:
@@ -79,13 +79,13 @@ campaignchain_core_activity_edit_modal:
         expose: true
 
 campaignchain_core_activity_edit_api:
-    pattern:  /api/v1/activity/{id}/edit
+    pattern:  /api/private/activity/{id}/edit
     defaults: { _controller: CampaignChainCoreBundle:Activity:editApi }
     options:
         expose: true
 
 campaignchain_core_activity_move_api:
-    pattern:  /api/v1/activity/move
+    pattern:  /api/private/activity/move
     defaults: { _controller: CampaignChainCoreBundle:Activity:moveApi }
     methods:  [POST]
     options:
@@ -110,13 +110,13 @@ campaignchain_core_milestone_edit_modal:
         expose: true
 
 campaignchain_core_milestone_edit_api:
-    pattern:  /api/v1/milestone/{id}/edit
+    pattern:  /api/private/milestone/{id}/edit
     defaults: { _controller: CampaignChainCoreBundle:Milestone:editApi }
     options:
         expose: true
 
 campaignchain_core_milestone_move_api:
-    pattern:  /api/v1/milestone/move
+    pattern:  /api/private/milestone/move
     defaults: { _controller: CampaignChainCoreBundle:Milestone:moveApi }
     methods:  [POST]
     options:
@@ -143,7 +143,7 @@ campaignchain_core_channel_cta_test:
     defaults: { _controller: CampaignChainCoreBundle:Channel:ctaTracking, id: 0  }
 
 campaignchain_core_channel_cta_tracking_test:
-    pattern:  /api/v1/channel/{id}/cta-tracking/test
+    pattern:  /api/private/channel/{id}/cta-tracking/test
     defaults: { _controller: CampaignChainCoreBundle:Channel:apiTestCtaTracking, id: 0 }
 
 campaignchain_core_location:
@@ -151,7 +151,7 @@ campaignchain_core_location:
     defaults: { _controller: CampaignChainCoreBundle:Location:index }
 
 campaignchain_core_location_list_activities_api:
-    pattern:  /api/v1/location/{id}/activities
+    pattern:  /api/private/location/{id}/activities
     defaults: { _controller: CampaignChainCoreBundle:Location:apiListActivities }
     options:
         expose: true
