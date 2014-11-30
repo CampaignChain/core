@@ -45,9 +45,26 @@
         "hpatoio/bitly-bundle": "dev-master",
         "sp/bower-bundle": "dev-master",
         "sonata-project/admin-bundle": "~2.2",
-        "sonata-project/block-bundle": "~2.2"
+        "sonata-project/block-bundle": "~2.2",
+        "campaignchain/composer": "*"
     },
     "autoload": {
         "psr-4": { "CampaignChain\\CoreBundle\\": "" }
+    },
+    "extra": {
+        "campaignchain": {
+            "copy": [
+                {
+                    "source": "Resources/public/js/campaignchain/campaignchain_tracking.js",
+                    "target": "/web/campaignchain/tracking.js",
+                    "remove": "/web/bundles/campaignchaincore/js/campaignchain/campaignchain_tracking.js"
+                },
+                {
+                    "source": "Resources/public/install/start.php",
+                    "target": "/web/campaignchain/install.php",
+                    "remove": "/web/bundles/campaignchaincore/install/start.php"
+                }
+            ]
+        }
     }
 }
