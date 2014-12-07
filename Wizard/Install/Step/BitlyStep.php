@@ -14,6 +14,7 @@ use Sensio\Bundle\DistributionBundle\Configurator\Step\StepInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use CampaignChain\CoreBundle\Wizard\Install\Form\BitlyStepType;
 use CampaignChain\CoreBundle\Wizard\Install\Driver\YamlConfig;
+use Symfony\Component\Filesystem\Filesystem;
 
 class BitlyStep implements StepInterface
 {
@@ -30,10 +31,8 @@ class BitlyStep implements StepInterface
 
     protected function getConfigFilePath()
     {
-        return '..'.DIRECTORY_SEPARATOR.
-        'vendor'.DIRECTORY_SEPARATOR.'campaignchain'.DIRECTORY_SEPARATOR.
-        'core'.DIRECTORY_SEPARATOR.'Resources'.DIRECTORY_SEPARATOR.
-        'config'.DIRECTORY_SEPARATOR.'config.yml';
+        return DIRECTORY_SEPARATOR.
+        'config'.DIRECTORY_SEPARATOR.'parameters.yml';
     }
 
     public function setParameters(array $parameters)
@@ -41,14 +40,9 @@ class BitlyStep implements StepInterface
         $yamlConfig = new YamlConfig($this->context['kernel_dir'], $this->getConfigFilePath());
         $parameters = $yamlConfig->read();
 
-        if (array_key_exists('hpatoio_bitly', $parameters) &&
-            array_key_exists('access_token', $parameters['hpatoio_bitly'])) {
-            $this->access_token = $parameters['hpatoio_bitly']['access_token'];
+        $this->access_token = $parameters['bitly_access_token'];
 
-            if ('insert_here_your_bitly_access_token' == $this->access_token) {
-                $this->access_token = '';
-            }
-        } else {
+        if ('insert_here_your_bitly_access_token' == $this->access_token) {
             $this->access_token = '';
         }
     }
@@ -82,7 +76,7 @@ class BitlyStep implements StepInterface
      */
     public function update(StepInterface $data)
     {
-        return array('hpatoio_bitly' => array('access_token' => $data->access_token));
+        return array('bitly_access_token' => $data->access_token);
     }
 
     /**
