@@ -31,8 +31,7 @@ class BitlyStep implements StepInterface
 
     protected function getConfigFilePath()
     {
-        return DIRECTORY_SEPARATOR.
-        'config'.DIRECTORY_SEPARATOR.'parameters.yml';
+        return 'config'.DIRECTORY_SEPARATOR.'parameters.yml';
     }
 
     public function setParameters(array $parameters)
@@ -40,7 +39,7 @@ class BitlyStep implements StepInterface
         $yamlConfig = new YamlConfig($this->context['kernel_dir'], $this->getConfigFilePath());
         $parameters = $yamlConfig->read();
 
-        $this->access_token = $parameters['bitly_access_token'];
+        $this->access_token = $parameters['parameters']['bitly_access_token'];
 
         if ('insert_here_your_bitly_access_token' == $this->access_token) {
             $this->access_token = '';
@@ -76,7 +75,7 @@ class BitlyStep implements StepInterface
      */
     public function update(StepInterface $data)
     {
-        return array('bitly_access_token' => $data->access_token);
+        return array('parameters' => array('bitly_access_token' => $data->access_token));
     }
 
     /**
