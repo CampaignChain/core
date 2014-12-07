@@ -18,6 +18,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Bundle extends Meta
 {
+    const TYPE_CORE = 'campaignchain-core';
     const TYPE_DISTRIBUTION = 'campaignchain-distribution';
     const TYPE_CAMPAIGN = 'campaignchain-campaign';
     const TYPE_MILESTONE = 'campaignchain-milestone';
@@ -123,6 +124,8 @@ class Bundle extends Meta
      * @ORM\Column(type="string", length=20)
      */
     protected $version = 'dev-master';
+
+    protected $extra;
 
     /**
      * Get id
@@ -259,6 +262,7 @@ class Bundle extends Meta
     public function setType($type)
     {
         if (!in_array($type, array(
+            self::TYPE_CORE,
             self::TYPE_DISTRIBUTION,
             self::TYPE_CAMPAIGN,
             self::TYPE_MILESTONE,
@@ -766,5 +770,17 @@ class Bundle extends Meta
     public function getVersion()
     {
         return $this->version;
+    }
+
+    public function setExtra($extra)
+    {
+        $this->extra = $extra;
+
+        return $this;
+    }
+
+    public function getExtra()
+    {
+        return $this->extra;
     }
 }

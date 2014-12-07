@@ -23,6 +23,27 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
  */
 class InstallController extends ContainerAware
 {
+    public function checkAction()
+    {
+        $installWizard = $this->container->get('campaignchain.core.install.wizard');
+
+        // Trying to get as much requirements as possible
+        $majors = $installWizard->getRequirements();
+        $minors = $installWizard->getOptionalSettings();
+
+        $url = $this->container->get('router')->generate('campaignchain_core_install_step', array('index' => 0));
+
+        if (empty($majors) && empty($minors)) {
+            return new RedirectResponse($url);
+        }
+
+        return $this->container->get('templating')->renderResponse('SensioDistributionBundle::Configurator/check.html.twig', array(
+            'majors'  => $majors,
+            'minors'  => $minors,
+            'url'     => $url,
+        ));
+    }
+
     /**
      * @return Response A Response instance
      */
@@ -42,10 +63,24 @@ class InstallController extends ContainerAware
                 $index++;
 
                 if ($index < $installWizard->getStepCount()) {
+                    /*
+                     * This is a hack to avoid that an error about a missing
+                     * bundle for a route will be shown after installing the
+                     * system modules.
+                     *
+                     * By redirecting to the next step without calling the
+                     * Symfony router component, we can avoid the above issue.
+                     *
+                     * TODO: Fix this in a proper way :)
+                     */
+                    if($index == 1){
+                        header('Location: /install/step/1');
+                        exit;
+                    }
                     return new RedirectResponse($this->container->get('router')->generate('campaignchain_core_install_step', array('index' => $index)));
                 }
 
-                return new RedirectResponse($this->container->get('router')->generate('campaignchain_core_system_module'));
+                return new RedirectResponse($this->container->get('router')->generate('campaignchain_core_homepage'));
             }
         }
 
@@ -53,27 +88,6 @@ class InstallController extends ContainerAware
             'form'    => $form->createView(),
             'index'   => $index,
             'count'   => $installWizard->getStepCount(),
-        ));
-    }
-
-    public function checkAction()
-    {
-        $installWizard = $this->container->get('campaignchain.core.install.wizard');
-
-        // Trying to get as much requirements as possible
-        $majors = $installWizard->getRequirements();
-        $minors = $installWizard->getOptionalSettings();
-
-        $url = $this->container->get('router')->generate('campaignchain_core_install_step', array('index' => 0));
-
-        if (empty($majors) && empty($minors)) {
-            return new RedirectResponse($url);
-        }
-
-        return $this->container->get('templating')->renderResponse('SensioDistributionBundle::Configurator/check.html.twig', array(
-            'majors'  => $majors,
-            'minors'  => $minors,
-            'url'     => $url,
         ));
     }
 }

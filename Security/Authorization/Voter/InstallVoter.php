@@ -56,21 +56,12 @@ class InstallVoter implements VoterInterface
         }
 
         /*
-         * If no database connection, then we assume that the system has
-         * not yet been set up and we grant access to the installer.
-         */
-        try {
-            $this->em->getConnection()->connect();
-        } catch (\Exception $e) {
-            return VoterInterface::ACCESS_GRANTED;
-        }
-
-        /*
          * If database connection exists, but no tables installed yet,
          * then we grant access to the installer.
          */
         $schemaManager = $this->em->getConnection()->getSchemaManager();
-        if (!$schemaManager->listTables()) {
+        $tables = $schemaManager->listTables();
+        if (!$tables || (is_array($tables) && !count($tables))) {
             return VoterInterface::ACCESS_GRANTED;
         }
 

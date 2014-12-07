@@ -119,11 +119,11 @@ services:
     campaignchain.core.install.wizard:
         class: CampaignChain\CoreBundle\Wizard\InstallWizard
         arguments: [ %kernel.root_dir% ]
-    campaignchain.core.install.wizard.step.sfdoctrine:
-        class: CampaignChain\CoreBundle\Wizard\Install\Step\SfDoctrineStep
+    campaignchain.core.install.wizard.step.system_modules:
+        class: CampaignChain\CoreBundle\Wizard\Install\Step\SystemModulesStep
         public: false
         calls:
-            - [ setKernel, [ @kernel ] ]
+            - [ setServices, [ @campaignchain.core.util.command, @campaignchain.core.module.installer ] ]
         tags:
             - {name: "campaignchain.install.step", priority: '0'}
     campaignchain.core.install.wizard.step.sfsecret:
@@ -140,10 +140,7 @@ services:
         class: CampaignChain\CoreBundle\Wizard\Install\Step\AdminStep
         public: false
         calls:
-            - [ setKernel, [ @kernel ] ]
-            - [ setTemplating, [ @templating ] ]
-            - [ setMailer, [ @mailer ] ]
-            - [ setEntityManager, [ @doctrine.orm.entity_manager ] ]
+            - [ setServices, [ @campaignchain.core.util.command ] ]
         tags:
             - {name: "campaignchain.install.step", priority: '300'}
     campaignchain.core.voter.install:
@@ -152,3 +149,21 @@ services:
         arguments: [ @doctrine.orm.entity_manager ]
         tags:
             - { name: security.voter }
+    campaignchain.core.module.installer:
+        class: CampaignChain\CoreBundle\Module\Installer
+        arguments: [ @doctrine.orm.entity_manager, @service_container ]
+    campaignchain.core.module.package:
+        class: CampaignChain\CoreBundle\Module\Package
+        arguments: [ %kernel.root_dir% ]
+    campaignchain.core.module.repository:
+        class: CampaignChain\CoreBundle\Module\Repository
+        arguments: [ @doctrine.orm.entity_manager ]
+    campaignchain.core.module.composer:
+        class: CampaignChain\CoreBundle\Module\Composer
+        arguments: [ %kernel.root_dir%, @logger ]
+    campaignchain.core.module.kernel:
+        class: CampaignChain\CoreBundle\Module\Kernel
+        arguments: [ %kernel.root_dir%, @campaignchain.core.util.command, @logger ]
+    campaignchain.core.util.command:
+        class: CampaignChain\CoreBundle\Util\CommandUtil
+        arguments: [ @kernel ]

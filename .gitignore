@@ -13,3 +13,4 @@ Resources/public/components
 *.iws
 .idea_modules/
 atlassian-ide-plugin.xml
+Resources/config/config.yml

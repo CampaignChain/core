@@ -10,13 +10,10 @@
 
 namespace CampaignChain\CoreBundle\Wizard\Install\Step;
 
-use FOS\UserBundle\Command\CreateUserCommand;
 use Sensio\Bundle\DistributionBundle\Configurator\Step\StepInterface;
+use CampaignChain\CoreBundle\Util\CommandUtil;
 use Symfony\Component\Validator\Constraints as Assert;
 use CampaignChain\CoreBundle\Wizard\Install\Form\AdminStepType;
-use Symfony\Bundle\FrameworkBundle\Console\Application,
-    Symfony\Component\Console\Input\ArrayInput,
-    Symfony\Component\Console\Output\NullOutput;
 
 class AdminStep implements StepInterface
 {
@@ -41,33 +38,16 @@ class AdminStep implements StepInterface
      */
     public $email;
 
-    public $support;
-
     private $context;
 
-    private $kernel;
-    private $templating;
-    private $mailer;
-    private $em;
-
-    public function setKernel($kernel){
-        $this->kernel = $kernel;
-    }
-
-    public function setTemplating($templating){
-        $this->templating = $templating;
-    }
-
-    public function setMailer($mailer){
-        $this->mailer = $mailer;
-    }
-
-    public function setEntityManager($em){
-        $this->em = $em;
-    }
+    private $command;
 
     public function setContext(array $context){
         $this->context = $context;
+    }
+
+    public function setServices(CommandUtil $command){
+        $this->command = $command;
     }
 
     public function setParameters(array $parameters)
@@ -129,7 +109,6 @@ class AdminStep implements StepInterface
             'last_name' => $data->last_name,
             'email' => $data->email,
             'password' => $data->password,
-            'support' => $data->support,
         );
     }
 
@@ -143,40 +122,7 @@ class AdminStep implements StepInterface
 
     public function execute($parameters)
     {
-        // Create admin user in database.
-        $application = new Application($this->kernel);
-        $application->add(new CreateUserCommand());
-        $command = $application->find('fos:user:create');
-
-        $arguments = array(
-            'doctrine:schema:update',
-            'username' => 'admin',
-            '--super-admin' => true,
-            'email' => $this->email,
-            'password' => $this->password,
-        );
-        $input = new ArrayInput($arguments);
-        $output = new NullOutput();
-
-        $command->run($input, $output);
-
-        if($this->support){
-            $message = \Swift_Message::newInstance()
-                ->setSubject('30 Days Free Support for '.$this->first_name.' '.$this->last_name)
-                ->setFrom($this->email)
-                ->setTo('support@campaignchain.com')
-                ->setBody(
-                    $this->templating->renderResponse(
-                        'CampaignChainCoreBundle:Wizard/Install/Step:admin_email.html.twig',
-                        array(
-                            'first_name' => $this->first_name,
-                            'last_name' => $this->last_name,
-                            'email' => $this->email,
-                        )
-                    )
-                )
-            ;
-            $this->mailer->send($message);
-        }
+        // Load schemas of entities into database
+        $this->command->createAdminUser($this->email, $this->password);
     }
 }

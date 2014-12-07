@@ -25,7 +25,10 @@ class ActivityModule extends Module
 
     /**
      * @ORM\ManyToMany(targetEntity="ChannelModule", inversedBy="activityModules")
-     * @ORM\JoinTable(name="campaignchain_module_activity_channel")
+     * @ORM\JoinTable(name="campaignchain_module_activity_channel",
+     *   joinColumns={@ORM\JoinColumn(name="activitymodule_id", referencedColumnName="id")},
+     *   inverseJoinColumns={@ORM\JoinColumn(name="channelmodule_id", referencedColumnName="id")}
+     *   )
      **/
     protected $channelModules;
 
@@ -101,6 +104,6 @@ class ActivityModule extends Module
     public function __construct()
     {
         $this->activities = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->channels = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->channelModules = new \Doctrine\Common\Collections\ArrayCollection();
     }
 }

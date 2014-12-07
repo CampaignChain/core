@@ -66,6 +66,11 @@ class System extends Meta
     protected $navigation;
 
     /**
+     * @ORM\Column(type="array", nullable=true)
+     */
+    protected $modules;
+
+    /**
      * Get id
      *
      * @return integer
@@ -257,5 +262,28 @@ class System extends Meta
     public function getNavigation()
     {
         return $this->navigation;
+    }
+
+    /**
+     * Set modules
+     *
+     * @param array $modules
+     * @return System
+     */
+    public function setModules($modules)
+    {
+        $this->modules = $modules;
+
+        return $this;
+    }
+
+    /**
+     * Get modules
+     *
+     * @return array
+     */
+    public function getModules()
+    {
+        return $this->modules;
     }
 }

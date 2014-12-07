@@ -9,6 +9,13 @@ file that was distributed with this source code.
 
 {% extends 'CampaignChainCoreBundle:Wizard/Install:base.html.twig' %}
 
+{% block javascripts %}
+    {{ parent() }}
+    {% javascripts '@blockui_js' combine=true %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
 {% block body %}
     <div class="symfony-form-errors">
         {{ form_errors(form) }}
@@ -21,8 +28,8 @@ file that was distributed with this source code.
             {{ form_rest(form) }}
 
             <p>&nbsp;</p>
-            <button class="btn btn-primary" type="submit">Next Step</button>
-
+            <button class="btn btn-primary" id="blockui-wait-button" type="submit">Next Step</button>
+            {% include 'CampaignChainCoreBundle:Base:blockui_wait.html.twig' %}
         </div>
     </form>
 {% endblock %}

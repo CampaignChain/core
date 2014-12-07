@@ -28,9 +28,17 @@ class BitlyStep implements StepInterface
         $this->context = $context;
     }
 
+    protected function getConfigFilePath()
+    {
+        return '..'.DIRECTORY_SEPARATOR.
+        'vendor'.DIRECTORY_SEPARATOR.'campaignchain'.DIRECTORY_SEPARATOR.
+        'core'.DIRECTORY_SEPARATOR.'Resources'.DIRECTORY_SEPARATOR.
+        'config'.DIRECTORY_SEPARATOR.'config.yml';
+    }
+
     public function setParameters(array $parameters)
     {
-        $yamlConfig = new YamlConfig($this->context['kernel_dir'], 'config'.DIRECTORY_SEPARATOR.'config.yml');
+        $yamlConfig = new YamlConfig($this->context['kernel_dir'], $this->getConfigFilePath());
         $parameters = $yamlConfig->read();
 
         if (array_key_exists('hpatoio_bitly', $parameters) &&
@@ -86,7 +94,7 @@ class BitlyStep implements StepInterface
     }
 
     public function execute($parameters){
-        $yamlConfig = new YamlConfig($this->context['kernel_dir'], 'config'.DIRECTORY_SEPARATOR.'config.yml');
+        $yamlConfig = new YamlConfig($this->context['kernel_dir'], $this->getConfigFilePath());
         $yamlConfig->write($parameters);
         $yamlConfig->clean();
     }

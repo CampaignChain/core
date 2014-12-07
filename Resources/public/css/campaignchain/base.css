@@ -81,6 +81,15 @@ ul.nav-tabs {
     margin-bottom: 30px;
 }
 
+.breadcrumb > .active {
+    font-weight: bold;
+    color: #333;
+}
+
+.breadcrumb li {
+    color: #777777;
+}
+
 .campaignchain-navbar-footer {
     bottom: 0;
     margin-bottom: 0;

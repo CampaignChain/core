@@ -32,15 +32,7 @@ class AdminStepType extends AbstractType
             'second_name'     => 'password_again',
             'invalid_message' => 'The password fields must match.',
             ))
-            ->add('email', 'email')
-            ->add('support', 'checkbox', array(
-                'label'     => 'Free: 30 days product support',
-                'required'  => false,
-                'data'     => true,
-                'attr' => array(
-                    'help_text' => 'Get one month of free engineering support and important product updates from CampaignChain. ',
-                ),
-            ));
+            ->add('email', 'email');
     }
 
     public function getName()

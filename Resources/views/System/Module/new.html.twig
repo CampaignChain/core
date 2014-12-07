@@ -1,0 +1,57 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) Sandro Groganz <sandro@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+{% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% javascripts '@blockui_js' combine=true %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% block bodytabs %}
+    {{ knp_menu_render('CampaignChainCoreBundle:Builder:modulesTab', { 'style': 'tabs' }) }}
+    {% include 'CampaignChainCoreBundle:System/Module:badges.html.twig' %}
+{% endblock %}
+
+{% block body %}
+    {% if modules and modules is iterable %}
+    <form action="{{ app.request.uri }}" method="POST">
+        <table class="table table-hover table-striped">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Module</th>
+                    <th>Version</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for module in modules %}
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="modules[]" value="{{ module.name }}" />
+                            <input type="hidden" name="versions[]" value="{{ module.version }}" />
+                        </td>
+                        <td>
+                            <p><strong><a  href="#" onclick="popupwindow('{{ module.url }}','',900,600)">{{ module.name }}</a></strong></p>
+                            <p>{{ module.description }}</p>
+                        </td>
+                        <td>{{ module.version }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button class="btn btn-primary" id="blockui-wait-button" type="submit"><span class="fa fa-download"></span> Install</button>
+        {% include 'CampaignChainCoreBundle:Base:blockui_wait.html.twig' %}
+    </form>
+    {% else %}
+    <p>No additional modules available.</p>
+    {% endif %}
+{% endblock %}

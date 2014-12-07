@@ -11,6 +11,7 @@
         "gantt": "2.1",
         "fullcalendar": "2.1",
         "jquery.countdown": "2.0",
-        "ladda": ""
+        "ladda": "",
+        "blockui": ""
     }
 }

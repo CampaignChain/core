@@ -26,6 +26,21 @@ class Builder extends ContainerAware
         return $menu;
     }
 
+    public function modulesTab(FactoryInterface $factory, array $options)
+    {
+        $menu = $factory->createItem('root');
+
+        $menu->addChild('All', array(
+            'route' => 'campaignchain_core_module'
+            ))
+            ->setAttribute('class', 'campaignchain-modules-all');
+        $menu->addChild('New', array(
+            'route' => 'campaignchain_core_module_new'
+            ));
+
+        return $menu;
+    }
+
     public function profileListTab(FactoryInterface $factory, array $options)
     {
         $menu = $factory->createItem('root');

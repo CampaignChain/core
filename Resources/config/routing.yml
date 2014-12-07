@@ -126,9 +126,13 @@ campaignchain_core_report:
     pattern:  /reports/{id}
     defaults: { _controller: CampaignChainCoreBundle:Report:index, id: 0 }
 
-campaignchain_core_system_module:
-    pattern:  /system/modules/
+campaignchain_core_module:
+    pattern:  /modules/
     defaults: { _controller: CampaignChainCoreBundle:Module:index }
+
+campaignchain_core_module_new:
+    pattern:  /modules/new/
+    defaults: { _controller: CampaignChainCoreBundle:Module:new }
 
 campaignchain_core_channel:
     pattern:  /channels/

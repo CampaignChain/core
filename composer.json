@@ -2,6 +2,7 @@
     "name": "campaignchain/core",
     "description": "Core bundle of CampaignChain.",
     "keywords": ["campaignchain","core"],
+    "type": "campaignchain-core",
     "homepage": "http://www.campaignchain.com",
     "license": "Apache-2.0",
     "authors": [
@@ -13,7 +14,7 @@
     "require": {
         "php": ">=5.4",
         "symfony/symfony": "~2.5",
-        "doctrine/orm": "~2.2,>=2.2.3",
+        "doctrine/orm": "2.4.*@dev",
         "doctrine/doctrine-bundle": "~1.2",
         "twig/extensions": "~1.0",
         "symfony/assetic-bundle": "~2.3",
@@ -52,18 +53,23 @@
     },
     "extra": {
         "campaignchain": {
-            "copy": [
-                {
-                    "source": "Resources/public/js/campaignchain/campaignchain_tracking.js",
-                    "target": "/web/campaignchain/tracking.js",
-                    "remove": "/web/bundles/campaignchaincore/js/campaignchain/campaignchain_tracking.js"
-                },
-                {
-                    "source": "Resources/public/install/start.php",
-                    "target": "/web/campaignchain/install.php",
-                    "remove": "/web/bundles/campaignchaincore/install/start.php"
-                }
-            ]
+            "kernel": {
+                "classes": [
+                    "CampaignChain\\CoreBundle\\CampaignChainCoreBundle",
+                    "Braincrafted\\Bundle\\BootstrapBundle\\BraincraftedBootstrapBundle",
+                    "Knp\\Bundle\\MenuBundle\\KnpMenuBundle",
+                    "Knp\\Bundle\\PaginatorBundle\\KnpPaginatorBundle",
+                    "SC\\DatetimepickerBundle\\SCDatetimepickerBundle",
+                    "FOS\\UserBundle\\FOSUserBundle",
+                    "Bmatzner\\FontAwesomeBundle\\BmatznerFontAwesomeBundle",
+                    "h4cc\\AliceFixturesBundle\\h4ccAliceFixturesBundle",
+                    "FOS\\JsRoutingBundle\\FOSJsRoutingBundle",
+                    "Hpatoio\\BitlyBundle\\HpatoioBitlyBundle",
+                    "Sp\\BowerBundle\\SpBowerBundle",
+                    "Sonata\\CoreBundle\\SonataCoreBundle",
+                    "Sonata\\BlockBundle\\SonataBlockBundle"
+                ]
+            }
         }
     }
 }
