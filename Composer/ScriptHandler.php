@@ -20,15 +20,20 @@ class ScriptHandler
      *
      * @param CommandEvent $event
      */
-    public static function initConfig(CommandEvent $event)
+    public static function initApp(CommandEvent $event)
     {
+        $campaignchainBundlesKernel = 'app'.DIRECTORY_SEPARATOR.'campaignchain_bundles.php';
         $symfonyConfigDir = 'app'.DIRECTORY_SEPARATOR.'config';
-        $campaignchainBundlesFile = $symfonyConfigDir.DIRECTORY_SEPARATOR.'campaignchain_bundles.yml';
+        $campaignchainBundlesConfig = $symfonyConfigDir.DIRECTORY_SEPARATOR.'campaignchain_bundles.yml';
         $routingFile = $symfonyConfigDir.DIRECTORY_SEPARATOR.'routing.yml';
 
         $fs = new Filesystem();
-        if(!$fs->exists($campaignchainBundlesFile)){
-            $fs->copy($campaignchainBundlesFile.'.dist', $campaignchainBundlesFile, true);
+
+        if(!$fs->exists($campaignchainBundlesKernel)){
+            $fs->copy($campaignchainBundlesKernel.'.dist', $campaignchainBundlesKernel, true);
+        }
+        if(!$fs->exists($campaignchainBundlesConfig)){
+            $fs->copy($campaignchainBundlesConfig.'.dist', $campaignchainBundlesConfig, true);
         }
         if(!$fs->exists($routingFile)){
             $fs->copy($routingFile.'.dist', $routingFile, true);
