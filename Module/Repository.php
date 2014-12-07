@@ -49,10 +49,13 @@ class Repository
     {
         $modules = array();
 
+        $distribution = $this->em->getRepository('CampaignChainCoreBundle:Bundle')
+            ->findOneByType('campaignchain-distribution');
+
         foreach($this->repositories as $repository){
             // Retrieve compatible modules.
             $client = new Client($repository);
-            $request = $client->get('distribution/ce/'.$this->distributionVersion.'.json');
+            $request = $client->get('d/'.$distribution->getName().'/'.$this->distributionVersion.'.json');
             $response = $request->send();
             $compatibleModules = json_decode($response->getBody(true));
             // TODO: What to do if same module exists in different repositories?
