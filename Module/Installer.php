@@ -79,11 +79,6 @@ class Installer
         // Increase timeout limit to run this script.
         set_time_limit(120);
 
-        // Load schemas of entities into database
-        $output = $this->command->doctrineSchemaUpdate();
-        $this->logger->info('Output of assets:install:');
-        $this->logger->info($output);
-
         try {
             $this->em->getConnection()->beginTransaction();
 
@@ -127,6 +122,16 @@ class Installer
             $this->em->getConnection()->rollback();
             throw $e;
         }
+
+        // Load schemas of entities into database
+        $output = $this->command->doctrineSchemaUpdate();
+        $this->logger->info('Output of assets:install');
+        $this->logger->info($output);
+
+        // Load schemas of entities into database
+        $output = $this->command->cacheClear(false);
+        $this->logger->info('Output of cache:clear --no-warmup');
+        $this->logger->info($output);
 
         // Install assets to web/ directory and dump assetic files.
         $output = $this->command->assetsInstallWeb();
