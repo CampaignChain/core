@@ -108,12 +108,6 @@ class ModuleController extends Controller
             $moduleInstaller = $this->get('campaignchain.core.module.installer');
             $moduleInstaller->install();
 
-            // Load schemas of entities into database
-            $commandUtil = $this->get('campaignchain.core.util.command');
-            $output = $commandUtil->doctrineSchemaUpdate();
-            $this->get('logger')->info('Output of 2nd call of doctrine:schema:update --force');
-            $this->get('logger')->info($output);
-
             /*
              * This is a hack to avoid that an error about a missing bundle for a
              * route will be shown after installing the modules.

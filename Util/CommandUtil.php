@@ -44,15 +44,32 @@ class CommandUtil
 
     public function doctrineSchemaUpdate()
     {
-        $this->application->add(new UpdateSchemaDoctrineCommand());
-        $command = $this->application->find('doctrine:schema:update');
+//        $this->application->add(new UpdateSchemaDoctrineCommand());
+//        $command = $this->application->find('doctrine:schema:update');
+//
+//        $arguments = array(
+//            'doctrine:schema:update',
+//            '--force' => true,
+//        );
+//
+//        return $this->run($command, $arguments);
+        /*
+         * Temporary hack, because above code does not reliably update
+         * the database scheme.
+         *
+         * TODO: Fix this.
+         */
+        $rootDir = $this->kernel->getRootDir().DIRECTORY_SEPARATOR.'..';
+        $currentDir = getcwd();
+        chdir($rootDir);
 
-        $arguments = array(
-            'doctrine:schema:update',
-            '--force' => true,
-        );
+        ob_start();
+        $command = 'php app/console doctrine:schema:update --force';
+        system($command, $output);
 
-        return $this->run($command, $arguments);
+        chdir($currentDir);
+
+        return ob_get_clean();
     }
 
     public function assetsInstallWeb()
