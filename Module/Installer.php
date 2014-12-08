@@ -79,6 +79,11 @@ class Installer
         // Increase timeout limit to run this script.
         set_time_limit(240);
 
+        // Load schemas of entities into database
+        $output = $this->command->doctrineSchemaUpdate();
+        $this->logger->info('Output of doctrine:schema:update --force');
+        $this->logger->info($output);
+
         try {
             $this->em->getConnection()->beginTransaction();
 
@@ -125,7 +130,7 @@ class Installer
 
         // Load schemas of entities into database
         $output = $this->command->doctrineSchemaUpdate();
-        $this->logger->info('Output of assets:install');
+        $this->logger->info('Output of doctrine:schema:update --force');
         $this->logger->info($output);
 
         // Load schemas of entities into database
