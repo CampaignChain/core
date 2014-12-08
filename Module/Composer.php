@@ -24,7 +24,7 @@ class Composer
         $this->logger = $logger;
     }
 
-    public function requirePackages(array $packages)
+    public function installPackages(array $packages)
     {
         if(!count($packages)){
             return false;
@@ -42,15 +42,22 @@ class Composer
          * Check whether the package and repository actually exist and that
          * the package exists in the repository.
          */
-
-        ob_start();
         $currentDir = getcwd();
         chdir($this->root);
-        system('composer require '.$packagesArg, $output);
-        chdir($currentDir);
-        $this->logger->info('Output of: composer require '.$packagesArg);
+
+        ob_start();
+        $command = 'composer require '.$packagesArg;
+        system($command, $output);
+        $this->logger->info('Output of: '.$command.' '.$packagesArg);
         $this->logger->info(ob_get_clean());
 
+        ob_start();
+        $command = 'composer update -n';
+        system($command, $output);
+        $this->logger->info('Output of: '.$command.' '.$packagesArg);
+        $this->logger->info(ob_get_clean());
+
+        chdir($currentDir);
         // TODO: Check if new package is in lock file.
     }
 }

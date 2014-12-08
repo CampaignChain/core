@@ -97,7 +97,7 @@ class ModuleController extends Controller
             }
 
             // Have composer download the required packages including the modules.
-            $composerService->requirePackages($requiredPackages);
+            $composerService->installPackages($requiredPackages);
 
             // Register the modules with CampaignChain.
             $moduleInstaller = $this->get('campaignchain.core.module.installer');

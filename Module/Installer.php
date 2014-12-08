@@ -77,7 +77,7 @@ class Installer
         }
 
         // Increase timeout limit to run this script.
-        set_time_limit(120);
+        set_time_limit(240);
 
         try {
             $this->em->getConnection()->beginTransaction();
