@@ -72,10 +72,10 @@ class Installer
     }
 
     public function install(){
-        $this->logger-info('START: MODULES INSTALLER');
+        $this->logger->info('START: MODULES INSTALLER');
         if(!$this->getNewBundles($this->root)){
-            $this->logger-info('No new modules found.');
-            $this->logger-info('END: MODULES INSTALLER');
+            $this->logger->info('No new modules found.');
+            $this->logger->info('END: MODULES INSTALLER');
             return false;
         }
 
@@ -133,7 +133,7 @@ class Installer
         } catch (\Exception $e) {
             $this->em->getConnection()->rollback();
             $this->logger->error('Error: '.$e->getMessage());
-            $this->logger-info('END: MODULES INSTALLER');
+            $this->logger->info('END: MODULES INSTALLER');
             throw $e;
         }
 
@@ -159,7 +159,7 @@ class Installer
         $this->logger->info('Output of doctrine:schema:update --force');
         $this->logger->info($output);
 
-        $this->logger-info('END: MODULES INSTALLER');
+        $this->logger->info('END: MODULES INSTALLER');
 
         return true;
     }
