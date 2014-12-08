@@ -129,7 +129,7 @@ class Installer
         $this->logger->info($output);
 
         // Load schemas of entities into database
-        $output = $this->command->cacheClear(false);
+        $output = $this->command->clearCache(false);
         $this->logger->info('Output of cache:clear --no-warmup');
         $this->logger->info($output);
 
