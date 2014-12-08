@@ -107,18 +107,18 @@ class ModuleController extends Controller
             // Register the modules with CampaignChain.
             $moduleInstaller = $this->get('campaignchain.core.module.installer');
             $moduleInstaller->install();
-        }
 
-        /*
-         * This is a hack to avoid that an error about a missing bundle for a
-         * route will be shown after installing the modules.
-         *
-         * By redirecting without calling the Symfony router component, we can
-         * avoid the above issue.
-         *
-         * TODO: Fix this in a proper way :)
-         */
-        header('Location: /modules/');
-        exit;
+            /*
+             * This is a hack to avoid that an error about a missing bundle for a
+             * route will be shown after installing the modules.
+             *
+             * By redirecting without calling the Symfony router component, we can
+             * avoid the above issue.
+             *
+             * TODO: Fix this in a proper way :)
+             */
+            header('Location: /modules/');
+            exit;
+        }
     }
 }
