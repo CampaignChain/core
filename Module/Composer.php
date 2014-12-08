@@ -48,6 +48,7 @@ class Composer
         chdir($this->root);
         system('composer require '.$packagesArg, $output);
         chdir($currentDir);
+        $this->logger->info('Output of: composer require '.$packagesArg);
         $this->logger->info(ob_get_clean());
 
         // TODO: Check if new package is in lock file.
