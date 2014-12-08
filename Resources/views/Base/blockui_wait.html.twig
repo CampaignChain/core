@@ -7,4 +7,4 @@ For the full copyright and license information, please view the LICENSE
 file that was distributed with this source code.
 #}
 
-<div id="blockui-wait-message" style="display:none;"><i class="fa fa-spinner fa-spin"></i> Please wait</div>
+<div id="blockui-wait-message" style="display:none;"><i class="fa fa-spinner fa-spin"></i> Please wait{% if blockui_wait_message is defined %}<br/>blockui_wait_message{% endif %}</div>

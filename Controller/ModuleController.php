@@ -16,6 +16,9 @@ use Symfony\Component\HttpFoundation\Request;
 
 class ModuleController extends Controller
 {
+
+    const BLOCKUI_WAIT_MESSAGE = 'Downloading and registering packages.<br/>This might take a while.</br>Please do not close the browser window.';
+
     public function indexAction(Request $request)
     {
         $this->processSelectedModules($request);
@@ -53,6 +56,7 @@ class ModuleController extends Controller
             'modules' => $modules,
             'updates' => $updates,
             'installs' => $installs,
+            'blockui_wait_message' => self::BLOCKUI_WAIT_MESSAGE,
         ));
     }
 
@@ -80,6 +84,7 @@ class ModuleController extends Controller
             'modules' => $modules,
             'updates' => $updates,
             'installs' => $installs,
+            'blockui_wait_message' => self::BLOCKUI_WAIT_MESSAGE,
         ));
     }
 
@@ -103,5 +108,17 @@ class ModuleController extends Controller
             $moduleInstaller = $this->get('campaignchain.core.module.installer');
             $moduleInstaller->install();
         }
+
+        /*
+         * This is a hack to avoid that an error about a missing bundle for a
+         * route will be shown after installing the modules.
+         *
+         * By redirecting without calling the Symfony router component, we can
+         * avoid the above issue.
+         *
+         * TODO: Fix this in a proper way :)
+         */
+        header('Location: /modules/');
+        exit;
     }
 }
