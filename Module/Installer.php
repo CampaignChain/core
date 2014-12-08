@@ -72,7 +72,10 @@ class Installer
     }
 
     public function install(){
+        $this->logger-info('START: MODULES INSTALLER');
         if(!$this->getNewBundles($this->root)){
+            $this->logger-info('No new modules found.');
+            $this->logger-info('END: MODULES INSTALLER');
             return false;
         }
 
@@ -110,8 +113,7 @@ class Installer
                         break;
                 }
 
-                $loggerResult .= $this->newBundle->getType().', ';
-
+                $loggerResult .= $this->newBundle->getName().', ';
 
                 $this->em->persist($this->newBundle);
                 $this->em->flush();
@@ -130,16 +132,12 @@ class Installer
             $this->em->getConnection()->commit();
         } catch (\Exception $e) {
             $this->em->getConnection()->rollback();
-            $this->logger->error($e->getMessage());
+            $this->logger->error('Error: '.$e->getMessage());
+            $this->logger-info('END: MODULES INSTALLER');
             throw $e;
         }
 
         $this->logger->info('Installed/updated modules: '.rtrim($loggerResult, ', '));
-
-        // Load schemas of entities into database
-        $output = $this->command->doctrineSchemaUpdate();
-        $this->logger->info('Output of doctrine:schema:update --force');
-        $this->logger->info($output);
 
         // Load schemas of entities into database
         $output = $this->command->clearCache(false);
@@ -155,6 +153,13 @@ class Installer
         $output = $this->command->asseticDump();
         $this->logger->info('Output of assetic:dump --no-debug');
         $this->logger->info($output);
+
+        // Load schemas of entities into database
+        $output = $this->command->doctrineSchemaUpdate();
+        $this->logger->info('Output of doctrine:schema:update --force');
+        $this->logger->info($output);
+
+        $this->logger-info('END: MODULES INSTALLER');
 
         return true;
     }
