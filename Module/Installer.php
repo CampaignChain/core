@@ -84,6 +84,8 @@ class Installer
         $this->logger->info('Output of doctrine:schema:update --force');
         $this->logger->info($output);
 
+        $loggerResult = '';
+
         try {
             $this->em->getConnection()->beginTransaction();
 
@@ -108,6 +110,9 @@ class Installer
                         break;
                 }
 
+                $loggerResult .= $this->newBundle->getType().', ';
+
+
                 $this->em->persist($this->newBundle);
                 $this->em->flush();
             }
@@ -125,8 +130,11 @@ class Installer
             $this->em->getConnection()->commit();
         } catch (\Exception $e) {
             $this->em->getConnection()->rollback();
+            $this->logger->error($e->getMessage());
             throw $e;
         }
+
+        $this->logger->info('Installed/updated modules: '.rtrim($loggerResult, ', '));
 
         // Load schemas of entities into database
         $output = $this->command->doctrineSchemaUpdate();
