@@ -20,7 +20,7 @@ class Composer
     public function __construct($kernelRootDir, $logger)
     {
         $this->root = $kernelRootDir.
-                        DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR;
+            DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR;
         $this->logger = $logger;
     }
 
