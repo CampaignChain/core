@@ -45,10 +45,10 @@ gantt.config.time_step = 5;
 gantt.config.tooltip_timeout = 0;
 
 function modToolbarHeight(){
-    var headHeight = $('.btn-toolbar').outerHeight(true);
+    var headHeight = $('#campaignchain-fullscreen-header').outerHeight(true)+$('.btn-toolbar').outerHeight(true);
     var sch = document.getElementById("gantt_here");
 
-    sch.style.height = (parseInt(document.body.offsetHeight)-headHeight)+"px";
+    sch.style.height = (parseInt(document.body.offsetHeight)-headHeight-30)+"px";
 //            var contbox = document.getElementById("contbox");
 //            contbox.style.width = (parseInt(document.body.offsetWidth)-300)+"px";
     gantt.setSizes();
