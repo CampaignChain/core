@@ -40,6 +40,10 @@ services:
             - { name: doctrine.event_listener, event: postLoad }
             - { name: doctrine.event_listener, event: prePersist }
             - { name: doctrine.event_listener, event: preUpdate }
+    campaignchain.core.listener.doctrine.meta:
+        class: CampaignChain\CoreBundle\EventListener\DoctrineMetaListener
+        tags:
+            - { name: doctrine.event_listener, event: onFlush }
     campaignchain.core.util.datetime:
         class: CampaignChain\CoreBundle\Util\DateTimeUtil
         arguments: ["@service_container"]
