@@ -22,15 +22,17 @@ file that was distributed with this source code.
     border-radius: 4px;
 }
 
-.jquery-flot-comment .callout {
-    color: #A94442;
-    border: 1px solid #EBCCD1 !important;
-    -webkit-border-radius: 3px !important;
-    -moz-border-radius: 3px !important;
-    border-radius: 3px !important;
+.jquery-flot-comment {
+    background-color: transparent !important;
 }
 
 .jquery-flot-comment .callout {
+    color: #A94442;
+    background-clip: padding-box !important;
+    border: 1px solid rgba(0, 0, 0, 0.15) !important;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
     position: absolute;
     width: 100px !important;
     display: block;
@@ -39,9 +41,6 @@ file that was distributed with this source code.
     padding-left: 20px !important;
     text-align: left;
     font-size: 11px !important;
-    border-bottom-right-radius: 3px;
-    border-right-width: 1px;
-    border-top-right-radius: 3px;
     background-color: #FFFFFF !important;
     background-position: 2px 2px;
     background-repeat: no-repeat;
