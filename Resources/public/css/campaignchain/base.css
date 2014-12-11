@@ -28,6 +28,10 @@ body { padding-top: 40px; padding-bottom: 70px; }
     width: 100%;
 }
 
+#campaignchain-fullscreen-body {
+    padding: 15px;
+}
+
 .campaignchain-navbar {
     float: left;
     margin-right: 10px;
@@ -78,7 +82,7 @@ ul.nav-tabs {
     margin-bottom: 30px;
 }
 .btn-toolbar {
-    margin-bottom: 30px;
+    margin-bottom: 15px;
 }
 
 .breadcrumb > .active {
