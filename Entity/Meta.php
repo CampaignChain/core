@@ -14,7 +14,6 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\MappedSuperclass
- * @ORM\HasLifecycleCallbacks
  */
 class Meta
 {
@@ -72,19 +71,5 @@ class Meta
     public function getModifiedDate()
     {
         return $this->modifiedDate;
-    }
-
-    /**
-     *
-     * @ORM\PrePersist
-     * @ORM\PreUpdate
-     */
-    public function timestamps()
-    {
-        if ($this->getCreatedDate() == null) {
-            $this->setCreatedDate(new \DateTime('now', new \DateTimeZone('UTC')));
-        } else {
-            $this->setModifiedDate(new \DateTime('now', new \DateTimeZone('UTC')));
-        }
     }
 }
