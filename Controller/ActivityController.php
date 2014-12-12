@@ -209,4 +209,20 @@ class ActivityController extends Controller
         $response = new Response($serializer->serialize($responseData, 'json'));
         return $response->setStatusCode(Response::HTTP_OK);
     }
+
+    public function readAction(Request $request, $id)
+    {
+        $activityService = $this->get('campaignchain.core.activity');
+        $activityModule = $activityService->getActivityModuleByActivity($id);
+        $routes = $activityModule->getRoutes();
+
+        return $this->redirect(
+            $this->generateUrl(
+                $routes['read'],
+                array(
+                    'id' => $id,
+                )
+            )
+        );
+    }
 }

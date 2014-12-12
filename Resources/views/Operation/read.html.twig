@@ -1,0 +1,22 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) Sandro Groganz <sandro@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+{% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-8">{% block operation %}{% endblock %}</div>
+        <div class="col-md-4">
+            <p><img class="fa-fw" src="{{ asset( activity|campaignchain_channel_asset_path~'/images/icons/16x16/'~activity|campaignchain_channel_icon_name ) }}" /> {{ activity.getChannel().getChannelModule().getDisplayName() }}</p>
+            <p><img class="fa-fw" src="{{ activity.getLocation().getImage() }}"> <a href="{{ activity.getLocation().getUrl() }}">{{ activity.getLocation().getName() }}</a></p>
+            <p><i class="fa fa-clock-o"></i> {{ activity|campaignchain_tpl_trigger_hook_inline }}</p>
+            <p><i class="fa fa-bullhorn"></i> {{ activity.getCampaign().getName() }}</p>
+        </div>
+    </div>
+{% endblock %}
