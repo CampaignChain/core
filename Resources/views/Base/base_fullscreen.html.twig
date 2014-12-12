@@ -90,12 +90,14 @@ file that was distributed with this source code.
         <![endif]-->
     </head>
     <body>
+    {% if path_fullscreen_close is defined %}
     <div id="campaignchain-fullscreen-header">
         <div class="modal-header">
             <a href="{{ path_fullscreen_close }}" class="button close" aria-hidden="true">&times;</a>
             <h4 class="modal-title" id="myModalLabel">{{ page_title }}</h4>
         </div>
     </div>
+    {% endif %}
     <div id="campaignchain-fullscreen-body">
         {% block body %}{% endblock %}
     </div>

@@ -267,6 +267,16 @@ class Installer
 
             // Set the version of the installed bundle.
             $version = $this->packageService->getVersion($bundle->getName());
+
+            /*
+             * If version does not exist, this means it is a package in
+             * require-dev of composer.json, but CampaignChain is not in
+             * dev mode.
+             */
+            if(!$version){
+                return false;
+            }
+
             $bundle->setVersion($version);
 
             // Set relative path of bundle.
