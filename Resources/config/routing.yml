@@ -91,6 +91,10 @@ campaignchain_core_activity_move_api:
     options:
         expose: true
 
+campaignchain_core_activity_read:
+    pattern:  /activity/{id}
+    defaults: { _controller: CampaignChainCoreBundle:Activity:read }
+
 campaignchain_core_milestone:
     pattern:  /milestones/
     defaults: { _controller: CampaignChainCoreBundle:Milestone:index }
@@ -170,6 +174,10 @@ campaignchain_core_tracking_new_api:
 campaignchain_development_sample_data:
     pattern:  /development/sample-data
     defaults: { _controller: CampaignChainCoreBundle:Development:sampleData }
+
+campaignchain_development_reset_system:
+    pattern:  /development/reset-system
+    defaults: { _controller: CampaignChainCoreBundle:Development:resetSystem }
 
 # User management
 
