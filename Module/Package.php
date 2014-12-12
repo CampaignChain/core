@@ -14,13 +14,19 @@ class Package
 {
     private $packages;
 
-    public function __construct($root)
+    public function __construct($root, $dev = false)
     {
         $composerLock = json_decode(file_get_contents(
                 $root.
                 DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'composer.lock')
         );
+
         $this->packages = $composerLock->packages;
+
+        // Also get required dev packages if in dev mode
+        if($dev){
+            $this->packages = array_merge($this->packages, $composerLock->{'packages-dev'});
+        }
     }
 
     public function getVersion($name) {

@@ -158,7 +158,7 @@ services:
         arguments: [ @doctrine.orm.entity_manager, @service_container ]
     campaignchain.core.module.package:
         class: CampaignChain\CoreBundle\Module\Package
-        arguments: [ %kernel.root_dir% ]
+        arguments: [ %kernel.root_dir%, %campaignchain_dev% ]
     campaignchain.core.module.repository:
         class: CampaignChain\CoreBundle\Module\Repository
         arguments: [ @doctrine.orm.entity_manager ]
