@@ -20,19 +20,32 @@ class Repository
 
     private $em;
 
+    private $devMode;
+
     private $repositories;
 
     private $distributionVersion;
 
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManager $em, $devMode = false)
     {
         $this->em = $em;
+        $this->devMode = $devMode;
     }
 
     public function loadRepositories()
     {
         $system = $this->em->getRepository('CampaignChainCoreBundle:System')->find(1);
-        $this->repositories = $system->getModules()['repositories'];
+
+        if($this->devMode){
+            if(isset($system->getModules()['repositories-dev'])){
+                $this->repositories = $system->getModules()['repositories-dev'];
+            } else {
+                $this->repositories = $system->getModules()['repositories'];
+            }
+        } else {
+            $this->repositories = $system->getModules()['repositories'];
+        }
+
         $this->distributionVersion = $system->getVersion();
 
         return !is_null($this->repositories) &&

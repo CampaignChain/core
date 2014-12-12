@@ -178,12 +178,12 @@ class DevelopmentController extends Controller
             $currentDir = getcwd();
             chdir($this->get('kernel')->getRootDir().DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR);
             $command = 'php app/console doctrine:schema:drop --force --full-database';
-            ob_get_contents();
+            ob_start();
             system($command, $output);
             ob_get_clean();
             chdir($currentDir);
 
-            header('Location: ../campaignchain/install.php');
+            header('Location: ../../campaignchain/install.php');
             exit;
         }
 
