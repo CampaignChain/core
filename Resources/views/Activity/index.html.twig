@@ -31,7 +31,7 @@ file that was distributed with this source code.
             <tbody>
                 {% for activity in activities %}
                     <tr class="
-                            {% if activity.status == "paused" %}text-muted {% endif %}
+                            {% if activity.status == "closed" or activity.status == "paused" %}text-muted {% endif %}
                             ">
                         <td><img src="{{ asset( activity|campaignchain_channel_asset_path~'/images/icons/16x16/'~activity|campaignchain_channel_icon_name ) }}" /></td>
                         <td>{{ activity.name }}</td>
@@ -44,9 +44,15 @@ file that was distributed with this source code.
                             {{ activity|campaignchain_tpl_trigger_hook_inline }}
                         </td>
                         <td>
+                            {% if activity.status == "open" or activity.status == "paused" %}
                             <a role="button" class="btn btn-default btn-xs"
                                href="{{ path('campaignchain_core_activity_edit',{'id':activity.id}) }}">
                                 <span class="fa fa-pencil"></span></a>
+                            {% elseif activity.status == "closed" %}
+                                <a role="button" class="btn btn-default btn-xs"
+                                   href="{{ path('campaignchain_core_activity_read',{'id':activity.id}) }}">
+                                    <span class="fa fa-file-text"></span></a>
+                            {% endif %}
                             {#{% if activity.status == "paused" %}#}
                                 {#<button type="button" class="btn btn-default btn-xs">#}
                                     {#<a href="#"><span class="fa fa-play"></span></a>#}
