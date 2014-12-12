@@ -171,3 +171,9 @@ services:
     campaignchain.core.util.command:
         class: CampaignChain\CoreBundle\Util\CommandUtil
         arguments: [ @kernel ]
+    campaignchain.core.voter.dev:
+        class: CampaignChain\CoreBundle\Security\Authorization\Voter\DevVoter
+        public: false
+        arguments: [ %campaignchain_dev% ]
+        tags:
+            - { name: security.voter }
