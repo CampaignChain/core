@@ -28,21 +28,24 @@ class ActivityType extends HookListenerType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder
-            ->add('name', 'text', array(
-                'label' => 'Activity Name',
-                'attr' => array('placeholder' => 'What should be the name of the Activity?')
-            ));
-
         if(is_array($this->operationForms) && count($this->operationForms)){
             foreach($this->operationForms as $form){
                 $builder
                     ->add($form['identifier'], $form['form'], array(
                         'mapped' => false,
-                        'label' => $form['label'],
+                        'label' => false,
+                        'attr' => array(
+                            'widget_col' => 8,
+                        ),
                     ));
             }
         }
+
+        $builder
+            ->add('name', 'text', array(
+                'label' => 'Activity Name',
+                'attr' => array('placeholder' => 'What should be the name of the Activity?')
+            ));
 
         $hookListener = $this->getHookListener($builder);
         $hookListener->setCampaign($this->campaign);
