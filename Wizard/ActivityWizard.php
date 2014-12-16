@@ -37,6 +37,11 @@ class ActivityWizard
         return $this->session->get('campaignchain_campaign');
     }
 
+    public function getLocation(){
+        $this->session->resume();
+        return $this->session->get('campaignchain_location');
+    }
+
     public function setOperation($operation){
         $this->session->resume();
         $this->session->set('campaignchain_operation', $operation);

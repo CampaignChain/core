@@ -159,7 +159,7 @@ class ActivityController extends Controller
 
     public function readAction(Request $request, $id)
     {
-        $this->editAction($request, $id);
+        return $this->editAction($request, $id);
     }
 
     public function editModalAction(Request $request, $id)
