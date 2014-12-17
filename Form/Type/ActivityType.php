@@ -35,7 +35,7 @@ class ActivityType extends HookListenerType
                         'mapped' => false,
                         'label' => false,
                         'attr' => array(
-                            'widget_col' => 8,
+                            'widget_col' => 12,
                         ),
                     ));
             }

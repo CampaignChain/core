@@ -1,0 +1,31 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) Sandro Groganz <sandro@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+{#
+    When a new activity gets created, these variables must be provided by the
+    controller:
+
+    - channel_module_bundle
+    - channel_module
+    - location
+    - campaign
+
+    If the activity exists, then it suffices to provide the activity object as
+    a variable.
+#}
+{% if channel_module_bundle is not defined %}
+    {% set channel_module_bundle = activity.getChannel().getChannelModule().getBundle() %}
+    {% set channel_module = activity.getChannel().getChannelModule() %}
+    {% set campaign = activity.getCampaign() %}
+    {% set location = activity.getLocation() %}
+{% endif %}
+
+<p><img class="fa-fw" src="{{ asset( channel_module_bundle|campaignchain_channel_asset_path~'/images/icons/16x16/'~channel_module_bundle|campaignchain_channel_icon_name ) }}" /> {{ channel_module.getDisplayName() }}</p>
+<p><img class="fa-fw" src="{{ location.getImage() }}"> <a href="{{ location.getUrl() }}">{{ location.getName() }}</a></p>
+<p><i class="fa fa-bullhorn"></i> {{ campaign.getName() }}</p>
