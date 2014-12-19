@@ -39,6 +39,8 @@ class CampaignChainCoreExtension extends \Twig_Extension
             new \Twig_SimpleFilter('campaignchain_channel_root_locations', array($this, 'channelRootLocations')),
             new \Twig_SimpleFilter('campaignchain_remaining_time', array($this, 'remainingTime')),
             new \Twig_SimpleFilter('campaignchain_remaining_time_badge', array($this, 'remainingTimeBadge')),
+            new \Twig_SimpleFilter('campaignchain_parse_url', array($this, 'parseUrl')),
+            new \Twig_SimpleFilter('campaignchain_ltrim', array($this, 'ltrim')),
         );
     }
 
@@ -184,6 +186,16 @@ class CampaignChainCoreExtension extends \Twig_Extension
     {
         $channelService = $this->container->get('campaignchain.core.channel');
         return $channelService->getRootLocations($object);
+    }
+
+    public function parseUrl($object)
+    {
+        return parse_url($object);
+    }
+
+    public function ltrim($string, $needle = '')
+    {
+        return ltrim($string, $needle);
     }
 
     public function getGlobals()

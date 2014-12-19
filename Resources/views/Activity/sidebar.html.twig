@@ -26,6 +26,9 @@ file that was distributed with this source code.
     {% set location = activity.getLocation() %}
 {% endif %}
 
+{% if activity.getStatus() == 'closed' %}
+    <p><i class="fa fa-clock-o"></i> {{ activity|campaignchain_tpl_trigger_hook_inline }}</p>
+{% endif %}
 <p><img class="fa-fw" src="{{ asset( channel_module_bundle|campaignchain_channel_asset_path~'/images/icons/16x16/'~channel_module_bundle|campaignchain_channel_icon_name ) }}" /> {{ channel_module.getDisplayName() }}</p>
 <p><img class="fa-fw" src="{{ location.getImage() }}"> <a href="{{ location.getUrl() }}">{{ location.getName() }}</a></p>
 <p><i class="fa fa-bullhorn"></i> {{ campaign.getName() }}</p>

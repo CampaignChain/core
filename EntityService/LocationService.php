@@ -73,8 +73,12 @@ class LocationService
         if(!$location){
             // Check if URL exists.
 
-            // TODO: This is a performance bottleneck!
-            $expandedUrlHeaders = get_headers($url);
+            try {
+                // TODO: This is a performance bottleneck!
+                $expandedUrlHeaders = get_headers($url);
+            } catch (\Exception $e) {
+                return false;
+            }
             $status = $expandedUrlHeaders[0];
 
             if(strpos($status,"200")) {
