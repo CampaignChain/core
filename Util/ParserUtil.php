@@ -127,6 +127,12 @@ class ParserUtil
             return false;
         }
 
+        // Get headers and see if Location is set.
+        $headers = get_headers($url, 1);
+        if(!is_array($headers) || !isset($headers['Location'])){
+            return false;
+        }
+
         return true;
     }
 
