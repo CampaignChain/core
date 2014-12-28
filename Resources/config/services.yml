@@ -164,7 +164,7 @@ services:
         arguments: [ @doctrine.orm.entity_manager, %campaignchain_dev% ]
     campaignchain.core.module.composer:
         class: CampaignChain\CoreBundle\Module\Composer
-        arguments: [ %kernel.root_dir%, @logger ]
+        arguments: [ %kernel.root_dir%, @campaignchain.core.util.command, @logger ]
     campaignchain.core.module.kernel:
         class: CampaignChain\CoreBundle\Module\Kernel
         arguments: [ %kernel.root_dir%, @campaignchain.core.util.command, @logger ]

@@ -26,20 +26,46 @@ class CommandUtil
 {
     private $kernel;
     private $application;
+    private $currentDir;
 
     public function __construct(Kernel $kernel)
     {
         $this->kernel = $kernel;
         $this->application = new Application($kernel);
+        $this->currentDir = getcwd();
+    }
+
+    protected function chRootDir()
+    {
+        $rootDir = $this->kernel->getRootDir().DIRECTORY_SEPARATOR.'..';
+        chdir($rootDir);
+    }
+
+    protected function chCurrentDir()
+    {
+        chdir($this->currentDir);
     }
 
     protected function run($command, $arguments)
     {
         $input = new ArrayInput($arguments);
         $output = new BufferedOutput();
+
+        $this->chRootDir();
         $command->run($input, $output);
+        $this->chCurrentDir();
 
         return $output->fetch();
+    }
+
+    public function shell($command)
+    {
+        $this->chRootDir();
+        ob_start();
+        system($command, $output);
+        $this->chCurrentDir();
+
+        return ob_get_clean();
     }
 
     public function doctrineSchemaUpdate()
@@ -59,17 +85,9 @@ class CommandUtil
          *
          * TODO: Fix this.
          */
-        $rootDir = $this->kernel->getRootDir().DIRECTORY_SEPARATOR.'..';
-        $currentDir = getcwd();
-        chdir($rootDir);
-
-        ob_start();
         $command = 'php app/console doctrine:schema:update --force';
-        system($command, $output);
 
-        chdir($currentDir);
-
-        return ob_get_clean();
+        return $this->shell($command);
     }
 
     public function assetsInstallWeb()

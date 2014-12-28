@@ -15,12 +15,14 @@ use Symfony\Component\Process\Process;
 class Composer
 {
     private $root;
+    private $commandUtil;
     private $logger;
 
-    public function __construct($kernelRootDir, $logger)
+    public function __construct($kernelRootDir, $commandUtil, $logger)
     {
         $this->root = $kernelRootDir.
             DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR;
+        $this->commandUtil = $commandUtil;
         $this->logger = $logger;
     }
 
@@ -42,22 +44,14 @@ class Composer
          * Check whether the package and repository actually exist and that
          * the package exists in the repository.
          */
-        $currentDir = getcwd();
-        chdir($this->root);
-
-        ob_start();
         $command = 'composer require '.$packagesArg;
-        system($command, $output);
         $this->logger->info('Output of: '.$command.' '.$packagesArg);
-        $this->logger->info(ob_get_clean());
+        $this->logger->info($this->commandUtil->shell($command));
 
-        ob_start();
-        $command = 'composer update -n';
-        system($command, $output);
+        $command = 'composer update -n --optimize-autoloader';
         $this->logger->info('Output of: '.$command.' '.$packagesArg);
-        $this->logger->info(ob_get_clean());
+        $this->logger->info($this->commandUtil->shell($command));
 
-        chdir($currentDir);
         // TODO: Check if new package is in lock file.
     }
 }
