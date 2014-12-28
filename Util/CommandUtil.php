@@ -91,6 +91,7 @@ class CommandUtil
         $command = $this->application->find('assetic:dump');
         $arguments = array(
             'assets:install',
+            '--env' => 'prod',
             '--no-debug' => true,
         );
         return $this->run($command, $arguments);
