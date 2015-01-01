@@ -29,7 +29,6 @@
         "sensio/generator-bundle": ">=2.3",
         "components/jquery": "1.11.*",
         "oyejorge/less.php": "~1.5",
-        "twitter/bootstrap": "*",
         "braincrafted/bootstrap-bundle": "dev-master",
         "incenteev/composer-parameter-handler": "~2.0",
         "twbs/bootstrap": "3.0.*",

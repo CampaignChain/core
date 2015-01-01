@@ -18,23 +18,23 @@ assetic:
                 - "@CampaignChainCoreBundle/Resources/public/components/moment-timezone/builds/moment-timezone-with-data.js"
         bootstrap_js:
             inputs:
-                - "%kernel.root_dir%/../vendor/twitter/bootstrap/js/transition.js"
-                - "%kernel.root_dir%/../vendor/twitter/bootstrap/js/alert.js"
-                - "%kernel.root_dir%/../vendor/twitter/bootstrap/js/modal.js"
-                - "%kernel.root_dir%/../vendor/twitter/bootstrap/js/dropdown.js"
-                - "%kernel.root_dir%/../vendor/twitter/bootstrap/js/scrollspy.js"
-                - "%kernel.root_dir%/../vendor/twitter/bootstrap/js/tab.js"
-                - "%kernel.root_dir%/../vendor/twitter/bootstrap/js/tooltip.js"
-                - "%kernel.root_dir%/../vendor/twitter/bootstrap/js/popover.js"
-                - "%kernel.root_dir%/../vendor/twitter/bootstrap/js/button.js"
-                - "%kernel.root_dir%/../vendor/twitter/bootstrap/js/collapse.js"
-                - "%kernel.root_dir%/../vendor/twitter/bootstrap/js/carousel.js"
-                - "%kernel.root_dir%/../vendor/twitter/bootstrap/js/affix.js"
+                - "%kernel.root_dir%/../vendor/twbs/bootstrap/js/transition.js"
+                - "%kernel.root_dir%/../vendor/twbs/bootstrap/js/alert.js"
+                - "%kernel.root_dir%/../vendor/twbs/bootstrap/js/modal.js"
+                - "%kernel.root_dir%/../vendor/twbs/bootstrap/js/dropdown.js"
+                - "%kernel.root_dir%/../vendor/twbs/bootstrap/js/scrollspy.js"
+                - "%kernel.root_dir%/../vendor/twbs/bootstrap/js/tab.js"
+                - "%kernel.root_dir%/../vendor/twbs/bootstrap/js/tooltip.js"
+                - "%kernel.root_dir%/../vendor/twbs/bootstrap/js/popover.js"
+                - "%kernel.root_dir%/../vendor/twbs/bootstrap/js/button.js"
+                - "%kernel.root_dir%/../vendor/twbs/bootstrap/js/collapse.js"
+                - "%kernel.root_dir%/../vendor/twbs/bootstrap/js/carousel.js"
+                - "%kernel.root_dir%/../vendor/twbs/bootstrap/js/affix.js"
             filters:
                 - "?yui_js"
         bootstrap_less:
             inputs:
-                - "%kernel.root_dir%/../vendor/twitter/bootstrap/less/bootstrap.less"
+                - "%kernel.root_dir%/../vendor/twbs/bootstrap/less/bootstrap.less"
             filters:
                 - "lessphp"
                 - "cssembed"
@@ -119,7 +119,7 @@ assetic:
         - "FOSUserBundle"
 braincrafted_bootstrap:
     output_dir: null
-    assets_dir: "%kernel.root_dir%/../vendor/twitter/bootstrap"
+    assets_dir: "%kernel.root_dir%/../vendor/twbs/bootstrap"
     jquery_path: "%kernel.root_dir%/../components/jquery/jquery.js"
     less_filter: "lessphp"
     auto_configure:
@@ -129,7 +129,7 @@ braincrafted_bootstrap:
         knp_paginator: true
     customize:
         variables_file: null
-        bootstrap_output: "%kernel.root_dir%/../vendor/twitter/less/bootstrap.less"
+        bootstrap_output: "%kernel.root_dir%/../vendor/twbs/less/bootstrap.less"
         bootstrap_template: "BraincraftedBootstrapBundle:Bootstrap:bootstrap.less.twig"
 sc_datetimepicker:
     picker: null
