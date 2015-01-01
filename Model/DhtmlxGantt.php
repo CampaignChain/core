@@ -189,8 +189,25 @@ class DhtmlxGantt
         $ganttTasks = array();
 
         if(isset($ganttCampaignData) && is_array($ganttCampaignData)){
-            $ganttTasks['data'] = array_merge($ganttCampaignData, array_merge($ganttMilestoneData, $ganttActivityData));
-            $ganttTasks['links'] = array_merge($ganttActivityLinks, $ganttMilestoneLinks);
+            $hasMilestones = false;
+            $hasActivities = false;
+
+            $ganttTasks['data'] = $ganttCampaignData;
+            if(isset($ganttMilestoneData) && is_array($ganttMilestoneData)){
+                $ganttTasks['data'] = array_merge($ganttTasks['data'], $ganttMilestoneData);
+                $hasMilestones = true;
+            }
+            if(isset($ganttActivityData) && is_array($ganttActivityData)){
+                $ganttTasks['data'] = array_merge($ganttTasks['data'], $ganttActivityData);
+                $hasActivities = true;
+            }
+            if($hasMilestones && $hasActivities){
+                $ganttTasks['links'] = array_merge($ganttActivityLinks, $ganttMilestoneLinks);
+            } elseif($hasMilestones){
+                $ganttTasks['links'] = $ganttMilestoneLinks;
+            } elseif($hasActivities){
+                $ganttTasks['links'] = $ganttActivityLinks;
+            }
         } else {
             $docUrl = $this->container->get('templating.helper.assets')
                 ->getUrl(
