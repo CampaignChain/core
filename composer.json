@@ -31,7 +31,7 @@
         "oyejorge/less.php": "~1.5",
         "braincrafted/bootstrap-bundle": "dev-master",
         "incenteev/composer-parameter-handler": "~2.0",
-        "twbs/bootstrap": "3.0.*",
+        "twbs/bootstrap": "3.3.*",
         "knplabs/knp-menu": "dev-master",
         "knplabs/knp-paginator-bundle": "dev-master",
         "knplabs/knp-menu-bundle":"dev-master",
