@@ -223,11 +223,19 @@ class DateTimeUtil
         $patterns[] = '/mm/';
         $patterns[] = '/M/';
         $patterns[] = '/MM/';
+        $patterns[] = '/h/';
+        $patterns[] = '/hh/';
+        $patterns[] = '/H/';
+        $patterns[] = '/HH/';
 
         $replacements[] = 'i';
         $replacements[] = 'ii';
         $replacements[] = 'm';
         $replacements[] = 'mm';
+        $replacements[] = 'H';
+        $replacements[] = 'HH';
+        $replacements[] = 'h';
+        $replacements[] = 'hh';
 
         return preg_replace($patterns, $replacements, $format);
     }
