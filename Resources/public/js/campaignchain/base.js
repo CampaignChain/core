@@ -21,6 +21,10 @@ function campaignchainRoundMinutes(date){
     return moment(date).hours(h).minutes(m);
 }
 
+function campaignchainGetUserDateTime(datetime){
+    return moment.tz(datetime, window.campaignchainTimezone)
+}
+
 //function campaignchainUserDatetimeRefresh(){
 //    var refresh=1000; // Refresh rate in milli seconds
 //    mytime=setTimeout('campaignchainDisplayUserDatetime()',refresh)

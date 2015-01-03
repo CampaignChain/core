@@ -37,6 +37,10 @@ file that was distributed with this source code.
 {% block body %}
     {% set gantt_toolbar_status = 'fullscreen' %}
 
+    {% javascripts '@campaignchain_dhtmlxgantt_global_js' combine=true %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
     {% include 'CampaignChainCoreBundle:Plan/Timeline:toolbar.html.twig' %}
 
     <div id="gantt_here" style='width:100%; height:100%;'></div>

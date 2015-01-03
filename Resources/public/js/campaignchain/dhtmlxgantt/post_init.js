@@ -8,15 +8,15 @@
  */
 
 gantt.templates.task_class = function(start, end, task){
-    if(+moment(start).zone(window.campaignchainTimezoneOffset) < +today && +moment(end).zone(window.campaignchainTimezoneOffset) > +today){
+    if(+campaignchainGetUserDateTime(start) < +today && +campaignchainGetUserDateTime(end) > +today){
         // Give running campaigns a different color.
         var class_name = "campaignchain_gantt_ongoing";
     }
-    if (+moment(start).zone(window.campaignchainTimezoneOffset) < +today && +moment(end).zone(window.campaignchainTimezoneOffset) < +today){
+    if (+campaignchainGetUserDateTime(start) < +today && +campaignchainGetUserDateTime(end) < +today){
         // Give done campaigns a different color.
         var class_name = "campaignchain_gantt_done";
     }
-    if (+moment(start).zone(window.campaignchainTimezoneOffset) > +today && +moment(end).zone(window.campaignchainTimezoneOffset) > +today){
+    if (+campaignchainGetUserDateTime(start) > +today && +campaignchainGetUserDateTime(end) > +today){
         // Give upcoming campaigns a different color.
         var class_name = "campaignchain_gantt_upcoming";
     }

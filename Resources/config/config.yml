@@ -66,6 +66,9 @@ assetic:
         dhtmlxgantt_tooltip_js:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/components/gantt/codebase/ext/dhtmlxgantt_tooltip.js"
+        campaignchain_dhtmlxgantt_global_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/global.js"
         campaignchain_dhtmlxgantt_toolbar_js:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/toolbar.js"

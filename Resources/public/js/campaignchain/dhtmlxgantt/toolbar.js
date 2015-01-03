@@ -30,7 +30,7 @@ function hide_weekend_highlight(){
 
 // Make chart jump to today's date
 function scrollToToday(){
-    var scrollX = gantt.posFromDate(+moment().zone(window.campaignchainTimezoneOffset));
+    var scrollX = gantt.posFromDate(+campaignchainGetUserDateTime(moment()));
     gantt.scrollTo(scrollX-200, 0);
 }
 
