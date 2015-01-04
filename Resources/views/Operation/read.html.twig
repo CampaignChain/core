@@ -14,6 +14,7 @@ file that was distributed with this source code.
         <div class="col-md-8">{% block operation %}{% endblock %}</div>
         <div class="col-md-4">
             {% include 'CampaignChainCoreBundle:Activity:sidebar.html.twig' %}
+            {% block sidebar_operation %}{% endblock %}
         </div>
     </div>
 {% endblock %}
