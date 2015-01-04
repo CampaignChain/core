@@ -10,6 +10,7 @@
 
 namespace CampaignChain\CoreBundle\Twig;
 
+use CampaignChain\CoreBundle\Util\ParserUtil;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Doctrine\ORM\EntityManager;
 
@@ -41,6 +42,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
             new \Twig_SimpleFilter('campaignchain_remaining_time_badge', array($this, 'remainingTimeBadge')),
             new \Twig_SimpleFilter('campaignchain_parse_url', array($this, 'parseUrl')),
             new \Twig_SimpleFilter('campaignchain_ltrim', array($this, 'ltrim')),
+            new \Twig_SimpleFilter('campaignchain_make_links', array($this, 'makeLinks')),
         );
     }
 
@@ -196,6 +198,10 @@ class CampaignChainCoreExtension extends \Twig_Extension
     public function ltrim($string, $needle = '')
     {
         return ltrim($string, $needle);
+    }
+
+    public function makeLinks($text, $target='_blank', $class=''){
+        return ParserUtil::makeLinks($text, $target, $class);
     }
 
     public function getGlobals()

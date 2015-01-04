@@ -173,4 +173,10 @@ class ParserUtil
 
         return false;
     }
+
+    static function makeLinks($text, $target='_blank', $class=''){
+        return preg_replace('!((http\:\/\/|ftp\:\/\/|https\:\/\/)|www\.)([-a-zA-Zа-яА-Я0-9\~\!\@\#\$\%\^\&\*\(\)_\-\=\+\\\/\?\.\:\;\'\,]*)?!ism',
+            '<a class="'.$class.'" href="//$3" target="'.$target.'">$1$3</a>',
+            $text);
+    }
 }
