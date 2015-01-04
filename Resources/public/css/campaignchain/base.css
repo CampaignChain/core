@@ -7,9 +7,6 @@ For the full copyright and license information, please view the LICENSE
 file that was distributed with this source code.
 */
 
-/* Fix overlapping of content by Bootstrap's fixed top navbar */
-body { padding-top: 40px; padding-bottom: 70px; }
-
 @font-face{
     font-family:'FontAwesome';
     src:url('/bundles/bmatznerfontawesome/fonts/fontawesome-webfont.eot?v=4.0.3');
@@ -20,12 +17,40 @@ body { padding-top: 40px; padding-bottom: 70px; }
     font-weight:normal;font-style:normal
 }
 
-#footer {
-    background-color: #F5F5F5;
-    bottom: 0;
-    height: 60px;
-    position: absolute;
+html {
+    min-height: 100%;
+    position: relative;
+}
+
+/* Fix overlapping of content by Bootstrap's fixed top navbar */
+body {
+    padding-top: 40px;
+    margin-bottom: 80px;
+}
+
+/* Sticky Footer */
+#wrap {
+    min-height: 100%;
+    height: auto !important;
+    height: 100%;
+    margin: 0 auto -50px;
+}
+
+.footer {
+    height: 50px;
+    background-color: #f8f8f8;
+    border-top: 1px solid #E7E7E7;
+    margin-top: 30px;
     width: 100%;
+    bottom: 0;
+    position: absolute;
+}
+
+@media (max-width: 767px) {
+    .footer {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
 }
 
 #campaignchain-fullscreen-body {
@@ -105,6 +130,7 @@ ul.nav-tabs {
     background-color: #F8F8F8;
     border-top: 1px solid #E7E7E7;
     border-bottom: 1px solid #E7E7E7;
+    position: absolute;
 }
 
 .campaignchain-navbar-footer .navbar-text {

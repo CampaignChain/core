@@ -71,16 +71,14 @@ file that was distributed with this source code.
 
             {% block body %}{% endblock %}
         </div>
-        <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
-            <div class="container-fluid">
+        <footer class="footer">
                 <p class="navbar-text text-muted">
                     <i class="fa fa-book"></i> <a href="#" onclick="popupwindow('{{ asset('bundles/campaignchaindochtml/index.html') }}','',900,600)">Help</a> &middot;
                     Powered by <a href="{{ path('campaignchain_core_homepage') }}" rel="external">CampaignChain</a>
                         {% if (campaignchain_system is not null) and (campaignchain_system.version is not null) %}
                             &nbsp;({{ campaignchain_system.version }})
                         {% endif %}</p>
-            </div>
-        </nav>
+        </footer>
         <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
         <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>-->
         {% block javascripts_footer %}{% endblock %}
