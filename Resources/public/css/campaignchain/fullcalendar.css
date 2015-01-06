@@ -18,6 +18,29 @@ file that was distributed with this source code.
     height: auto !important;
 }
 
+.campaignchain-calendar-campaign .fc-content {
+    padding: 3px;
+    font-size: 14px;
+}
+
+.campaignchain-calendar-done.fc-event {
+    background-color: #cccccc !important;
+    border: 1px solid #777777 !important;
+    color: #ffffff;
+}
+
+.campaignchain-calendar-ongoing.fc-event {
+    background-color: #F0AD4E !important;
+    border: 1px solid #EEA236 !important;
+    color: #ffffff;
+}
+
+.campaignchain-calendar-upcoming.fc-event {
+    background-color: #5BC0DE !important;
+    border: 1px solid #46B8DA !important;
+    color: #ffffff;
+}
+
 .fc-title {
     white-space: normal;
 }

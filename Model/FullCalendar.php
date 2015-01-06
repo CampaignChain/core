@@ -55,6 +55,11 @@ class FullCalendar
             return false;
         }
 
+        $campaignEvents = array();
+
+        $datetimeUtil = $this->container->get('campaignchain.core.util.datetime');
+        $userNow = $datetimeUtil->getUserNow();
+
         foreach($campaigns as $campaign){
             $campaignEvent['title'] = $campaign->getName();
             $campaignEvent['start'] = $campaign->getStartDate()->format(self::FORMAT_CALENDAR_DATE);
@@ -62,13 +67,33 @@ class FullCalendar
             $campaignEvent['allDay'] = true;
             $campaignEvent['id'] = $campaign->getId();
 
-            $campaignEvents[] = $campaignEvent;
+            if($campaign->getStartDate() < $userNow && $campaign->getEndDate() > $userNow){
+                $campaignEvents['ongoing'][] = $campaignEvent;
+            } elseif($campaign->getStartDate() < $userNow && $campaign->getEndDate() < $userNow){
+                $campaignEvents['done'][] = $campaignEvent;
+            } elseif($campaign->getStartDate() > $userNow && $campaign->getEndDate() > $userNow){
+                $campaignEvents['upcoming'][] = $campaignEvent;
+            }
         }
 
-        $calendarEvents['campaign']['data'] = $serializer->serialize($campaignEvents, 'json');
-        $calendarEvents['campaign']['options'] = array(
-            'className' => 'campaignchain_campaign',
-        );
+        if(isset($campaignEvents['ongoing'])){
+            $calendarEvents['campaign_ongoing']['data'] = $serializer->serialize($campaignEvents['ongoing'], 'json');
+            $calendarEvents['campaign_ongoing']['options'] = array(
+                'className' => 'campaignchain-calendar-ongoing campaignchain-calendar-campaign',
+            );
+        }
+        if(isset($campaignEvents['done'])){
+            $calendarEvents['campaign_done']['data'] = $serializer->serialize($campaignEvents['done'], 'json');
+            $calendarEvents['campaign_done']['options'] = array(
+                'className' => 'campaignchain-calendar-done campaignchain-calendar-campaign',
+            );
+        }
+        if(isset($campaignEvents['upcoming'])){
+            $calendarEvents['campaign_upcoming']['data'] = $serializer->serialize($campaignEvents['upcoming'], 'json');
+            $calendarEvents['campaign_upcoming']['options'] = array(
+                'className' => 'campaignchain-calendar-upcoming campaignchain-calendar-campaign',
+            );
+        }
 
         // Retrieve all activities
         $repository = $this->em->getRepository('CampaignChainCoreBundle:Activity');

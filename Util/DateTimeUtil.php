@@ -25,6 +25,10 @@ class DateTimeUtil
         return new \DateTime('now', new \DateTimeZone($timezone));
     }
 
+    public function getUserNow(){
+        return new \DateTime('now', new \DateTimeZone($this->container->get('session')->get('campaignchain.timezone')));
+    }
+
     public function setUserTimezone(\DateTime $dateTime){
         if($this->container->get('session')->isStarted()){
             $timezone = $this->container->get('session')->get('campaignchain.timezone');
