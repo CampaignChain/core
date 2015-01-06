@@ -80,18 +80,21 @@ class FullCalendar
             $calendarEvents['campaign_ongoing']['data'] = $serializer->serialize($campaignEvents['ongoing'], 'json');
             $calendarEvents['campaign_ongoing']['options'] = array(
                 'className' => 'campaignchain-calendar-ongoing campaignchain-calendar-campaign',
+                'startEditable' => false,
             );
         }
         if(isset($campaignEvents['done'])){
             $calendarEvents['campaign_done']['data'] = $serializer->serialize($campaignEvents['done'], 'json');
             $calendarEvents['campaign_done']['options'] = array(
                 'className' => 'campaignchain-calendar-done campaignchain-calendar-campaign',
+                'startEditable' => false,
             );
         }
         if(isset($campaignEvents['upcoming'])){
             $calendarEvents['campaign_upcoming']['data'] = $serializer->serialize($campaignEvents['upcoming'], 'json');
             $calendarEvents['campaign_upcoming']['options'] = array(
                 'className' => 'campaignchain-calendar-upcoming campaignchain-calendar-campaign',
+                'startEditable' => false,
             );
         }
 
