@@ -8,7 +8,9 @@ file that was distributed with this source code.
 */
 
 .campaignchain-activity,
-.campaignchain-milestone {
+.campaignchain-milestone,
+.campaignchain-activity.fc-event:hover,
+.campaignchain-milestone.fc-event:hover {
     background-repeat: no-repeat;
     background-position: 2px 2px;
     background-color: #ffffff !important;
