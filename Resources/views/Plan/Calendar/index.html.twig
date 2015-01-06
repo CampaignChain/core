@@ -29,46 +29,53 @@ file that was distributed with this source code.
 
 {% block body %}
 <script>
+    $(document).ready(function() {
 
-        $(document).ready(function() {
-
-            $('#calendar').fullCalendar({
-                header: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'month,agendaWeek,agendaDay'
-                },
-                timeFormat: {
-                    month: 'H:mm',
-                    agendaWeek: 'H:mm',
-                    agendaDay: 'H:mm'
-                },
-                defaultDate: new Date(),
-                editable: true,
-                defaultTimedEventDuration: '00:01:00',
-                eventRender: function(event, eventElement) {
-                    console.log(eventElement);
-                    if (event.icon_path_16px)
+        $('#calendar').fullCalendar({
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month,agendaWeek,agendaDay'
+            },
+            timeFormat: {
+                month: 'H:mm',
+                agendaWeek: 'H:mm',
+                agendaDay: 'H:mm'
+            },
+            defaultDate: new Date(),
+            editable: true,
+            defaultTimedEventDuration: '00:01:00',
+            eventRender: function(event, eventElement) {
+                if (event.icon_path_16px)
+                {
+                    eventElement.css({"background-image":"url('" + event.icon_path_16px +"')"});
+                }
+                eventElement.bind('dblclick', function() {
+                    campaignchainShowModal(
+                        event.start,
+                        event.end,
+                        event.type, event.campaignchain_id, event.route_edit_api,
+                        event, 'campaignchainCalendarTaskDblClickSuccess'
+                    );
+                });
+            },
+            eventSources: [
+                {% if events and events is iterable %}
+                    {% for event_type, event in events %}
                     {
-                        eventElement.css({"background-image":"url('" + event.icon_path_16px +"')"});
-                    }
-                },
-                eventSources: [
-                    {% if events and events is iterable %}
-                        {% for event_type, event in events %}
-                        {
-                            events: {{ event.data|raw }},
-                            {% for option_key, option_val in event.options %}
-                                {{ option_key }}: '{{ option_val }}',
-                            {% endfor %}
-                        },
+                        events: {{ event.data|raw }},
+                        {% for option_key, option_val in event.options %}
+                            {{ option_key }}: '{{ option_val }}',
                         {% endfor %}
-                    {% endif %}
-                ]
-            });
-
+                    },
+                    {% endfor %}
+                {% endif %}
+            ]
         });
 
-    </script>
-    <div id='calendar'></div>
+    });
+
+</script>
+<div id='calendar'></div>
+    {% include 'CampaignChainCoreBundle:Base:modal_remote.html.twig' %}
 {% endblock %}

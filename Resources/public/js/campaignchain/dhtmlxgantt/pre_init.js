@@ -208,130 +208,49 @@ gantt.templates.grid_folder = function(item) {
 
 // Show the edit dialogue when someone clicks on a task.
 gantt.attachEvent("onTaskDblClick", function(id,e){
-    // TODO: If a task is in the past, do not allow editing.
     // TODO: Fade in/out tooltip while modal for editing task is visible.
     var task = gantt.getTask(id);
 
-    // Done tasks cannot be edited.
-    if(+campaignchainGetUserDateTime(task.start_date) < +today && +campaignchainGetUserDateTime(task.end_date) < +today){
-        return false;
-    }
+    campaignchainShowModal(
+        campaignchainGetUserDateTime(task.start_date),
+        campaignchainGetUserDateTime(task.end_date),
+        task.type, task.campaignchain_id, task.route_edit_api,
+        task, 'campaignchainGanttTaskDblClickSuccess'
+    );
 
-    $('#ganttModal').on('hidden.bs.modal', function () {
-        // Clean up submitted data before showing this modal.
-        $(this).removeData('bs.modal');
-        // Make sure we always show the actual remote content
-        // and not always the same remote modal content.
-        $(this).find(".modal-content").empty();
-    });
+    return false;
+});
 
-    switch(task.type) {
-        // window.apiUrl makes it a global variable that can later be used in the function for posting
-        // from the modal's form.
+function campaignchainGanttTaskDblClickSuccess(task) {
+    // Update changes in GANTT data as well.
+    switch(task.type){
         case 'campaign':
-            var modalForm = Routing.generate('campaignchain_core_campaign_edit_modal', { id: task.campaignchain_id });
+            var form_root_name = "campaignchain_core_campaign";
             break;
         case 'milestone':
-            var modalForm = Routing.generate('campaignchain_core_milestone_edit_modal', { id: task.campaignchain_id });
+            var form_root_name = "campaignchain_core_milestone";
             break;
         case 'activity':
-            var modalForm = Routing.generate('campaignchain_core_activity_edit_modal', { id: task.campaignchain_id });
+            var form_root_name = "campaignchain_core_activity";
             break;
     }
 
-    window.apiUrl = Routing.generate(task.route_edit_api, { id: task.campaignchain_id });
+    var taskId = task.campaignchain_id + '_' + task.type;
 
-//    $('#ganttModal .modal-body').text('');
+    gantt.getTask(taskId).text =
+        $('input[name="' + form_root_name + '[name]"]').val();
+    gantt.getTask(taskId).start_date =
+        moment(
+            $('input[name="' + form_root_name + '[campaignchain_hook_' + task.trigger_identifier + '][' + task.start_date_identifier + ']"]').val()
+        );
+    gantt.getTask(taskId).end_date =
+        moment(
+            $('input[name="' + form_root_name + '[campaignchain_hook_' + task.trigger_identifier + '][' + task.end_date_identifier + ']"]').val()
+        );
 
-    $('#ganttModal').modal({
-        show: true,
-        remote: modalForm
-    });
-
-    // Note that we use .one instead of .on here, to make sure the event is fired only once per modal.
-    $('.modal').one('submit', 'form', function(e) {
-        var $form = $(this);
-        var enctype = $form.attr('id')
-        var taskId = task.campaignchain_id + '_' + task.type;
-
-        if(enctype == 'multipart') {
-            var formData = new FormData(this);
-
-            $.ajax({
-                type: $form.attr('method'),
-                url: window.apiUrl,
-                data: formData,
-                mimeType: "multipart/form-data",
-                contentType: false,
-                cache: false,
-                processData: false,
-
-                success: function(data, status) {
-                    $('#ganttModal .modal-content').html(data);
-                }
-            });
-        }
-        else {
-            var submitButton = $("input[type='submit'][clicked=true], button[type='submit'][clicked=true]", $form);
-            var formData = $form.serializeArray();
-
-            if(submitButton.size() === 1) {
-                formData.push({ name: $(submitButton[0]).attr("name"), value: "1" });
-            }
-            else if(submitButton.size() !== 0) {
-                console.log("Error: Multiple submit buttons pressed.");
-            }
-
-            //console.log(formData);
-            $.ajax({
-                type: $form.attr('method'),
-                url: window.apiUrl,
-                data: formData,
-                cache: false,
-
-                success: function(data, status) {
-                    // Update changes in GANTT data as well.
-                    switch(task.type){
-                        case 'campaign':
-                            var form_root_name = "campaignchain_core_campaign";
-                            break;
-                        case 'milestone':
-                            var form_root_name = "campaignchain_core_milestone";
-                            break;
-                        case 'activity':
-                            var form_root_name = "campaignchain_core_activity";
-                            break;
-                    }
-                    gantt.getTask(taskId).text =
-                        $('input[name="' + form_root_name + '[name]"]').val();
-                    gantt.getTask(taskId).start_date =
-                        moment(
-                            $('input[name="' + form_root_name + '[campaignchain_hook_' + task.trigger_identifier + '][' + task.start_date_identifier + ']"]').val()
-                        );
-                    gantt.getTask(taskId).end_date =
-                        moment(
-                            $('input[name="' + form_root_name + '[campaignchain_hook_' + task.trigger_identifier + '][' + task.end_date_identifier + ']"]').val()
-                        );
-
-                    gantt.updateTask(taskId);
-                    gantt.render();
-
-                    $('#ganttModal').modal('hide');
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    alert('URL: ' + apiUrl + ', status: ' + xhr.status + ', message: ' +thrownError);
-                }
-            });
-        }
-
-        e.preventDefault();
-    });
-
-    $('.modal').on("click", 'input[type="submit"], button[type="submit"]', function() {
-        $('form[data-async] input[type=submit], form[data-async] button[type=submit]', $(this).parents("form")).removeAttr("clicked");
-        $(this).attr("clicked", "true");
-    });
-});
+    gantt.updateTask(taskId);
+    gantt.render();
+}
 
 // Persist onTaskDrag changes.
 

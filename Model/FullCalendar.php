@@ -62,10 +62,25 @@ class FullCalendar
 
         foreach($campaigns as $campaign){
             $campaignEvent['title'] = $campaign->getName();
-            $campaignEvent['start'] = $campaign->getStartDate()->format(self::FORMAT_CALENDAR_DATE);
-            $campaignEvent['end'] = $campaign->getEndDate()->format(self::FORMAT_CALENDAR_DATE);
+
+            // Retrieve the start and end date from the trigger hook.
+            $hookService = $this->container->get($campaign->getTriggerHook()->getServices()['entity']);
+            $hook = $hookService->getHook($campaign);
+            $campaignEvent['start'] = $hook->getStartDate()->format(self::FORMAT_CALENDAR_DATE);
+            if($hook->getEndDate()){
+                $campaignEvent['end'] = $hook->getEndDate()->format(self::FORMAT_CALENDAR_DATE);
+            } else {
+                $campaignEvent['end'] = $campaignEvent['start'];
+            }
+            // Provide the hook's start and end date form field names.
+            $campaignEvent['start_date_identifier'] = $hookService->getStartDateIdentifier();
+            $campaignEvent['end_date_identifier'] = $hookService->getEndDateIdentifier();
+
             $campaignEvent['allDay'] = true;
-            $campaignEvent['id'] = $campaign->getId();
+            $campaignEvent['type'] = 'campaign';
+            $campaignEvent['campaignchain_id'] = $campaign->getId();
+            $campaignEvent['route_edit_api'] = $campaign->getCampaignModule()->getRoutes()['edit_api'];
+            $campaignEvent['trigger_identifier'] = str_replace('-', '_', $campaign->getTriggerHook()->getIdentifier());
 
             if($campaign->getStartDate() < $userNow && $campaign->getEndDate() > $userNow){
                 $campaignEvents['ongoing'][] = $campaignEvent;
@@ -105,10 +120,19 @@ class FullCalendar
         if(count($activities)){
             foreach($activities as $activity){
                 $activityEvent['title'] = $activity->getName();
-                // TODO: Use hook instead.
-                $activityEvent['start'] = $activity->getStartDate()->format(self::FORMAT_CALENDAR_DATE);
-                $activityEvent['id'] = $activity->getId();
+
+                // Retrieve the start and end date from the trigger hook.
+                $hookService = $this->container->get($activity->getTriggerHook()->getServices()['entity']);
+                $hook = $hookService->getHook($activity);
+                $activityEvent['start'] = $hook->getStartDate()->format(self::FORMAT_CALENDAR_DATE);
+                // Provide the hook's start and end date form field names.
+                $activityEvent['start_date_identifier'] = $hookService->getStartDateIdentifier();
+                $activityEvent['end_date_identifier'] = $hookService->getEndDateIdentifier();
+
+                $activityEvent['campaignchain_id'] = $activity->getId();
                 $activityEvent['type'] = 'activity';
+                $activityEvent['route_edit_api'] = $activity->getActivityModule()->getRoutes()['edit_api'];
+                $activityEvent['trigger_identifier'] = str_replace('-', '_', $activity->getTriggerHook()->getIdentifier());
                 // Get icons path
                 $channelService = $this->container->get('campaignchain.core.channel');
                 $icons = $channelService->getIcons($activity->getChannel());
@@ -131,8 +155,19 @@ class FullCalendar
         if(count($milestones)){
             foreach($milestones as $milestone){
                 $milestoneEvent['title'] = $milestone->getName();
-                $milestoneEvent['start'] = $milestone->getStartDate()->format(self::FORMAT_CALENDAR_DATE);
-                $milestoneEvent['id'] = $milestone->getId();
+
+                // Retrieve the start and end date from the trigger hook.
+                $hookService = $this->container->get($milestone->getTriggerHook()->getServices()['entity']);
+                $hook = $hookService->getHook($milestone);
+                $milestoneEvent['start'] = $hook->getStartDate()->format(self::FORMAT_CALENDAR_DATE);
+                // Provide the hook's start and end date form field names.
+                $milestoneEvent['start_date_identifier'] = $hookService->getStartDateIdentifier();
+                $milestoneEvent['end_date_identifier'] = $hookService->getEndDateIdentifier();
+
+                $milestoneEvent['type'] = 'milestone';
+                $milestoneEvent['campaignchain_id'] = $milestone->getId();
+                $milestoneEvent['route_edit_api'] = $milestone->getMilestoneModule()->getRoutes()['edit_api'];
+                $milestoneEvent['trigger_identifier'] = str_replace('-', '_', $milestone->getTriggerHook()->getIdentifier());
                 // Get icons path
                 $milestoneService = $this->container->get('campaignchain.core.milestone');
                 $icons = $milestoneService->getIcons($milestone);

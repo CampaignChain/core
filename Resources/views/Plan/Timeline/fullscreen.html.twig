@@ -63,14 +63,5 @@ file that was distributed with this source code.
         scrollToToday();
     </script>
 
-    <!-- Modal -->
-    <div class="modal fade" id="ganttModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-            </div>
-            <!-- /.modal-content -->
-        </div>
-        <!-- /.modal-dialog -->
-    </div>
-    <!-- /.modal -->
+    {% include 'CampaignChainCoreBundle:Base:modal_remote.html.twig' %}
 {% endblock %}
