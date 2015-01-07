@@ -7,7 +7,7 @@
  file that was distributed with this source code.
  */
 
-function campaignchainCalendarTaskDblClickSuccess(event){
+function campaignchainCalendarTaskDblClickSuccess(event, data){
     switch(event.type){
         case 'campaign':
             var form_root_name = "campaignchain_core_campaign";

@@ -106,7 +106,9 @@ function campaignchainShowModal(start, end, type, id, route, action, successFunc
                 cache: false,
 
                 success: function(data, status) {
-                    window[successFunction](action);
+                    if(successFunction !== undefined){
+                        window[successFunction](action, data);
+                    }
 
                     $('#remoteModal').modal('hide');
                 },
@@ -122,6 +124,41 @@ function campaignchainShowModal(start, end, type, id, route, action, successFunc
     $('.modal').on("click", 'input[type="submit"], button[type="submit"]', function() {
         $('form[data-async] input[type=submit], form[data-async] button[type=submit]', $(this).parents("form")).removeAttr("clicked");
         $(this).attr("clicked", "true");
+    });
+}
+
+function campaignchainMoveAction(id, start, type, action, successFunction){
+    var postData = { id: id, start_date: start };
+
+    switch(type){
+        case 'campaign':
+            var apiUrl = Routing.generate('campaignchain_core_campaign_move_api');
+            break;
+        case 'milestone':
+            var apiUrl = Routing.generate('campaignchain_core_milestone_move_api');
+            break;
+        case 'activity':
+            var apiUrl = Routing.generate('campaignchain_core_activity_move_api');
+            break;
+    }
+
+    // Post data.
+    // TODO: Show spinning icon while saving.
+    $.ajax({
+        type: 'POST',
+        url: apiUrl,
+        data: postData,
+        dataType: "json",
+        cache: false,
+        success: function(data, status) {
+            // TODO: Show success message in Browser.
+            if(successFunction !== undefined){
+                window[successFunction](action, data);
+            }
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert('URL: ' + apiUrl + ', status: ' + xhr.status + ', message: ' +thrownError);
+        }
     });
 }
 

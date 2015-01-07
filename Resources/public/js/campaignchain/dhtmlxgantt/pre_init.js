@@ -221,7 +221,7 @@ gantt.attachEvent("onTaskDblClick", function(id,e){
     return false;
 });
 
-function campaignchainGanttTaskDblClickSuccess(task) {
+function campaignchainGanttTaskDblClickSuccess(task, data) {
     // Update changes in GANTT data as well.
     switch(task.type){
         case 'campaign':
@@ -264,47 +264,21 @@ gantt.attachEvent("onAfterTaskDrag", function(id, mode, e){
 //    console.log('End date after dragging: ' + task.end_date);
 
     if(mode == modes.move){
-        var postData = { id: task.campaignchain_id, start_date: start_date };
-
-        switch(task.type){
-            case 'campaign':
-                var apiUrl = Routing.generate('campaignchain_core_campaign_move_api');
-                break;
-            case 'milestone':
-                var apiUrl = Routing.generate('campaignchain_core_milestone_move_api');
-                break;
-            case 'activity':
-                var apiUrl = Routing.generate('campaignchain_core_activity_move_api');
-                break;
-        }
-
-        // Post data.
-        // TODO: Show spinning icon while saving.
-        $.ajax({
-            type: 'POST',
-            url: apiUrl,
-            data: postData,
-            dataType: "json",
-            cache: false,
-            success: function(data, status) {
-                // TODO: Show success message in Browser.
-                if(task.type == 'campaign'){
-                    // Explicitly set end_date of task based on the response data,
-                    // because DHTMLXGantt seems to adjust the end_date in a strange way.
-    //                var responseData = $.parseJSON(data);
-                    var new_end_date = campaignchainGetUserDateTime(data.campaign.new_end_date);
-                    gantt.getTask(id).end_date = new_end_date;
-                    gantt.updateTask(id);
-                    // Overwrite tooltip's end date info, which is a hack :)
-                    $(".campaignchain_dhxmlxgantt_tooltip_end_date").html("<b>End:</b> " + new_end_date.format(window.campaignchainDatetimeFormat) + " (" + window.campaignchainTimezoneAbbreviation + ")");
-                }
-            },
-            error: function (xhr, ajaxOptions, thrownError) {
-                alert('URL: ' + apiUrl + ', status: ' + xhr.status + ', message: ' +thrownError);
-            }
-        });
+        campaignchainMoveAction(task.campaignchain_id, start_date, task.type, task, 'campaignchainOnAfterTaskDragSuccess');
     }
 });
+
+function campaignchainOnAfterTaskDragSuccess(task, data){
+    if(task.type == 'campaign'){
+        // Explicitly set end_date of task based on the response data,
+        // because DHTMLXGantt seems to adjust the end_date in a strange way.
+        var new_end_date = campaignchainGetUserDateTime(data.campaign.new_end_date);
+        gantt.getTask(task.id).end_date = new_end_date;
+        gantt.updateTask(task.id);
+        // Overwrite tooltip's end date info, which is a hack :)
+        $(".campaignchain_dhxmlxgantt_tooltip_end_date").html("<b>End:</b> " + new_end_date.format(window.campaignchainDatetimeFormat) + " (" + window.campaignchainTimezoneAbbreviation + ")");
+    }
+}
 
 gantt.attachEvent("onTaskDrag", function (t) {
     gantt._is_tooltip(t) || this._hide_tooltip()
