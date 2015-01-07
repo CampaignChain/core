@@ -55,10 +55,10 @@ class FullCalendar
             return false;
         }
 
-        $campaignEvents = array();
-
         $datetimeUtil = $this->container->get('campaignchain.core.util.datetime');
         $userNow = $datetimeUtil->getUserNow();
+
+        $campaignEvents = array();
 
         foreach($campaigns as $campaign){
             $campaignEvent['title'] = $campaign->getName();
@@ -82,11 +82,11 @@ class FullCalendar
             $campaignEvent['route_edit_api'] = $campaign->getCampaignModule()->getRoutes()['edit_api'];
             $campaignEvent['trigger_identifier'] = str_replace('-', '_', $campaign->getTriggerHook()->getIdentifier());
 
-            if($campaign->getStartDate() < $userNow && $campaign->getEndDate() > $userNow){
+            if($hook->getStartDate() < $userNow && $hook->getEndDate() > $userNow){
                 $campaignEvents['ongoing'][] = $campaignEvent;
-            } elseif($campaign->getStartDate() < $userNow && $campaign->getEndDate() < $userNow){
+            } elseif($hook->getStartDate() < $userNow && $hook->getEndDate() < $userNow){
                 $campaignEvents['done'][] = $campaignEvent;
-            } elseif($campaign->getStartDate() > $userNow && $campaign->getEndDate() > $userNow){
+            } elseif($hook->getStartDate() > $userNow && $hook->getEndDate() > $userNow){
                 $campaignEvents['upcoming'][] = $campaignEvent;
             }
         }
@@ -102,7 +102,7 @@ class FullCalendar
             $calendarEvents['campaign_done']['data'] = $serializer->serialize($campaignEvents['done'], 'json');
             $calendarEvents['campaign_done']['options'] = array(
                 'className' => 'campaignchain-calendar-done campaignchain-calendar-campaign',
-                'startEditable' => false,
+                'editable' => false,
             );
         }
         if(isset($campaignEvents['upcoming'])){
@@ -118,6 +118,9 @@ class FullCalendar
         $activities = $repository->findAll();
 
         if(count($activities)){
+
+            $activityEvents = array();
+
             foreach($activities as $activity){
                 $activityEvent['title'] = $activity->getName();
 
@@ -138,14 +141,27 @@ class FullCalendar
                 $icons = $channelService->getIcons($activity->getChannel());
                 $activityEvent['icon_path_16px'] = $icons['16px'];
 
-                $activityEvents[] = $activityEvent;
+                if($hook->getStartDate() < $userNow){
+                    $activityEvents['done'][] = $activityEvent;
+                } else {
+                    $activityEvents['upcoming'][] = $activityEvent;
+                }
             }
 
-            $calendarEvents['activity']['data'] = $serializer->serialize($activityEvents, 'json');
-            $calendarEvents['activity']['options'] = array(
-                'className' => 'campaignchain-activity',
-                'durationEditable' => false,
-            );
+            if(isset($activityEvents['done'])){
+                $calendarEvents['activity_done']['data'] = $serializer->serialize($activityEvents['done'], 'json');
+                $calendarEvents['activity_done']['options'] = array(
+                    'className' => 'campaignchain-activity campaignchain-activity-done',
+                    'editable' => false,
+                );
+            }
+            if(isset($activityEvents['upcoming'])){
+                $calendarEvents['activity_upcoming']['data'] = $serializer->serialize($activityEvents['upcoming'], 'json');
+                $calendarEvents['activity_upcoming']['options'] = array(
+                    'className' => 'campaignchain-activity',
+                    'durationEditable' => false,
+                );
+            }
         }
 
         // Retrieve all milestones
@@ -153,6 +169,9 @@ class FullCalendar
         $milestones = $repository->findAll();
 
         if(count($milestones)){
+
+            $milestoneEvents = array();
+
             foreach($milestones as $milestone){
                 $milestoneEvent['title'] = $milestone->getName();
 
@@ -173,14 +192,27 @@ class FullCalendar
                 $icons = $milestoneService->getIcons($milestone);
                 $milestoneEvent['icon_path_16px'] = $icons['16px'];
 
-                $milestoneEvents[] = $milestoneEvent;
+                if($hook->getStartDate() < $userNow){
+                    $milestoneEvents['done'][] = $milestoneEvent;
+                } else {
+                    $milestoneEvents['upcoming'][] = $milestoneEvent;
+                }
             }
 
-            $calendarEvents['milestone']['data'] = $serializer->serialize($milestoneEvents, 'json');
-            $calendarEvents['milestone']['options'] = array(
-                'className' => 'campaignchain-milestone',
-                'durationEditable' => false,
-            );
+            if(isset($milestoneEvents['done'])){
+                $calendarEvents['milestone_done']['data'] = $serializer->serialize($milestoneEvents['done'], 'json');
+                $calendarEvents['milestone_done']['options'] = array(
+                    'className' => 'campaignchain-milestone campaignchain-milestone-done',
+                    'editable' => false,
+                );
+            }
+            if(isset($milestoneEvents['upcoming'])){
+                $calendarEvents['milestone_upcoming']['data'] = $serializer->serialize($milestoneEvents['upcoming'], 'json');
+                $calendarEvents['milestone_upcoming']['options'] = array(
+                    'className' => 'campaignchain-milestone',
+                    'durationEditable' => false,
+                );
+            }
         }
 
         return $calendarEvents;

@@ -20,6 +20,12 @@ file that was distributed with this source code.
     height: auto !important;
 }
 
+.campaignchain-activity-done,
+.campaignchain-milestone-done {
+    opacity:0.4;
+    filter:alpha(opacity=40); /* For IE8 and earlier */
+}
+
 .campaignchain-calendar-campaign .fc-content {
     padding: 3px;
     font-size: 14px;
