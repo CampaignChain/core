@@ -197,7 +197,7 @@ class Installer
         }
     }
 
-    public function getNewBundles(){
+    public function getNewBundles($getAll = false){
         $finder = new Finder();
         // Find all the CampaignChain module configuration files.
         $finder->files()->in($this->root)->name('campaignchain.yml');
@@ -214,7 +214,7 @@ class Installer
                     'composer.json',
                     $moduleConfig->getRelativePathname()
                 );
-            $this->getNewBundle($bundleComposer);
+            $this->getNewBundle($bundleComposer, $getAll);
         }
 
         if(!count($this->newBundles)){
@@ -224,7 +224,7 @@ class Installer
         return true;
     }
 
-    protected function getNewBundle($bundleComposer)
+    protected function getNewBundle($bundleComposer, $getAll = false)
     {
         if(file_exists($bundleComposer)){
             $bundleComposerData = file_get_contents($bundleComposer);
@@ -288,28 +288,33 @@ class Installer
                 )
             );
 
-            // Check whether this bundle has already been installed
-            switch($this->isRegisteredBundle($bundle)){
-                case self::STATUS_REGISTERED_NO:
-                    $this->newBundles[] = $bundle;
-                    return true;
-                case self::STATUS_REGISTERED_OLDER:
-                    // Get the existing bundle.
-                    $registeredBundle = $this->em
-                        ->getRepository('CampaignChainCoreBundle:Bundle')
-                        ->findOneByName($bundle->getName());
-                    // Update the existing bundle's data.
-                    $registeredBundle->setDescription($bundle->getDescription());
-                    $registeredBundle->setLicense($bundle->getLicense());
-                    $registeredBundle->setAuthors($bundle->getAuthors());
-                    $registeredBundle->setHomepage($bundle->getHomepage());
-                    $registeredBundle->setVersion($bundle->getVersion());
+            if(!$getAll){
+                // Check whether this bundle has already been installed
+                switch($this->isRegisteredBundle($bundle)){
+                    case self::STATUS_REGISTERED_NO:
+                        $this->newBundles[] = $bundle;
+                        return true;
+                    case self::STATUS_REGISTERED_OLDER:
+                        // Get the existing bundle.
+                        $registeredBundle = $this->em
+                            ->getRepository('CampaignChainCoreBundle:Bundle')
+                            ->findOneByName($bundle->getName());
+                        // Update the existing bundle's data.
+                        $registeredBundle->setDescription($bundle->getDescription());
+                        $registeredBundle->setLicense($bundle->getLicense());
+                        $registeredBundle->setAuthors($bundle->getAuthors());
+                        $registeredBundle->setHomepage($bundle->getHomepage());
+                        $registeredBundle->setVersion($bundle->getVersion());
 
-                    $this->newBundles[] = $registeredBundle;
+                        $this->newBundles[] = $registeredBundle;
 
-                    return true;
-                case self::STATUS_REGISTERED_SAME:
-                    return false;
+                        return true;
+                    case self::STATUS_REGISTERED_SAME:
+                        return false;
+                }
+            } else {
+                $this->newBundles[] = $bundle;
+                return true;
             }
         } else {
             // TODO: Throw exception if file does not exist?
@@ -631,5 +636,10 @@ class Installer
         }
 
         return $modules;
+    }
+
+    public function getKernelConfig()
+    {
+        return $this->kernelConfig;
     }
 }

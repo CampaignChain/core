@@ -30,13 +30,26 @@ class Kernel
         $this->logger = $logger;
     }
 
-    public function register(KernelConfig $kernelConfig)
+    public function register(
+        KernelConfig $kernelConfig,
+        array $types = array(
+            'classes' => true,
+            'configs' => true,
+            'routings' => true
+        )
+    )
     {
         $this->kernelConfig = $kernelConfig;
 
-        $this->registerClasses();
-        $this->registerConfigs();
-        $this->registerRoutings();
+        if(isset($types['classes']) && $types['classes']){
+            $this->registerClasses();
+        }
+        if(isset($types['configs']) && $types['configs']){
+            $this->registerConfigs();
+        }
+        if(isset($types['routings']) && $types['routings']){
+            $this->registerRoutings();
+        }
     }
 
     protected function registerClasses()
