@@ -128,7 +128,8 @@ function campaignchainShowModal(start, end, type, id, route, action, successFunc
 }
 
 function campaignchainMoveAction(id, start, type, action, successFunction){
-    var postData = { id: id, start_date: start.toISOString() };
+    start = moment.tz(start, 'UTC').toISOString();
+    var postData = { id: id, start_date: start };
 
     switch(type){
         case 'campaign':

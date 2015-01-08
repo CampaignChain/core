@@ -61,7 +61,7 @@ file that was distributed with this source code.
             },
             eventDrop: function(event, delta, revertFunc) {
                 // Adjust to user timezone and ISO8601 format.
-                var start_date = moment.tz(campaignchainGetUserDateTime(event.start), 'UTC');
+                var start_date = campaignchainGetUserDateTime(event.start);
 
                 campaignchainMoveAction(event.campaignchain_id, start_date, event.type);
             },
