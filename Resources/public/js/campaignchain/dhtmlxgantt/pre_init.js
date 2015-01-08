@@ -260,7 +260,7 @@ gantt.attachEvent("onAfterTaskDrag", function(id, mode, e){
     var task = gantt.getTask(id);
     var modes = gantt.config.drag_mode;
     // Adjust to user timezone and ISO8601 format.
-    var start_date = moment.tz(campaignchainGetUserDateTime(task.start_date), 'UTC').toISOString();
+    var start_date = moment.tz(campaignchainGetUserDateTime(task.start_date), 'UTC');
 //    console.log('End date after dragging: ' + task.end_date);
 
     if(mode == modes.move){
