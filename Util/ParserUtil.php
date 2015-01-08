@@ -13,7 +13,6 @@ namespace CampaignChain\CoreBundle\Util;
 use Guzzle\Http\Client;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Filesystem\Exception\IOException;
 
 class ParserUtil
 {
