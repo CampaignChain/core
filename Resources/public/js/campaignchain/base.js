@@ -22,7 +22,7 @@ function campaignchainRoundMinutes(date){
 }
 
 function campaignchainGetUserDateTime(datetime){
-    return moment.tz(datetime, window.campaignchainTimezone)
+    return moment.tz(datetime, window.campaignchainTimezone);
 }
 
 function campaignchainShowModal(start, end, type, id, route, action, successFunction){
@@ -128,8 +128,7 @@ function campaignchainShowModal(start, end, type, id, route, action, successFunc
 }
 
 function campaignchainMoveAction(id, start, type, action, successFunction){
-    start = moment.tz(start, 'UTC').toISOString();
-    var postData = { id: id, start_date: start };
+    var postData = { id: id, start_date: start.format(), timezone: window.campaignchainTimezone };
 
     switch(type){
         case 'campaign':

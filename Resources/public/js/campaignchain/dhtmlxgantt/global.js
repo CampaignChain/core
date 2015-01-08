@@ -45,8 +45,6 @@ gantt.config.tooltip_timeout = 0;
 // Mark today with a line
 gantt.attachEvent("onGanttRender", onGanttRender_todayLine(today));
 
-
-// TODO: Seems like the calculated time of the day is not correct.
 function onGanttRender_todayLine(today) {
     return function f() {
         var $today = $("#campaignchain_gantt_today");
@@ -61,4 +59,27 @@ function onGanttRender_todayLine(today) {
         var x_end = gantt.posFromDate(today.add(1, 'minute'));
         $today.css("left", Math.floor(x_start + 0.5 * (x_end - x_start)) + "px");
     };
+}
+
+/*
+ Normalize the date, i.e. calculate the difference between the browser's
+ and the provided date's timezone offset and adjust the date accordingly.
+
+ For example, the browser might be in +01:00 (Europe/Berlin), while
+ the timezone configured for CampaignChain is -08:00 (USA/Los Angeles).
+
+ In that case the moment.js date would have to be adjusted by +9:00 hours
+ in relation to the UTC date provided by moment.js.
+ */
+function campaignchainGanttNormalizeDate(date)
+{
+    var browserOffset = moment().zone();
+    var userTimezoneOffset = moment().zone(window.campaignchainTimezoneOffset).zone();
+
+    date = campaignchainGetUserDateTime(date);
+    date.utc()
+    date.subtract(browserOffset, 'minutes');
+    date.add(userTimezoneOffset, 'minutes');
+
+    return date;
 }

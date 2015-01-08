@@ -18,7 +18,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class FullCalendar
 {
-    const FORMAT_CALENDAR_DATE = 'Y-m-d\TH:i:s';
+    const FORMAT_CALENDAR_DATE = \DateTime::ISO8601; //'Y-m-d\TH:i:s';
 
     protected $em;
     protected $container;

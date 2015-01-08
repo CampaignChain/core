@@ -35,3 +35,21 @@ function campaignchainCalendarTaskDblClickSuccess(event, data){
 
     $('#calendar').fullCalendar('updateEvent', event);
 }
+
+/*
+The calendar dates on the client side should be regarded as UTC minus the
+user's timezone offset and adjusted accordingly before storing them directly
+into the database, e.g. via AJAX.
+ */
+function campaignchainCalendarNormalizeDate(date)
+{
+    // Clone the event object, because we don't want below changes
+    // to the date to influence it.
+    var date = moment(date);
+
+    var browserOffset = moment().zone();
+    var userTimezoneOffset = moment().zone(window.campaignchainTimezoneOffset).zone();
+
+    date.subtract(browserOffset, 'minutes');
+    return date.add(userTimezoneOffset, 'minutes');
+}
