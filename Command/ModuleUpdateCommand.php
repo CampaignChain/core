@@ -51,12 +51,14 @@ EOT
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         if ($input->getOption('config-only')) {
+            $output->writeln('Updating configuration');
             $installer = $this->getContainer()->get('campaignchain.core.module.installer');
             $installer->getNewBundles(true);
 
             $kernel = $this->getContainer()->get('campaignchain.core.module.kernel');
             $types = array('configs' => true, 'routings' => true);
             $kernel->register($installer->getKernelConfig(), $types);
+            $output->writeln('Done');
         }
     }
 }
