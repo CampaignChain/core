@@ -34,10 +34,12 @@ file that was distributed with this source code.
                         <td>{{ milestone.name }}</td>
                         <td>{{ milestone.getCampaign().getName() }}</td>
                         <td>{{ milestone|campaignchain_tpl_trigger_hook_inline }}</td>
-                        <td>
-                            <a role="button" class="btn btn-default btn-xs"
-                               href="{{ path('campaignchain_core_milestone_edit',{'id':milestone.id}) }}">
-                                <span class="fa fa-pencil"></span></a>
+                        <td align="center">
+                            <button type="button" class="btn btn-default">
+                                <a href="{{ path('campaignchain_core_milestone_edit',{'id':milestone.id}) }}">
+                                    <span class="fa fa-pencil"></span>
+                                </a>
+                            </button>
                             {#{% if milestone.status == "paused" %}#}
                                 {#<button type="button" class="btn btn-default btn-xs">#}
                                     {#<a href="#"><span class="fa fa-play"></span></a>#}
