@@ -163,12 +163,27 @@ ul.nav-tabs {
 }
 
 .campaignchain-location-image-input-prepend,
-.campaignchain-icon-inline,
-.select2-container .icon,
-.select2-result .icon{
+.campaignchain-icon-inline {
     height: 16px;
     width: 16px;
     margin-top: -4px;
+}
+
+.select2-container .icon,
+.select2-result .icon,
+.campaignchain-medium-icon .icon {
+    height: 32px;
+    width: 32px;
+    margin-top: -4px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+.select2-container .context-icon,
+.select2-result .context-icon,
+.campaignchain-medium-icon .context-icon {
+    margin-left: -14px;
+    margin-bottom: -12px;
 }
 
 .campaignchain-location-image {
