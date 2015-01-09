@@ -27,6 +27,20 @@ class LocationService
         $this->container = $container;
     }
 
+    public function getLocation($id){
+        $location = $this->em
+            ->getRepository('CampaignChainCoreBundle:Location')
+            ->find($id);
+
+        if (!$location) {
+            throw new \Exception(
+                'No location found for id '.$id
+            );
+        }
+
+        return $location;
+    }
+
     public function getLocationModule($moduleIdentifier, $locationIdentifier){
         // Get module.
         $bundle = $this->em

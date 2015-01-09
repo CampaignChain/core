@@ -87,6 +87,8 @@ class CampaignChainCoreExtension extends \Twig_Extension
             $bundlePath = $object->getChannelModule()->getBundle()->getPath();
         } elseif(strpos($class, 'CoreBundle\Entity\Activity') !== false){
             $bundlePath = $object->getChannel()->getChannelModule()->getBundle()->getPath();
+        } else {
+            return false;
         }
 
         $path = 'bundles/campaignchain'.strtolower(str_replace(DIRECTORY_SEPARATOR, '', str_replace('Bundle', '', str_replace('-', '', $bundlePath))));
@@ -108,6 +110,8 @@ class CampaignChainCoreExtension extends \Twig_Extension
             $bundleName = $object->getChannelModule()->getBundle()->getName();
         } elseif(strpos($class, 'CoreBundle\Entity\Activity') !== false){
             $bundleName = $object->getChannel()->getChannelModule()->getBundle()->getName();
+        } else {
+            return false;
         }
 
         $iconName = str_replace('campaignchain/channel-', '', $bundleName).'.png';
