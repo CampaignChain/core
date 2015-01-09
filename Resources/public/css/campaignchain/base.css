@@ -173,6 +173,11 @@ ul.nav-tabs {
     display: inline-block;
 }
 
+.campaignchain-medium-icon a,
+.campaignchain-medium-icon a:hover {
+    text-decoration: none;
+}
+
 .select2-container .icon,
 .select2-result .icon,
 .campaignchain-medium-icon .icon {
