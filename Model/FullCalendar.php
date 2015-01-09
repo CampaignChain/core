@@ -136,10 +136,11 @@ class FullCalendar
                 $activityEvent['type'] = 'activity';
                 $activityEvent['route_edit_api'] = $activity->getActivityModule()->getRoutes()['edit_api'];
                 $activityEvent['trigger_identifier'] = str_replace('-', '_', $activity->getTriggerHook()->getIdentifier());
-                // Get icons path
-                $channelService = $this->container->get('campaignchain.core.channel');
-                $icons = $channelService->getIcons($activity->getChannel());
-                $activityEvent['icon_path_16px'] = $icons['16px'];
+                // Get activity icons path
+                $activityService = $this->container->get('campaignchain.core.activity');
+                $icons = $activityService->getIcons($activity);
+                $activityEvent['location_icon'] = $icons['location_icon'];
+                $activityEvent['activity_icon'] = $icons['activity_icon'];
 
                 if($hook->getStartDate() < $userNow){
                     $activityEvents['done'][] = $activityEvent;

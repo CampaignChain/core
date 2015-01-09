@@ -63,25 +63,6 @@ class ChannelService
         }
     }
 
-    /**
-     * Compose the channel icon path
-     *
-     * @param $channel
-     * @return mixed
-     */
-    public function getIcons($channel)
-    {
-        // Compose the channel icon path
-        $modulePath = $channel->getChannelModule()->getBundle()->getPath();
-        $bundlePath = 'bundles/campaignchain'.strtolower(str_replace(DIRECTORY_SEPARATOR, '', str_replace('Bundle', '', $modulePath)));
-        $bundleName = $channel->getChannelModule()->getBundle()->getName();
-        $iconName = str_replace('campaignchain/channel-', '', $bundleName).'.png';
-        $icon['16px'] = '/'.$bundlePath.'/images/icons/16x16/'.$iconName;
-        $icon['24px'] = '/'.$bundlePath.'/images/icons/24x24/'.$iconName;
-
-        return $icon;
-    }
-
     public function getRootLocations($channel)
     {
         $repository = $this->em->getRepository('CampaignChainCoreBundle:Location');

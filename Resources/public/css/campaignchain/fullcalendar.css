@@ -11,13 +11,22 @@ file that was distributed with this source code.
 .campaignchain-milestone,
 .campaignchain-activity.fc-event:hover,
 .campaignchain-milestone.fc-event:hover {
-    background-repeat: no-repeat;
-    background-position: 2px 2px;
     background-color: #ffffff !important;
     color: #000;
     padding-left: 20px;
-    min-height: 22px;
     height: auto !important;
+}
+
+.campaignchain-milestone,
+.campaignchain-milestone.fc-event:hover {
+    background-repeat: no-repeat;
+    background-position: 2px 2px;
+    min-height: 22px;
+}
+
+.campaignchain-activity,
+.campaignchain-activity.fc-event:hover {
+    min-height: 36px;
 }
 
 .campaignchain-activity-done,
@@ -59,4 +68,19 @@ file that was distributed with this source code.
 
 .fc-event-vert .fc-event-time {
     white-space: normal;
+}
+
+.fc-event.campaignchain-activity .campaignchain-medium-icon {
+    float:left;
+    margin-left: -18px;
+    padding-top: 4px;
+    padding-right: 2px;
+}
+
+.fc-time-grid-event.fc-short .fc-time, .fc-time-grid-event.fc-short .fc-title {
+    display: inline;
+}
+
+.fc-time-grid-event.fc-short .fc-time:before {
+    font-weight: bold;
 }

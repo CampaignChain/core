@@ -28,6 +28,7 @@ gantt.locale.labels['type_' + "milestone"] = "Milestone";
 // TODO: Make left column collapsible.
 gantt.config.progress = false;
 gantt.config.grid_width = 240;
+gantt.config.row_height = 40;
 //gantt.config.autosize = true;
 gantt.config.columns = [
     {name:"text", label:"Campaigns, Activities, Milestones", tree:true, width:100 },

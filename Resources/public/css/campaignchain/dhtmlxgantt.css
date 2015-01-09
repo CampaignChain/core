@@ -103,7 +103,23 @@ border: "#777777"
     border: none;
     box-sizing: content-box;
     -moz-box-sizing: content-box;
+}
+
+.gantt_task_line.campaignchain_gantt_milestone {
     width:24px !important;
+}
+
+.gantt_task_line.campaignchain_gantt_activity {
+    width:34px !important;
+}
+
+.gantt_cell .campaignchain-medium-icon {
+    position:absolute;
+    padding-left: 10px;
+}
+
+.campaignchain-medium-icon ~ .gantt_tree_content {
+    padding-left: 50px;
 }
 
 .gantt_task_line.campaignchain_gantt_activity div,

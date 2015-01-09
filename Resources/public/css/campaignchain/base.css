@@ -169,6 +169,10 @@ ul.nav-tabs {
     margin-top: -4px;
 }
 
+.campaignchain-medium-icon {
+    display: inline-block;
+}
+
 .select2-container .icon,
 .select2-result .icon,
 .campaignchain-medium-icon .icon {
