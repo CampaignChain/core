@@ -54,17 +54,15 @@ file that was distributed with this source code.
                         </td>
                         <td align="center">
                             {% if activity.status == "open" or activity.status == "paused" %}
-                                <button type="button" class="btn btn-default">
-                                    <a href="{{ path('campaignchain_core_activity_edit',{'id':activity.id}) }}">
-                                        <span class="fa fa-pencil"></span>
-                                    </a>
-                                </button>
+                                <a  class="btn btn-primary"
+                                    href="{{ path('campaignchain_core_activity_edit',{'id':activity.id}) }}">
+                                    <span class="fa fa-pencil"></span>
+                                </a>
                             {% elseif activity.status == "closed" %}
-                                <button type="button" class="btn btn-default">
-                                    <a href="{{ path('campaignchain_core_activity_read',{'id':activity.id}) }}">
-                                        <span class="fa fa-file-text"></span>
-                                    </a>
-                                </button>
+                                <a class="btn btn-primary"
+                                    href="{{ path('campaignchain_core_activity_read',{'id':activity.id}) }}">
+                                    <span class="fa fa-file-text"></span>
+                                </a>
                             {% endif %}
                             {#{% if activity.status == "paused" %}#}
                                 {#<button type="button" class="btn btn-default btn-xs">#}
