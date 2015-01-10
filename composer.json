@@ -41,7 +41,7 @@
         "bmatzner/fontawesome-bundle": "dev-master",
         "ivaynberg/select2": "3.5.0",
         "h4cc/alice-fixtures-bundle": "dev-master",
-        "friendsofsymfony/jsrouting-bundle": "dev-master",
+        "friendsofsymfony/jsrouting-bundle": "dev-master#6810cd029eb2bde0a33ec7b59e7adcd9c666811d",
         "hpatoio/bitly-bundle": "dev-master",
         "sp/bower-bundle": "dev-master",
         "sonata-project/admin-bundle": "~2.2",
