@@ -46,10 +46,13 @@ file that was distributed with this source code.
             editable: true,
             defaultTimedEventDuration: '00:01:00',
             eventRender: function(event, element) {
+                // Render Milestone icon.
                 if (event.icon_path_16px)
                 {
                     element.css({"background-image":"url('" + event.icon_path_16px +"')"});
                 }
+
+                // Render Activity icons
                 if (event.location_icon)
                 {
                     var icon = "<div class='campaignchain-medium-icon'>";
@@ -58,6 +61,8 @@ file that was distributed with this source code.
                     icon = icon + "</div>";
                     element.prepend(icon);
                 }
+
+                // Edit in modal.
                 element.bind('dblclick', function() {
                     campaignchainShowModal(
                         event.start,
@@ -66,9 +71,6 @@ file that was distributed with this source code.
                         event, 'campaignchainCalendarTaskDblClickSuccess'
                     );
                 });
-            },
-            eventAfterRender: function(event, element, view) {
-                element.draggable();
             },
             eventDrop: function(event, delta, revertFunc) {
                 var start_date = campaignchainCalendarNormalizeDate(event.start.format());
@@ -87,9 +89,6 @@ file that was distributed with this source code.
                 {% endif %}
             ]
         });
-
-        $('.fc-view tbody').draggable();
-
     });
 
 </script>
