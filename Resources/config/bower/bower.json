@@ -12,6 +12,7 @@
         "fullcalendar": "2.1",
         "jquery.countdown": "2.0",
         "ladda": "",
-        "blockui": ""
+        "blockui": "",
+        "jquery-ui-touch-punch": ""
     }
 }
