@@ -67,6 +67,9 @@ file that was distributed with this source code.
                     );
                 });
             },
+            eventAfterRender: function(event, element, view) {
+                element.draggable();
+            },
             eventDrop: function(event, delta, revertFunc) {
                 var start_date = campaignchainCalendarNormalizeDate(event.start.format());
                 campaignchainMoveAction(event.campaignchain_id, start_date, event.type);
@@ -84,6 +87,8 @@ file that was distributed with this source code.
                 {% endif %}
             ]
         });
+
+        $('.fc-view tbody').draggable();
 
     });
 

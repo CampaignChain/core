@@ -99,6 +99,7 @@ assetic:
         fullcalendar_js:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/components/fullcalendar/dist/fullcalendar.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js"
                 - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/fullcalendar.js"
         fullcalendar_css:
             inputs:
