@@ -70,6 +70,26 @@ assetic:
         datatables_css:
             inputs:
                 - "%kernel.root_dir%/../vendor/datatables/datatables/examples/resources/bootstrap/3/dataTables.bootstrap.css"
+        datatables_sort_asc:
+            inputs:
+                - "%kernel.root_dir%/../vendor/datatables/datatables/media/images/sort_asc.png"
+            output: "images/sort_asc.png"
+        datatables_sort_asc_disabled:
+            inputs:
+                - "%kernel.root_dir%/../vendor/datatables/datatables/media/images/sort_asc_disabled.png"
+            output: "images/sort_asc_disabled.png"
+        datatables_sort_both:
+            inputs:
+                - "%kernel.root_dir%/../vendor/datatables/datatables/media/images/sort_both.png"
+            output: "images/sort_both.png"
+        datatables_sort_desc:
+            inputs:
+                - "%kernel.root_dir%/../vendor/datatables/datatables/media/images/sort_desc.png"
+            output: "images/sort_desc.png"
+        datatables_sort_desc_disabled:
+            inputs:
+                - "%kernel.root_dir%/../vendor/datatables/datatables/media/images/sort_desc_disabled.png"
+            output: "images/sort_desc_disabled.png"
         daterangepicker_js:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/components/bootstrap-daterangepicker/daterangepicker.js"
