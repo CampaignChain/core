@@ -29,12 +29,5 @@ file that was distributed with this source code.
 {% if activity.getStatus() == 'closed' %}
     <p><i class="fa fa-clock-o"></i> {{ activity|campaignchain_tpl_trigger_hook_inline }}</p>
 {% endif %}
-<p>
-    <div class='campaignchain-medium-icon'>
-        <img class='icon' src='{{ asset( location|campaignchain_medium_icon ) }}'/>
-        <img class='context-icon' src='{{ asset( location|campaignchain_medium_context ) }}' style='background-image: url("{{ asset( location|campaignchain_medium_context ) }}");'/>
-        <span class="text"><a href="{{ location.getUrl() }}">{{ location.getName() }}</a></span>
-    </div>
-</p>
 <p><i class="fa fa-globe"></i> <a href="{{ location.getUrl() }}">{{ location.getUrl() }}</a></p>
 <p><i class="fa fa-bullhorn"></i> <a href="{{ path('campaignchain_core_campaign_edit', { 'id': campaign.getId() }) }}">{{ campaign.getName() }}</a></p>

@@ -1,0 +1,26 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) Sandro Groganz <sandro@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+{% if form is defined and form.vars is defined and form.vars.location is defined %}
+    {% set location = form.vars.location %}
+{% else %}
+    {% set location = activity.getLocation() %}
+{% endif %}
+
+{% spaceless %}
+    <div id="campaignchain-operation-field">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class='campaignchain-medium-icon'>
+                    <img class='icon' src='{{ asset( location|campaignchain_medium_icon ) }}'/>
+                    <img class='context-icon' src='{{ asset( location|campaignchain_medium_context ) }}' style='background-image: url("{{ asset( location|campaignchain_medium_context ) }}");'/>
+                    <span class="text"><a href="{{ location.getUrl() }}" target="_blank">{{ location.getName() }}</a></span>
+                </div>
+            </div>
+            <div class="panel-body">
+{% endspaceless %}
