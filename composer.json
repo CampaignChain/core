@@ -33,7 +33,7 @@
         "incenteev/composer-parameter-handler": "~2.0",
         "twbs/bootstrap": "3.3.*",
         "knplabs/knp-menu": "dev-master",
-        "knplabs/knp-paginator-bundle": "dev-master",
+        "knplabs/knp-paginator-bundle": "2.4.*",
         "knplabs/knp-menu-bundle":"dev-master",
         "stephanecollot/datetimepicker-bundle": "dev-master",
         "datatables/datatables": "dev-master",
