@@ -13,11 +13,8 @@ namespace CampaignChain\CoreBundle\Command;
 use CampaignChain\CoreBundle\Entity\Action;
 use CampaignChain\CoreBundle\Entity\Scheduler;
 use CampaignChain\CoreBundle\Entity\Job;
-use CampaignChain\CoreBundle\Job\JobServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -98,7 +95,7 @@ class SchedulerCommand extends ContainerAwareCommand
         $this->scheduler = $this->startScheduler($this->interval);
 
         // Test whether we have Internet access.
-        $this->testInternet();
+        //$this->testInternet();
 
         try {
             $output->writeln('Scheduler ID: '.$this->scheduler->getId());
@@ -129,7 +126,11 @@ class SchedulerCommand extends ContainerAwareCommand
                         // Check whether this operation is executable per its trigger hook.
                         if($this->isExecutable($action)){
                             // Queue new Job.
-                            $this->queueJob($action);
+                            $this->queueJob(
+                                $action->getType(),
+                                $action->getId(),
+                                $action->getModule()->getServices()['job']
+                            );
 
                             // Highlight the date that is within the execution period.
                             $startDate = $action->getStartDate()->format('Y-m-d h:i:s');
@@ -163,74 +164,134 @@ class SchedulerCommand extends ContainerAwareCommand
                     // Create the table rows for output.
                     $table->setRows($outputTableRows);
                     $table->render();
-
-                    // Get the operations to be processed.
-                    $jobs = $this->em->getRepository('CampaignChainCoreBundle:Job')->findBy(array(
-                        'scheduler' => $this->scheduler,
-                        'status' => Job::STATUS_OPEN,
-                        'actionType' => $actionType,
-                    ));
-
-                    // Executing the open operations.
-                    if(count($jobs)){
-                        $output->writeln('<info>Executing action type "'.$actionType.'" now:</info>');
-
-                        // create a new progress bar
-                        $progress = new ProgressBar($output, count($jobs));
-                        // start and displays the progress bar
-                        $progress->start();
-
-                        foreach($jobs as $job){
-                            // Execute job.
-                            $this->executeJob($job);
-
-                            // advance the progress bar 1 unit
-                            $progress->advance();
-                        }
-
-                        // ensure that the progress bar is at 100%
-                        $progress->finish();
-                        $output->writeln('');
-
-                        // Get the processed jobs.
-                        $jobs = $this->em->getRepository('CampaignChainCoreBundle:Job')->findBy(array(
-                            'scheduler' => $this->scheduler,
-                            'actionType' => $actionType,
-                        ));
-
-                        // Display the results of the execution.
-                        $output->writeln('<info>Results of executed actions:</info>');
-                        $table = new Table($this->output);
-                        $table
-                            ->setHeaders(array(
-                                'Operation ID', 'Process ID', 'Job Name', 'Job Start Date', 'Job End Date', 'Duration', 'Status', 'Message'
-                            ));
-
-                        $outputTableRows = array();
-                        foreach($jobs as $job){
-                            $startDate = null;
-                            $endDate = null;
-
-                            if($job->getStartDate()) {
-                                $startDate = $job->getStartDate()->format('Y-m-d h:i:s');
-                            }
-                            if($job->getEndDate()) {
-                                $endDate = $job->getEndDate()->format('Y-m-d h:i:s');
-                            }
-
-                            $outputTableRows[] = array(
-                                $job->getActionId(), $job->getPid(), $job->getName(), $startDate, $endDate, $job->getDuration().' ms', $job->getStatus(), $job->getMessage(),
-                            );
-                        }
-
-                        // Create the table rows for output.
-                        $table->setRows($outputTableRows);
-                        $table->render();
-                    }
                 } else {
                     $output->writeln('<error>No actions of type "'.$actionType.'" scheduled within the past '.$this->interval.' minutes.</error>');
                 }
             }
+
+            // Queue the scheduled reports.
+            $output->writeln('Processing scheduled reports.');
+
+            $qb = $this->em->createQueryBuilder();
+            $qb->select('sr')
+                ->from('CampaignChain\CoreBundle\Entity\SchedulerReport', 'sr')
+                ->where('sr.endDate > :now')
+//                ->andWhere('sr.nextRun >= :periodStart AND sr.nextRun <= :periodEnd')
+                ->setParameter('now', new \DateTime('now', new \DateTimeZone('UTC')));
+//                ->setParameter('periodEnd', $this->scheduler->getPeriodEnd()->format('Y-m-d h:i:s'))
+//                ->setParameter('periodStart', $this->scheduler->getPeriodStart()->format('Y-m-d h:i:s'));
+            $query = $qb->getQuery();
+            $scheduledReports = $query->getResult();
+            $output->writeln(count($scheduledReports));
+            foreach($scheduledReports as $scheduledReport){
+                if($scheduledReport instanceof \CampaignChain\CoreBundle\Entity\SchedulerReportOperation){
+                    $module = $scheduledReport->getOperation()->getOperationModule();
+                    $type = Action::TYPE_OPERATION;
+                    $id = $scheduledReport->getOperation()->getId();
+                    $name = $scheduledReport->getOperation()->getName();
+                }/* elseif($scheduledReport instanceof \CampaignChain\CoreBundle\Entity\SchedulerReportActivity){
+                    $module = $scheduledReport->getActivity()->getActivityModule();
+                    $type = Action::TYPE_ACTIVITY;
+                    $id = $scheduledReport->getActivity()->getId();
+                } elseif($scheduledReport instanceof \CampaignChain\CoreBundle\Entity\SchedulerReportMilestone){
+                    $module = $scheduledReport->getMilestone()->getMilestoneModule();
+                    $type = Action::TYPE_MILESTONE;
+                    $id = $scheduledReport->getMilestone()->getId();
+                }*/
+
+                $output->writeln('Adding Job for collecting report data for '.Action::TYPE_OPERATION.' '.$id.' "'.$name.'".');
+
+                $this->queueJob(
+                    $type,
+                    $id,
+                    $module->getServices()['report'],
+                    'report'
+                );
+
+                // Update next run.
+                if($scheduledReport->getInterval() != null){
+                    $interval = \DateInterval::createfromdatestring($scheduledReport->getInterval());
+                    $nextRun = clone $scheduledReport->getNextRun();
+                    $scheduledReport->setNextRun($nextRun->add($interval));
+                }
+            }
+
+            // Get the Jobs to be processed.
+            $qb = $this->em->createQueryBuilder();
+            $qb->select('j')
+                ->from('CampaignChain\CoreBundle\Entity\Job', 'j')
+                ->where('j.scheduler = :scheduler')
+                ->andWhere('j.status = :status')
+                ->setParameter('scheduler', $this->scheduler)
+                ->setParameter('status', Job::STATUS_OPEN)
+                ->orderBy('j.id', 'DESC');
+            $query = $qb->getQuery();
+            $jobs = $query->getResult();
+
+            // Executing the open operations.
+            if(count($jobs)){
+                $output->writeln('<info>Executing jobs now:</info>');
+
+                // create a new progress bar
+                $progress = new ProgressBar($output, count($jobs));
+                // start and displays the progress bar
+                $progress->start();
+
+                foreach($jobs as $job){
+                    // Execute job.
+                    $this->executeJob($job);
+
+                    // advance the progress bar 1 unit
+                    $progress->advance();
+                }
+
+                // ensure that the progress bar is at 100%
+                $progress->finish();
+                $output->writeln('');
+            }
+
+            // Get the processed jobs.
+            $qb = $this->em->createQueryBuilder();
+            $qb->select('j')
+                ->from('CampaignChain\CoreBundle\Entity\Job', 'j')
+                ->where('j.scheduler = :scheduler')
+                ->andWhere('j.status != :status')
+                ->setParameter('scheduler', $this->scheduler)
+                ->setParameter('status', Job::STATUS_OPEN)
+                ->orderBy('j.id', 'DESC');
+            $query = $qb->getQuery();
+            $jobs = $query->getResult();
+
+            // Display the results of the execution.
+            $output->writeln('<info>Results of executed actions:</info>');
+            $table = new Table($this->output);
+            $table
+                ->setHeaders(array(
+                    'Job ID', 'Operation ID', 'Process ID', 'Job Name', 'Job Start Date', 'Job End Date', 'Duration', 'Status', 'Message'
+                ));
+
+            $outputTableRows = array();
+            foreach($jobs as $job){
+                $startDate = null;
+                $endDate = null;
+
+                if($job->getStartDate()) {
+                    $startDate = $job->getStartDate()->format('Y-m-d h:i:s');
+                }
+                if($job->getEndDate()) {
+                    $endDate = $job->getEndDate()->format('Y-m-d h:i:s');
+                }
+
+                $outputTableRows[] = array(
+                    $job->getId(), $job->getActionId(), $job->getPid(), $job->getName(), $startDate, $endDate, $job->getDuration().' ms', $job->getStatus(), $job->getMessage(),
+                );
+            }
+
+            // Create the table rows for output.
+            $table->setRows($outputTableRows);
+            $table->render();
+
+
             // Scheduler is done, let's see how long it took.
             $stopwatchSchedulerEvent = $stopwatchScheduler->stop('scheduler');
 
@@ -390,16 +451,14 @@ class SchedulerCommand extends ContainerAwareCommand
         return $query->getResult();
     }
 
-    protected function queueJob($action){
+    protected function queueJob($actionType, $actionId, $service, $jobType = null){
         $job = new Job();
         $job->setScheduler($this->scheduler);
         //$this->scheduler->addJob($job);
-        $job->setActionType($action->getType());
-        $job->setActionId($action->getId());
-        // Check whether the action actually has a related job service.
-        if($jobServiceName = $action->getModule()->getServices()['job']){
-            $job->setName($jobServiceName);
-        }
+        $job->setActionType($actionType);
+        $job->setActionId($actionId);
+        $job->setName($service);
+        $job->setJobType($jobType);
         $job->setStatus(Job::STATUS_OPEN);
 
         $this->em->persist($job);

@@ -31,6 +31,8 @@ use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
+use CampaignChain\CoreBundle\Entity\ReportAnalyticsActivityMetric;
+use CampaignChain\CoreBundle\Entity\ReportAnalyticsChannelMetric;
 
 class Installer
 {
@@ -443,6 +445,43 @@ class Installer
                 }
                 if(isset($moduleParams['system']) && is_array($moduleParams['system']) && count($moduleParams['system'])){
                     $this->systemParams = array_merge($this->systemParams, $moduleParams['system']);
+                }
+                // Are metrics for the reports defined?
+                if(isset($moduleParams['metrics']) && is_array($moduleParams['metrics']) && count($moduleParams['metrics'])){
+                    foreach($moduleParams['metrics'] as $metricType => $metricNames){
+                        switch($metricType){
+                            case 'activity':
+                                $metricClass = 'ReportAnalyticsActivityMetric';
+                                break;
+                            case 'channel':
+                                $metricClass = 'ReportAnalyticsChannelMetric';
+                                break;
+                            default:
+                                throw new \Exception(
+                                    "Unknown metric type '".$metricType."'."
+                                    ."Pick 'activity' or 'channel' instead."
+                                );
+                                break;
+                        }
+                        foreach($metricNames as $metricName){
+                            $metric = $this->em->getRepository(
+                                'CampaignChainCoreBundle:'.$metricClass
+                                )->findOneByName($metricName);
+                            if($metric){
+                                throw new \Exception(
+                                    "Metric '".$metricName."' of type '".$metricType."'"
+                                    ." already exists. Please define another name "
+                                    ."in campaignchain.yml of ".$this->newBundle->getName()."."
+                                );
+                            } else {
+                                // Create new metric.
+                                $metricNamespacedClass = 'CampaignChain\\CoreBundle\\Entity\\'.$metricClass;
+                                $metric = new $metricNamespacedClass();
+                                $metric->setName($metricName);
+                                $this->em->persist($metric);
+                            }
+                        }
+                    }
                 }
 
                 // Process the params specific to a module type.

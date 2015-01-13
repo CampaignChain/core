@@ -13,7 +13,7 @@ namespace CampaignChain\CoreBundle\Command;
 use CampaignChain\CoreBundle\Entity\Action;
 use CampaignChain\CoreBundle\Entity\Scheduler;
 use CampaignChain\CoreBundle\Entity\Job;
-use CampaignChain\CoreBundle\Job\JobServiceInterface;
+use CampaignChain\CoreBundle\Job\JobOperationInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -74,14 +74,14 @@ class JobCommand extends ContainerAwareCommand
                 $jobService = $this->getContainer()->get($job->getName());
 
                 // A Job service must implement the respective interface.
-                if($jobService instanceof JobServiceInterface){
+                if($jobService instanceof JobOperationInterface){
                     try{
                         $status = $jobService->execute($job->getActionId());
                         switch($status){
-                            case JobServiceInterface::STATUS_OK:
+                            case JobOperationInterface::STATUS_OK:
                                 $job->setStatus(JOB::STATUS_CLOSED);
                                 break;
-                            case JobServiceInterface::STATUS_ERROR:
+                            case JobOperationInterface::STATUS_ERROR:
                                 $job->setStatus(JOB::STATUS_ERROR);
                                 break;
                         }
@@ -92,7 +92,7 @@ class JobCommand extends ContainerAwareCommand
                         // TODO: Notify owner of operation of error.
                     }
                 } else {
-                    $errorMsg = 'The job service "'.$job->getName().'" with the class "'.get_class($jobService).'" does not implement the interface CampaignChain\CoreBundle\Job\JobServiceInterface as required.';
+                    $errorMsg = 'The job service "'.$job->getName().'" with the class "'.get_class($jobService).'" does not implement the interface CampaignChain\CoreBundle\Job\JobOperationInterface as required.';
 
                     $job->setStatus(JOB::STATUS_ERROR);
                     $job->setMessage($errorMsg);
@@ -101,10 +101,13 @@ class JobCommand extends ContainerAwareCommand
                     throw new \Exception($errorMsg);
                 }
             } else {
-                // No Job service, so let's just close the action's entity and the job.
-                $action = $em->getRepository(Action::getRepositoryName($job->getActionType()))->find($job->getActionId());
-                $action->setStatus(Action::STATUS_CLOSED);
-                $job->setStatus(JOB::STATUS_CLOSED);
+                // Actions have a job type of null value.
+                if($job->getJobType() == null){
+                    // No Job service, so let's just close the action's entity and the job.
+                    $action = $em->getRepository(Action::getRepositoryName($job->getActionType()))->find($job->getActionId());
+                    $action->setStatus(Action::STATUS_CLOSED);
+                    $job->setStatus(JOB::STATUS_CLOSED);
+                }
             }
             $job->setEndDate(new \DateTime('now', new \DateTimeZone('UTC')));
 

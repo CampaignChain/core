@@ -27,6 +27,11 @@ class ReportAnalyticsActivityFact
     protected $id;
 
     /**
+     * @ORM\ManyToOne(targetEntity="Operation")
+     */
+    protected $operation;
+
+    /**
      * @ORM\ManyToOne(targetEntity="Activity")
      */
     protected $activity;
@@ -94,6 +99,29 @@ class ReportAnalyticsActivityFact
         $date = new \DateTime($this->time->format('Y-m-d H:i:s'));
         $javascriptTimestamp = $date->getTimestamp()*1000;
         return $javascriptTimestamp;
+    }
+
+    /**
+     * Set operation
+     *
+     * @param \CampaignChain\CoreBundle\Entity\Operation $operation
+     * @return Statistics
+     */
+    public function setOperation(\CampaignChain\CoreBundle\Entity\Operation $operation = null)
+    {
+        $this->operation = $operation;
+
+        return $this;
+    }
+
+    /**
+     * Get operation
+     *
+     * @return \CampaignChain\CoreBundle\Entity\Operation
+     */
+    public function getOperation()
+    {
+        return $this->operation;
     }
 
     /**
