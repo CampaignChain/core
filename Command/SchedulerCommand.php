@@ -109,8 +109,6 @@ class SchedulerCommand extends ContainerAwareCommand
 
                 // Store all the operation-related info in the Job entity.
                 if($actions){
-                    $output->writeln('');
-                    $output->writeln('<info>These actions of type "'.$actionType.'"  will be executed:</info>');
                     $table = new Table($this->output);
                     $tableHeaders = array('ID', 'Start Date', 'End Date', 'Name', 'Status');
                     if($actionType != Action::TYPE_CAMPAIGN){
@@ -164,11 +162,15 @@ class SchedulerCommand extends ContainerAwareCommand
                         }
                     }
 
-                    // Create the table rows for output.
                     if(count($outputTableRows)){
+                        // Create the table rows for output.
+                        $output->writeln('');
+                        $output->writeln('<info>These actions of type "'.$actionType.'"  will be executed:</info>');
                         $table->setRows($outputTableRows);
+                        $table->render();
+                    } else {
+                        $output->writeln('<error>No actions of type "'.$actionType.'" scheduled within the past '.$this->interval.' minutes.</error>');
                     }
-                    $table->render();
                 } else {
                     $output->writeln('<error>No actions of type "'.$actionType.'" scheduled within the past '.$this->interval.' minutes.</error>');
                 }
