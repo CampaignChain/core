@@ -45,7 +45,7 @@ class SchedulerCommand extends ContainerAwareCommand
     /**
      * @var int Interval in minutes.
      */
-    protected $interval = 5;
+    protected $interval = 9600;
     /**
      * @var int Process timeout in seconds.
      */
@@ -122,6 +122,9 @@ class SchedulerCommand extends ContainerAwareCommand
                         $tableHeaders[] = 'Activity Status';
                     }
                     $table->setHeaders($tableHeaders);
+
+                    $outputTableRows = array();
+
                     foreach($actions as $action){
                         // Check whether this operation is executable per its trigger hook.
                         if($this->isExecutable($action)){
@@ -162,7 +165,9 @@ class SchedulerCommand extends ContainerAwareCommand
                     }
 
                     // Create the table rows for output.
-                    $table->setRows($outputTableRows);
+                    if(count($outputTableRows)){
+                        $table->setRows($outputTableRows);
+                    }
                     $table->render();
                 } else {
                     $output->writeln('<error>No actions of type "'.$actionType.'" scheduled within the past '.$this->interval.' minutes.</error>');

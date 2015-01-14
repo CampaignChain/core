@@ -380,9 +380,9 @@ class Installer
         // General installation routine.
         if(is_array($params['modules']) && count($params['modules'])){
 
-            $module = null;
-
             foreach($params['modules'] as $identifier => $moduleParams){
+
+                $module = null;
 
                 /*
                  * TODO: Detect whether a module has previously been registered
@@ -466,11 +466,16 @@ class Installer
                         foreach($metricNames as $metricName){
                             $metric = $this->em->getRepository(
                                 'CampaignChainCoreBundle:'.$metricClass
-                                )->findOneByName($metricName);
+                                )->findOneBy(array(
+                                    'name' => $metricName,
+                                    'bundle' => $this->newBundle->getName()
+                                    )
+                                );
                             if($metric){
                                 throw new \Exception(
                                     "Metric '".$metricName."' of type '".$metricType."'"
-                                    ." already exists. Please define another name "
+                                    ." already exists for bundle ".$this->newBundle->getName().". "
+                                    ."Please define another name "
                                     ."in campaignchain.yml of ".$this->newBundle->getName()."."
                                 );
                             } else {
@@ -478,6 +483,7 @@ class Installer
                                 $metricNamespacedClass = 'CampaignChain\\CoreBundle\\Entity\\'.$metricClass;
                                 $metric = new $metricNamespacedClass();
                                 $metric->setName($metricName);
+                                $metric->setBundle($this->newBundle->getName());
                                 $this->em->persist($metric);
                             }
                         }

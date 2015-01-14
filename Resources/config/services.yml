@@ -59,6 +59,9 @@ services:
     campaignchain.core.location:
         class: CampaignChain\CoreBundle\EntityService\LocationService
         arguments: [ @doctrine.orm.entity_manager, @service_container ]
+    campaignchain.core.fact:
+        class: CampaignChain\CoreBundle\EntityService\FactService
+        arguments: [ @doctrine.orm.entity_manager ]
     campaignchain.core.form.type.location:
         class: CampaignChain\CoreBundle\Form\Type\LocationType
     campaignchain.core.form.type.activity:

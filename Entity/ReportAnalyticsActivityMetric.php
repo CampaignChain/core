@@ -37,6 +37,11 @@ class ReportAnalyticsActivityMetric
     protected $name;
 
     /**
+     * @ORM\Column(type="string")
+     */
+    protected $bundle;
+
+    /**
      * Get id
      *
      * @return integer 
@@ -50,7 +55,7 @@ class ReportAnalyticsActivityMetric
      * Set name
      *
      * @param string $name
-     * @return Variable
+     * @return ReportAnalyticsActivityMetric
      */
     public function setName($name)
     {
@@ -68,6 +73,7 @@ class ReportAnalyticsActivityMetric
     {
         return $this->name;
     }
+
     /**
      * Constructor
      */
@@ -107,5 +113,28 @@ class ReportAnalyticsActivityMetric
     public function getFact()
     {
         return $this->fact;
+    }
+
+    /**
+     * Set bundle
+     *
+     * @param string $bundle
+     * @return ReportAnalyticsActivityMetric
+     */
+    public function setBundle($bundle)
+    {
+        $this->bundle = $bundle;
+
+        return $this;
+    }
+
+    /**
+     * Get bundle
+     *
+     * @return string
+     */
+    public function getBundle()
+    {
+        return $this->bundle;
     }
 }
