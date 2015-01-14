@@ -63,6 +63,14 @@ assetic:
             inputs:
                 - "%kernel.root_dir%/../vendor/ivaynberg/select2/select2.css"
                 - "%kernel.root_dir%/../vendor/ivaynberg/select2/select2-bootstrap.css"
+        select2_png:
+            inputs:
+                - "%kernel.root_dir%/../vendor/ivaynberg/select2/select2.png"
+            output: "css/select2.png"
+        select2_spinner_gif:
+            inputs:
+                - "%kernel.root_dir%/../vendor/ivaynberg/select2/select2-spinner.gif"
+            output: "css/select2-spinner.gif"
         datatables_js:
             inputs:
                 - "%kernel.root_dir%/../vendor/datatables/datatables/media/js/jquery.dataTables.js"
