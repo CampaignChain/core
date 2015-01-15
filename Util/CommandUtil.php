@@ -92,7 +92,11 @@ class CommandUtil
 
     public function assetsInstallWeb()
     {
-        $this->application->add(new AssetsInstallCommand());
+        $command = 'php app/console assets:install web';
+
+        return $this->shell($command);
+
+        /*$this->application->add(new AssetsInstallCommand());
 
         // app/console assets:install web
         $command = $this->application->find('assets:install');
@@ -100,19 +104,23 @@ class CommandUtil
             'assets:install',
             'target' => $this->kernel->getRootDir() . '/../web',
         );
-        return $this->run($command, $arguments);
+        return $this->run($command, $arguments);*/
     }
 
     public function asseticDump()
     {
-        $this->application->add(new DumpCommand());
+        $command = 'php app/console assetic:dump --env=prod --no-debug';
+
+        return $this->shell($command);
+
+        /*$this->application->add(new DumpCommand());
         $command = $this->application->find('assetic:dump');
         $arguments = array(
             'assets:install',
             '--env' => 'prod',
             '--no-debug' => true,
         );
-        return $this->run($command, $arguments);
+        return $this->run($command, $arguments);*/
     }
 
     public function createAdminUser($email, $password)
@@ -144,7 +152,11 @@ class CommandUtil
 
     public function clearCache($warmup = true)
     {
-        $this->application->add(new CacheClearCommand());
+        $command = 'php app/console cache:clear --env=prod --no-debug';
+
+        return $this->shell($command);
+
+        /*$this->application->add(new CacheClearCommand());
         $command = $this->application->find('cache:clear');
         $arguments = array(
             'cache:clear',
@@ -156,7 +168,7 @@ class CommandUtil
             $arguments['--no-warmup'] = true;
         }
 
-        return $this->run($command, $arguments);
+        return $this->run($command, $arguments);*/
     }
 
     public function warumupCache()
