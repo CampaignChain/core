@@ -50,6 +50,8 @@ class Installer
 
     private $isRegisteredBundle = array();
 
+    private $processAllBundles = false;
+
     private $systemParams = array();
 
     private $activityChannels = array();
@@ -75,7 +77,7 @@ class Installer
 
     public function install(){
         $this->logger->info('START: MODULES INSTALLER');
-        if(!$this->getNewBundles($this->root)){
+        if(!$this->getNewBundles()){
             $this->logger->info('No new modules found.');
             $this->logger->info('END: MODULES INSTALLER');
             return false;
@@ -200,6 +202,9 @@ class Installer
     }
 
     public function getNewBundles($getAll = false){
+
+        $this->processAllBundles = $getAll;
+
         $finder = new Finder();
         // Find all the CampaignChain module configuration files.
         $finder->files()->in($this->root)->name('campaignchain.yml');
@@ -216,7 +221,7 @@ class Installer
                     'composer.json',
                     $moduleConfig->getRelativePathname()
                 );
-            $this->getNewBundle($bundleComposer, $getAll);
+            $this->getNewBundle($bundleComposer);
         }
 
         if(!count($this->newBundles)){
@@ -226,7 +231,7 @@ class Installer
         return true;
     }
 
-    protected function getNewBundle($bundleComposer, $getAll = false)
+    protected function getNewBundle($bundleComposer)
     {
         if(file_exists($bundleComposer)){
             $bundleComposerData = file_get_contents($bundleComposer);
@@ -290,7 +295,7 @@ class Installer
                 )
             );
 
-            if(!$getAll){
+            if($this->processAllBundles == false){
                 // Check whether this bundle has already been installed
                 switch($this->isRegisteredBundle($bundle)){
                     case self::STATUS_REGISTERED_NO:
