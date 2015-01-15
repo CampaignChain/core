@@ -45,7 +45,7 @@ class SchedulerCommand extends ContainerAwareCommand
     /**
      * @var int Interval in minutes.
      */
-    protected $interval = 5;
+    protected $interval = 9600;
     /**
      * @var int Process timeout in seconds.
      */

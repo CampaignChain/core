@@ -214,3 +214,7 @@ ul.nav-tabs {
     text-align:left;
     white-space:pre-wrap;
 }
+
+#campaignchain-chart-header .datetime {
+    float: right;
+}

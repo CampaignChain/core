@@ -433,6 +433,11 @@ class Installer
                 }
 
                 $module->setDisplayName($moduleParams['display_name']);
+
+                if(isset($moduleParams['description'])){
+                    $module->setDescription($moduleParams['description']);
+                }
+
                 if(isset($moduleParams['routes']) && is_array($moduleParams['routes']) && count($moduleParams['routes'])){
                     $module->setRoutes($moduleParams['routes']);
                 }
