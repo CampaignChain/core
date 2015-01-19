@@ -8,15 +8,15 @@
  */
 
 gantt.templates.task_class = function(start, end, task){
-    if(+moment(start).zone(window.campaignchainTimezoneOffset) < +today && +moment(end).zone(window.campaignchainTimezoneOffset) > +today){
+    if(+campaignchainGetUserDateTime(start) < +today && +campaignchainGetUserDateTime(end) > +today){
         // Give running campaigns a different color.
         var class_name = "campaignchain_gantt_ongoing";
     }
-    if (+moment(start).zone(window.campaignchainTimezoneOffset) < +today && +moment(end).zone(window.campaignchainTimezoneOffset) < +today){
+    if (+campaignchainGetUserDateTime(start) < +today && +campaignchainGetUserDateTime(end) < +today){
         // Give done campaigns a different color.
         var class_name = "campaignchain_gantt_done";
     }
-    if (+moment(start).zone(window.campaignchainTimezoneOffset) > +today && +moment(end).zone(window.campaignchainTimezoneOffset) > +today){
+    if (+campaignchainGetUserDateTime(start) > +today && +campaignchainGetUserDateTime(end) > +today){
         // Give upcoming campaigns a different color.
         var class_name = "campaignchain_gantt_upcoming";
     }
@@ -39,8 +39,10 @@ gantt.templates.task_text = function(start, end, task){
             return '<img src="/bundles/campaignchaincampaignscheduledcampaign/images/icons/24x24/scheduled_campaign_white.png" class="campaignchain_gantt_icon_timeline" />' + task.text;
             break;
         case 'milestone':
-        case 'activity':
             return "<img src='" + task.icon_path_24px + "' class='campaignchain_gantt_icon_timeline' />"
+            break;
+        case 'activity':
+            return "<div class='campaignchain-medium-icon'><img src='" + task.location_icon + "' class='icon' /><img src='" + task.activity_icon + "' class='context-icon' /></div>"
             break;
     }
     return task.text;

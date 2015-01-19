@@ -29,7 +29,7 @@ file that was distributed with this source code.
                 <td>{{ report.getBundle().getType() }}</td>
                 <td>{{ report.description }}</td>
                 <td>
-                    <a role="button" class="btn btn-default btn-xs"
+                    <a class="btn btn-primary"
                        href="{{ path(app.request.attributes.get('_route'), {id: report.id}) }}">
                         <span class="fa fa-folder-open"></span></a>
                 </td>

@@ -13,7 +13,6 @@ namespace CampaignChain\CoreBundle\Util;
 use Guzzle\Http\Client;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Filesystem\Exception\IOException;
 
 class ParserUtil
 {
@@ -127,6 +126,12 @@ class ParserUtil
             return false;
         }
 
+        // Get headers and see if Location is set.
+        $headers = get_headers($url, 1);
+        if(!is_array($headers) || !isset($headers['Location'])){
+            return false;
+        }
+
         return true;
     }
 
@@ -166,5 +171,11 @@ class ParserUtil
         }
 
         return false;
+    }
+
+    static function makeLinks($text, $target='_blank', $class=''){
+        return preg_replace('!((http\:\/\/|ftp\:\/\/|https\:\/\/)|www\.)([-a-zA-Zа-яА-Я0-9\~\!\@\#\$\%\^\&\*\(\)_\-\=\+\\\/\?\.\:\;\'\,]*)?!ism',
+            '<a class="'.$class.'" href="//$3" target="'.$target.'">$1$3</a>',
+            $text);
     }
 }

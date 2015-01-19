@@ -10,6 +10,7 @@
 
 namespace CampaignChain\CoreBundle\Controller;
 
+use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Filesystem\Filesystem;
@@ -136,6 +137,62 @@ class DevelopmentController extends Controller
                 'page_title' => 'Load Sample Data',
                 'form' => $form->createView(),
                 'form_submit_label' => 'Upload',
+            ));
+    }
+
+    public function resetSystemAction(Request $request){
+        $formData = array();
+        $form = $this->createFormBuilder($formData)
+            ->add('confirm', 'checkbox', array(
+                'label'     => 'Confirm',
+                'required'  => false,
+                'data'     => false,
+                'attr' => array(
+                    'align_with_widget' => true,
+                    'help_text' => 'Please confirm that you aware that all data will be lost.',
+                ),
+            ))
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isValid() && !$form['confirm']->getData()) {
+            $this->get('session')->getFlashBag()->add(
+                'warning',
+                'Please confirm.'
+            );
+        } elseif ($form->isValid() && $form['confirm']->getData()) {
+            $kernelFile = $this->get('kernel')->getRootDir().DIRECTORY_SEPARATOR.'campaignchain_bundles.php';
+            $configDir = $this->get('kernel')->getRootDir().DIRECTORY_SEPARATOR.'config';
+            $configFile = $configDir.DIRECTORY_SEPARATOR.'campaignchain_bundles.yml';
+            $routingFile = $configDir.DIRECTORY_SEPARATOR.'routing.yml';
+
+            // Reset files
+            $fs = new Filesystem();
+            $fs->copy($configFile.'.dist', $configFile, true);
+            $fs->copy($routingFile.'.dist', $routingFile, true);
+            $fs->remove($kernelFile);
+            $fs->dumpFile($kernelFile, '<?php'."\xA");
+
+            // Drop all tables
+            $currentDir = getcwd();
+            chdir($this->get('kernel')->getRootDir().DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR);
+            $command = 'php app/console doctrine:schema:drop --force --full-database';
+            ob_start();
+            system($command, $output);
+            ob_get_clean();
+            chdir($currentDir);
+
+            header('Location: ../../campaignchain/install.php');
+            exit;
+        }
+
+        return $this->render(
+            'CampaignChainCoreBundle:Base:new.html.twig',
+            array(
+                'page_title' => 'Reset System',
+                'form' => $form->createView(),
+                'form_submit_label' => 'Reset',
             ));
     }
 

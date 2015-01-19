@@ -175,6 +175,10 @@ campaignchain_development_sample_data:
     pattern:  /development/sample-data
     defaults: { _controller: CampaignChainCoreBundle:Development:sampleData }
 
+campaignchain_development_reset_system:
+    pattern:  /development/reset-system
+    defaults: { _controller: CampaignChainCoreBundle:Development:resetSystem }
+
 # User management
 
 campaignchain_core_user:

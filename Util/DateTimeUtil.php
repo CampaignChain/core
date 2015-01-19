@@ -25,6 +25,10 @@ class DateTimeUtil
         return new \DateTime('now', new \DateTimeZone($timezone));
     }
 
+    public function getUserNow(){
+        return new \DateTime('now', new \DateTimeZone($this->container->get('session')->get('campaignchain.timezone')));
+    }
+
     public function setUserTimezone(\DateTime $dateTime){
         if($this->container->get('session')->isStarted()){
             $timezone = $this->container->get('session')->get('campaignchain.timezone');
@@ -223,11 +227,19 @@ class DateTimeUtil
         $patterns[] = '/mm/';
         $patterns[] = '/M/';
         $patterns[] = '/MM/';
+        $patterns[] = '/h/';
+        $patterns[] = '/hh/';
+        $patterns[] = '/H/';
+        $patterns[] = '/HH/';
 
         $replacements[] = 'i';
         $replacements[] = 'ii';
         $replacements[] = 'm';
         $replacements[] = 'mm';
+        $replacements[] = 'H';
+        $replacements[] = 'HH';
+        $replacements[] = 'h';
+        $replacements[] = 'hh';
 
         return preg_replace($patterns, $replacements, $format);
     }

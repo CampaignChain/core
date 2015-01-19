@@ -31,6 +31,8 @@ use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
+use CampaignChain\CoreBundle\Entity\ReportAnalyticsActivityMetric;
+use CampaignChain\CoreBundle\Entity\ReportAnalyticsChannelMetric;
 
 class Installer
 {
@@ -47,6 +49,8 @@ class Installer
     private $newBundle;
 
     private $isRegisteredBundle = array();
+
+    private $processAllBundles = false;
 
     private $systemParams = array();
 
@@ -73,7 +77,7 @@ class Installer
 
     public function install(){
         $this->logger->info('START: MODULES INSTALLER');
-        if(!$this->getNewBundles($this->root)){
+        if(!$this->getNewBundles()){
             $this->logger->info('No new modules found.');
             $this->logger->info('END: MODULES INSTALLER');
             return false;
@@ -197,7 +201,10 @@ class Installer
         }
     }
 
-    public function getNewBundles(){
+    public function getNewBundles($getAll = false){
+
+        $this->processAllBundles = $getAll;
+
         $finder = new Finder();
         // Find all the CampaignChain module configuration files.
         $finder->files()->in($this->root)->name('campaignchain.yml');
@@ -267,6 +274,16 @@ class Installer
 
             // Set the version of the installed bundle.
             $version = $this->packageService->getVersion($bundle->getName());
+
+            /*
+             * If version does not exist, this means it is a package in
+             * require-dev of composer.json, but CampaignChain is not in
+             * dev mode.
+             */
+            if(!$version){
+                return false;
+            }
+
             $bundle->setVersion($version);
 
             // Set relative path of bundle.
@@ -278,28 +295,33 @@ class Installer
                 )
             );
 
-            // Check whether this bundle has already been installed
-            switch($this->isRegisteredBundle($bundle)){
-                case self::STATUS_REGISTERED_NO:
-                    $this->newBundles[] = $bundle;
-                    return true;
-                case self::STATUS_REGISTERED_OLDER:
-                    // Get the existing bundle.
-                    $registeredBundle = $this->em
-                        ->getRepository('CampaignChainCoreBundle:Bundle')
-                        ->findOneByName($bundle->getName());
-                    // Update the existing bundle's data.
-                    $registeredBundle->setDescription($bundle->getDescription());
-                    $registeredBundle->setLicense($bundle->getLicense());
-                    $registeredBundle->setAuthors($bundle->getAuthors());
-                    $registeredBundle->setHomepage($bundle->getHomepage());
-                    $registeredBundle->setVersion($bundle->getVersion());
+            if($this->processAllBundles == false){
+                // Check whether this bundle has already been installed
+                switch($this->isRegisteredBundle($bundle)){
+                    case self::STATUS_REGISTERED_NO:
+                        $this->newBundles[] = $bundle;
+                        return true;
+                    case self::STATUS_REGISTERED_OLDER:
+                        // Get the existing bundle.
+                        $registeredBundle = $this->em
+                            ->getRepository('CampaignChainCoreBundle:Bundle')
+                            ->findOneByName($bundle->getName());
+                        // Update the existing bundle's data.
+                        $registeredBundle->setDescription($bundle->getDescription());
+                        $registeredBundle->setLicense($bundle->getLicense());
+                        $registeredBundle->setAuthors($bundle->getAuthors());
+                        $registeredBundle->setHomepage($bundle->getHomepage());
+                        $registeredBundle->setVersion($bundle->getVersion());
 
-                    $this->newBundles[] = $registeredBundle;
+                        $this->newBundles[] = $registeredBundle;
 
-                    return true;
-                case self::STATUS_REGISTERED_SAME:
-                    return false;
+                        return true;
+                    case self::STATUS_REGISTERED_SAME:
+                        return false;
+                }
+            } else {
+                $this->newBundles[] = $bundle;
+                return true;
             }
         } else {
             // TODO: Throw exception if file does not exist?
@@ -363,9 +385,9 @@ class Installer
         // General installation routine.
         if(is_array($params['modules']) && count($params['modules'])){
 
-            $module = null;
-
             foreach($params['modules'] as $identifier => $moduleParams){
+
+                $module = null;
 
                 /*
                  * TODO: Detect whether a module has previously been registered
@@ -416,6 +438,11 @@ class Installer
                 }
 
                 $module->setDisplayName($moduleParams['display_name']);
+
+                if(isset($moduleParams['description'])){
+                    $module->setDescription($moduleParams['description']);
+                }
+
                 if(isset($moduleParams['routes']) && is_array($moduleParams['routes']) && count($moduleParams['routes'])){
                     $module->setRoutes($moduleParams['routes']);
                 }
@@ -428,6 +455,49 @@ class Installer
                 }
                 if(isset($moduleParams['system']) && is_array($moduleParams['system']) && count($moduleParams['system'])){
                     $this->systemParams = array_merge($this->systemParams, $moduleParams['system']);
+                }
+                // Are metrics for the reports defined?
+                if(isset($moduleParams['metrics']) && is_array($moduleParams['metrics']) && count($moduleParams['metrics'])){
+                    foreach($moduleParams['metrics'] as $metricType => $metricNames){
+                        switch($metricType){
+                            case 'activity':
+                                $metricClass = 'ReportAnalyticsActivityMetric';
+                                break;
+                            case 'channel':
+                                $metricClass = 'ReportAnalyticsChannelMetric';
+                                break;
+                            default:
+                                throw new \Exception(
+                                    "Unknown metric type '".$metricType."'."
+                                    ."Pick 'activity' or 'channel' instead."
+                                );
+                                break;
+                        }
+                        foreach($metricNames as $metricName){
+                            $metric = $this->em->getRepository(
+                                'CampaignChainCoreBundle:'.$metricClass
+                                )->findOneBy(array(
+                                    'name' => $metricName,
+                                    'bundle' => $this->newBundle->getName()
+                                    )
+                                );
+                            if($metric){
+                                throw new \Exception(
+                                    "Metric '".$metricName."' of type '".$metricType."'"
+                                    ." already exists for bundle ".$this->newBundle->getName().". "
+                                    ."Please define another name "
+                                    ."in campaignchain.yml of ".$this->newBundle->getName()."."
+                                );
+                            } else {
+                                // Create new metric.
+                                $metricNamespacedClass = 'CampaignChain\\CoreBundle\\Entity\\'.$metricClass;
+                                $metric = new $metricNamespacedClass();
+                                $metric->setName($metricName);
+                                $metric->setBundle($this->newBundle->getName());
+                                $this->em->persist($metric);
+                            }
+                        }
+                    }
                 }
 
                 // Process the params specific to a module type.
@@ -621,5 +691,10 @@ class Installer
         }
 
         return $modules;
+    }
+
+    public function getKernelConfig()
+    {
+        return $this->kernelConfig;
     }
 }

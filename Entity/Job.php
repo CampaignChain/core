@@ -81,6 +81,11 @@ class Job extends Meta
     protected $message;
 
     /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    protected $jobType;
+
+    /**
      * Get id
      *
      * @return integer 
@@ -327,5 +332,28 @@ class Job extends Meta
     public function getPid()
     {
         return $this->pid;
+    }
+
+    /**
+     * Set jobType
+     *
+     * @param string $jobType
+     * @return Job
+     */
+    public function setJobType($jobType)
+    {
+        $this->jobType = $jobType;
+
+        return $this;
+    }
+
+    /**
+     * Get jobType
+     *
+     * @return string
+     */
+    public function getJobType()
+    {
+        return $this->jobType;
     }
 }

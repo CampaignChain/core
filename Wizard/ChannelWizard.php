@@ -92,6 +92,10 @@ class ChannelWizard
         return $this->session->get($key);
     }
 
+    public function has($key){
+        return $this->session->has($key);
+    }
+
     public function persist(){
         $this->session->resume();
         $channel = $this->session->get('campaignchain_channel');

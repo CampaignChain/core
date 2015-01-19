@@ -119,7 +119,7 @@ class MilestoneController extends Controller
         $responseData = array();
 
         $id = $request->request->get('id');
-        $newDue = new \DateTime($request->request->get('due_date'));
+        $newDue = new \DateTime($request->request->get('start_date'));
 
         $milestoneService = $this->get('campaignchain.core.milestone');
         $milestone = $milestoneService->getMilestone($id);

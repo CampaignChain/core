@@ -16,6 +16,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class InstallVoter implements VoterInterface
 {
+    const CAMPAIGNCHAIN_INSTALL = 'CAMPAIGNCHAIN_INSTALL';
+
     private $em;
 
     public function __construct($em)
@@ -25,7 +27,7 @@ class InstallVoter implements VoterInterface
 
     public function supportsAttribute($attribute)
     {
-        return $attribute == 'CAMPAIGNCHAIN_INSTALL';
+        return null !== $attribute && ($attribute === self::CAMPAIGNCHAIN_INSTALL);
     }
 
     public function supportsClass($class)
@@ -43,7 +45,7 @@ class InstallVoter implements VoterInterface
         // Check if the voter is used correct, only allow one attribute
         if (1 !== count($attributes)) {
             throw new \InvalidArgumentException(
-                'Only one attribute is allowed for CAMPAIGNCHAIN_INSTALL'
+                'Only one attribute is allowed for '.self::CAMPAIGNCHAIN_INSTALL
             );
         }
 

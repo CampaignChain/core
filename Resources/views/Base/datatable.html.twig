@@ -19,7 +19,7 @@ file that was distributed with this source code.
 {% endblock %}
 
 {% block stylesheets %}
-    {% stylesheets '@datatables_css' output="media/css/*.css" %}
+    {% stylesheets '@datatables_css' output="media/css/*.css" filter="cssrewrite" %}
     <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
     {% endstylesheets %}
 {% endblock %}

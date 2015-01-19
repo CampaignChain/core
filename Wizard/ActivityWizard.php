@@ -28,6 +28,11 @@ class ActivityWizard
         $this->session->start();
         $this->session->set('campaignchain_campaign', $campaign);
         $this->session->set('campaignchain_location', $location);
+        $this->session->set('campaignchain_channel', $location->getChannel());
+        $this->session->set('campaignchain_channelModule', $location->getChannel()->getChannelModule());
+        // Fixes lazy loading issue
+        $bundle = clone $location->getChannel()->getChannelModule()->getBundle();
+        $this->session->set('campaignchain_channelModuleBundle', $bundle);
         $this->session->set('campaignchain_activity', $activity);
         $this->session->set('campaignchain_activityModule', $activityModule);
     }
@@ -35,6 +40,26 @@ class ActivityWizard
     public function getCampaign(){
         $this->session->resume();
         return $this->session->get('campaignchain_campaign');
+    }
+
+    public function getLocation(){
+        $this->session->resume();
+        return $this->session->get('campaignchain_location');
+    }
+
+    public function getChannel(){
+        $this->session->resume();
+        return $this->session->get('campaignchain_channel');
+    }
+
+    public function getChannelModule(){
+        $this->session->resume();
+        return $this->session->get('campaignchain_channelModule');
+    }
+
+    public function getChannelModuleBundle(){
+        $this->session->resume();
+        return $this->session->get('campaignchain_channelModuleBundle');
     }
 
     public function setOperation($operation){

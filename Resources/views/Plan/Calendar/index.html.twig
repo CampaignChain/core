@@ -29,46 +29,69 @@ file that was distributed with this source code.
 
 {% block body %}
 <script>
+    $(document).ready(function() {
 
-        $(document).ready(function() {
+        $('#calendar').fullCalendar({
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month,agendaWeek,agendaDay'
+            },
+            timeFormat: {
+                month: 'H:mm',
+                agendaWeek: 'H:mm',
+                agendaDay: 'H:mm'
+            },
+            defaultDate: new Date(),
+            editable: true,
+            defaultTimedEventDuration: '00:01:00',
+            eventRender: function(event, element) {
+                // Render Milestone icon.
+                if (event.icon_path_16px)
+                {
+                    element.css({"background-image":"url('" + event.icon_path_16px +"')"});
+                }
 
-            $('#calendar').fullCalendar({
-                header: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'month,agendaWeek,agendaDay'
-                },
-                timeFormat: {
-                    month: 'H:mm',
-                    agendaWeek: 'H:mm',
-                    agendaDay: 'H:mm'
-                },
-                defaultDate: new Date(),
-                editable: true,
-                defaultTimedEventDuration: '00:01:00',
-                eventRender: function(event, eventElement) {
-                    console.log(eventElement);
-                    if (event.icon_path_16px)
+                // Render Activity icons
+                if (event.location_icon)
+                {
+                    var icon = "<div class='campaignchain-medium-icon'>";
+                    icon = icon + "<img class='icon' src='" + event.location_icon + "'/>";
+                    icon = icon + "<img class='context-icon' src='" + event.activity_icon + "' style='background-image: url(\"" + event.activity_icon + "\");'/>";
+                    icon = icon + "</div>";
+                    element.prepend(icon);
+                }
+
+                // Edit in modal.
+                element.bind('dblclick', function() {
+                    campaignchainShowModal(
+                        event.start,
+                        event.end,
+                        event.type, event.campaignchain_id, event.route_edit_api,
+                        event, 'campaignchainCalendarTaskDblClickSuccess'
+                    );
+                });
+            },
+            eventDrop: function(event, delta, revertFunc) {
+                var start_date = campaignchainCalendarNormalizeDate(event.start.format());
+                campaignchainMoveAction(event.campaignchain_id, start_date, event.type);
+            },
+            eventSources: [
+                {% if events and events is iterable %}
+                    {% for event_type, event in events %}
                     {
-                        eventElement.css({"background-image":"url('" + event.icon_path_16px +"')"});
-                    }
-                },
-                eventSources: [
-                    {% if events and events is iterable %}
-                        {% for event_type, event in events %}
-                        {
-                            events: {{ event.data|raw }},
-                            {% for option_key, option_val in event.options %}
-                                {{ option_key }}: '{{ option_val }}',
-                            {% endfor %}
-                        },
+                        events: {{ event.data|raw }},
+                        {% for option_key, option_val in event.options %}
+                            {{ option_key }}: '{{ option_val }}',
                         {% endfor %}
-                    {% endif %}
-                ]
-            });
-
+                    },
+                    {% endfor %}
+                {% endif %}
+            ]
         });
+    });
 
-    </script>
-    <div id='calendar'></div>
+</script>
+<div id='calendar'></div>
+    {% include 'CampaignChainCoreBundle:Base:modal_remote.html.twig' %}
 {% endblock %}

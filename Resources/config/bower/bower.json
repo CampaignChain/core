@@ -8,8 +8,8 @@
         "moment": "2.8",
         "moment-timezone": "0.2",
         "ScrollToFixed": "1.0",
-        "gantt": "2.1",
-        "fullcalendar": "2.1",
+        "gantt": "3.1",
+        "fullcalendar": "",
         "jquery.countdown": "2.0",
         "ladda": "",
         "blockui": ""

@@ -22,7 +22,6 @@ file that was distributed with this source code.
                 <tr>
                     <th></th>
                     <th>Name</th>
-                    <th>Operations</th>
                     <th>Campaign</th>
                     <th>Execution</th>
                     <th></th>
@@ -31,22 +30,40 @@ file that was distributed with this source code.
             <tbody>
                 {% for activity in activities %}
                     <tr class="
-                            {% if activity.status == "paused" %}text-muted {% endif %}
+                            {% if activity.status == "closed" or activity.status == "paused" %}text-muted {% endif %}
                             ">
-                        <td><img src="{{ asset( activity|campaignchain_channel_asset_path~'/images/icons/16x16/'~activity|campaignchain_channel_icon_name ) }}" /></td>
-                        <td>{{ activity.name }}</td>
-                        <td>{% set operations = activity.getOperations() %}
-                            {% for operation in operations %}
-                            {{ operation.getOperationModule().getDisplayName() }}{{ loop.last ? '' : ', ' }}
-                            {% endfor %}</td>
+                        <td align="center">
+                            {% if activity.status == "open" or activity.status == "paused" %}
+                                <i class="fa fa-clock-o"></i>
+                            {% elseif activity.status == "closed" %}
+                                <i class="fa fa-check-circle"></i>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class='campaignchain-medium-icon'>
+                                <a href="{{ path('campaignchain_core_activity_edit',{'id':activity.id}) }}">
+                                    <img class='icon' src='{{ asset( activity.getLocation()|campaignchain_medium_icon ) }}'/>
+                                    <img class='context-icon' src='{{ asset( activity.getLocation()|campaignchain_medium_context ) }}' style='background-image: url("{{ asset( activity.getLocation()|campaignchain_medium_context ) }}");'/>
+                                </a>
+                                <span class="text"><a href="{{ path('campaignchain_core_activity_edit',{'id':activity.id}) }}">{{ activity.name }}</a></span>
+                            </div>
+                        </td>
                         <td>{{ activity.getCampaign().getName() }}</td>
                         <td>
                             {{ activity|campaignchain_tpl_trigger_hook_inline }}
                         </td>
-                        <td>
-                            <a role="button" class="btn btn-default btn-xs"
-                               href="{{ path('campaignchain_core_activity_edit',{'id':activity.id}) }}">
-                                <span class="fa fa-pencil"></span></a>
+                        <td align="center">
+                            {% if activity.status == "open" or activity.status == "paused" %}
+                                <a  class="btn btn-primary"
+                                    href="{{ path('campaignchain_core_activity_edit',{'id':activity.id}) }}">
+                                    <span class="fa fa-pencil"></span>
+                                </a>
+                            {% elseif activity.status == "closed" %}
+                                <a class="btn btn-primary"
+                                    href="{{ path('campaignchain_core_activity_read',{'id':activity.id}) }}">
+                                    <span class="fa fa-file-text"></span>
+                                </a>
+                            {% endif %}
                             {#{% if activity.status == "paused" %}#}
                                 {#<button type="button" class="btn btn-default btn-xs">#}
                                     {#<a href="#"><span class="fa fa-play"></span></a>#}

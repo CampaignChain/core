@@ -10,6 +10,7 @@
 
 namespace CampaignChain\CoreBundle\EntityService;
 
+use CampaignChain\CoreBundle\Twig\CampaignChainCoreExtension;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -103,5 +104,21 @@ class ActivityService
             $hook->setEndDate(new \DateTime($hook->getEndDate()->add($interval)->format(\DateTime::ISO8601)));
         }
         return $hookService->processHook($activity, $hook);
+    }
+
+    /**
+     * Compose the channel icon path
+     *
+     * @param $channel
+     * @return mixed
+     */
+    public function getIcons($activity)
+    {
+        $twigExt = new CampaignChainCoreExtension($this->em, $this->container);
+
+        $icon['location_icon'] = $twigExt->mediumIcon($activity->getLocation());
+        $icon['activity_icon'] = '/'.$twigExt->mediumContext($activity->getLocation());
+
+        return $icon;
     }
 }

@@ -7,9 +7,6 @@ For the full copyright and license information, please view the LICENSE
 file that was distributed with this source code.
 */
 
-/* Fix overlapping of content by Bootstrap's fixed top navbar */
-body { padding-top: 40px; padding-bottom: 70px; }
-
 @font-face{
     font-family:'FontAwesome';
     src:url('/bundles/bmatznerfontawesome/fonts/fontawesome-webfont.eot?v=4.0.3');
@@ -20,12 +17,44 @@ body { padding-top: 40px; padding-bottom: 70px; }
     font-weight:normal;font-style:normal
 }
 
-#footer {
-    background-color: #F5F5F5;
-    bottom: 0;
-    height: 60px;
-    position: absolute;
+html {
+    min-height: 100%;
+    position: relative;
+}
+
+/* Fix overlapping of content by Bootstrap's fixed top navbar */
+body {
+    padding-top: 40px;
+    margin-bottom: 80px;
+}
+
+/* Sticky Footer */
+#wrap {
+    min-height: 100%;
+    height: auto !important;
+    height: 100%;
+    margin: 0 auto -50px;
+}
+
+.footer {
+    height: 50px;
+    background-color: #f8f8f8;
+    border-top: 1px solid #E7E7E7;
+    margin-top: 30px;
     width: 100%;
+    bottom: 0;
+    position: absolute;
+}
+
+@media (max-width: 767px) {
+    .footer {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+}
+
+#campaignchain-fullscreen-body {
+    padding: 15px;
 }
 
 .campaignchain-navbar {
@@ -78,7 +107,7 @@ ul.nav-tabs {
     margin-bottom: 30px;
 }
 .btn-toolbar {
-    margin-bottom: 30px;
+    margin-bottom: 15px;
 }
 
 .breadcrumb > .active {
@@ -101,6 +130,7 @@ ul.nav-tabs {
     background-color: #F8F8F8;
     border-top: 1px solid #E7E7E7;
     border-bottom: 1px solid #E7E7E7;
+    position: absolute;
 }
 
 .campaignchain-navbar-footer .navbar-text {
@@ -133,12 +163,40 @@ ul.nav-tabs {
 }
 
 .campaignchain-location-image-input-prepend,
-.campaignchain-icon-inline,
-.select2-container .icon,
-.select2-result .icon{
+.campaignchain-icon-inline {
     height: 16px;
     width: 16px;
     margin-top: -4px;
+}
+
+.campaignchain-medium-icon {
+    display: inline-block;
+}
+
+.campaignchain-medium-icon .text {
+    padding-left: 4px;
+}
+
+.campaignchain-medium-icon a,
+.campaignchain-medium-icon a:hover {
+    text-decoration: none;
+}
+
+.select2-container .icon,
+.select2-result .icon,
+.campaignchain-medium-icon .icon {
+    height: 32px;
+    width: 32px;
+    margin-top: -4px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+.select2-container .context-icon,
+.select2-result .context-icon,
+.campaignchain-medium-icon .context-icon {
+    margin-left: -14px;
+    margin-bottom: -12px;
 }
 
 .campaignchain-location-image {
@@ -155,4 +213,8 @@ ul.nav-tabs {
 .campaignchain-tooltip-text-left .tooltip-inner {
     text-align:left;
     white-space:pre-wrap;
+}
+
+#campaignchain-chart-header .datetime {
+    float: right;
 }

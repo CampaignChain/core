@@ -7,48 +7,11 @@
  file that was distributed with this source code.
  */
 
-// TODO: Make sure that timezones work properly in timeline.
-
-/*
-    Definition of global vars.
- */
-var today = moment().zone(window.campaignchainTimezoneOffset);
-
-/*
-    Configuration of DHTMLXGantt properties.
- */
-gantt.config.work_time = false;
-gantt.config.correct_work_time = false;
-gantt.config.duration_unit = 'minute'; // 5 minutes
-gantt.config.duration_step = 5;
-// Define task type for activity
-gantt.config.types["activity"] = "type_id";
-gantt.locale.labels['type_' + "activity"] = "Activity";
-// Define task type for milestone
-gantt.config.types["milestone"] = "type_id";
-gantt.locale.labels['type_' + "milestone"] = "Milestone";
-// TODO: Make left column collapsible.
-gantt.config.progress = false;
-gantt.config.grid_width = 240;
-//gantt.config.autosize = true;
-gantt.config.columns = [
-    {name:"text", label:"Campaigns, Activities, Milestones", tree:true, width:100 },
-//        {name:"start_date", label:"Start Date", align: "center", width:100 },
-//        {name:"end_date", label:"End Date", align: "center", width:100 },
-];
-gantt.config.touch =  true;
-// Disable that dragged task snaps to grid.
-gantt.config.round_dnd_dates = false;
-gantt.config.time_step = 5;
-// Tooltip config.
-// Important to ensure smooth movement during onTaskDrag event.
-gantt.config.tooltip_timeout = 0;
-
 function modToolbarHeight(){
-    var headHeight = $('.btn-toolbar').outerHeight(true);
+    var headHeight = $('#campaignchain-fullscreen-header').outerHeight(true)+$('.btn-toolbar').outerHeight(true);
     var sch = document.getElementById("gantt_here");
 
-    sch.style.height = (parseInt(document.body.offsetHeight)-headHeight)+"px";
+    sch.style.height = (parseInt(document.body.offsetHeight)-headHeight-30)+"px";
 //            var contbox = document.getElementById("contbox");
 //            contbox.style.width = (parseInt(document.body.offsetWidth)-300)+"px";
     gantt.setSizes();
@@ -68,8 +31,8 @@ window.onmousemove = function (e) {
 };
 
 //gantt.attachEvent("onTaskLoading", function(task){
-//    task.start_date = moment(task.start_date).zone(window.campaignchainTimezoneOffset);
-//    task.end_date = moment(task.end_date).zone(window.campaignchainTimezoneOffset);
+//    task.start_date = campaignchainGetUserDateTime(task.start_date);
+//    task.end_date = campaignchainGetUserDateTime(task.end_date);
 //
 //    return true;
 //});
@@ -133,7 +96,7 @@ gantt.attachEvent("onTaskDrag", function(id, mode, task, original, e){
 
     if(!(mode == modes.move || mode == modes.resize)) return;
 
-    if(+moment(task.start_date).zone(window.campaignchainTimezoneOffset) >= +today){
+    if(+campaignchainGetUserDateTime(task.start_date) >= +today){
         if(mode == modes.move){
             limitLeft = limitMoveLeft;
             limitRight = limitMoveRight;
@@ -181,10 +144,10 @@ gantt.attachEvent("onTaskDrag", function(id, mode, task, original, e){
     var modes = gantt.config.drag_mode;
     if(mode == modes.move || mode == modes.resize){
 
-        if(+moment(task.start_date).zone(window.campaignchainTimezoneOffset) == +today || +moment(task.start_date).zone(window.campaignchainTimezoneOffset) < +today){
-            task.start_date = moment().zone(window.campaignchainTimezoneOffset);
+        if(+campaignchainGetUserDateTime(task.start_date) == +today || +campaignchainGetUserDateTime(task.start_date) < +today){
+            task.start_date = campaignchainGetUserDateTime(moment());
             if(mode == modes.move){
-                task.end_date = moment(new Date(+task.start_date + original.duration*(1000*60*60*24))).zone(window.campaignchainTimezoneOffset);
+                task.end_date = moment(new Date(+task.start_date + campaignchainGetUserDateTime(original.duration*(1000*60*60*24))));
             }
         }
     }
@@ -194,32 +157,14 @@ gantt.attachEvent("onTaskDrag", function(id, mode, task, original, e){
 // Campaigns where the start date is in the past cannot be moved.
 gantt.attachEvent("onBeforeTaskDrag", function(id, mode, e){
     var task = gantt.getTask(id);
-    if(+moment(task.start_date).zone(window.campaignchainTimezoneOffset) < +today){
+    if(+campaignchainGetUserDateTime(task.start_date) < +today){
         return false;      //denies dragging
     }
     return true;           //allows dragging
 });
 
 
-// Mark today with a line
-gantt.attachEvent("onGanttRender", onGanttRender_todayLine(moment().zone(window.campaignchainTimezoneOffset)));
 
-
-// TODO: Seems like the calculated time of the day is not correct.
-function onGanttRender_todayLine(today) {
-    return function f() {
-        var $today = $("#campaignchain_gantt_today");
-        if (!$today.length) {
-            var elem = document.createElement("div");
-            elem.id = "campaignchain_gantt_today";
-            gantt.$task_data.appendChild(elem);
-            $today = $(elem);
-        }
-        var x_start = gantt.posFromDate(moment(today).zone(window.campaignchainTimezoneOffset));
-        var x_end = gantt.posFromDate(moment(today).zone(window.campaignchainTimezoneOffset).add('day',1));
-        $today.css("left", Math.floor(x_start + 0.5 * (x_end - x_start)) + "px");
-    };
-}
 
 // If an activity or milestone is in the past, don't allow
 // to create a dependency from or to it
@@ -228,10 +173,10 @@ gantt.attachEvent("onBeforeLinkAdd", function(id,link){
     var task_target = gantt.getTask(link.target);
 
     if (
-        +moment(task_source.start_date).zone(window.campaignchainTimezoneOffset) < +today ||
-        +moment(task_source.end_date).zone(window.campaignchainTimezoneOffset) < +today ||
-        +moment(task_target.start_date).zone(window.campaignchainTimezoneOffset) < +today ||
-        +moment(task_target.end_date).zone(window.campaignchainTimezoneOffset) < +today
+        +campaignchainGetUserDateTime(task_source.start_date) < +today ||
+        +campaignchainGetUserDateTime(task_source.end_date) < +today ||
+        +campaignchainGetUserDateTime(task_target.start_date) < +today ||
+        +campaignchainGetUserDateTime(task_target.end_date) < +today
         ){
         return false;
     }
@@ -245,8 +190,10 @@ gantt.attachEvent("onBeforeLinkAdd", function(id,link){
 gantt.templates.grid_blank = function(item) {
     switch(item.type){
         case 'milestone':
-        case 'activity':
             return "<img src='" + item.icon_path_16px + "' class='campaignchain_gantt_icon_column' />";
+            break;
+        case 'activity':
+            return "<div class='campaignchain-medium-icon'><img src='" + item.location_icon + "' class='icon' /><img src='" + item.activity_icon + "' class='context-icon' /></div>";
             break;
     }
 
@@ -263,130 +210,49 @@ gantt.templates.grid_folder = function(item) {
 
 // Show the edit dialogue when someone clicks on a task.
 gantt.attachEvent("onTaskDblClick", function(id,e){
-    // TODO: If a task is in the past, do not allow editing.
     // TODO: Fade in/out tooltip while modal for editing task is visible.
     var task = gantt.getTask(id);
 
-    // Done tasks cannot be edited.
-    if(+moment(task.start_date).zone(window.campaignchainTimezoneOffset) < +today && +moment(task.end_date).zone(window.campaignchainTimezoneOffset) < +today){
-        return false;
-    }
+    campaignchainShowModal(
+        campaignchainGetUserDateTime(task.start_date),
+        campaignchainGetUserDateTime(task.end_date),
+        task.type, task.campaignchain_id, task.route_edit_api,
+        task, 'campaignchainGanttTaskDblClickSuccess'
+    );
 
-    $('#ganttModal').on('hidden.bs.modal', function () {
-        // Clean up submitted data before showing this modal.
-        $(this).removeData('bs.modal');
-        // Make sure we always show the actual remote content
-        // and not always the same remote modal content.
-        $(this).find(".modal-content").empty();
-    });
+    return false;
+});
 
-    switch(task.type) {
-        // window.apiUrl makes it a global variable that can later be used in the function for posting
-        // from the modal's form.
+function campaignchainGanttTaskDblClickSuccess(task, data) {
+    // Update changes in GANTT data as well.
+    switch(task.type){
         case 'campaign':
-            var modalForm = Routing.generate('campaignchain_core_campaign_edit_modal', { id: task.campaignchain_id });
+            var form_root_name = "campaignchain_core_campaign";
             break;
         case 'milestone':
-            var modalForm = Routing.generate('campaignchain_core_milestone_edit_modal', { id: task.campaignchain_id });
+            var form_root_name = "campaignchain_core_milestone";
             break;
         case 'activity':
-            var modalForm = Routing.generate('campaignchain_core_activity_edit_modal', { id: task.campaignchain_id });
+            var form_root_name = "campaignchain_core_activity";
             break;
     }
 
-    window.apiUrl = Routing.generate(task.route_edit_api, { id: task.campaignchain_id });
+    var taskId = task.campaignchain_id + '_' + task.type;
 
-//    $('#ganttModal .modal-body').text('');
+    gantt.getTask(taskId).text =
+        $('input[name="' + form_root_name + '[name]"]').val();
+    gantt.getTask(taskId).start_date =
+        moment(
+            $('input[name="' + form_root_name + '[campaignchain_hook_' + task.trigger_identifier + '][' + task.start_date_identifier + ']"]').val()
+        );
+    gantt.getTask(taskId).end_date =
+        moment(
+            $('input[name="' + form_root_name + '[campaignchain_hook_' + task.trigger_identifier + '][' + task.end_date_identifier + ']"]').val()
+        );
 
-    $('#ganttModal').modal({
-        show: true,
-        remote: modalForm
-    });
-
-    // Note that we use .one instead of .on here, to make sure the event is fired only once per modal.
-    $('.modal').one('submit', 'form', function(e) {
-        var $form = $(this);
-        var enctype = $form.attr('id')
-        var taskId = task.campaignchain_id + '_' + task.type;
-
-        if(enctype == 'multipart') {
-            var formData = new FormData(this);
-
-            $.ajax({
-                type: $form.attr('method'),
-                url: window.apiUrl,
-                data: formData,
-                mimeType: "multipart/form-data",
-                contentType: false,
-                cache: false,
-                processData: false,
-
-                success: function(data, status) {
-                    $('#ganttModal .modal-content').html(data);
-                }
-            });
-        }
-        else {
-            var submitButton = $("input[type='submit'][clicked=true], button[type='submit'][clicked=true]", $form);
-            var formData = $form.serializeArray();
-
-            if(submitButton.size() === 1) {
-                formData.push({ name: $(submitButton[0]).attr("name"), value: "1" });
-            }
-            else if(submitButton.size() !== 0) {
-                console.log("Error: Multiple submit buttons pressed.");
-            }
-
-            //console.log(formData);
-            $.ajax({
-                type: $form.attr('method'),
-                url: window.apiUrl,
-                data: formData,
-                cache: false,
-
-                success: function(data, status) {
-                    // Update changes in GANTT data as well.
-                    switch(task.type){
-                        case 'campaign':
-                            var form_root_name = "campaignchain_core_campaign";
-                            break;
-                        case 'milestone':
-                            var form_root_name = "campaignchain_core_milestone";
-                            break;
-                        case 'activity':
-                            var form_root_name = "campaignchain_core_activity";
-                            break;
-                    }
-                    gantt.getTask(taskId).text =
-                        $('input[name="' + form_root_name + '[name]"]').val();
-                    gantt.getTask(taskId).start_date =
-                        moment(
-                            $('input[name="' + form_root_name + '[campaignchain_hook_' + task.trigger_identifier + '][' + task.start_date_identifier + ']"]').val()
-                        );
-                    gantt.getTask(taskId).end_date =
-                        moment(
-                            $('input[name="' + form_root_name + '[campaignchain_hook_' + task.trigger_identifier + '][' + task.end_date_identifier + ']"]').val()
-                        );
-
-                    gantt.updateTask(taskId);
-                    gantt.render();
-
-                    $('#ganttModal').modal('hide');
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    alert('URL: ' + apiUrl + ', status: ' + xhr.status + ', message: ' +thrownError);
-                }
-            });
-        }
-
-        e.preventDefault();
-    });
-
-    $('.modal').on("click", 'input[type="submit"], button[type="submit"]', function() {
-        $('form[data-async] input[type=submit], form[data-async] button[type=submit]', $(this).parents("form")).removeAttr("clicked");
-        $(this).attr("clicked", "true");
-    });
-});
+    gantt.updateTask(taskId);
+    gantt.render();
+}
 
 // Persist onTaskDrag changes.
 
@@ -396,58 +262,25 @@ gantt.attachEvent("onAfterTaskDrag", function(id, mode, e){
     var task = gantt.getTask(id);
     var modes = gantt.config.drag_mode;
     // Adjust to user timezone and ISO8601 format.
-    var start_date = moment(task.start_date).zone(window.campaignchainTimezoneOffset).toISOString();
+    var start_date = campaignchainGanttNormalizeDate(task.start_date);
 //    console.log('End date after dragging: ' + task.end_date);
 
     if(mode == modes.move){
-        var postData = { id: task.campaignchain_id, start_date: start_date };
-
-        switch(task.type){
-            case 'campaign':
-                var apiUrl = Routing.generate('campaignchain_core_campaign_move_api');
-//                var postData = { id: task.campaignchain_id, start_date: start_date };
-                break;
-            case 'milestone':
-                var apiUrl = Routing.generate('campaignchain_core_milestone_move_api');
-                var postData = { id: task.campaignchain_id, due_date: start_date };
-                break;
-            case 'activity':
-                var apiUrl = Routing.generate('campaignchain_core_activity_move_api');
-//                var postData = { id: task.campaignchain_id, due_date: start_date };
-                break;
-        }
-
-    //    console.log(start_date);
-
-        // Post data.
-        // TODO: Show spinning icon while saving.
-        $.ajax({
-            type: 'POST',
-            url: apiUrl,
-            // TODO: Normalize start date so that it is in UTC timezone and ISO8601 format.
-            data: postData,
-            dataType: "json",
-            cache: false,
-            success: function(data, status) {
-    //            console.log('Data: ' + data);
-                // TODO: Show success message in Browser.
-                if(task.type == 'campaign'){
-                    // Explicitly set end_date of task based on the response data,
-                    // because DHTMLXGantt seems to adjust the end_date in a strange way.
-    //                var responseData = $.parseJSON(data);
-                    var new_end_date = moment(data.campaign.new_end_date).zone(window.campaignchainTimezoneOffset);
-                    gantt.getTask(id).end_date = new_end_date;
-                    gantt.updateTask(id);
-                    // Overwrite tooltip's end date info, which is a hack :)
-                    $(".campaignchain_dhxmlxgantt_tooltip_end_date").html("<b>End:</b> " + new_end_date.format(window.campaignchainDatetimeFormat) + " (" + window.campaignchainTimezoneAbbreviation + ")");
-                }
-            },
-            error: function (xhr, ajaxOptions, thrownError) {
-                alert('URL: ' + apiUrl + ', status: ' + xhr.status + ', message: ' +thrownError);
-            }
-        });
+        campaignchainMoveAction(task.campaignchain_id, start_date, task.type, task, 'campaignchainOnAfterTaskDragSuccess');
     }
 });
+
+function campaignchainOnAfterTaskDragSuccess(task, data){
+    if(task.type == 'campaign'){
+        // Explicitly set end_date of task based on the response data,
+        // because DHTMLXGantt seems to adjust the end_date in a strange way.
+        var new_end_date = campaignchainGetUserDateTime(data.campaign.new_end_date);
+        gantt.getTask(task.id).end_date = new_end_date;
+        gantt.updateTask(task.id);
+        // Overwrite tooltip's end date info, which is a hack :)
+        $(".campaignchain_dhxmlxgantt_tooltip_end_date").html("<b>End:</b> " + new_end_date.format(window.campaignchainDatetimeFormat) + " (" + window.campaignchainTimezoneAbbreviation + ")");
+    }
+}
 
 gantt.attachEvent("onTaskDrag", function (t) {
     gantt._is_tooltip(t) || this._hide_tooltip()
@@ -461,14 +294,14 @@ gantt.attachEvent("onMouseLeave", function (t) {
 gantt.templates.tooltip_text = function (start_date, end_date, e) {
     start_date = campaignchainRoundMinutes(start_date);
     // Adjust to user timezone.
-//    start_date = moment(start_date).zone(window.campaignchainTimezoneOffset);
+//    start_date = campaignchainGetUserDateTime(start_date);
 
     switch (e.type){
         case 'campaign':
             end_date = campaignchainRoundMinutes(end_date);
 
             // Adjust to user timezone.
-//            end_date = moment(end_date).zone(window.campaignchainTimezoneOffset);
+//            end_date = campaignchainGetUserDateTime(end_date);
 
             return "<b>Start:</b> " + start_date.format(window.campaignchainDatetimeFormat) + " (" + window.campaignchainTimezoneAbbreviation + ") <br/><span class='campaignchain_dhxmlxgantt_tooltip_end_date'><b>End:</b> " + end_date.format(window.campaignchainDatetimeFormat) + " (" + window.campaignchainTimezoneAbbreviation + ")</span>";
             break;

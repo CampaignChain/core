@@ -134,19 +134,32 @@ class ActivityController extends Controller
 
     public function editAction(Request $request, $id)
     {
-        // TODO: If an activity is done, it cannot be edited.
         $activityService = $this->get('campaignchain.core.activity');
+
+        $routeType = 'edit';
+
+        // If closed activity, then redirect to read view.
+        $activity = $activityService->getActivity($id);
+        if($activity->getStatus() == 'closed'){
+            $routeType = 'read';
+        }
+
         $activityModule = $activityService->getActivityModuleByActivity($id);
         $routes = $activityModule->getRoutes();
 
         return $this->redirect(
             $this->generateUrl(
-                $routes['edit'],
+                $routes[$routeType],
                 array(
                     'id' => $id,
                 )
             )
         );
+    }
+
+    public function readAction(Request $request, $id)
+    {
+        return $this->editAction($request, $id);
     }
 
     public function editModalAction(Request $request, $id)

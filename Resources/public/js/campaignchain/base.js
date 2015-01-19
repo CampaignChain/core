@@ -21,6 +21,147 @@ function campaignchainRoundMinutes(date){
     return moment(date).hours(h).minutes(m);
 }
 
+function campaignchainGetUserDateTime(datetime){
+    return moment.tz(datetime, window.campaignchainTimezone);
+}
+
+function campaignchainShowModal(start, end, type, id, route, action, successFunction){
+
+    // Done tasks cannot be edited.
+    var today = campaignchainGetUserDateTime(moment());
+    if(+start < +today && +end < +today){
+        return false;
+    }
+
+    $('#remoteModal').on('hidden.bs.modal', function () {
+        // Clean up submitted data before showing this modal.
+        $(this).removeData('bs.modal');
+        // Make sure we always show the actual remote content
+        // and not always the same remote modal content.
+        $(this).find(".modal-content").empty();
+    });
+
+    switch(type) {
+        // window.apiUrl makes it a global variable that can later be used in the function for posting
+        // from the modal's form.
+        case 'campaign':
+            var modalForm = Routing.generate('campaignchain_core_campaign_edit_modal', { id: id });
+            break;
+        case 'milestone':
+            var modalForm = Routing.generate('campaignchain_core_milestone_edit_modal', { id: id });
+            break;
+        case 'activity':
+            var modalForm = Routing.generate('campaignchain_core_activity_edit_modal', { id: id });
+            break;
+    }
+
+    window.apiUrl = Routing.generate(route, { id: id });
+
+//    $('#remoteModal .modal-body').text('');
+
+    $('#remoteModal').modal({
+        show: true,
+        remote: modalForm
+    });
+
+    // Note that we use .one instead of .on here, to make sure the event is fired only once per modal.
+    $('.modal').one('submit', 'form', function(e) {
+        var $form = $(this);
+        var enctype = $form.attr('id')
+        var taskId = id + '_' + type;
+
+        if(enctype == 'multipart') {
+            var formData = new FormData(this);
+
+            $.ajax({
+                type: $form.attr('method'),
+                url: window.apiUrl,
+                data: formData,
+                mimeType: "multipart/form-data",
+                contentType: false,
+                cache: false,
+                processData: false,
+
+                success: function(data, status) {
+                    $('#remoteModal .modal-content').html(data);
+                }
+            });
+        }
+        else {
+            var submitButton = $("input[type='submit'][clicked=true], button[type='submit'][clicked=true]", $form);
+            var formData = $form.serializeArray();
+
+            if(submitButton.size() === 1) {
+                formData.push({ name: $(submitButton[0]).attr("name"), value: "1" });
+            }
+            else if(submitButton.size() !== 0) {
+                console.log("Error: Multiple submit buttons pressed.");
+            }
+
+            //console.log(formData);
+            $.ajax({
+                type: $form.attr('method'),
+                url: window.apiUrl,
+                data: formData,
+                cache: false,
+
+                success: function(data, status) {
+                    if(successFunction !== undefined){
+                        window[successFunction](action, data);
+                    }
+
+                    $('#remoteModal').modal('hide');
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert('URL: ' + apiUrl + ', status: ' + xhr.status + ', message: ' +thrownError);
+                }
+            });
+        }
+
+        e.preventDefault();
+    });
+
+    $('.modal').on("click", 'input[type="submit"], button[type="submit"]', function() {
+        $('form[data-async] input[type=submit], form[data-async] button[type=submit]', $(this).parents("form")).removeAttr("clicked");
+        $(this).attr("clicked", "true");
+    });
+}
+
+function campaignchainMoveAction(id, start, type, action, successFunction){
+    var postData = { id: id, start_date: start.format(), timezone: window.campaignchainTimezone };
+
+    switch(type){
+        case 'campaign':
+            var apiUrl = Routing.generate('campaignchain_core_campaign_move_api');
+            break;
+        case 'milestone':
+            var apiUrl = Routing.generate('campaignchain_core_milestone_move_api');
+            break;
+        case 'activity':
+            var apiUrl = Routing.generate('campaignchain_core_activity_move_api');
+            break;
+    }
+
+    // Post data.
+    // TODO: Show spinning icon while saving.
+    $.ajax({
+        type: 'POST',
+        url: apiUrl,
+        data: postData,
+        dataType: "json",
+        cache: false,
+        success: function(data, status) {
+            // TODO: Show success message in Browser.
+            if(successFunction !== undefined){
+                window[successFunction](action, data);
+            }
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert('URL: ' + apiUrl + ', status: ' + xhr.status + ', message: ' +thrownError);
+        }
+    });
+}
+
 //function campaignchainUserDatetimeRefresh(){
 //    var refresh=1000; // Refresh rate in milli seconds
 //    mytime=setTimeout('campaignchainDisplayUserDatetime()',refresh)

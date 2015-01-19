@@ -40,6 +40,10 @@ services:
             - { name: doctrine.event_listener, event: postLoad }
             - { name: doctrine.event_listener, event: prePersist }
             - { name: doctrine.event_listener, event: preUpdate }
+    campaignchain.core.listener.doctrine.meta:
+        class: CampaignChain\CoreBundle\EventListener\DoctrineMetaListener
+        tags:
+            - { name: doctrine.event_listener, event: onFlush }
     campaignchain.core.util.datetime:
         class: CampaignChain\CoreBundle\Util\DateTimeUtil
         arguments: ["@service_container"]
@@ -55,6 +59,9 @@ services:
     campaignchain.core.location:
         class: CampaignChain\CoreBundle\EntityService\LocationService
         arguments: [ @doctrine.orm.entity_manager, @service_container ]
+    campaignchain.core.fact:
+        class: CampaignChain\CoreBundle\EntityService\FactService
+        arguments: [ @doctrine.orm.entity_manager ]
     campaignchain.core.form.type.location:
         class: CampaignChain\CoreBundle\Form\Type\LocationType
     campaignchain.core.form.type.activity:
@@ -154,16 +161,22 @@ services:
         arguments: [ @doctrine.orm.entity_manager, @service_container ]
     campaignchain.core.module.package:
         class: CampaignChain\CoreBundle\Module\Package
-        arguments: [ %kernel.root_dir% ]
+        arguments: [ %kernel.root_dir%, %campaignchain_dev% ]
     campaignchain.core.module.repository:
         class: CampaignChain\CoreBundle\Module\Repository
-        arguments: [ @doctrine.orm.entity_manager ]
+        arguments: [ @doctrine.orm.entity_manager, %campaignchain_dev% ]
     campaignchain.core.module.composer:
         class: CampaignChain\CoreBundle\Module\Composer
-        arguments: [ %kernel.root_dir%, @logger ]
+        arguments: [ %kernel.root_dir%, @campaignchain.core.util.command, @logger ]
     campaignchain.core.module.kernel:
         class: CampaignChain\CoreBundle\Module\Kernel
         arguments: [ %kernel.root_dir%, @campaignchain.core.util.command, @logger ]
     campaignchain.core.util.command:
         class: CampaignChain\CoreBundle\Util\CommandUtil
         arguments: [ @kernel ]
+    campaignchain.core.voter.dev:
+        class: CampaignChain\CoreBundle\Security\Authorization\Voter\DevVoter
+        public: false
+        arguments: [ %campaignchain_dev% ]
+        tags:
+            - { name: security.voter }

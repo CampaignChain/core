@@ -18,7 +18,6 @@ file that was distributed with this source code.
                 <tr>
                     <th>Name</th>
                     <th>Type</th>
-                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -27,29 +26,14 @@ file that was distributed with this source code.
                             {% if location.status == "inactive" %}text-muted {% endif %}
                             ">
                         <td>
-                            {% if location.image is not null %}
-                                <img class="campaignchain-icon-inline" src="{{ location.image }}" />&nbsp;
-                            {% endif %}
-                            {{ location.name }}
+                            <div class='campaignchain-medium-icon'>
+                                    <img class='icon' src='{{ asset( location|campaignchain_medium_icon ) }}'/>
+                                    <img class='context-icon' src='{{ asset( location|campaignchain_medium_context ) }}' style='background-image: url("{{ asset( location|campaignchain_medium_context ) }}");'/>
+                                <span class="text"><a href="{{ location.getUrl() }}">{{ location.getName() }}</a></span>
+                            </div>
                         </td>
                         <td>
-                            {{ location.getLocationModule().getDisplayName() }}</td>
-                        <td>
-                            <button type="button" class="btn btn-default btn-xs">
-                                <a href="#"><span class="fa fa-pencil"></span></a>
-                            </button>
-                            {% if location.status == "inactive" %}
-                                <button type="button" class="btn btn-default btn-xs">
-                                    <a href="#"><span class="fa fa-play"></span></a>
-                                </button>
-                            {% else %}
-                                <button type="button" class="btn btn-default btn-xs">
-                                    <a href="#"><span class="fa fa-pause"></span></a>
-                                </button>
-                            {% endif %}
-                            <button type="button" class="btn btn-default btn-xs">
-                                <a href="#"><span class="fa fa-trash-o"></span></a>
-                            </button>
+                            {{ location.getLocationModule().getDisplayName() }}
                         </td>
                     </tr>
                 {% endfor %}

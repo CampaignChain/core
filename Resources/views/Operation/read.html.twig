@@ -1,0 +1,20 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) Sandro Groganz <sandro@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+{% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-8">{% block operation %}{% endblock %}</div>
+        <div class="col-md-4">
+            {% include 'CampaignChainCoreBundle:Activity:sidebar.html.twig' %}
+            {% block sidebar_operation %}{% endblock %}
+        </div>
+    </div>
+{% endblock %}

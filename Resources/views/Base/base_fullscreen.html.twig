@@ -11,6 +11,7 @@ file that was distributed with this source code.
 <html>
     <head>
         <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
         <title>{{ page_title }} - CampaignChain</title>
         {% block javascripts %}
             {% javascripts '@jquery_js' '@bootstrap_js' filter='?yui_js' combine=true %}
@@ -67,10 +68,6 @@ file that was distributed with this source code.
                 position: absolute;
                 width: 100%;
             }
-
-            .btn-toolbar {
-                margin-bottom: 30px;
-            }
         </style>
         <!-- Add Fonta Awesome Glyphicons -->
         <link rel="stylesheet" type="text/css" href="{{ asset('bundles/bmatznerfontawesome/css/font-awesome.min.css') }}" />
@@ -94,7 +91,17 @@ file that was distributed with this source code.
         <![endif]-->
     </head>
     <body>
-            {% block body %}{% endblock %}
+    {% if path_fullscreen_close is defined %}
+    <div id="campaignchain-fullscreen-header">
+        <div class="modal-header">
+            <a href="{{ path_fullscreen_close }}" class="button close" aria-hidden="true">&times;</a>
+            <h4 class="modal-title" id="myModalLabel">{{ page_title }}</h4>
+        </div>
+    </div>
+    {% endif %}
+    <div id="campaignchain-fullscreen-body">
+        {% block body %}{% endblock %}
+    </div>
         <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
         <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>-->
 

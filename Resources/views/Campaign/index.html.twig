@@ -34,10 +34,11 @@ file that was distributed with this source code.
                         <td>{{ campaign.name }}</td>
                         <td>{{ campaign.startDate|campaignchain_datetime() }}</td>
                         <td>{{ campaign.endDate|campaignchain_datetime() }}</td>
-                        <td>
-                                <a role="button" class="btn btn-default btn-xs"
-                                    href="{{ path('campaignchain_core_campaign_edit',{'id':campaign.id}) }}">
-                            <span class="fa fa-pencil"></span></a>
+                        <td align="center">
+                            <a class="btn btn-primary"
+                               href="{{ path('campaignchain_core_campaign_edit',{'id':campaign.id}) }}">
+                               <span class="fa fa-pencil"></span>
+                            </a>
                             {#{% if campaign.status == 'inactive' %}#}
                                 {#<button type="button" class="btn btn-default btn-xs">#}
                                     {#<a href="#"><span class="fa fa-play"></span></a>#}

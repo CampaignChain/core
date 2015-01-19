@@ -50,6 +50,16 @@ class Operation extends Action
     protected $outboundCTAs;
 
     /**
+     * @ORM\OneToMany(targetEntity="SchedulerReportOperation", mappedBy="operation")
+     */
+    protected $scheduledReports;
+
+    /**
+     * @ORM\OneToMany(targetEntity="ReportAnalyticsActivityFact", mappedBy="operation")
+     */
+    protected $fact;
+
+    /**
      * Get id
      *
      * @return integer 
@@ -174,6 +184,7 @@ class Operation extends Action
     {
         $this->locations = new \Doctrine\Common\Collections\ArrayCollection();
         $this->outboundCTAs = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->scheduledReports = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -207,5 +218,71 @@ class Operation extends Action
     public function getOutboundCTAs()
     {
         return $this->outboundCTAs;
+    }
+
+    /**
+     * Add scheduledReports
+     *
+     * @param \CampaignChain\CoreBundle\Entity\SchedulerReportOperation $scheduledReports
+     * @return OperationModule
+     */
+    public function addScheduledReport(\CampaignChain\CoreBundle\Entity\SchedulerReportOperation $scheduledReports)
+    {
+        $this->scheduledReports[] = $scheduledReports;
+
+        return $this;
+    }
+
+    /**
+     * Remove scheduledReports
+     *
+     * @param \CampaignChain\CoreBundle\Entity\SchedulerReportOperation $scheduledReports
+     */
+    public function removeScheduledReport(\CampaignChain\CoreBundle\Entity\SchedulerReportOperation $scheduledReports)
+    {
+        $this->scheduledReports->removeElement($scheduledReports);
+    }
+
+    /**
+     * Get scheduledReports
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getScheduledReports()
+    {
+        return $this->scheduledReports;
+    }
+
+    /**
+     * Add fact
+     *
+     * @param \CampaignChain\CoreBundle\Entity\ReportAnalyticsActivityFact $fact
+     * @return Operation
+     */
+    public function addFact(\CampaignChain\CoreBundle\Entity\ReportAnalyticsActivityFact $fact)
+    {
+        $this->fact[] = $fact;
+
+        return $this;
+    }
+
+    /**
+     * Remove fact
+     *
+     * @param \CampaignChain\CoreBundle\Entity\ReportAnalyticsActivityFact $fact
+     */
+    public function removeFact(\CampaignChain\CoreBundle\Entity\ReportAnalyticsActivityFact $fact)
+    {
+        $this->fact->removeElement($fact);
+    }
+
+    /**
+     * Get fact
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getFact()
+    {
+        return $this->fact;
     }
 }

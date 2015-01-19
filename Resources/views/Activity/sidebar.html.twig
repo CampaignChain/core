@@ -1,0 +1,33 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) Sandro Groganz <sandro@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+{#
+    When a new activity gets created, these variables must be provided by the
+    controller:
+
+    - channel_module_bundle
+    - channel_module
+    - location
+    - campaign
+
+    If the activity exists, then it suffices to provide the activity object as
+    a variable.
+#}
+{% if channel_module_bundle is not defined %}
+    {% set channel_module_bundle = activity.getChannel().getChannelModule().getBundle() %}
+    {% set channel_module = activity.getChannel().getChannelModule() %}
+    {% set campaign = activity.getCampaign() %}
+    {% set location = activity.getLocation() %}
+{% endif %}
+
+{% if activity.getStatus() == 'closed' %}
+    <p><i class="fa fa-clock-o"></i> {{ activity|campaignchain_tpl_trigger_hook_inline }}</p>
+{% endif %}
+<p><i class="fa fa-globe"></i> <a href="{{ location.getUrl() }}">{{ location.getUrl() }}</a></p>
+<p><i class="fa fa-bullhorn"></i> <a href="{{ path('campaignchain_core_campaign_edit', { 'id': campaign.getId() }) }}">{{ campaign.getName() }}</a></p>

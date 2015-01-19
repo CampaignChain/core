@@ -115,11 +115,11 @@ class DhtmlxGantt
                     $activity_data['type'] = 'activity';
 //                    $activity_data['form_root_name'] = $activity->getActivityModule()->getFormRootName();
                     $activity_data['route_edit_api'] = $activity->getActivityModule()->getRoutes()['edit_api'];
-                    // Get channel icons path
-                    $channelService = $this->container->get('campaignchain.core.channel');
-                    $icons = $channelService->getIcons($activity->getChannel());
-                    $activity_data['icon_path_16px'] = $icons['16px'];
-                    $activity_data['icon_path_24px'] = $icons['24px'];
+                    // Get activity icons path
+                    $activityService = $this->container->get('campaignchain.core.activity');
+                    $icons = $activityService->getIcons($activity);
+                    $activity_data['location_icon'] = $icons['location_icon'];
+                    $activity_data['activity_icon'] = $icons['activity_icon'];
 
                     $ganttActivityData[] = $activity_data;
                     $ganttActivityLinks[] = array(
@@ -189,8 +189,25 @@ class DhtmlxGantt
         $ganttTasks = array();
 
         if(isset($ganttCampaignData) && is_array($ganttCampaignData)){
-            $ganttTasks['data'] = array_merge($ganttCampaignData, array_merge($ganttMilestoneData, $ganttActivityData));
-            $ganttTasks['links'] = array_merge($ganttActivityLinks, $ganttMilestoneLinks);
+            $hasMilestones = false;
+            $hasActivities = false;
+
+            $ganttTasks['data'] = $ganttCampaignData;
+            if(isset($ganttMilestoneData) && is_array($ganttMilestoneData)){
+                $ganttTasks['data'] = array_merge($ganttTasks['data'], $ganttMilestoneData);
+                $hasMilestones = true;
+            }
+            if(isset($ganttActivityData) && is_array($ganttActivityData)){
+                $ganttTasks['data'] = array_merge($ganttTasks['data'], $ganttActivityData);
+                $hasActivities = true;
+            }
+            if($hasMilestones && $hasActivities){
+                $ganttTasks['links'] = array_merge($ganttActivityLinks, $ganttMilestoneLinks);
+            } elseif($hasMilestones){
+                $ganttTasks['links'] = $ganttMilestoneLinks;
+            } elseif($hasActivities){
+                $ganttTasks['links'] = $ganttActivityLinks;
+            }
         } else {
             $docUrl = $this->container->get('templating.helper.assets')
                 ->getUrl(

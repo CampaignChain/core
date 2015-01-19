@@ -32,43 +32,37 @@ class DatetimeListener {
             $entity = $args->getEntity();
             $em = $args->getEntityManager();
 
-    //        // Only change the properties for the following entities
-    //        $entityClass = get_class($entity);
-    //
-    //        if(
-    //            $entityClass == 'CampaignChain\CoreBundle\Entity\Campaign' ||
-    //            $entityClass == 'CampaignChain\CoreBundle\Entity\Milestone' ||
-    //            $entityClass == 'CampaignChain\CoreBundle\Entity\Activity'){
-                $reflect = new \ReflectionObject($entity);
-                foreach ($reflect->getProperties(\ReflectionProperty::IS_PRIVATE | \ReflectionProperty::IS_PROTECTED) as $prop) {
-                    $prop->setAccessible(true);
-                    $value = $prop->getValue($entity);
+            $reflect = new \ReflectionObject($entity);
+            foreach ($reflect->getProperties(\ReflectionProperty::IS_PRIVATE | \ReflectionProperty::IS_PROTECTED) as $prop) {
+                $prop->setAccessible(true);
+                $value = $prop->getValue($entity);
 
-                    if (! $value instanceof \DateTime) {
-                        $prop->setAccessible(false);
-                        continue;
-                    }
-    //                echo 'Timezone in DB: '.$value->getTimezone()->getName();
-
-                    // Don't execute this upon login.
-                    if( $this->container->get('request')->get('_route') != 'fos_user_security_check' ){
-                        $value = $this->datetime->setUserTimezone($value);
-                    }
-
-                    $prop->setValue($entity, $value);
+                if (! $value instanceof \DateTime) {
                     $prop->setAccessible(false);
+                    continue;
                 }
-    //        }
+//                echo 'Timezone in DB: '.$value->getTimezone()->getName();
+
+                // Don't execute this upon login.
+                if( $this->container->get('request')->get('_route') != 'fos_user_security_check' ){
+                    $value = $this->datetime->setUserTimezone($value);
+                }
+
+                $prop->setValue($entity, $value);
+                $prop->setAccessible(false);
+            }
         }
     }
 
     public function prePersist(LifecycleEventArgs $args) {
+        // Only execute if HTTP request and not called as command.
         if($this->container->isScopeActive('request')){
             $this->locale2UTC($args);
         }
     }
 
     public function preUpdate(LifecycleEventArgs $args) {
+        // Only execute if HTTP request and not called as command.
         if($this->container->isScopeActive('request')){
             $this->locale2UTC($args);
         }
@@ -77,37 +71,25 @@ class DatetimeListener {
     public function locale2UTC(LifecycleEventArgs $args){
         $entity = $args->getEntity();
         $em = $args->getEntityManager();
-//        echo $entity->getId().' - '.$entity->getName();
-//        // Only change the properties for the following entities
-//        $entityClass = get_class($entity);
-//
-//        if(
-//            $entityClass == 'CampaignChain\CoreBundle\Entity\Campaign'  ||
-//            $entityClass == 'CampaignChain\CoreBundle\Entity\Milestone' ||
-//            $entityClass == 'CampaignChain\CoreBundle\Entity\Activity'
-//        ){
-            $reflect = new \ReflectionObject($entity);
-            foreach ($reflect->getProperties(\ReflectionProperty::IS_PRIVATE | \ReflectionProperty::IS_PROTECTED) as $prop) {
-                $prop->setAccessible(true);
-                $value = $prop->getValue($entity);
 
-                if (
-                    ! $value instanceof \DateTime ||
-                    $this->datetime->isUserTimezone($value)
-                ) {
-                    $prop->setAccessible(false);
-                    continue;
-                }
+        $reflect = new \ReflectionObject($entity);
+        foreach ($reflect->getProperties(\ReflectionProperty::IS_PRIVATE | \ReflectionProperty::IS_PROTECTED) as $prop) {
+            $prop->setAccessible(true);
+            $value = $prop->getValue($entity);
 
-                $value->setTimezone(new \DateTimeZone('UTC'));
-
-                // Round date to 5 minute increments, because that's the minimum time interval of the scheduler.
-                // The frontend should actually take care of this. Hence, this is a fallback solution.
-                $value = DateTimeUtil::roundMinutes($value);
-
-                $prop->setValue($entity, $value);
+            if (! $value instanceof \DateTime) {
                 $prop->setAccessible(false);
+                continue;
             }
-//        }
+
+            $value->setTimezone(new \DateTimeZone('UTC'));
+
+            // Round date to 5 minute increments, because that's the minimum time interval of the scheduler.
+            // The frontend should actually take care of this. Hence, this is a fallback solution.
+            $value = DateTimeUtil::roundMinutes($value);
+
+            $prop->setValue($entity, $value);
+            $prop->setAccessible(false);
+        }
     }
 }

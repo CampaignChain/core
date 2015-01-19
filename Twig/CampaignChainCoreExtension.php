@@ -10,6 +10,7 @@
 
 namespace CampaignChain\CoreBundle\Twig;
 
+use CampaignChain\CoreBundle\Util\ParserUtil;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Doctrine\ORM\EntityManager;
 
@@ -29,7 +30,8 @@ class CampaignChainCoreExtension extends \Twig_Extension
     public function getFilters()
     {
         return array(
-            new \Twig_SimpleFilter('campaignchain_image', array($this, 'image')),
+            new \Twig_SimpleFilter('campaignchain_medium_icon', array($this, 'mediumIcon')),
+            new \Twig_SimpleFilter('campaignchain_medium_context', array($this, 'mediumContext')),
             new \Twig_SimpleFilter('campaignchain_channel_asset_path', array($this, 'channelAssetPath')),
             new \Twig_SimpleFilter('campaignchain_channel_icon_name', array($this, 'channelIconName')),
             new \Twig_SimpleFilter('campaignchain_datetime', array($this, 'datetime')),
@@ -39,6 +41,9 @@ class CampaignChainCoreExtension extends \Twig_Extension
             new \Twig_SimpleFilter('campaignchain_channel_root_locations', array($this, 'channelRootLocations')),
             new \Twig_SimpleFilter('campaignchain_remaining_time', array($this, 'remainingTime')),
             new \Twig_SimpleFilter('campaignchain_remaining_time_badge', array($this, 'remainingTimeBadge')),
+            new \Twig_SimpleFilter('campaignchain_parse_url', array($this, 'parseUrl')),
+            new \Twig_SimpleFilter('campaignchain_ltrim', array($this, 'ltrim')),
+            new \Twig_SimpleFilter('campaignchain_make_links', array($this, 'makeLinks')),
         );
     }
 
@@ -46,14 +51,25 @@ class CampaignChainCoreExtension extends \Twig_Extension
         return $this->em->getRepository('CampaignChainCoreBundle:System')->find(1);
     }
 
-    public function image($object)
+    public function mediumIcon($object)
     {
         $class = get_class($object);
 
         if(strpos($class, 'CoreBundle\Entity\Location') !== false){
             return $object->getImage();
         } else {
+            return $this->channelAssetPath($object).'/images/icons/32x32/'.$this->channelIconName($object);
+        }
+    }
+
+    public function mediumContext($object)
+    {
+        $class = get_class($object);
+
+        if(strpos($class, 'CoreBundle\Entity\Location') !== false){
             return $this->channelAssetPath($object).'/images/icons/16x16/'.$this->channelIconName($object);
+        } else {
+            return false;
         }
     }
 
@@ -65,10 +81,14 @@ class CampaignChainCoreExtension extends \Twig_Extension
             $bundlePath = $object->getPath();
         } elseif(strpos($class, 'CoreBundle\Entity\ChannelModule') !== false){
             $bundlePath = $object->getBundle()->getPath();
+        } elseif(strpos($class, 'CoreBundle\Entity\Location') !== false){
+            $bundlePath = $object->getChannel()->getChannelModule()->getBundle()->getPath();
         } elseif(strpos($class, 'CoreBundle\Entity\Channel') !== false){
             $bundlePath = $object->getChannelModule()->getBundle()->getPath();
         } elseif(strpos($class, 'CoreBundle\Entity\Activity') !== false){
             $bundlePath = $object->getChannel()->getChannelModule()->getBundle()->getPath();
+        } else {
+            return false;
         }
 
         $path = 'bundles/campaignchain'.strtolower(str_replace(DIRECTORY_SEPARATOR, '', str_replace('Bundle', '', str_replace('-', '', $bundlePath))));
@@ -84,10 +104,14 @@ class CampaignChainCoreExtension extends \Twig_Extension
             $bundleName = $object->getName();
         } elseif(strpos($class, 'CoreBundle\Entity\ChannelModule') !== false){
             $bundleName = $object->getBundle()->getName();
+        } elseif(strpos($class, 'CoreBundle\Entity\Location') !== false){
+            $bundleName = $object->getChannel()->getChannelModule()->getBundle()->getName();
         } elseif(strpos($class, 'CoreBundle\Entity\Channel') !== false){
             $bundleName = $object->getChannelModule()->getBundle()->getName();
         } elseif(strpos($class, 'CoreBundle\Entity\Activity') !== false){
             $bundleName = $object->getChannel()->getChannelModule()->getBundle()->getName();
+        } else {
+            return false;
         }
 
         $iconName = str_replace('campaignchain/channel-', '', $bundleName).'.png';
@@ -186,6 +210,20 @@ class CampaignChainCoreExtension extends \Twig_Extension
         return $channelService->getRootLocations($object);
     }
 
+    public function parseUrl($object)
+    {
+        return parse_url($object);
+    }
+
+    public function ltrim($string, $needle = '')
+    {
+        return ltrim($string, $needle);
+    }
+
+    public function makeLinks($text, $target='_blank', $class=''){
+        return ParserUtil::makeLinks($text, $target, $class);
+    }
+
     public function getGlobals()
     {
         // Do not load globals during installation, which is when no
@@ -203,6 +241,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
             "campaignchain_user_timezone_offset" => $this->getGlobalTimezoneOffset(),
             "campaignchain_user_timezone_abbreviation" => $this->getGlobalTimezoneAbbreviation(),
             'campaignchain_system' => $this->system(),
+            'campaignchain_dev' => $this->container->getParameter('campaignchain_dev'),
         );
     }
 

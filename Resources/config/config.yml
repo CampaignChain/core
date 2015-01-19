@@ -1,1 +1,209 @@
-{ assetic: { assets: { campaignchain_base_css: { inputs: ['@CampaignChainCoreBundle/Resources/public/css/campaignchain/base.css'] }, campaignchain_base_js: { inputs: ['@CampaignChainCoreBundle/Resources/public/js/campaignchain/base.js', '@CampaignChainCoreBundle/Resources/public/components/ScrollToFixed/jquery-scrolltofixed.js'] }, jquery_js: { inputs: ['%kernel.root_dir%/../vendor/components/jquery/jquery.js'], filters: ['?yui_js'] }, moment_js: { inputs: ['@CampaignChainCoreBundle/Resources/public/components/moment/moment.js', '@CampaignChainCoreBundle/Resources/public/components/moment-timezone/builds/moment-timezone-with-data.js'] }, bootstrap_js: { inputs: ['%kernel.root_dir%/../vendor/twitter/bootstrap/js/transition.js', '%kernel.root_dir%/../vendor/twitter/bootstrap/js/alert.js', '%kernel.root_dir%/../vendor/twitter/bootstrap/js/modal.js', '%kernel.root_dir%/../vendor/twitter/bootstrap/js/dropdown.js', '%kernel.root_dir%/../vendor/twitter/bootstrap/js/scrollspy.js', '%kernel.root_dir%/../vendor/twitter/bootstrap/js/tab.js', '%kernel.root_dir%/../vendor/twitter/bootstrap/js/tooltip.js', '%kernel.root_dir%/../vendor/twitter/bootstrap/js/popover.js', '%kernel.root_dir%/../vendor/twitter/bootstrap/js/button.js', '%kernel.root_dir%/../vendor/twitter/bootstrap/js/collapse.js', '%kernel.root_dir%/../vendor/twitter/bootstrap/js/carousel.js', '%kernel.root_dir%/../vendor/twitter/bootstrap/js/affix.js'], filters: ['?yui_js'] }, bootstrap_less: { inputs: ['%kernel.root_dir%/../vendor/twitter/bootstrap/less/bootstrap.less'], filters: [lessphp, cssembed] }, braincrafted_bootstrap: { less_filter: lessphp }, select2_js: { inputs: ['%kernel.root_dir%/..//vendor/ivaynberg/select2/select2.js'] }, select2_css: { inputs: ['%kernel.root_dir%/../vendor/ivaynberg/select2/select2.css', '%kernel.root_dir%/../vendor/ivaynberg/select2/select2-bootstrap.css'] }, datatables_js: { inputs: ['%kernel.root_dir%/../vendor/datatables/datatables/media/js/jquery.dataTables.js', '%kernel.root_dir%/../vendor/datatables/datatables/examples/resources/bootstrap/3/dataTables.bootstrap.js'] }, datatables_css: { inputs: ['%kernel.root_dir%/../vendor/datatables/datatables/examples/resources/bootstrap/3/dataTables.bootstrap.css'] }, daterangepicker_js: { inputs: ['@CampaignChainCoreBundle/Resources/public/components/bootstrap-daterangepicker/daterangepicker.js'] }, daterangepicker_css: { inputs: ['@CampaignChainCoreBundle/Resources/public/components/bootstrap-daterangepicker/daterangepicker-bs3.css'] }, dhtmlxgantt_js: { inputs: ['@CampaignChainCoreBundle/Resources/public/components/gantt/codebase/dhtmlxgantt.js'] }, dhtmlxgantt_tooltip_js: { inputs: ['@CampaignChainCoreBundle/Resources/public/components/gantt/codebase/ext/dhtmlxgantt_tooltip.js'] }, campaignchain_dhtmlxgantt_toolbar_js: { inputs: ['@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/toolbar.js'] }, campaignchain_dhtmlxgantt_pre_init_js: { inputs: ['@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/pre_init.js'] }, campaignchain_dhtmlxgantt_post_init_js: { inputs: ['@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/post_init.js'] }, dhtmlxgantt_css: { inputs: ['@CampaignChainCoreBundle/Resources/public/components/gantt/codebase/dhtmlxgantt.css', '@CampaignChainCoreBundle/Resources/public/css/campaignchain/dhtmlxgantt.css'] }, flot_js: { inputs: ['@CampaignChainCoreBundle/Resources/public/components/flot/jquery.flot.js', '@CampaignChainCoreBundle/Resources/public/components/flot/jquery.flot.time.js', '@CampaignChainCoreBundle/Resources/public/components/flot/jquery.flot.symbol.js'] }, flot_comments_js: { inputs: ['@CampaignChainCoreBundle/Resources/public/components/jquery.flot.comments/jquery.flot.comments.js'] }, flot_tooltip_js: { inputs: ['@CampaignChainCoreBundle/Resources/public/components/flot.tooltip/js/jquery.flot.tooltip.js'] }, campaignchain_flot_css: { inputs: ['@CampaignChainCoreBundle/Resources/public/css/campaignchain/flot.css'] }, fullcalendar_js: { inputs: ['@CampaignChainCoreBundle/Resources/public/components/fullcalendar/dist/fullcalendar.js'] }, fullcalendar_css: { inputs: ['@CampaignChainCoreBundle/Resources/public/components/fullcalendar/dist/fullcalendar.css', '@CampaignChainCoreBundle/Resources/public/css/campaignchain/fullcalendar.css'] }, countdown_js: { inputs: ['@CampaignChainCoreBundle/Resources/public/components/jquery.countdown/dist/jquery.countdown.js'] }, ladda_js: { inputs: ['@CampaignChainCoreBundle/Resources/public/components/ladda/dist/spin.min.js', '@CampaignChainCoreBundle/Resources/public/components/ladda/dist/ladda.min.js'] }, ladda_css: { inputs: ['@CampaignChainCoreBundle/Resources/public/components/ladda/dist/ladda-themeless.min.css'] }, blockui_js: { inputs: ['@CampaignChainCoreBundle/Resources/public/components/blockui/jquery.blockUI.js', '@CampaignChainCoreBundle/Resources/public/js/campaignchain/blockui.js'] } }, bundles: [CampaignChainCoreBundle, FOSUserBundle] }, braincrafted_bootstrap: { output_dir: null, assets_dir: '%kernel.root_dir%/../vendor/twitter/bootstrap', jquery_path: '%kernel.root_dir%/../components/jquery/jquery.js', less_filter: lessphp, auto_configure: { assetic: true, twig: true, knp_menu: true, knp_paginator: true }, customize: { variables_file: null, bootstrap_output: '%kernel.root_dir%/../vendor/twitter/less/bootstrap.less', bootstrap_template: 'BraincraftedBootstrapBundle:Bootstrap:bootstrap.less.twig' } }, sc_datetimepicker: { picker: null }, fos_user: { db_driver: orm, firewall_name: main, user_class: CampaignChain\CoreBundle\Entity\User, group: { group_class: CampaignChain\CoreBundle\Entity\Group } }, hpatoio_bitly: { access_token: "%bitly_access_token%", profiler: null, file_log_format: default }, sp_bower: { assetic: { enabled: false }, bundles: { CampaignChainCoreBundle: null } }, sonata_block: { default_contexts: [sonata_page_bundle], blocks: { sonata.block.service.text: null, sonata.block.service.rss: null, campaignchain.block.activity.upcoming.listgroup: null, campaignchain.block.milestone.upcoming.listgroup: null, campaignchain.block.campaign.ongoing.listgroup: null, campaignchain.block.rss: null } } }
+assetic:
+    assets:
+        campaignchain_base_css:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/css/campaignchain/base.css"
+        campaignchain_base_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/base.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/ScrollToFixed/jquery-scrolltofixed.js"
+        jquery_js:
+            inputs:
+                - "%kernel.root_dir%/../vendor/components/jquery/jquery.js"
+            filters:
+                - "?yui_js"
+        moment_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/moment/moment.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/moment-timezone/builds/moment-timezone-with-data.js"
+        bootstrap_js:
+            inputs:
+                - "%kernel.root_dir%/../vendor/twbs/bootstrap/js/transition.js"
+                - "%kernel.root_dir%/../vendor/twbs/bootstrap/js/alert.js"
+                - "%kernel.root_dir%/../vendor/twbs/bootstrap/js/modal.js"
+                - "%kernel.root_dir%/../vendor/twbs/bootstrap/js/dropdown.js"
+                - "%kernel.root_dir%/../vendor/twbs/bootstrap/js/scrollspy.js"
+                - "%kernel.root_dir%/../vendor/twbs/bootstrap/js/tab.js"
+                - "%kernel.root_dir%/../vendor/twbs/bootstrap/js/tooltip.js"
+                - "%kernel.root_dir%/../vendor/twbs/bootstrap/js/popover.js"
+                - "%kernel.root_dir%/../vendor/twbs/bootstrap/js/button.js"
+                - "%kernel.root_dir%/../vendor/twbs/bootstrap/js/collapse.js"
+                - "%kernel.root_dir%/../vendor/twbs/bootstrap/js/carousel.js"
+                - "%kernel.root_dir%/../vendor/twbs/bootstrap/js/affix.js"
+            filters:
+                - "?yui_js"
+        bootstrap_less:
+            inputs:
+                - "%kernel.root_dir%/../vendor/twbs/bootstrap/less/bootstrap.less"
+            filters:
+                - "lessphp"
+                - "cssembed"
+        bootstrap_glyphicons_ttf:
+            inputs:
+                - %kernel.root_dir%/../vendor/twbs/bootstrap/dist/fonts/glyphicons-halflings-regular.ttf
+            output: "fonts/glyphicons-halflings-regular.ttf"
+        bootstrap_glyphicons_eot:
+            inputs:
+                - %kernel.root_dir%/../vendor/twbs/bootstrap/dist/fonts/glyphicons-halflings-regular.eot
+            output: "fonts/glyphicons-halflings-regular.eot"
+        bootstrap_glyphicons_svg:
+            inputs:
+                - %kernel.root_dir%/../vendor/twbs/bootstrap/dist/fonts/glyphicons-halflings-regular.svg
+            output: "fonts/glyphicons-halflings-regular.svg"
+        bootstrap_glyphicons_woff:
+            inputs:
+                - %kernel.root_dir%/../vendor/twbs/bootstrap/dist/fonts/glyphicons-halflings-regular.woff
+            output: "fonts/glyphicons-halflings-regular.woff"
+        braincrafted_bootstrap:
+            less_filter: "lessphp"
+        select2_js:
+            inputs:
+                - "%kernel.root_dir%/..//vendor/ivaynberg/select2/select2.js"
+        select2_css:
+            inputs:
+                - "%kernel.root_dir%/../vendor/ivaynberg/select2/select2.css"
+                - "%kernel.root_dir%/../vendor/ivaynberg/select2/select2-bootstrap.css"
+        select2_png:
+            inputs:
+                - "%kernel.root_dir%/../vendor/ivaynberg/select2/select2.png"
+            output: "css/select2.png"
+        select2_spinner_gif:
+            inputs:
+                - "%kernel.root_dir%/../vendor/ivaynberg/select2/select2-spinner.gif"
+            output: "css/select2-spinner.gif"
+        datatables_js:
+            inputs:
+                - "%kernel.root_dir%/../vendor/datatables/datatables/media/js/jquery.dataTables.js"
+                - "%kernel.root_dir%/../vendor/datatables/datatables/examples/resources/bootstrap/3/dataTables.bootstrap.js"
+        datatables_css:
+            inputs:
+                - "%kernel.root_dir%/../vendor/datatables/datatables/examples/resources/bootstrap/3/dataTables.bootstrap.css"
+        datatables_sort_asc:
+            inputs:
+                - "%kernel.root_dir%/../vendor/datatables/datatables/media/images/sort_asc.png"
+            output: "images/sort_asc.png"
+        datatables_sort_asc_disabled:
+            inputs:
+                - "%kernel.root_dir%/../vendor/datatables/datatables/media/images/sort_asc_disabled.png"
+            output: "images/sort_asc_disabled.png"
+        datatables_sort_both:
+            inputs:
+                - "%kernel.root_dir%/../vendor/datatables/datatables/media/images/sort_both.png"
+            output: "images/sort_both.png"
+        datatables_sort_desc:
+            inputs:
+                - "%kernel.root_dir%/../vendor/datatables/datatables/media/images/sort_desc.png"
+            output: "images/sort_desc.png"
+        datatables_sort_desc_disabled:
+            inputs:
+                - "%kernel.root_dir%/../vendor/datatables/datatables/media/images/sort_desc_disabled.png"
+            output: "images/sort_desc_disabled.png"
+        daterangepicker_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/bootstrap-daterangepicker/daterangepicker.js"
+        daterangepicker_css:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/bootstrap-daterangepicker/daterangepicker-bs3.css"
+        dhtmlxgantt_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/gantt/codebase/dhtmlxgantt.js"
+        dhtmlxgantt_tooltip_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/gantt/codebase/ext/dhtmlxgantt_tooltip.js"
+        campaignchain_dhtmlxgantt_global_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/global.js"
+        campaignchain_dhtmlxgantt_toolbar_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/toolbar.js"
+        campaignchain_dhtmlxgantt_pre_init_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/pre_init.js"
+        campaignchain_dhtmlxgantt_post_init_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/post_init.js"
+        dhtmlxgantt_css:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/gantt/codebase/dhtmlxgantt.css"
+                - "@CampaignChainCoreBundle/Resources/public/css/campaignchain/dhtmlxgantt.css"
+        flot_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/flot/jquery.flot.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/flot/jquery.flot.time.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/flot/jquery.flot.symbol.js"
+        flot_comments_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/jquery.flot.comments/jquery.flot.comments.js"
+        flot_tooltip_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/flot.tooltip/js/jquery.flot.tooltip.js"
+        campaignchain_flot_css:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/css/campaignchain/flot.css"
+        fullcalendar_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/fullcalendar/dist/fullcalendar.js"
+                - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/fullcalendar.js"
+        fullcalendar_css:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/fullcalendar/dist/fullcalendar.css"
+                - "@CampaignChainCoreBundle/Resources/public/css/campaignchain/fullcalendar.css"
+        countdown_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/jquery.countdown/dist/jquery.countdown.js"
+        ladda_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/ladda/dist/spin.min.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/ladda/dist/ladda.min.js"
+        ladda_css:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/ladda/dist/ladda-themeless.min.css"
+        blockui_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/blockui/jquery.blockUI.js"
+                - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/blockui.js"
+    bundles:
+        - "CampaignChainCoreBundle"
+        - "FOSUserBundle"
+braincrafted_bootstrap:
+    output_dir: null
+    assets_dir: "%kernel.root_dir%/../vendor/twbs/bootstrap"
+    jquery_path: "%kernel.root_dir%/../components/jquery/jquery.js"
+    less_filter: "lessphp"
+    auto_configure:
+        assetic: true
+        twig: true
+        knp_menu: true
+        knp_paginator: true
+    customize:
+        variables_file: null
+        bootstrap_output: "%kernel.root_dir%/../vendor/twbs/less/bootstrap.less"
+        bootstrap_template: "BraincraftedBootstrapBundle:Bootstrap:bootstrap.less.twig"
+sc_datetimepicker:
+    picker: null
+fos_user:
+    db_driver: "orm"
+    firewall_name: "main"
+    user_class: "CampaignChain\\CoreBundle\\Entity\\User"
+    group:
+        group_class: "CampaignChain\\CoreBundle\\Entity\\Group"
+hpatoio_bitly:
+    access_token: "%bitly_access_token%"
+    profiler: null
+    file_log_format: "default"
+sp_bower:
+    allow_root: true
+    assetic:
+        enabled: false
+    bundles:
+        CampaignChainCoreBundle: null
+sonata_block:
+    default_contexts:
+        - "sonata_page_bundle"
+    blocks:
+        sonata.block.service.text: null
+        sonata.block.service.rss: null
+        campaignchain.block.activity.upcoming.listgroup: null
+        campaignchain.block.milestone.upcoming.listgroup: null
+        campaignchain.block.campaign.ongoing.listgroup: null
+        campaignchain.block.rss: null

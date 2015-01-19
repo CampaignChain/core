@@ -51,7 +51,7 @@ class YamlConfig
      *
      * @return string
      */
-    public function render($expanded = 0)
+    public function render($expanded = 2)
     {
         return Yaml::dump($this->parameters, $expanded);
     }

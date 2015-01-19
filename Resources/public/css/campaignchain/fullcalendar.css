@@ -8,14 +8,54 @@ file that was distributed with this source code.
 */
 
 .campaignchain-activity,
-.campaignchain-milestone {
-    background-repeat: no-repeat;
-    background-position: 2px 2px;
+.campaignchain-milestone,
+.campaignchain-activity.fc-event:hover,
+.campaignchain-milestone.fc-event:hover {
     background-color: #ffffff !important;
     color: #000;
     padding-left: 20px;
-    min-height: 22px;
     height: auto !important;
+}
+
+.campaignchain-milestone,
+.campaignchain-milestone.fc-event:hover {
+    background-repeat: no-repeat;
+    background-position: 2px 2px;
+    min-height: 22px;
+}
+
+.campaignchain-activity,
+.campaignchain-activity.fc-event:hover {
+    min-height: 36px;
+}
+
+.campaignchain-activity-done,
+.campaignchain-milestone-done {
+    opacity:0.4;
+    filter:alpha(opacity=40); /* For IE8 and earlier */
+}
+
+.campaignchain-calendar-campaign .fc-content {
+    padding: 2px;
+    font-size: 13px;
+}
+
+.campaignchain-calendar-done.fc-event {
+    background-color: #cccccc !important;
+    border: 1px solid #777777 !important;
+    color: #ffffff;
+}
+
+.campaignchain-calendar-ongoing.fc-event {
+    background-color: #F0AD4E !important;
+    border: 1px solid #EEA236 !important;
+    color: #ffffff;
+}
+
+.campaignchain-calendar-upcoming.fc-event {
+    background-color: #5BC0DE !important;
+    border: 1px solid #46B8DA !important;
+    color: #ffffff;
 }
 
 .fc-title {
@@ -28,4 +68,19 @@ file that was distributed with this source code.
 
 .fc-event-vert .fc-event-time {
     white-space: normal;
+}
+
+.fc-event.campaignchain-activity .campaignchain-medium-icon {
+    float:left;
+    margin-left: -18px;
+    padding-top: 4px;
+    padding-right: 2px;
+}
+
+.fc-time-grid-event.fc-short .fc-time, .fc-time-grid-event.fc-short .fc-title {
+    display: inline;
+}
+
+.fc-time-grid-event.fc-short .fc-time:before {
+    font-weight: bold;
 }
