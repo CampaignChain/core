@@ -318,6 +318,31 @@ class Bundle extends Meta
     }
 
     /**
+     * Get path
+     *
+     * @return string
+     */
+    public function getWebAssetsPath()
+    {
+        $bundlePath = $this->getPath();
+
+        $bundlePath = str_replace('vendor/', '', $bundlePath);
+        $bundlePath = str_replace('src/', '', $bundlePath);
+
+        $path = 'bundles/'.strtolower(
+                str_replace(DIRECTORY_SEPARATOR, '',
+                    str_replace(
+                        'Bundle', '',
+                        str_replace(
+                            '-', '', $bundlePath
+                        )
+                    )
+                )
+            );
+        return $path;
+    }
+
+    /**
      * Get identifier
      *
      * @return string

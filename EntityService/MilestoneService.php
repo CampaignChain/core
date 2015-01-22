@@ -102,8 +102,7 @@ class MilestoneService
     public function getIcons($milestone)
     {
         // Compose the channel icon path
-        $modulePath = $milestone->getMilestoneModule()->getBundle()->getPath();
-        $bundlePath = 'bundles/campaignchain'.strtolower(str_replace(DIRECTORY_SEPARATOR, '', str_replace('Bundle', '', $modulePath)));
+        $bundlePath = $milestone->getMilestoneModule()->getBundle()->getWebAssetsPath();
         $bundleName = $milestone->getMilestoneModule()->getBundle()->getName();
         $iconName = str_replace('campaignchain/', '', str_replace('-', '_', $bundleName)).'.png';
         $icon['16px'] = '/'.$bundlePath.'/images/icons/16x16/'.$iconName;

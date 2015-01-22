@@ -78,22 +78,20 @@ class CampaignChainCoreExtension extends \Twig_Extension
         $class = get_class($object);
 
         if(strpos($class, 'CoreBundle\Entity\Bundle') !== false){
-            $bundlePath = $object->getPath();
+            $bundlePath = $object->getWebAssetsPath();
         } elseif(strpos($class, 'CoreBundle\Entity\ChannelModule') !== false){
-            $bundlePath = $object->getBundle()->getPath();
+            $bundlePath = $object->getBundle()->getWebAssetsPath();
         } elseif(strpos($class, 'CoreBundle\Entity\Location') !== false){
-            $bundlePath = $object->getChannel()->getChannelModule()->getBundle()->getPath();
+            $bundlePath = $object->getChannel()->getChannelModule()->getBundle()->getWebAssetsPath();
         } elseif(strpos($class, 'CoreBundle\Entity\Channel') !== false){
-            $bundlePath = $object->getChannelModule()->getBundle()->getPath();
+            $bundlePath = $object->getChannelModule()->getBundle()->getWebAssetsPath();
         } elseif(strpos($class, 'CoreBundle\Entity\Activity') !== false){
-            $bundlePath = $object->getChannel()->getChannelModule()->getBundle()->getPath();
+            $bundlePath = $object->getChannel()->getChannelModule()->getBundle()->getWebAssetsPath();
         } else {
             return false;
         }
 
-        $path = 'bundles/campaignchain'.strtolower(str_replace(DIRECTORY_SEPARATOR, '', str_replace('Bundle', '', str_replace('-', '', $bundlePath))));
-
-        return $path;
+        return $bundlePath;
     }
 
     public function channelIconName($object)
