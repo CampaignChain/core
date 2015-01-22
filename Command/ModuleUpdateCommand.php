@@ -59,6 +59,11 @@ EOT
             $types = array('configs' => true, 'routings' => true);
             $kernel->register($installer->getKernelConfig(), $types);
             $output->writeln('Done');
+        } else {
+            $output->writeln('Updating system registry for all existing modules');
+            $installer = $this->getContainer()->get('campaignchain.core.module.installer');
+            $installer->install();
+            $output->writeln('Done');
         }
     }
 }
