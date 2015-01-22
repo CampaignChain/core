@@ -69,7 +69,8 @@ class Installer
         $this->command = $this->container->get('campaignchain.core.util.command');
         $this->logger = $this->container->get('logger');
         $this->root = realpath(
-            __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR);
+            __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR
+            .'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR);
         $this->packageService = $this->container->get('campaignchain.core.module.package');
         $this->repositoryService = $this->container->get('campaignchain.core.module.repository');
         $this->kernelConfig = new KernelConfig();
@@ -207,20 +208,26 @@ class Installer
 
         $finder = new Finder();
         // Find all the CampaignChain module configuration files.
-        $finder->files()->in($this->root)->name('campaignchain.yml');
+        $finder->files()
+            ->in($this->root.DIRECTORY_SEPARATOR)
+            ->exclude('app')
+            ->exclude('bin')
+            ->exclude('component')
+            ->exclude('web')
+            ->name('campaignchain.yml');
 
         $bundles = null;
 
         // campaignchain-core package
-        $coreComposerFile = $this->root.DIRECTORY_SEPARATOR.'core'.DIRECTORY_SEPARATOR.'composer.json';
+        $coreComposerFile = $this->root.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'campaignchain'.DIRECTORY_SEPARATOR.'core'.DIRECTORY_SEPARATOR.'composer.json';
         $this->getNewBundle($coreComposerFile);
 
         foreach ($finder as $moduleConfig) {
             $bundleComposer = $this->root.DIRECTORY_SEPARATOR.str_replace(
-                    'campaignchain.yml',
-                    'composer.json',
-                    $moduleConfig->getRelativePathname()
-                );
+                'campaignchain.yml',
+                'composer.json',
+                $moduleConfig->getRelativePathname()
+            );
             $this->getNewBundle($bundleComposer);
         }
 
@@ -276,12 +283,23 @@ class Installer
             $version = $this->packageService->getVersion($bundle->getName());
 
             /*
-             * If version does not exist, this means it is a package in
-             * require-dev of composer.json, but CampaignChain is not in
-             * dev mode.
+             * If version does not exist, this means two things:
+             *
+             * 1) Either, it is a package in* require-dev of composer.json, but
+             * CampaignChain is not in dev mode. Then we don't add this package.
+             *
+             * 2) Or it is a bundle in Symfony's src/ directory. Then we want to
+             * add it.
              */
             if(!$version){
-                return false;
+                // Check if bundle is in src/ dir.
+                $bundlePath = str_replace($this->root.DIRECTORY_SEPARATOR, '', $bundleComposer);
+                if(strpos($bundlePath, 'src'.DIRECTORY_SEPARATOR) !== 0){
+                    // Not in src/ dir, so don't add this bundle.
+                    return false;
+                } else {
+                    $version = 'dev-master';
+                }
             }
 
             $bundle->setVersion($version);
