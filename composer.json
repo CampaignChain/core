@@ -51,6 +51,9 @@
         "psr-4": { "CampaignChain\\CoreBundle\\": "" }
     },
     "extra": {
+        "branch-alias": {
+            "dev-1.0.0-beta.1": "1.0.0-beta.1-dev"
+        },
         "campaignchain": {
             "kernel": {
                 "classes": [
