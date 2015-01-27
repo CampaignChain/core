@@ -26,11 +26,7 @@ file that was distributed with this source code.
                             {% if location.status == "inactive" %}text-muted {% endif %}
                             ">
                         <td>
-                            <div class='campaignchain-medium-icon'>
-                                    <img class='icon' src='{{ asset( location|campaignchain_medium_icon ) }}'/>
-                                    <img class='context-icon' src='{{ asset( location|campaignchain_medium_context ) }}' style='background-image: url("{{ asset( location|campaignchain_medium_context ) }}");'/>
-                                <span class="text"><a href="{{ location.getUrl() }}">{{ location.getName() }}</a></span>
-                            </div>
+                            {{ location|campaignchain_tpl_medium }}
                         </td>
                         <td>
                             {{ location.getLocationModule().getDisplayName() }}

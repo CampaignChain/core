@@ -38,6 +38,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
             new \Twig_SimpleFilter('campaignchain_datetime', array($this, 'datetime')),
             new \Twig_SimpleFilter('campaignchain_timezone', array($this, 'timezone')),
             new \Twig_SimpleFilter('campaignchain_data_trigger_hook', array($this, 'dataTriggerHook')),
+            new \Twig_SimpleFilter('campaignchain_tpl_medium', array($this, 'tplLocation'), array('is_safe' => array('html'))),
             new \Twig_SimpleFilter('campaignchain_tpl_trigger_hook_inline', array($this, 'tplTriggerHookInline')),
             new \Twig_SimpleFilter('campaignchain_channel_root_locations', array($this, 'channelRootLocations')),
             new \Twig_SimpleFilter('campaignchain_remaining_time', array($this, 'remainingTime')),
@@ -122,6 +123,40 @@ class CampaignChainCoreExtension extends \Twig_Extension
         $iconName = str_replace($bundleVendor.'-', '', $channelIdentifier).'.png';
 
         return $iconName;
+    }
+
+    public function tplLocation($object)
+    {
+        $class = get_class($object);
+
+        if(strpos($class, 'CoreBundle\Entity\Location') !== false){
+            $url = $object->getUrl();
+            $iconPath = $this->mediumIcon($object);
+            $contextIconPath = $this->mediumContext($object);
+        } elseif(strpos($class, 'CoreBundle\Entity\Activity') !== false){
+            $url = $url = $this->container->get('router')->generate(
+                'campaignchain_core_activity_edit',
+                array('id' => $object->getId()),
+                true
+            );
+            $iconPath = $this->mediumIcon($object->getLocation());
+            $contextIconPath = $this->mediumContext($object->getLocation());
+        } else {
+            throw new \Exception(
+                'Value must either be instance of CampaignChain\CoreBundle\Entity\Activity'
+                .'or CampaignChain\CoreBundle\Entity\Location.'
+            );
+        }
+
+        return $this->container->get('templating')->render(
+            'CampaignChainCoreBundle:Location:widget.html.twig',
+            array(
+                'icon_path' => $iconPath,
+                'context_icon_path' => $contextIconPath,
+                'url' => $url,
+                'name' => $object->getName(),
+            )
+        );
     }
 
     public function remainingTime(\DateTime $object)
