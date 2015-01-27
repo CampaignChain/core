@@ -64,12 +64,12 @@ class CampaignChainCoreExtension extends \Twig_Extension
         }
     }
 
-    public function mediumContext($object)
+    public function mediumContext($object, $size = '16')
     {
         $class = get_class($object);
 
         if(strpos($class, 'CoreBundle\Entity\Location') !== false){
-            return $this->channelAssetPath($object).'/images/icons/16x16/'.$this->channelIconName($object);
+            return $this->channelAssetPath($object).'/images/icons/'.$size.'x'.$size.'/'.$this->channelIconName($object);
         } else {
             return false;
         }
@@ -133,6 +133,10 @@ class CampaignChainCoreExtension extends \Twig_Extension
             $url = $object->getUrl();
             $iconPath = $this->mediumIcon($object);
             $contextIconPath = $this->mediumContext($object);
+            if(!$iconPath){
+                $iconPath = $this->mediumContext($object, '32');
+                $contextIconPath = null;
+            }
         } elseif(strpos($class, 'CoreBundle\Entity\Activity') !== false){
             $url = $url = $this->container->get('router')->generate(
                 'campaignchain_core_activity_edit',
@@ -141,6 +145,10 @@ class CampaignChainCoreExtension extends \Twig_Extension
             );
             $iconPath = $this->mediumIcon($object->getLocation());
             $contextIconPath = $this->mediumContext($object->getLocation());
+            if(!$iconPath){
+                $iconPath = $this->mediumContext($object->getLocation(), '32');
+                $contextIconPath = null;
+            }
         } else {
             throw new \Exception(
                 'Value must either be instance of CampaignChain\CoreBundle\Entity\Activity'

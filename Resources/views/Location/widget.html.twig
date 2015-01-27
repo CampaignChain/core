@@ -9,7 +9,9 @@ file that was distributed with this source code.
 <div class='campaignchain-medium-icon'>
     <a href="{{ url }}">
         <img class='icon' src='{{ asset( icon_path ) }}'/>
-        <img class='context-icon' src='{{ asset( context_icon_path ) }}' style='background-image: url("{{ asset( context_icon_path ) }}");'/>
+        {% if context_icon_path|length > 0 %}
+            <img class='context-icon' src='{{ asset( context_icon_path ) }}' style='background-image: url("{{ asset( context_icon_path ) }}");'/>
+        {% endif %}
     </a>
     <span class="text"><a href="{{ url }}">{{ name }}</a></span>
 </div>
