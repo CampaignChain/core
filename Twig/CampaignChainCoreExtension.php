@@ -11,6 +11,7 @@
 namespace CampaignChain\CoreBundle\Twig;
 
 use CampaignChain\CoreBundle\Util\ParserUtil;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Doctrine\ORM\EntityManager;
 
@@ -99,20 +100,26 @@ class CampaignChainCoreExtension extends \Twig_Extension
         $class = get_class($object);
 
         if(strpos($class, 'CoreBundle\Entity\Bundle') !== false){
-            $bundleName = $object->getName();
+            // $channelIdentifier = $object->getName();
+            throw new \Exception('Cannot derive icon name for Bundle object');
         } elseif(strpos($class, 'CoreBundle\Entity\ChannelModule') !== false){
-            $bundleName = $object->getBundle()->getName();
+            $channelModule = $object;
         } elseif(strpos($class, 'CoreBundle\Entity\Location') !== false){
-            $bundleName = $object->getChannel()->getChannelModule()->getBundle()->getName();
+            $channelModule = $object->getChannel()->getChannelModule();
         } elseif(strpos($class, 'CoreBundle\Entity\Channel') !== false){
-            $bundleName = $object->getChannelModule()->getBundle()->getName();
+            $channelModule = $object->getChannelModule();
         } elseif(strpos($class, 'CoreBundle\Entity\Activity') !== false){
-            $bundleName = $object->getChannel()->getChannelModule()->getBundle()->getName();
+            $channelModule = $object->getChannel()->getChannelModule();
         } else {
             return false;
         }
 
-        $iconName = str_replace('campaignchain/channel-', '', $bundleName).'.png';
+        $bundleName         = $channelModule->getBundle()->getName();
+        $bundleNameParts    = explode('/', $bundleName);
+        $bundleVendor       = $bundleNameParts[0];
+        $channelIdentifier  = $channelModule->getIdentifier();
+
+        $iconName = str_replace($bundleVendor.'-', '', $channelIdentifier).'.png';
 
         return $iconName;
     }
