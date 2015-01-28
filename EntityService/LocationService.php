@@ -167,4 +167,24 @@ class LocationService
 
         return false;
     }
+
+    public function existsInCampaign($identifier, $campaign)
+    {
+        $qb = $this->em->createQueryBuilder();
+        $qb->select('l')
+            ->from('CampaignChain\CoreBundle\Entity\Location', 'l')
+            ->from('CampaignChain\CoreBundle\Entity\Operation', 'o')
+            ->from('CampaignChain\CoreBundle\Entity\Activity', 'a')
+            ->where('l.identifier = :identifier')
+            ->andWhere('l.operation = o.id')
+            ->andWhere('o.activity = a.id')
+            ->andWhere('a.campaign = :campaign')
+            ->setParameter('identifier', $identifier)
+            ->setParameter('campaign', $campaign)
+            ->orderBy('a.startDate', 'ASC');
+        $query = $qb->getQuery();
+        $locations = $query->getResult();
+
+        return is_array($locations) && count($locations) >= 1;
+    }
 }
