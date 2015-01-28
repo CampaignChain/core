@@ -139,7 +139,7 @@ abstract class SchedulerReport extends Meta
      * @param \DateTime $startDate
      * @return ReportOperation
      */
-    protected function setStartDate($startDate)
+    public function setStartDate($startDate)
     {
         $this->startDate = $startDate;
 

@@ -100,8 +100,8 @@ class SchedulerCommand extends ContainerAwareCommand
         try {
             $output->writeln('Scheduler ID: '.$this->scheduler->getId());
             $output->writeln('Interval: '.$this->scheduler->getPeriodInterval().' minute(s)');
-            $output->writeln('Period starts: '.$this->scheduler->getPeriodStart()->format('Y-m-d h:i:s'));
-            $output->writeln('Period ends: '.$this->scheduler->getPeriodEnd()->format('Y-m-d h:i:s'));
+            $output->writeln('Period starts: '.$this->scheduler->getPeriodStart()->format('Y-m-d H:i:s T'));
+            $output->writeln('Period ends: '.$this->scheduler->getPeriodEnd()->format('Y-m-d H:i:s T'));
 
             foreach($this->actionsOrder as $actionType){
                 // Find all Operations to be processed.
@@ -134,13 +134,13 @@ class SchedulerCommand extends ContainerAwareCommand
                             );
 
                             // Highlight the date that is within the execution period.
-                            $startDate = $action->getStartDate()->format('Y-m-d h:i:s');
+                            $startDate = $action->getStartDate()->format('Y-m-d H:i:s');
                             $endDate = null;
 
                             if($action->getStartDate() >= $this->scheduler->getPeriodStart()){
                                 $startDate = '<options=bold>'.$startDate.'</options=bold>';
                             } elseif($action->getEndDate()) {
-                                $endDate = $action->getEndDate()->format('Y-m-d h:i:s');
+                                $endDate = $action->getEndDate()->format('Y-m-d H:i:s');
                                 $endDate = '<options=bold>'.$endDate.'</options=bold>';
                             }
 
@@ -189,8 +189,8 @@ class SchedulerCommand extends ContainerAwareCommand
                 ->setParameter('now', new \DateTime('now', new \DateTimeZone('UTC')))
                 ->setParameter('reportType', 'operation')
                 ->setParameter('jobStatus', JOB::STATUS_OPEN)
-                ->setParameter('periodEnd', $this->scheduler->getPeriodEnd()->format('Y-m-d h:i:s'))
-                ->setParameter('periodStart', $this->scheduler->getPeriodStart()->format('Y-m-d h:i:s'));
+                ->setParameter('periodEnd', $this->scheduler->getPeriodEnd()->format('Y-m-d H:i:s'))
+                ->setParameter('periodStart', $this->scheduler->getPeriodStart()->format('Y-m-d H:i:s'));
             $query = $qb->getQuery();
             $scheduledReports = $query->getResult();
 
@@ -295,10 +295,10 @@ class SchedulerCommand extends ContainerAwareCommand
                     $endDate = null;
 
                     if($job->getStartDate()) {
-                        $startDate = $job->getStartDate()->format('Y-m-d h:i:s');
+                        $startDate = $job->getStartDate()->format('Y-m-d H:i:s');
                     }
                     if($job->getEndDate()) {
-                        $endDate = $job->getEndDate()->format('Y-m-d h:i:s');
+                        $endDate = $job->getEndDate()->format('Y-m-d H:i:s');
                     }
 
                     $outputTableRows[] = array(
@@ -403,8 +403,8 @@ class SchedulerCommand extends ContainerAwareCommand
                     ->setParameter('status', 'open')
                     ->setParameter('jobStatus', JOB::STATUS_OPEN)
                     ->setParameter('actionType', $actionType)
-                    ->setParameter('periodEnd', $periodEnd->format('Y-m-d h:i:s'))
-                    ->setParameter('periodStart', $periodStart->format('Y-m-d h:i:s'));
+                    ->setParameter('periodEnd', $periodEnd->format('Y-m-d H:i:s'))
+                    ->setParameter('periodStart', $periodStart->format('Y-m-d H:i:s'));
                 break;
             case Action::TYPE_ACTIVITY:
                 $qb->select('a')
@@ -425,8 +425,8 @@ class SchedulerCommand extends ContainerAwareCommand
                     ->setParameter('status', 'open')
                     ->setParameter('jobStatus', JOB::STATUS_OPEN)
                     ->setParameter('actionType', $actionType)
-                    ->setParameter('periodEnd', $periodEnd->format('Y-m-d h:i:s'))
-                    ->setParameter('periodStart', $periodStart->format('Y-m-d h:i:s'));
+                    ->setParameter('periodEnd', $periodEnd->format('Y-m-d H:i:s'))
+                    ->setParameter('periodStart', $periodStart->format('Y-m-d H:i:s'));
                 break;
             case Action::TYPE_MILESTONE:
                 $qb->select('m')
@@ -447,8 +447,8 @@ class SchedulerCommand extends ContainerAwareCommand
                     ->setParameter('status', 'open')
                     ->setParameter('jobStatus', JOB::STATUS_OPEN)
                     ->setParameter('actionType', $actionType)
-                    ->setParameter('periodEnd', $periodEnd->format('Y-m-d h:i:s'))
-                    ->setParameter('periodStart', $periodStart->format('Y-m-d h:i:s'));
+                    ->setParameter('periodEnd', $periodEnd->format('Y-m-d H:i:s'))
+                    ->setParameter('periodStart', $periodStart->format('Y-m-d H:i:s'));
                 break;
             case Action::TYPE_CAMPAIGN:
                 $qb->select('c')
@@ -465,8 +465,8 @@ class SchedulerCommand extends ContainerAwareCommand
                     ->setParameter('status', 'open')
                     ->setParameter('jobStatus', JOB::STATUS_OPEN)
                     ->setParameter('actionType', $actionType)
-                    ->setParameter('periodEnd', $periodEnd->format('Y-m-d h:i:s'))
-                    ->setParameter('periodStart', $periodStart->format('Y-m-d h:i:s'));
+                    ->setParameter('periodEnd', $periodEnd->format('Y-m-d H:i:s'))
+                    ->setParameter('periodStart', $periodStart->format('Y-m-d H:i:s'));
                 break;
         }
 
