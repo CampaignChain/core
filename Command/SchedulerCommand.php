@@ -126,6 +126,17 @@ class SchedulerCommand extends ContainerAwareCommand
                     foreach($actions as $action){
                         // Check whether this operation is executable per its trigger hook.
                         if($this->isExecutable($action)){
+                            // Has a job been defined for the module?
+                            $actionServices = $action->getModule()->getServices();
+                            if(!is_array($actionServices) || !isset($actionServices['job'])){
+                                throw new \Exception(
+                                    'No job service defined for module "'
+                                    .$action->getModule()->getIdentifier()
+                                    .'" in bundle "'
+                                    .$action->getModule()->getBundle()->getName().'".'
+                                );
+                            }
+
                             // Queue new Job.
                             $this->queueJob(
                                 $action->getType(),
@@ -215,6 +226,17 @@ class SchedulerCommand extends ContainerAwareCommand
                     }*/
 
                     $output->writeln('Adding Job for collecting report data for '.Action::TYPE_OPERATION.' '.$id.' "'.$name.'".');
+
+                    // Has a report job been defined for the module?
+                    $moduleServices = $module->getServices();
+                    if(!is_array($moduleServices) || !isset($moduleServices['report'])){
+                        throw new \Exception(
+                            'No report service defined for module "'
+                            .$module->getIdentifier()
+                            .'" in bundle "'
+                            .$module->getBundle()->getName().'".'
+                        );
+                    }
 
                     $this->queueJob(
                         $type,
@@ -324,6 +346,7 @@ class SchedulerCommand extends ContainerAwareCommand
         } catch(\Exception $e) {
             $this->scheduler->setMessage($e->getMessage());
             $this->scheduler->setStatus(Scheduler::STATUS_ERROR);
+            $this->scheduler->setExecutionEnd(new \DateTime('now', new \DateTimeZone('UTC')));
             $this->em->flush();
 
             $output->writeln('<error>'.$this->scheduler->getMessage().'</error>');

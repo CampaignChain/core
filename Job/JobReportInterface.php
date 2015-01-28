@@ -24,5 +24,5 @@ interface JobReportInterface extends JobOperationInterface
      * @param $action The object of an action (Operation, Activity or Milestone).
      * @return const One of the status constants.
      */
-    public function schedule($action);
+    public function schedule($action, $facts = null);
 }
