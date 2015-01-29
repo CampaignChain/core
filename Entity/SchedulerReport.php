@@ -113,6 +113,9 @@ abstract class SchedulerReport extends Meta
      * end Action should be extended to. For example, Facebook stats for a
      * status updated could be delayed by up to 1 week.
      *
+     * Note that the prolongation will not be applied to the next run date, but
+     * to the end date of the specified Action's end date.
+     *
      * Relative date formats are defined here:
      * http://php.net/manual/en/datetime.formats.relative.php
      *
@@ -122,6 +125,20 @@ abstract class SchedulerReport extends Meta
      * @ORM\Column(type="string", length=100, nullable=true)
      */
     protected $prolongation;
+
+    /**
+     * A string defining the interval range of the scheduler running with in the
+     * prolonged period of time.
+     *
+     * TODO: Make sure that the provided interval is within the prolonged period.
+     *
+     * TODO: Same additional todos as for $interval.
+     *
+     * @ORM\Column(type="string", length=100, nullable=true)
+     *
+     * @see $interval
+     */
+    protected $prolongationInterval;
 
     /**
      * Get id
@@ -320,11 +337,11 @@ abstract class SchedulerReport extends Meta
     public function getEndAction()
     {
         if($this->endActivity != null){
-            return $this->endActivity;
+            return $this->endActivity->getEndDate();
         } elseif($this->endMilestone != null){
-            return $this->endMilestone;
+            return $this->endMilestone->getEndDate();
         } elseif($this->endCampaign != null){
-            return $this->endCampaign;
+            return $this->endCampaign->getEndDate();
         }
 
         throw \Exception('No end Action defined.');
@@ -374,5 +391,28 @@ abstract class SchedulerReport extends Meta
     public function getProlongation()
     {
         return $this->prolongation;
+    }
+
+    /**
+     * Set prolongationInterval
+     *
+     * @param string $prolongationInterval
+     * @return SchedulerReport
+     */
+    public function setProlongationInterval($prolongationInterval)
+    {
+        $this->prolongationInterval = $prolongationInterval;
+
+        return $this;
+    }
+
+    /**
+     * Get prolongationInterval
+     *
+     * @return string
+     */
+    public function getProlongationInterval()
+    {
+        return $this->prolongationInterval;
     }
 }
