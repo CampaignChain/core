@@ -32,8 +32,6 @@ border: "#777777"
 }
 
 #campaignchain_gantt_today {
-    /* TODO: This is a hack. Height should be calculated by height of gantt_ver_scroll class's height. */
-    height: 20000px;
     width: 3px;
     top:0;
     position: absolute;
