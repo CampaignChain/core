@@ -277,6 +277,7 @@ class Installer
             if($extra && isset($extra['campaignchain'])){
                 if(isset($extra['campaignchain']['kernel'])){
                     $this->kernelConfig->addClasses($extra['campaignchain']['kernel']['classes']);
+                    $bundle->setClass($extra['campaignchain']['kernel']['classes'][0]);
                 }
                 if(isset($extra['campaignchain']['kernel']['routing'])){
                     $this->kernelConfig->addRouting($extra['campaignchain']['kernel']['routing']);

@@ -121,6 +121,13 @@ class Bundle extends Meta
     protected $path;
 
     /**
+     * The bundle class.
+     *
+     * @ORM\Column(type="string", length=255)
+     */
+    protected $class;
+
+    /**
      * @ORM\Column(type="string", length=20)
      */
     protected $version = 'dev-master';
@@ -141,7 +148,7 @@ class Bundle extends Meta
      * Set name
      *
      * @param string $name
-     * @return Module
+     * @return Bundle
      */
     public function setName($name)
     {
@@ -164,7 +171,7 @@ class Bundle extends Meta
      * Set description
      *
      * @param string $description
-     * @return Module
+     * @return Bundle
      */
     public function setDescription($description)
     {
@@ -187,7 +194,7 @@ class Bundle extends Meta
      * Set license
      *
      * @param string $license
-     * @return Module
+     * @return Bundle
      */
     public function setLicense($license)
     {
@@ -210,7 +217,7 @@ class Bundle extends Meta
      * Set authors
      *
      * @param array $authors
-     * @return Module
+     * @return Bundle
      */
     public function setAuthors($authors)
     {
@@ -233,7 +240,7 @@ class Bundle extends Meta
      * Set homepage
      *
      * @param string $homepage
-     * @return Module
+     * @return Bundle
      */
     public function setHomepage($homepage)
     {
@@ -257,7 +264,7 @@ class Bundle extends Meta
      * Set type
      *
      * @param string $type
-     * @return Module
+     * @return Bundle
      */
     public function setType($type)
     {
@@ -298,7 +305,7 @@ class Bundle extends Meta
      * Set path
      *
      * @param string $path
-     * @return Module
+     * @return Bundle
      */
     public function setPath($path)
     {
@@ -318,25 +325,43 @@ class Bundle extends Meta
     }
 
     /**
+     * Set class
+     *
+     * @param string $class
+     * @return Bundle
+     */
+    public function setClass($class)
+    {
+        $this->class = $class;
+
+        return $this;
+    }
+
+    /**
+     * Get class
+     *
+     * @return string
+     */
+    public function getClass()
+    {
+        return $this->class;
+    }
+
+    /**
      * Get path
      *
      * @return string
      */
     public function getWebAssetsPath()
     {
-        $bundlePath = $this->getPath();
-
-        $bundlePath = str_replace('vendor/', '', $bundlePath);
-        $bundlePath = str_replace('src/', '', $bundlePath);
+        $class = $this->getClass();
+        $classParts = explode("\\", $class);
+        $class = end($classParts);
 
         $path = 'bundles/'.strtolower(
-                str_replace(DIRECTORY_SEPARATOR, '',
-                    str_replace(
-                        'Bundle', '',
-                        str_replace(
-                            '-', '', $bundlePath
-                        )
-                    )
+                str_replace(
+                    'Bundle', '',
+                    $class
                 )
             );
         return $path;
@@ -364,7 +389,7 @@ class Bundle extends Meta
      * Add channels
      *
      * @param \CampaignChain\CoreBundle\Entity\Channel $channels
-     * @return Module
+     * @return Bundle
      */
     public function addChannel(\CampaignChain\CoreBundle\Entity\Channel $channels)
     {
@@ -397,7 +422,7 @@ class Bundle extends Meta
      * Add activityModules
      *
      * @param \CampaignChain\CoreBundle\Entity\ActivityModule $activityModules
-     * @return Module
+     * @return Bundle
      */
     public function addActivityModule(\CampaignChain\CoreBundle\Entity\ActivityModule $activityModules)
     {
@@ -430,7 +455,7 @@ class Bundle extends Meta
      * Add operationModules
      *
      * @param \CampaignChain\CoreBundle\Entity\ActivityModule $operationModules
-     * @return Module
+     * @return Bundle
      */
     public function addOperationModule(\CampaignChain\CoreBundle\Entity\OperationModule $operationModules)
     {
@@ -463,7 +488,7 @@ class Bundle extends Meta
      * Add hookModules
      *
      * @param \CampaignChain\CoreBundle\Entity\Hook $hooks
-     * @return Module
+     * @return Bundle
      */
     public function addHook(\CampaignChain\CoreBundle\Entity\Hook $hooks)
     {
@@ -496,7 +521,7 @@ class Bundle extends Meta
      * Add campaignModules
      *
      * @param \CampaignChain\CoreBundle\Entity\CampaignModule $campaignModules
-     * @return Module
+     * @return Bundle
      */
     public function addCampaignModule(\CampaignChain\CoreBundle\Entity\CampaignModule $campaignModules)
     {
@@ -529,7 +554,7 @@ class Bundle extends Meta
      * Add milestoneModules
      *
      * @param \CampaignChain\CoreBundle\Entity\MilestoneModule $milestoneModules
-     * @return Module
+     * @return Bundle
      */
     public function addMilestoneModule(\CampaignChain\CoreBundle\Entity\MilestoneModule $milestoneModules)
     {
@@ -562,7 +587,7 @@ class Bundle extends Meta
      * Add locations
      *
      * @param \CampaignChain\CoreBundle\Entity\Location $locations
-     * @return Module
+     * @return Bundle
      */
     public function addLocation(\CampaignChain\CoreBundle\Entity\Location $locations)
     {
@@ -595,7 +620,7 @@ class Bundle extends Meta
      * Add channelModules
      *
      * @param \CampaignChain\CoreBundle\Entity\ChannelModule $channelModules
-     * @return Module
+     * @return Bundle
      */
     public function addChannelModule(\CampaignChain\CoreBundle\Entity\ChannelModule $channelModules)
     {
@@ -628,7 +653,7 @@ class Bundle extends Meta
      * Add locationModules
      *
      * @param \CampaignChain\CoreBundle\Entity\LocationModule $locationModules
-     * @return Module
+     * @return Bundle
      */
     public function addLocationModule(\CampaignChain\CoreBundle\Entity\LocationModule $locationModules)
     {
@@ -661,7 +686,7 @@ class Bundle extends Meta
      * Add reportModules
      *
      * @param \CampaignChain\CoreBundle\Entity\ReportModule $reportModules
-     * @return Module
+     * @return Bundle
      */
     public function addReportModule(\CampaignChain\CoreBundle\Entity\ReportModule $reportModules)
     {
@@ -694,7 +719,7 @@ class Bundle extends Meta
      * Add securityModules
      *
      * @param \CampaignChain\CoreBundle\Entity\SecurityModule $securityModules
-     * @return Module
+     * @return Bundle
      */
     public function addSecurityModule(\CampaignChain\CoreBundle\Entity\SecurityModule $securityModules)
     {
