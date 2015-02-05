@@ -26,7 +26,11 @@ file that was distributed with this source code.
     {% set location = activity.getLocation() %}
 {% endif %}
 
-{% if activity.getStatus() == 'closed' %}
+{% if show_date is not defined %}
+    {% set show_date = false %}
+{% endif %}
+
+{% if activity.getStatus() == 'closed' or show_date == true %}
     <p><i class="fa fa-clock-o"></i> {{ activity|campaignchain_tpl_trigger_hook_inline }}</p>
 {% endif %}
 {% if location.getUrl() != '' %}

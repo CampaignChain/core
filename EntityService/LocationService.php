@@ -187,4 +187,19 @@ class LocationService
 
         return is_array($locations) && count($locations) >= 1;
     }
+
+    public function getLocationByOperation($operation)
+    {
+        $location = $this->em
+            ->getRepository('CampaignChainCoreBundle:Location')
+            ->findOneByOperation($operation);
+
+        if (!$location) {
+            throw new \Exception(
+                'No location found for Operation with ID '.$operation->getId()
+            );
+        }
+
+        return $location;
+    }
 }
