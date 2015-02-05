@@ -125,7 +125,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
         return $iconName;
     }
 
-    public function tplLocation($object)
+    public function tplLocation($object, $onlyIcons = false)
     {
         $class = get_class($object);
 
@@ -159,6 +159,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
         return $this->container->get('templating')->render(
             'CampaignChainCoreBundle:Location:widget.html.twig',
             array(
+                'only_icons' => $onlyIcons,
                 'icon_path' => $iconPath,
                 'context_icon_path' => $contextIconPath,
                 'url' => $url,

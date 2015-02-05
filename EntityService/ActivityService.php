@@ -121,4 +121,13 @@ class ActivityService
 
         return $icon;
     }
+
+    public function getLocationTpl($activity, $onlyIcons = false)
+    {
+        $twigExt = new CampaignChainCoreExtension($this->em, $this->container);
+
+        return $twigExt->tplLocation($activity->getLocation(), $onlyIcons);
+
+        return $icon;
+    }
 }

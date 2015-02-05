@@ -88,10 +88,14 @@ border: "#777777"
     padding-left: 1px;
 }
 
-.campaignchain_gantt_activity .gantt_side_content.gantt_right,
-.campaignchain_gantt_milestone .gantt_side_content.gantt_right{
+.campaignchain_gantt_milestone .gantt_side_content.gantt_right {
     padding-top: 7px;
-    padding-left: 5px;
+    padding-left: 7px;
+}
+
+.campaignchain_gantt_activity .gantt_side_content.gantt_right {
+    padding-top: 7px;
+    padding-left: 10px;
 }
 
 .gantt_task_line.campaignchain_gantt_activity,
@@ -117,7 +121,7 @@ border: "#777777"
 }
 
 .campaignchain-medium-icon ~ .gantt_tree_content {
-    padding-left: 50px;
+    padding-left: 52px;
 }
 
 .gantt_task_line.campaignchain_gantt_activity div,
@@ -157,4 +161,8 @@ border: "#777777"
 .campaignchain_gantt_activity .gantt_task_drag,
 .campaignchain_gantt_activity .gantt_task_progress_drag {
     display: none !important;
+}
+
+.campaignchain_gantt_activity .gantt_task_content {
+    min-width: 40px;
 }

@@ -193,7 +193,7 @@ gantt.templates.grid_blank = function(item) {
             return "<img src='" + item.icon_path_16px + "' class='campaignchain_gantt_icon_column' />";
             break;
         case 'activity':
-            return "<div class='campaignchain-medium-icon'><img src='" + item.location_icon + "' class='icon' /><img src='" + item.activity_icon + "' class='context-icon' /></div>";
+            return item.location_tpl;
             break;
     }
 

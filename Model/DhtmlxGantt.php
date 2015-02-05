@@ -117,9 +117,7 @@ class DhtmlxGantt
                     $activity_data['route_edit_api'] = $activity->getActivityModule()->getRoutes()['edit_api'];
                     // Get activity icons path
                     $activityService = $this->container->get('campaignchain.core.activity');
-                    $icons = $activityService->getIcons($activity);
-                    $activity_data['location_icon'] = $icons['location_icon'];
-                    $activity_data['activity_icon'] = $icons['activity_icon'];
+                    $activity_data['location_tpl'] = $activityService->getLocationTpl($activity, true);
 
                     $ganttActivityData[] = $activity_data;
                     $ganttActivityLinks[] = array(

@@ -138,9 +138,7 @@ class FullCalendar
                 $activityEvent['trigger_identifier'] = str_replace('-', '_', $activity->getTriggerHook()->getIdentifier());
                 // Get activity icons path
                 $activityService = $this->container->get('campaignchain.core.activity');
-                $icons = $activityService->getIcons($activity);
-                $activityEvent['location_icon'] = $icons['location_icon'];
-                $activityEvent['activity_icon'] = $icons['activity_icon'];
+                $activityEvent['location_tpl'] = $activityService->getLocationTpl($activity, true);
 
                 if($hook->getStartDate() < $userNow){
                     $activityEvents['done'][] = $activityEvent;

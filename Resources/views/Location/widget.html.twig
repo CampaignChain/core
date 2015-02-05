@@ -7,11 +7,13 @@ For the full copyright and license information, please view the LICENSE
 file that was distributed with this source code.
 #}
 <div class='campaignchain-medium-icon'>
-    <a href="{{ url }}">
+    {% if only_icons == false %}<a href="{{ url }}">{% endif %}
         <img class='icon' src='{{ asset( icon_path ) }}'/>
         {% if context_icon_path|length > 0 %}
             <img class='context-icon' src='{{ asset( context_icon_path ) }}' style='background-image: url("{{ asset( context_icon_path ) }}");'/>
         {% endif %}
+    {% if only_icons == false %}
     </a>
     <span class="text"><a href="{{ url }}">{{ name }}</a></span>
+    {% endif %}
 </div>
