@@ -130,7 +130,7 @@ class Bundle extends Meta
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -153,7 +153,7 @@ class Bundle extends Meta
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -176,7 +176,7 @@ class Bundle extends Meta
     /**
      * Get description
      *
-     * @return string 
+     * @return string
      */
     public function getDescription()
     {
@@ -199,7 +199,7 @@ class Bundle extends Meta
     /**
      * Get license
      *
-     * @return string 
+     * @return string
      */
     public function getLicense()
     {
@@ -222,7 +222,7 @@ class Bundle extends Meta
     /**
      * Get authors
      *
-     * @return array 
+     * @return array
      */
     public function getAuthors()
     {
@@ -245,7 +245,7 @@ class Bundle extends Meta
     /**
      * Get homepage
      *
-     * @return string 
+     * @return string
      */
     public function getHomepage()
     {
@@ -310,7 +310,7 @@ class Bundle extends Meta
     /**
      * Get path
      *
-     * @return string 
+     * @return string
      */
     public function getPath()
     {
@@ -386,7 +386,7 @@ class Bundle extends Meta
     /**
      * Get channels
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getChannels()
     {
@@ -419,7 +419,7 @@ class Bundle extends Meta
     /**
      * Get activityModules
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getActivityModules()
     {
@@ -452,7 +452,7 @@ class Bundle extends Meta
     /**
      * Get operationModules
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getOperationModules()
     {
@@ -485,7 +485,7 @@ class Bundle extends Meta
     /**
      * Get hookModules
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getHooks()
     {
@@ -518,7 +518,7 @@ class Bundle extends Meta
     /**
      * Get campaignModules
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getCampaignModules()
     {
@@ -551,7 +551,7 @@ class Bundle extends Meta
     /**
      * Get milestoneModules
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getMilestoneModules()
     {
@@ -584,7 +584,7 @@ class Bundle extends Meta
     /**
      * Get locations
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getLocations()
     {
@@ -617,7 +617,7 @@ class Bundle extends Meta
     /**
      * Get channelModules
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getChannelModules()
     {
@@ -650,7 +650,7 @@ class Bundle extends Meta
     /**
      * Get locationModules
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getLocationModules()
     {
@@ -767,7 +767,7 @@ class Bundle extends Meta
     /**
      * Get activities
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getActivities()
     {
@@ -790,7 +790,7 @@ class Bundle extends Meta
     /**
      * Get version
      *
-     * @return string 
+     * @return string
      */
     public function getVersion()
     {
