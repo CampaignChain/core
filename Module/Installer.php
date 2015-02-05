@@ -62,6 +62,26 @@ class Installer
 
     private $kernelConfig;
 
+    /**
+     * Specifies which routes must be defined by which type of module.
+     *
+     * @var array
+     */
+    private $requiredRoutes = array(
+        'campaignchain-channel' => array(
+            'new'
+        ),
+        'campaignchain-activity' => array(
+            'new', 'edit', 'edit_modal', 'edit_api', 'read'
+        ),
+        'campaignchain-campaign' => array(
+            'new', 'edit', 'edit_modal', 'edit_api', 'plan'
+        ),
+        'campaignchain-milestone' => array(
+            'new', 'edit', 'edit_modal', 'edit_api'
+        )
+    );
+
     public function __construct(EntityManager $em, ContainerInterface $container)
     {
         $this->em = $em;
@@ -461,9 +481,51 @@ class Installer
                     $module->setDescription($moduleParams['description']);
                 }
 
-                if(isset($moduleParams['routes']) && is_array($moduleParams['routes']) && count($moduleParams['routes'])){
+                // Verify routes.
+                if(
+                    $this->newBundle->getType() == 'campaignchain-activity'
+                    || $this->newBundle->getType() == 'campaignchain-channel'
+                    || $this->newBundle->getType() == 'campaignchain-campaign'
+                    || $this->newBundle->getType() == 'campaignchain-milestone'
+                ){
+                    // Throw error if no routes defined.
+                    if(
+                        !isset($moduleParams['routes'])
+                        || !is_array($moduleParams['routes'])
+                        || !count($moduleParams['routes'])
+                    ){
+                        throw new \Exception(
+                            'The module "'.$identifier
+                            .'" in bundle "'.$this->newBundle->getName().'"'
+                            .' does not provide any of the required routes.'
+                        );
+                    } else {
+                        // Throw error if one or more routes are missing.
+                        $hasMissingRoutes = false;
+                        $missingRoutes = '';
+
+                        foreach($this->requiredRoutes[$this->newBundle->getType()] as $requiredRoute){
+                            if (!array_key_exists($requiredRoute, $moduleParams['routes'])) {
+                                $hasMissingRoutes = true;
+                                $missingRoutes .= $requiredRoute.', ';
+                            }
+                        }
+
+                        if($hasMissingRoutes){
+                            throw new \Exception(
+                                'The module "'.$identifier
+                                .'" in bundle "'.$this->newBundle->getName().'"'
+                                .' must define the following route(s): '
+                                .rtrim($missingRoutes, ', ').'.'
+                            );
+                        } else {
+                            $module->setRoutes($moduleParams['routes']);
+                        }
+                    }
+                } elseif(isset($moduleParams['routes']) && is_array($moduleParams['routes']) && count($moduleParams['routes'])){
                     $module->setRoutes($moduleParams['routes']);
                 }
+
                 if(isset($moduleParams['services']) && is_array($moduleParams['services']) && count($moduleParams['services'])){
                     $module->setServices($moduleParams['services']);
                 }
