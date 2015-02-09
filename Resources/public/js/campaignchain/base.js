@@ -25,7 +25,7 @@ function campaignchainGetUserDateTime(datetime){
     return moment.tz(datetime, window.campaignchainTimezone);
 }
 
-function campaignchainShowModal(start, end, type, id, route, action, successFunction){
+function campaignchainShowModal(start, end, type, id, api_route, action, successFunction){
 
     // Done tasks cannot be edited.
     var today = campaignchainGetUserDateTime(moment());
@@ -55,76 +55,76 @@ function campaignchainShowModal(start, end, type, id, route, action, successFunc
             break;
     }
 
-    window.apiUrl = Routing.generate(route, { id: id });
-
-//    $('#remoteModal .modal-body').text('');
-
     $('#remoteModal').modal({
         show: true,
         remote: modalForm
     });
 
-    // Note that we use .one instead of .on here, to make sure the event is fired only once per modal.
-    $('.modal').one('submit', 'form', function(e) {
-        var $form = $(this);
-        var enctype = $form.attr('id')
-        var taskId = id + '_' + type;
+    if(api_route){
+        window.apiUrl = Routing.generate(api_route, { id: id });
 
-        if(enctype == 'multipart') {
-            var formData = new FormData(this);
+        // Note that we use .one instead of .on here, to make sure the event is fired only once per modal.
+        $('.modal').one('submit', 'form', function(e) {
+            var $form = $(this);
+            var enctype = $form.attr('id')
+            var taskId = id + '_' + type;
 
-            $.ajax({
-                type: $form.attr('method'),
-                url: window.apiUrl,
-                data: formData,
-                mimeType: "multipart/form-data",
-                contentType: false,
-                cache: false,
-                processData: false,
+            if(enctype == 'multipart') {
+                var formData = new FormData(this);
 
-                success: function(data, status) {
-                    $('#remoteModal .modal-content').html(data);
-                }
-            });
-        }
-        else {
-            var submitButton = $("input[type='submit'][clicked=true], button[type='submit'][clicked=true]", $form);
-            var formData = $form.serializeArray();
+                $.ajax({
+                    type: $form.attr('method'),
+                    url: window.apiUrl,
+                    data: formData,
+                    mimeType: "multipart/form-data",
+                    contentType: false,
+                    cache: false,
+                    processData: false,
 
-            if(submitButton.size() === 1) {
-                formData.push({ name: $(submitButton[0]).attr("name"), value: "1" });
-            }
-            else if(submitButton.size() !== 0) {
-                console.log("Error: Multiple submit buttons pressed.");
-            }
-
-            //console.log(formData);
-            $.ajax({
-                type: $form.attr('method'),
-                url: window.apiUrl,
-                data: formData,
-                cache: false,
-
-                success: function(data, status) {
-                    if(successFunction !== undefined){
-                        window[successFunction](action, data);
+                    success: function(data, status) {
+                        $('#remoteModal .modal-content').html(data);
                     }
+                });
+            }
+            else {
+                var submitButton = $("input[type='submit'][clicked=true], button[type='submit'][clicked=true]", $form);
+                var formData = $form.serializeArray();
 
-                    $('#remoteModal').modal('hide');
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    alert('URL: ' + apiUrl + ', status: ' + xhr.status + ', message: ' +thrownError);
+                if(submitButton.size() === 1) {
+                    formData.push({ name: $(submitButton[0]).attr("name"), value: "1" });
                 }
-            });
-        }
+                else if(submitButton.size() !== 0) {
+                    console.log("Error: Multiple submit buttons pressed.");
+                }
 
-        e.preventDefault();
-    });
+                //console.log(formData);
+                $.ajax({
+                    type: $form.attr('method'),
+                    url: window.apiUrl,
+                    data: formData,
+                    cache: false,
 
-    $('.modal').on("click", 'input[type="submit"], button[type="submit"]', function() {
-        $('form[data-async] input[type=submit], form[data-async] button[type=submit]', $(this).parents("form")).removeAttr("clicked");
-        $(this).attr("clicked", "true");
-    });
+                    success: function(data, status) {
+                        if(successFunction !== undefined){
+                            window[successFunction](action, data);
+                        }
+
+                        $('#remoteModal').modal('hide');
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        alert('URL: ' + apiUrl + ', status: ' + xhr.status + ', message: ' +thrownError);
+                    }
+                });
+            }
+
+            e.preventDefault();
+        });
+
+        $('.modal').on("click", 'input[type="submit"], button[type="submit"]', function() {
+            $('form[data-async] input[type=submit], form[data-async] button[type=submit]', $(this).parents("form")).removeAttr("clicked");
+            $(this).attr("clicked", "true");
+        });
+    }
 }
 
 function campaignchainMoveAction(id, start, type, action, successFunction){
