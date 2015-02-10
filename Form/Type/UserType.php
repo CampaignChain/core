@@ -58,16 +58,29 @@ class UserType extends AbstractType
         $builder
             ->add('username', 'text')
             ->add('email', 'email')
-            ->add('language', 'language')
-            ->add('locale', 'locale')
+            ->add('language', 'language', array(
+                'data' => 'en_US',
+                'disabled' => 'true'
+            ))
+            ->add('locale', 'locale', array(
+                'data' => 'en_US',
+                'disabled' => true,
+            ))
             ->add('timezone', 'timezone')
-            ->add('currency', 'currency')
+            ->add('currency', 'currency', array(
+                'data' => 'USD',
+                'disabled' => 'true'
+            ))
             ->add('dateFormat', 'choice', array(
+                'data' => 'yyyy-MM-dd',
+                'disabled' => true,
                 'label' => 'Date Format',
                 'choices'   => $dateFormats,
                 'multiple'  => false,
              ))
             ->add('timeFormat', 'choice', array(
+                'data' => 'HH:mm:ss',
+                'disabled' => true,
                 'label' => 'Time Format',
                 'choices'   => $timeFormats,
                 'multiple'  => false,
