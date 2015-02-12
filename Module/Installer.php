@@ -372,9 +372,24 @@ class Installer
     {
         if(is_array($params['hooks']) && count($params['hooks'])){
             foreach($params['hooks'] as $identifier => $hookParams){
-                $hook = new Hook();
-                $hook->setIdentifier($identifier);
-                $hook->setBundle($this->newBundle);
+
+                // Check whether this Hook has already been installed
+                switch($this->isRegisteredBundle($this->newBundle)){
+                    case self::STATUS_REGISTERED_NO :
+                        $hook = new Hook();
+                        $hook->setIdentifier($identifier);
+                        $hook->setBundle($this->newBundle);
+                        break;
+                    case self::STATUS_REGISTERED_OLDER :
+                        // Get the existing bundle.
+                        $hook = $this->em
+                            ->getRepository('CampaignChainCoreBundle:Hook')
+                            ->findOneByIdentifier(strtolower($identifier));
+                        break;
+                    case self::STATUS_REGISTERED_SAME :
+                        continue;
+                }
+
                 $hook->setServices($hookParams['services']);
                 $hook->setType($hookParams['type']);
                 $hook->setLabel($hookParams['label']);
@@ -562,13 +577,26 @@ class Installer
                                     'bundle' => $this->newBundle->getName()
                                     )
                                 );
+
+                            // Does the metric already exist?
                             if($metric){
-                                throw new \Exception(
-                                    "Metric '".$metricName."' of type '".$metricType."'"
-                                    ." already exists for bundle ".$this->newBundle->getName().". "
-                                    ."Please define another name "
-                                    ."in campaignchain.yml of ".$this->newBundle->getName()."."
-                                );
+                                /*
+                                 * Throw error if bundle is new and metric
+                                 * has already been registered.
+                                 */
+                                if(
+                                    $this->isRegisteredBundle($this->newBundle)
+                                    == self::STATUS_REGISTERED_NO
+                                ){
+                                    throw new \Exception(
+                                        "Metric '".$metricName."' of type '".$metricType."'"
+                                        ." already exists for bundle ".$this->newBundle->getName().". "
+                                        ."Please define another name "
+                                        ."in campaignchain.yml of ".$this->newBundle->getName()."."
+                                    );
+                                }
+                                // Skip if same or older version of bundle.
+                                continue;
                             } else {
                                 // Create new metric.
                                 $metricNamespacedClass = 'CampaignChain\\CoreBundle\\Entity\\'.$metricClass;
