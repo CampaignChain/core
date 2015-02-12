@@ -107,7 +107,7 @@ function CampaignChain(){
      *
      * @type {string} prod|dev|dev-stay
      */
-    this.mode = 'dev';
+    this.mode = 'prod';
 }
 
 /**
