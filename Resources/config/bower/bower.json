@@ -12,6 +12,8 @@
         "fullcalendar": "",
         "jquery.countdown": "2.0",
         "ladda": "",
-        "blockui": ""
+        "blockui": "",
+        "d3": "3.5.*",
+        "d3-plugins": ""
     }
 }

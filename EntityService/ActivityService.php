@@ -122,11 +122,11 @@ class ActivityService
         return $icon;
     }
 
-    public function getLocationTpl($activity, $onlyIcons = false)
+    public function tplTeaser($activity, $options = array())
     {
         $twigExt = new CampaignChainCoreExtension($this->em, $this->container);
 
-        return $twigExt->tplLocation($activity->getLocation(), $onlyIcons);
+        return $twigExt->tplTeaser($activity, $options);
 
         return $icon;
     }

@@ -11,7 +11,6 @@
 namespace CampaignChain\CoreBundle\Twig;
 
 use CampaignChain\CoreBundle\Util\ParserUtil;
-use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Doctrine\ORM\EntityManager;
 
@@ -20,6 +19,13 @@ class CampaignChainCoreExtension extends \Twig_Extension
     protected $em;
     protected $container;
     protected $datetime;
+
+    protected $teaserOptions = array(
+        'only_icon' => false,
+        'name' => 'location',
+        'show_trigger' => false,
+        'truncate_middle' => 0,
+    );
 
     public function __construct(EntityManager $em, ContainerInterface $container)
     {
@@ -38,7 +44,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
             new \Twig_SimpleFilter('campaignchain_datetime', array($this, 'datetime')),
             new \Twig_SimpleFilter('campaignchain_timezone', array($this, 'timezone')),
             new \Twig_SimpleFilter('campaignchain_data_trigger_hook', array($this, 'dataTriggerHook')),
-            new \Twig_SimpleFilter('campaignchain_tpl_medium', array($this, 'tplLocation'), array('is_safe' => array('html'))),
+            new \Twig_SimpleFilter('campaignchain_tpl_teaser', array($this, 'tplTeaser'), array('is_safe' => array('html'))),
             new \Twig_SimpleFilter('campaignchain_tpl_trigger_hook_inline', array($this, 'tplTriggerHookInline')),
             new \Twig_SimpleFilter('campaignchain_channel_root_locations', array($this, 'channelRootLocations')),
             new \Twig_SimpleFilter('campaignchain_remaining_time', array($this, 'remainingTime')),
@@ -125,29 +131,42 @@ class CampaignChainCoreExtension extends \Twig_Extension
         return $iconName;
     }
 
-    public function tplLocation($object, $onlyIcons = false)
+    public function tplTeaser($object, $options = array())
     {
+        if(is_array($options) && count($options)){
+            $this->teaserOptions = array_merge($this->teaserOptions, $options);
+        }
+
         $class = get_class($object);
 
         if(strpos($class, 'CoreBundle\Entity\Location') !== false){
-            $url = $object->getUrl();
-            $iconPath = $this->mediumIcon($object);
-            $contextIconPath = $this->mediumContext($object);
-            if(!$iconPath){
-                $iconPath = $this->mediumContext($object, '32');
-                $contextIconPath = null;
+            $tplVars['url'] = $object->getUrl();
+            $tplVars['icon_path'] = $this->mediumIcon($object);
+            $tplVars['context_icon_path'] = $this->mediumContext($object);
+            if(!$tplVars['icon_path']){
+                $tplVars['icon_path'] = $this->mediumContext($object, '32');
+                $tplVars['context_icon_path'] = null;
             }
+            $tplVars['name'] = $object->getName();
         } elseif(strpos($class, 'CoreBundle\Entity\Activity') !== false){
-            $url = $url = $this->container->get('router')->generate(
+            $tplVars['url'] = $this->container->get('router')->generate(
                 'campaignchain_core_activity_edit',
                 array('id' => $object->getId()),
                 true
             );
-            $iconPath = $this->mediumIcon($object->getLocation());
-            $contextIconPath = $this->mediumContext($object->getLocation());
-            if(!$iconPath){
-                $iconPath = $this->mediumContext($object->getLocation(), '32');
-                $contextIconPath = null;
+            $tplVars['icon_path'] = $this->mediumIcon($object->getLocation());
+            $tplVars['context_icon_path'] = $this->mediumContext($object->getLocation());
+            if(!$tplVars['icon_path']){
+                $tplVars['icon_path'] = $this->mediumContext($object->getLocation(), '32');
+                $tplVars['context_icon_path'] = null;
+            }
+            if($this->teaserOptions['name'] == 'activity'){
+                $tplVars['name'] = $object->getName();
+            } else {
+                $tplVars['name'] = $object->getLocation()->getName();
+            }
+            if($this->teaserOptions['show_trigger'] == true){
+                $tplVars['trigger'] = $this->tplTriggerHookInline($object);
             }
         } else {
             throw new \Exception(
@@ -156,15 +175,17 @@ class CampaignChainCoreExtension extends \Twig_Extension
             );
         }
 
+        if($this->teaserOptions['truncate_middle'] > 5){
+            $tplVars['name'] = ParserUtil::truncateMiddle(
+                $tplVars['name'], $this->teaserOptions['truncate_middle']
+            );
+        }
+
+        $tplVars['options'] = $this->teaserOptions;
+
         return $this->container->get('templating')->render(
-            'CampaignChainCoreBundle:Location:widget.html.twig',
-            array(
-                'only_icons' => $onlyIcons,
-                'icon_path' => $iconPath,
-                'context_icon_path' => $contextIconPath,
-                'url' => $url,
-                'name' => $object->getName(),
-            )
+            'CampaignChainCoreBundle:Base:teaser_widget.html.twig',
+            $tplVars
         );
     }
 

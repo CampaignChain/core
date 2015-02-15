@@ -162,6 +162,21 @@ function campaignchainMoveAction(id, start, type, action, successFunction){
     });
 }
 
+function campaignchainTplMedium(iconPath, contextIconPath, text){
+    if(iconPath == '/'){
+        iconPath = contextIconPath.replace('16x16', '32x32');
+        contextIconPath = null;
+    }
+
+    var image = "<div class='campaignchain-teaser'>";
+
+    image = image + "<img class='icon' src='" + iconPath + "'/>";
+    if(contextIconPath && contextIconPath != '/'){
+        image = image + "<img class='context-icon' src='" + contextIconPath + "' style='background-image: url(\"" + contextIconPath + "\");'/>"
+    }
+    return image + "<span class='text'>" + text + "</span></div>";
+}
+
 //function campaignchainUserDatetimeRefresh(){
 //    var refresh=1000; // Refresh rate in milli seconds
 //    mytime=setTimeout('campaignchainDisplayUserDatetime()',refresh)

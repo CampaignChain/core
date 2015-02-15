@@ -185,6 +185,10 @@ class TrackingController extends Controller
             // Add new CTA to report.
             $reportCTA = new ReportCTA();
             $reportCTA->setCTA($cta);
+            $reportCTA->setOperation($cta->getOperation());
+            $reportCTA->setActivity($cta->getOperation()->getActivity());
+            $reportCTA->setCampaign($cta->getOperation()->getActivity()->getCampaign());
+            $reportCTA->setChannel($cta->getOperation()->getActivity()->getChannel());
             $reportCTA->setReferrerLocation($referrerLocation);
             $reportCTA->setReferrerName($referrerLocation->getName());
             $reportCTA->setReferrerUrl($referrerLocation->getUrl());

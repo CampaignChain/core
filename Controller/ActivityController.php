@@ -125,10 +125,13 @@ class ActivityController extends Controller
         }
 
         return $this->render(
-            'CampaignChainCoreBundle:Activity:new.html.twig',
+            'CampaignChainCoreBundle:Base:new_dependent_select.html.twig',
             array(
                 'page_title' => 'Create New Activity',
                 'form' => $form->createView(),
+                'dependent_select_parent' => 'location',
+                'dependent_select_child' => 'activity',
+                'dependent_select_route' => 'campaignchain_core_location_list_activities_api',
             ));
     }
 

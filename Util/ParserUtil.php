@@ -182,4 +182,25 @@ class ParserUtil
             '<a class="'.$class.'" href="//$3" target="'.$target.'">$1$3</a>',
             $text);
     }
+
+    static function sanitizeUrl($url)
+    {
+        // Append trailing slash if missing.
+        if (substr($url, -1) !== '/') {
+            return $url.'/';
+        }
+
+        return $url;
+    }
+
+    static function truncateMiddle($text, $maxChars)
+    {
+        $textLength = strlen($text);
+
+        if ($textLength > $maxChars){
+            return substr_replace($text, '...', $maxChars/2, $textLength-$maxChars);
+        }
+
+        return $text;
+    }
 }

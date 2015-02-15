@@ -115,12 +115,12 @@ border: "#777777"
     width:34px !important;
 }
 
-.gantt_cell .campaignchain-medium-icon {
+.gantt_cell .campaignchain-teaser {
     position:absolute;
     padding-left: 10px;
 }
 
-.campaignchain-medium-icon ~ .gantt_tree_content {
+.campaignchain-teaser ~ .gantt_tree_content {
     padding-left: 52px;
 }
 

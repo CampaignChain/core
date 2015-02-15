@@ -47,9 +47,8 @@ jQuery(document).ready(function() {
         campaignchain.sendUrlReport(window.location.href);
     }
 
-    // Disable clicks if dev-stay mode and Tracking ID exists in URL.
-    if(campaignchain.mode == 'dev-stay' &&
-        campaignchain.getTrackingId()){
+    // Disable clicks if dev-stay mode.
+    if(campaignchain.mode == 'dev-stay'){
         jQuery('a').on('click', function(event) {
             event.preventDefault();
         });
@@ -158,16 +157,10 @@ CampaignChain.prototype.sendUrlReport = function(target)
                 this.continueTracking(data.target_affiliation);
 
                 if(this.mode != 'dev-stay'){
-                    if(this.newVisit() == false){
-                        window.location.href = this.target;
-                    }
+                    window.location.href = this.target;
                 } else {
-                    if(this.newVisit() == false){
-                        console.log('AJAX success: ' + status);
-                        console.log('Would redirect to: ' + this.target);
-                    } else {
-                        console.log('First visit, so we stay here.');
-                    }
+                    console.log('AJAX success: ' + status);
+                    console.log('Would redirect to: ' + this.target);
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {

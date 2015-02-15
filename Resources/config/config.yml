@@ -126,6 +126,12 @@ assetic:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/components/gantt/codebase/dhtmlxgantt.css"
                 - "@CampaignChainCoreBundle/Resources/public/css/campaignchain/dhtmlxgantt.css"
+        d3_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/d3/d3.min.js"
+        d3_sankey_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/d3-plugins/sankey/sankey.js"
         flot_js:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/components/flot/jquery.flot.js"

@@ -15,6 +15,8 @@ use CampaignChain\CoreBundle\Entity\Channel;
 use CampaignChain\CoreBundle\Entity\Location;
 use CampaignChain\CoreBundle\Entity\Operation;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use CampaignChain\CoreBundle\Util\ParserUtil;
+use CampaignChain\CoreBundle\Twig\CampaignChainCoreExtension;
 
 class LocationService
 {
@@ -71,6 +73,8 @@ class LocationService
      */
     public function findLocationByUrl($url, $operation)
     {
+        $url = ParserUtil::sanitizeUrl($url);
+
         // Check if the URL is in CampaignChain as a Location.
         $location = $this->em
             ->getRepository('CampaignChainCoreBundle:Location')
@@ -201,5 +205,14 @@ class LocationService
         }
 
         return $location;
+    }
+
+    public function tplTeaser($location, $options = array())
+    {
+        $twigExt = new CampaignChainCoreExtension($this->em, $this->container);
+
+        return $twigExt->tplTeaser($location, $options);
+
+        return $icon;
     }
 }
