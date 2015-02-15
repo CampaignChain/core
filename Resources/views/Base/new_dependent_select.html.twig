@@ -12,8 +12,8 @@ file that was distributed with this source code.
 {% block javascripts %}
     {{ parent() }}
 
-    {% javascripts '@CampaignChainCoreBundle/Resources/public/js/select2_select2_ajax.js' %}
-    <script src="{{ asset_url }}"></script>
+    {% javascripts '@select2_dependent_js' %}
+    <!-- dependent select --><script src="{{ asset_url }}"></script>
     {% endjavascripts %}
 
     <script>
