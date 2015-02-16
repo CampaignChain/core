@@ -22,7 +22,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
 
     protected $teaserOptions = array(
         'only_icon' => false,
-        'name' => 'location',
+        'activity_name' => 'activity',
         'show_trigger' => false,
         'truncate_middle' => 0,
     );
@@ -160,7 +160,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
                 $tplVars['icon_path'] = $this->mediumContext($object->getLocation(), '32');
                 $tplVars['context_icon_path'] = null;
             }
-            if($this->teaserOptions['name'] == 'activity'){
+            if($this->teaserOptions['activity_name'] == 'activity'){
                 $tplVars['name'] = $object->getName();
             } else {
                 $tplVars['name'] = $object->getLocation()->getName();
