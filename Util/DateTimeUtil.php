@@ -184,11 +184,15 @@ class DateTimeUtil
         return false;
     }
 
-    public function formatLocale(\DateTime $object, $format = null){
+    public function formatLocale(\DateTime $object, $format = null, $timezone = null){
+        if(!$timezone){
+            $timezone = $this->container->get('session')->get('campaignchain.timezone');
+        }
+
         switch($format){
             case 'ISO8601':
                 $object->setTimezone(
-                    new \DateTimeZone($this->container->get('session')->get('campaignchain.timezone'))
+                    new \DateTimeZone($timezone)
                 );
                 return $object->format(\DateTime::ISO8601);
                 break;
@@ -198,12 +202,28 @@ class DateTimeUtil
                     $this->container->get('session')->get('campaignchain.locale'),
                     \IntlDateFormatter::FULL,
                     \IntlDateFormatter::FULL,
-                    $this->container->get('session')->get('campaignchain.timezone')
+                    $timezone
                 );
                 $localeFormat->setPattern($this->container->get('session')->get('campaignchain.dateFormat').' '.$this->container->get('session')->get('campaignchain.timeFormat'));
                 return $localeFormat->format($object);
                 break;
         }
+    }
+
+    public function getLocalizedTime(\DateTime $object, $timezone = null){
+        if(!$timezone){
+            $timezone = $this->container->get('session')->get('campaignchain.timezone');
+        }
+
+        // Apply timezone and locale to DateTime object
+        $localeFormat = new \IntlDateFormatter(
+            $this->container->get('session')->get('campaignchain.locale'),
+            \IntlDateFormatter::FULL,
+            \IntlDateFormatter::FULL,
+            $timezone
+        );
+        $localeFormat->setPattern($this->container->get('session')->get('campaignchain.timeFormat'));
+        return $localeFormat->format($object);
     }
 
     private function convertToMomentJSFormat($format){

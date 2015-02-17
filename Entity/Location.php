@@ -11,6 +11,7 @@
 namespace CampaignChain\CoreBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use CampaignChain\CoreBundle\Util\ParserUtil;
 
 /**
  * @ORM\Entity
@@ -246,7 +247,7 @@ class Location extends Medium
      */
     public function setUrl($url)
     {
-        $this->url = rtrim($url, '/');
+        $this->url = ParserUtil::sanitizeUrl($url);
 
         return $this;
     }

@@ -32,8 +32,6 @@ border: "#777777"
 }
 
 #campaignchain_gantt_today {
-    /* TODO: This is a hack. Height should be calculated by height of gantt_ver_scroll class's height. */
-    height: 20000px;
     width: 3px;
     top:0;
     position: absolute;
@@ -90,10 +88,14 @@ border: "#777777"
     padding-left: 1px;
 }
 
-.campaignchain_gantt_activity .gantt_side_content.gantt_right,
-.campaignchain_gantt_milestone .gantt_side_content.gantt_right{
+.campaignchain_gantt_milestone .gantt_side_content.gantt_right {
     padding-top: 7px;
-    padding-left: 5px;
+    padding-left: 7px;
+}
+
+.campaignchain_gantt_activity .gantt_side_content.gantt_right {
+    padding-top: 7px;
+    padding-left: 10px;
 }
 
 .gantt_task_line.campaignchain_gantt_activity,
@@ -113,13 +115,13 @@ border: "#777777"
     width:34px !important;
 }
 
-.gantt_cell .campaignchain-medium-icon {
+.gantt_cell .campaignchain-teaser {
     position:absolute;
     padding-left: 10px;
 }
 
-.campaignchain-medium-icon ~ .gantt_tree_content {
-    padding-left: 50px;
+.campaignchain-teaser ~ .gantt_tree_content {
+    padding-left: 52px;
 }
 
 .gantt_task_line.campaignchain_gantt_activity div,
@@ -159,4 +161,8 @@ border: "#777777"
 .campaignchain_gantt_activity .gantt_task_drag,
 .campaignchain_gantt_activity .gantt_task_progress_drag {
     display: none !important;
+}
+
+.campaignchain_gantt_activity .gantt_task_content {
+    min-width: 40px;
 }

@@ -80,4 +80,15 @@ class HookService
 
         return $entity;
     }
+
+    public function getHook($identifier)
+    {
+        $hook = $this->em->getRepository('CampaignChainCoreBundle:Hook')->findOneByIdentifier($identifier);
+
+        if(!$hook){
+            throw new \Exception('No hook with identifier '.$identifier);
+        }
+
+        return $hook;
+    }
 }

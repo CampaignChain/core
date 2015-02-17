@@ -154,6 +154,12 @@ campaignchain_core_channel_cta_tracking_test:
     pattern:  /api/private/channel/{id}/cta-tracking/test
     defaults: { _controller: CampaignChainCoreBundle:Channel:apiTestCtaTracking, id: 0 }
 
+campaignchain_core_report_list_cta_locations_per_campaign_api:
+    pattern:  /api/private/report/cta/campaign/{id}/locations
+    defaults: { _controller: CampaignChainCoreBundle:Report:apiListCtaLocationsPerCampaign }
+    options:
+        expose: true
+
 campaignchain_core_location:
     pattern:  /locations/
     defaults: { _controller: CampaignChainCoreBundle:Location:index }

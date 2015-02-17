@@ -42,7 +42,7 @@ gantt.templates.task_text = function(start, end, task){
             return "<img src='" + task.icon_path_24px + "' class='campaignchain_gantt_icon_timeline' />"
             break;
         case 'activity':
-            return "<div class='campaignchain-medium-icon'><img src='" + task.location_icon + "' class='icon' /><img src='" + task.activity_icon + "' class='context-icon' /></div>"
+            return task.location_tpl;
             break;
     }
     return task.text;

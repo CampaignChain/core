@@ -1,26 +1,28 @@
-$(document).ready(function(){
-    $("#form_activity").hide();
-    $('label[for="form_activity"]').hide();
+function campaignchainDependentSelect2(parent, child, route){
+    $parentSelect = $("#form_" + parent);
+    $childSelect = $("#form_" + child);
+    $childLabel = $('label[for="form_' + child + '"]');
 
-    $locationSelect = $("#form_location");
+    $childSelect.hide();
+    $childLabel.hide();
 
-    var $previousSelect = $currentSelect = $locationSelect.attr('value');
+    var $previousSelect = $currentSelect = $parentSelect.attr('value');
 
-    $locationSelect.select2("val", "");
+    $parentSelect.select2("val", "");
 
-    $locationSelect.change(function(){
+    $parentSelect.change(function(){
         if ($(this).val() != '') {
-            var $route = Routing.generate('campaignchain_core_location_list_activities_api', { id: $locationSelect.val() });
+            var $route = Routing.generate(route, { id: $parentSelect.val() });
             $.getJSON( $route )
                 .done(function( json ) {
                     function format(item) { return item.display_name; }
 
-                    $("#form_activity").select2({
+                    $childSelect.select2({
                         minimumResultsForSearch: 5,
                         dataType: 'json',
                         data: { results: json, text: 'display_name' },
-                            formatSelection: format,
-                            formatResult: format
+                        formatSelection: format,
+                        formatResult: format
                     });
                 })
                 .fail(function( jqxhr, textStatus, error ) {
@@ -29,20 +31,20 @@ $(document).ready(function(){
                 });
 
             $(this).focus();
-            $("#form_activity").show();
-            $('label[for="form_activity"]').show();
+            $childSelect.show();
+            $childLabel.show();
 
-            if($previousSelect != $locationSelect.val()){
-                $("#form_activity").val('');
+            if($previousSelect != $parentSelect.val()){
+                $childSelect.val('');
             }
 
-            $previousSelect = $locationSelect.val();
+            $previousSelect = $parentSelect.val();
         }
     });
 
-    $locationSelect.on("select2-opening", function() {
-        $("#form_activity").select2('destroy');
-        $("#form_activity").hide();
-        $('label[for="form_activity"]').hide();
+    $parentSelect.on("select2-opening", function() {
+        $childSelect.select2('destroy');
+        $childSelect.hide();
+        $childLabel.hide();
     });
-});
+}

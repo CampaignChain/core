@@ -15,6 +15,8 @@ use CampaignChain\CoreBundle\Entity\Channel;
 use CampaignChain\CoreBundle\Entity\Location;
 use CampaignChain\CoreBundle\Entity\Operation;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use CampaignChain\CoreBundle\Util\ParserUtil;
+use CampaignChain\CoreBundle\Twig\CampaignChainCoreExtension;
 
 class LocationService
 {
@@ -71,6 +73,8 @@ class LocationService
      */
     public function findLocationByUrl($url, $operation)
     {
+        $url = ParserUtil::sanitizeUrl($url);
+
         // Check if the URL is in CampaignChain as a Location.
         $location = $this->em
             ->getRepository('CampaignChainCoreBundle:Location')
@@ -166,5 +170,49 @@ class LocationService
         }
 
         return false;
+    }
+
+    public function existsInCampaign($identifier, $campaign)
+    {
+        $qb = $this->em->createQueryBuilder();
+        $qb->select('l')
+            ->from('CampaignChain\CoreBundle\Entity\Location', 'l')
+            ->from('CampaignChain\CoreBundle\Entity\Operation', 'o')
+            ->from('CampaignChain\CoreBundle\Entity\Activity', 'a')
+            ->where('l.identifier = :identifier')
+            ->andWhere('l.operation = o.id')
+            ->andWhere('o.activity = a.id')
+            ->andWhere('a.campaign = :campaign')
+            ->setParameter('identifier', $identifier)
+            ->setParameter('campaign', $campaign)
+            ->orderBy('a.startDate', 'ASC');
+        $query = $qb->getQuery();
+        $locations = $query->getResult();
+
+        return is_array($locations) && count($locations) >= 1;
+    }
+
+    public function getLocationByOperation($operation)
+    {
+        $location = $this->em
+            ->getRepository('CampaignChainCoreBundle:Location')
+            ->findOneByOperation($operation);
+
+        if (!$location) {
+            throw new \Exception(
+                'No location found for Operation with ID '.$operation->getId()
+            );
+        }
+
+        return $location;
+    }
+
+    public function tplTeaser($location, $options = array())
+    {
+        $twigExt = new CampaignChainCoreExtension($this->em, $this->container);
+
+        return $twigExt->tplTeaser($location, $options);
+
+        return $icon;
     }
 }

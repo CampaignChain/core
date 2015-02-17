@@ -20,6 +20,13 @@ class CampaignChainCoreExtension extends \Twig_Extension
     protected $container;
     protected $datetime;
 
+    protected $teaserOptions = array(
+        'only_icon' => false,
+        'activity_name' => 'activity',
+        'show_trigger' => false,
+        'truncate_middle' => 0,
+    );
+
     public function __construct(EntityManager $em, ContainerInterface $container)
     {
         $this->em = $em;
@@ -37,6 +44,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
             new \Twig_SimpleFilter('campaignchain_datetime', array($this, 'datetime')),
             new \Twig_SimpleFilter('campaignchain_timezone', array($this, 'timezone')),
             new \Twig_SimpleFilter('campaignchain_data_trigger_hook', array($this, 'dataTriggerHook')),
+            new \Twig_SimpleFilter('campaignchain_tpl_teaser', array($this, 'tplTeaser'), array('is_safe' => array('html'))),
             new \Twig_SimpleFilter('campaignchain_tpl_trigger_hook_inline', array($this, 'tplTriggerHookInline')),
             new \Twig_SimpleFilter('campaignchain_channel_root_locations', array($this, 'channelRootLocations')),
             new \Twig_SimpleFilter('campaignchain_remaining_time', array($this, 'remainingTime')),
@@ -62,12 +70,12 @@ class CampaignChainCoreExtension extends \Twig_Extension
         }
     }
 
-    public function mediumContext($object)
+    public function mediumContext($object, $size = '16')
     {
         $class = get_class($object);
 
         if(strpos($class, 'CoreBundle\Entity\Location') !== false){
-            return $this->channelAssetPath($object).'/images/icons/16x16/'.$this->channelIconName($object);
+            return $this->channelAssetPath($object).'/images/icons/'.$size.'x'.$size.'/'.$this->channelIconName($object);
         } else {
             return false;
         }
@@ -78,22 +86,20 @@ class CampaignChainCoreExtension extends \Twig_Extension
         $class = get_class($object);
 
         if(strpos($class, 'CoreBundle\Entity\Bundle') !== false){
-            $bundlePath = $object->getPath();
+            $bundlePath = $object->getWebAssetsPath();
         } elseif(strpos($class, 'CoreBundle\Entity\ChannelModule') !== false){
-            $bundlePath = $object->getBundle()->getPath();
+            $bundlePath = $object->getBundle()->getWebAssetsPath();
         } elseif(strpos($class, 'CoreBundle\Entity\Location') !== false){
-            $bundlePath = $object->getChannel()->getChannelModule()->getBundle()->getPath();
+            $bundlePath = $object->getChannel()->getChannelModule()->getBundle()->getWebAssetsPath();
         } elseif(strpos($class, 'CoreBundle\Entity\Channel') !== false){
-            $bundlePath = $object->getChannelModule()->getBundle()->getPath();
+            $bundlePath = $object->getChannelModule()->getBundle()->getWebAssetsPath();
         } elseif(strpos($class, 'CoreBundle\Entity\Activity') !== false){
-            $bundlePath = $object->getChannel()->getChannelModule()->getBundle()->getPath();
+            $bundlePath = $object->getChannel()->getChannelModule()->getBundle()->getWebAssetsPath();
         } else {
             return false;
         }
 
-        $path = 'bundles/campaignchain'.strtolower(str_replace(DIRECTORY_SEPARATOR, '', str_replace('Bundle', '', str_replace('-', '', $bundlePath))));
-
-        return $path;
+        return $bundlePath;
     }
 
     public function channelIconName($object)
@@ -101,22 +107,86 @@ class CampaignChainCoreExtension extends \Twig_Extension
         $class = get_class($object);
 
         if(strpos($class, 'CoreBundle\Entity\Bundle') !== false){
-            $bundleName = $object->getName();
+            // $channelIdentifier = $object->getName();
+            throw new \Exception('Cannot derive icon name for Bundle object');
         } elseif(strpos($class, 'CoreBundle\Entity\ChannelModule') !== false){
-            $bundleName = $object->getBundle()->getName();
+            $channelModule = $object;
         } elseif(strpos($class, 'CoreBundle\Entity\Location') !== false){
-            $bundleName = $object->getChannel()->getChannelModule()->getBundle()->getName();
+            $channelModule = $object->getChannel()->getChannelModule();
         } elseif(strpos($class, 'CoreBundle\Entity\Channel') !== false){
-            $bundleName = $object->getChannelModule()->getBundle()->getName();
+            $channelModule = $object->getChannelModule();
         } elseif(strpos($class, 'CoreBundle\Entity\Activity') !== false){
-            $bundleName = $object->getChannel()->getChannelModule()->getBundle()->getName();
+            $channelModule = $object->getChannel()->getChannelModule();
         } else {
             return false;
         }
 
-        $iconName = str_replace('campaignchain/channel-', '', $bundleName).'.png';
+        $bundleName         = $channelModule->getBundle()->getName();
+        $bundleNameParts    = explode('/', $bundleName);
+        $bundleVendor       = $bundleNameParts[0];
+        $channelIdentifier  = $channelModule->getIdentifier();
+
+        $iconName = str_replace($bundleVendor.'-', '', $channelIdentifier).'.png';
 
         return $iconName;
+    }
+
+    public function tplTeaser($object, $options = array())
+    {
+        if(is_array($options) && count($options)){
+            $this->teaserOptions = array_merge($this->teaserOptions, $options);
+        }
+
+        $class = get_class($object);
+
+        if(strpos($class, 'CoreBundle\Entity\Location') !== false){
+            $tplVars['url'] = $object->getUrl();
+            $tplVars['icon_path'] = $this->mediumIcon($object);
+            $tplVars['context_icon_path'] = $this->mediumContext($object);
+            if(!$tplVars['icon_path']){
+                $tplVars['icon_path'] = $this->mediumContext($object, '32');
+                $tplVars['context_icon_path'] = null;
+            }
+            $tplVars['name'] = $object->getName();
+        } elseif(strpos($class, 'CoreBundle\Entity\Activity') !== false){
+            $tplVars['url'] = $this->container->get('router')->generate(
+                'campaignchain_core_activity_edit',
+                array('id' => $object->getId()),
+                true
+            );
+            $tplVars['icon_path'] = $this->mediumIcon($object->getLocation());
+            $tplVars['context_icon_path'] = $this->mediumContext($object->getLocation());
+            if(!$tplVars['icon_path']){
+                $tplVars['icon_path'] = $this->mediumContext($object->getLocation(), '32');
+                $tplVars['context_icon_path'] = null;
+            }
+            if($this->teaserOptions['activity_name'] == 'activity'){
+                $tplVars['name'] = $object->getName();
+            } else {
+                $tplVars['name'] = $object->getLocation()->getName();
+            }
+            if($this->teaserOptions['show_trigger'] == true){
+                $tplVars['trigger'] = $this->tplTriggerHookInline($object);
+            }
+        } else {
+            throw new \Exception(
+                'Value must either be instance of CampaignChain\CoreBundle\Entity\Activity'
+                .'or CampaignChain\CoreBundle\Entity\Location.'
+            );
+        }
+
+        if($this->teaserOptions['truncate_middle'] > 5){
+            $tplVars['name'] = ParserUtil::truncateMiddle(
+                $tplVars['name'], $this->teaserOptions['truncate_middle']
+            );
+        }
+
+        $tplVars['options'] = $this->teaserOptions;
+
+        return $this->container->get('templating')->render(
+            'CampaignChainCoreBundle:Base:teaser_widget.html.twig',
+            $tplVars
+        );
     }
 
     public function remainingTime(\DateTime $object)

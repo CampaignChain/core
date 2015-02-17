@@ -59,8 +59,24 @@ function onGanttRender_todayLine(today) {
         var x_start = gantt.posFromDate(today);
         var x_end = gantt.posFromDate(today.add(1, 'minute'));
         $today.css("left", Math.floor(x_start + 0.5 * (x_end - x_start)) + "px");
+        $today.css("height", $(".gantt_data_area").innerHeight());
     };
 }
+
+gantt.attachEvent("onTaskOpened", function(id){
+    $("#campaignchain_gantt_today").css("height", $(".gantt_task_bg").innerHeight());
+    return true;
+});
+
+gantt.attachEvent("onTaskClosed", function(id){
+    if($(".gantt_task_bg").innerHeight() > $(".gantt_data_area").innerHeight()){
+        var height = $(".gantt_task_bg").innerHeight();
+    } else {
+        var height = $(".gantt_data_area").innerHeight();
+    }
+    $("#campaignchain_gantt_today").css("height", height);
+    return true;
+});
 
 /*
  Normalize the date, i.e. calculate the difference between the browser's

@@ -36,9 +36,19 @@ document.write('<script type="text/javascript" src="http://cdnjs.cloudflare.com/
 jQuery(document).ready(function() {
     var campaignchain = new CampaignChain();
 
-    // Disable clicks if dev-stay mode and Tracking ID exists in URL.
-    if(campaignchain.mode == 'dev-stay' &&
-        campaignchain.getTrackingId()){
+    // If Tracking ID is not in cookie, then this is a first-time visit and
+    // we want to report that.
+    if(campaignchain.newVisit() == true){
+        /*
+            We pass this page as the target. The tracking API will then
+            detect that the source equals the target and will understand
+            that the CTA is the actual source.
+         */
+        campaignchain.sendUrlReport(window.location.href);
+    }
+
+    // Disable clicks if dev-stay mode.
+    if(campaignchain.mode == 'dev-stay'){
         jQuery('a').on('click', function(event) {
             event.preventDefault();
         });
@@ -96,7 +106,7 @@ function CampaignChain(){
      *
      * @type {string} prod|dev|dev-stay
      */
-    this.mode = 'dev';
+    this.mode = 'prod';
 }
 
 /**
@@ -273,4 +283,33 @@ CampaignChain.prototype.continueTracking = function(affiliation)
  */
 CampaignChain.prototype.getCookie = function() {
     return jQuery.cookie(this.idName);
+}
+
+/**
+ * Is this a new visit to this page from the Activity with the CTA?
+ *
+ * @returns {boolean}
+ */
+CampaignChain.prototype.newVisit = function()
+{
+    // Is the Tracking ID in the URL?
+    if(this.source.toLowerCase().indexOf(this.idName) >= 0){
+        // Is the visitor from a page outside of this pages domain?
+        if(document.referrer.indexOf(location.protocol + "//" + location.host) !== 0){
+            // Delete existing cookie.
+            jQuery.removeCookie(this.idName);
+            if(this.mode == 'dev' || this.mode == 'dev-stay'){
+                console.log('New visit.');
+                console.log('Cookie deleted.');
+            }
+            return true;
+        }
+    }
+
+    if(this.mode == 'dev' || this.mode == 'dev-stay'){
+        console.log('Not a new visit.');
+        console.log('Referrer: ' + document.referrer);
+    }
+
+    return false;
 }

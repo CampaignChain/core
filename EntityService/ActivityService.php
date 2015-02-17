@@ -121,4 +121,13 @@ class ActivityService
 
         return $icon;
     }
+
+    public function tplTeaser($activity, $options = array())
+    {
+        $twigExt = new CampaignChainCoreExtension($this->em, $this->container);
+
+        return $twigExt->tplTeaser($activity, $options);
+
+        return $icon;
+    }
 }

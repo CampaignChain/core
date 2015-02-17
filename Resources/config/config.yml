@@ -58,7 +58,10 @@ assetic:
             less_filter: "lessphp"
         select2_js:
             inputs:
-                - "%kernel.root_dir%/..//vendor/ivaynberg/select2/select2.js"
+                - "%kernel.root_dir%/../vendor/ivaynberg/select2/select2.js"
+        select2_dependent_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/js/select2_select2_ajax.js"
         select2_css:
             inputs:
                 - "%kernel.root_dir%/../vendor/ivaynberg/select2/select2.css"
@@ -126,6 +129,12 @@ assetic:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/components/gantt/codebase/dhtmlxgantt.css"
                 - "@CampaignChainCoreBundle/Resources/public/css/campaignchain/dhtmlxgantt.css"
+        d3_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/d3/d3.min.js"
+        d3_sankey_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/d3-plugins/sankey/sankey.js"
         flot_js:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/components/flot/jquery.flot.js"

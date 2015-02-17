@@ -9,86 +9,85 @@ file that was distributed with this source code.
 
 {% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
 
-    {% block choice_widget_collapsed %}
-        {% spaceless %}
-            <script>
-                $('.select2').select2({ placeholder: "Select a State", maximumSelectionSize: 6 });
-                $(':checkbox').on( "click", function() {
-                    $(this).parent().nextAll('select').select2("enable", this.checked );
-                });
-            </script>
-            {% set attr = attr|merge({ 'class': (attr.class|default('') ~ ' form-control')|trim }) %}
+{% block choice_widget_collapsed %}
+    {% spaceless %}
+        <script>
+            $('.select2').select2({ placeholder: "Select a State", maximumSelectionSize: 6 });
+            $(':checkbox').on( "click", function() {
+                $(this).parent().nextAll('select').select2("enable", this.checked );
+            });
+        </script>
+        {% set attr = attr|merge({ 'class': (attr.class|default('') ~ ' form-control')|trim }) %}
 
-            <select class="form-control {{ id }}-select2" {{ block('widget_attributes') }}{% if multiple %} multiple="multiple"{% endif %}>
-                {% if empty_value is not none %}
-                    <option></option>
-                {% endif %}
-                {% if preferred_choices|length > 0 %}
-                    {% set options = preferred_choices %}
-                    {{ block('choice_widget_options') }}
-                    {% if choices|length > 0 and separator is not none %}
-                        <option disabled="disabled">{{ separator }}</option>
-                    {% endif %}
-                {% endif %}
-                {% set options = choices %}
+        <select class="form-control {{ id }}-select2" {{ block('widget_attributes') }}{% if multiple %} multiple="multiple"{% endif %}>
+            {% if empty_value is not none %}
+                <option></option>
+            {% endif %}
+            {% if preferred_choices|length > 0 %}
+                {% set options = preferred_choices %}
                 {{ block('choice_widget_options') }}
-            </select>
-            <script>
+                {% if choices|length > 0 and separator is not none %}
+                    <option disabled="disabled">{{ separator }}</option>
+                {% endif %}
+            {% endif %}
+            {% set options = choices %}
+            {{ block('choice_widget_options') }}
+        </select>
+        <script>
+            {% if attr.show_image is defined and attr.show_image == true %}
+                function format(optionnode) {
+                    if (!optionnode.id) return optionnode.text; // optgroup
+                    var originalOption = optionnode.element;
+
+                    return campaignchainTplMedium(
+                            $(originalOption).data('icon'),
+                            $(originalOption).data('context-icon'),
+                            optionnode.text
+                    );
+                }
+            {% endif %}
+            $('.{{ id }}-select2').select2({
+                {% if empty_value is not none %}
+                    placeholder: "{{ empty_value|trans({}, translation_domain) }}", allowClear: true,
+                {% endif %}
                 {% if attr.show_image is defined and attr.show_image == true %}
-                    function format(optionnode) {
-                        if (!optionnode.id) return optionnode.text; // optgroup
-                        var originalOption = optionnode.element;
-                        var image = "<div class='campaignchain-medium-icon'>";
-
-                        image = image + "<img class='icon' src='" + $(originalOption).data('icon') + "'/>";
-                        if($(originalOption).data('context-icon') != '/'){
-                            image = image + "<img class='context-icon' src='" + $(originalOption).data('context-icon') + "' style='background-image: url(\"" + $(originalOption).data('context-icon') + "\");'/>"
-                        }
-                        return image + "<span class='text'>" + optionnode.text + "</span></div>";
-                    }
+                    formatResult: format,
+                    formatSelection: format,
+                    escapeMarkup: function(m) { return m; },
                 {% endif %}
-                $('.{{ id }}-select2').select2({
-                    {% if empty_value is not none %}
-                        placeholder: "{{ empty_value|trans({}, translation_domain) }}", allowClear: true,
-                    {% endif %}
-                    {% if attr.show_image is defined and attr.show_image == true %}
-                        formatResult: format,
-                        formatSelection: format,
-                        escapeMarkup: function(m) { return m; },
-                    {% endif %}
-                    {% if attr.minimum_resulsts_for_search is defined and attr.minimum_resulsts_for_search is not empty %}
-                        {% set minimum_resulsts_for_search = attr.minimum_resulsts_for_search %}
-                    {% else %}
-                        {% set minimum_resulsts_for_search = '5' %}
-                    {% endif %}
-                    minimumResultsForSearch : {{ minimum_resulsts_for_search }}
-                });
-                $(':checkbox').on( "click", function() {
-                    $(this).parent().nextAll('select').select2("enable", this.checked );
-                });
-            </script>
-        {% endspaceless %}
-    {% endblock choice_widget_collapsed %}
-
-    {% block choice_widget_options %}
-        {% spaceless %}
-            {% for group_label, choice in options %}
-                {% if choice is iterable %}
-                    <optgroup label="{{ group_label|trans({}, translation_domain) }}">
-                        {% set options = choice %}
-                        {{ block('choice_widget_options') }}
-                    </optgroup>
+                {% if attr.minimum_resulsts_for_search is defined and attr.minimum_resulsts_for_search is not empty %}
+                    {% set minimum_resulsts_for_search = attr.minimum_resulsts_for_search %}
                 {% else %}
-                    <option value="{{ choice.value }}"{% if choice is selectedchoice(value) %} selected="selected"{% endif %}
-                        {% if attr.show_image is defined and attr.show_image == true %}
-                            data-icon="{{ asset( choice.data|campaignchain_medium_icon ) }}"
-                            data-context-icon="{{ asset( choice.data|campaignchain_medium_context ) }}"
-                        {% endif %}> {{ choice.label|trans({}, translation_domain) }}
-                    </option>
+                    {% set minimum_resulsts_for_search = '5' %}
                 {% endif %}
-            {% endfor %}
-        {% endspaceless %}
-    {% endblock choice_widget_options %}
+                minimumResultsForSearch : {{ minimum_resulsts_for_search }}
+            });
+            $(':checkbox').on( "click", function() {
+                $(this).parent().nextAll('select').select2("enable", this.checked );
+            });
+        </script>
+    {% endspaceless %}
+{% endblock choice_widget_collapsed %}
+
+{% block choice_widget_options %}
+    {% spaceless %}
+        {% for group_label, choice in options %}
+            {% if choice is iterable %}
+                <optgroup label="{{ group_label|trans({}, translation_domain) }}">
+                    {% set options = choice %}
+                    {{ block('choice_widget_options') }}
+                </optgroup>
+            {% else %}
+                <option value="{{ choice.value }}"{% if choice is selectedchoice(value) %} selected="selected"{% endif %}
+                    {% if attr.show_image is defined and attr.show_image == true %}
+                        data-icon="{{ asset( choice.data|campaignchain_medium_icon ) }}"
+                        data-context-icon="{{ asset( choice.data|campaignchain_medium_context ) }}"
+                    {% endif %}> {{ choice.label|trans({}, translation_domain) }}
+                </option>
+            {% endif %}
+        {% endfor %}
+    {% endspaceless %}
+{% endblock choice_widget_options %}
 
 {% block daterangepicker_widget %}
     {% spaceless %}

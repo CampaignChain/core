@@ -169,22 +169,32 @@ ul.nav-tabs {
     margin-top: -4px;
 }
 
-.campaignchain-medium-icon {
+.campaignchain-teaser {
     display: inline-block;
 }
 
-.campaignchain-medium-icon .text {
+.campaignchain-teaser .text {
     padding-left: 4px;
 }
 
-.campaignchain-medium-icon a,
-.campaignchain-medium-icon a:hover {
+.campaignchain-teaser .text-s {
+    font-size: 12px;
+}
+
+.campaignchain-teaser .text-xs {
+    font-size: 8px;
+}
+
+.campaignchain-teaser a,
+.campaignchain-teaser a:hover {
     text-decoration: none;
 }
 
+
+
 .select2-container .icon,
 .select2-result .icon,
-.campaignchain-medium-icon .icon {
+.campaignchain-teaser .icon {
     height: 32px;
     width: 32px;
     margin-top: -4px;
@@ -194,7 +204,7 @@ ul.nav-tabs {
 
 .select2-container .context-icon,
 .select2-result .context-icon,
-.campaignchain-medium-icon .context-icon {
+.campaignchain-teaser .context-icon {
     margin-left: -14px;
     margin-bottom: -12px;
 }
@@ -217,4 +227,11 @@ ul.nav-tabs {
 
 #campaignchain-chart-header .datetime {
     float: right;
+}
+
+body.campaignchain-svg-foreign-object {
+    margin: 0px auto;
+    padding: 0;
+    padding-top: 2px;
+    background-color: transparent;
 }

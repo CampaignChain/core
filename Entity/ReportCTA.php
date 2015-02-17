@@ -35,6 +35,30 @@ class ReportCTA
     protected $CTA;
 
     /**
+     * @ORM\ManyToOne(targetEntity="Operation")
+     * @ORM\JoinColumn(name="operation_id", referencedColumnName="id", nullable=false)
+     */
+    protected $operation;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Activity")
+     * @ORM\JoinColumn(name="activity_id", referencedColumnName="id", nullable=false)
+     */
+    protected $activity;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Campaign")
+     * @ORM\JoinColumn(name="campaign_id", referencedColumnName="id", nullable=false)
+     */
+    protected $campaign;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Channel")
+     * @ORM\JoinColumn(name="channel_id", referencedColumnName="id", nullable=false)
+     */
+    protected $channel;
+
+    /**
      * @ORM\ManyToOne(targetEntity="Location")
      * @ORM\JoinColumn(name="referrer_location_id", referencedColumnName="id", nullable=false)
      */
@@ -136,6 +160,98 @@ class ReportCTA
     public function getCTA()
     {
         return $this->CTA;
+    }
+
+    /**
+     * Set Operation
+     *
+     * @param \CampaignChain\CoreBundle\Entity\Operation $operation
+     * @return ReportCTA
+     */
+    public function setOperation(\CampaignChain\CoreBundle\Entity\Operation $operation)
+    {
+        $this->operation = $operation;
+
+        return $this;
+    }
+
+    /**
+     * Get Operation
+     *
+     * @return \CampaignChain\CoreBundle\Entity\Operation
+     */
+    public function getOperation()
+    {
+        return $this->operation;
+    }
+
+    /**
+     * Set Activity
+     *
+     * @param \CampaignChain\CoreBundle\Entity\Activity $activity
+     * @return ReportCTA
+     */
+    public function setActivity(\CampaignChain\CoreBundle\Entity\Activity $activity)
+    {
+        $this->activity = $activity;
+
+        return $this;
+    }
+
+    /**
+     * Get Activity
+     *
+     * @return \CampaignChain\CoreBundle\Entity\Activity
+     */
+    public function getActivity()
+    {
+        return $this->activity;
+    }
+
+    /**
+     * Set Campaign
+     *
+     * @param \CampaignChain\CoreBundle\Entity\Campaign $campaign
+     * @return ReportCTA
+     */
+    public function setCampaign(\CampaignChain\CoreBundle\Entity\Campaign $campaign)
+    {
+        $this->campaign = $campaign;
+
+        return $this;
+    }
+
+    /**
+     * Get Campaign
+     *
+     * @return \CampaignChain\CoreBundle\Entity\Campaign
+     */
+    public function getCampaign()
+    {
+        return $this->campaign;
+    }
+
+    /**
+     * Set Channel
+     *
+     * @param \CampaignChain\CoreBundle\Entity\Channel $channel
+     * @return ReportCTA
+     */
+    public function setChannel(\CampaignChain\CoreBundle\Entity\Channel $channel)
+    {
+        $this->channel = $channel;
+
+        return $this;
+    }
+
+    /**
+     * Get Channel
+     *
+     * @return \CampaignChain\CoreBundle\Entity\Channel
+     */
+    public function getChannel()
+    {
+        return $this->channel;
     }
 
     /**

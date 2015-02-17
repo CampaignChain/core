@@ -17,6 +17,7 @@ class ActivityType extends HookListenerType
 {
     private $campaign;
     private $operationForms;
+    private $showNameField = true;
 
     public function setOperationForms(array $operationForms){
         $this->operationForms = $operationForms;
@@ -24,6 +25,11 @@ class ActivityType extends HookListenerType
 
     public function setCampaign($campaign){
         $this->campaign = $campaign;
+    }
+
+    public function showNameField($showNameField)
+    {
+        $this->showNameField = $showNameField;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -41,11 +47,13 @@ class ActivityType extends HookListenerType
             }
         }
 
-        $builder
-            ->add('name', 'text', array(
-                'label' => 'Activity Name',
-                'attr' => array('placeholder' => 'What should be the name of the Activity?')
-            ));
+        if($this->showNameField){
+            $builder
+                ->add('name', 'text', array(
+                    'label' => 'Activity Name',
+                    'attr' => array('placeholder' => 'What should be the name of the Activity?')
+                ));
+        }
 
         $hookListener = $this->getHookListener($builder);
         $hookListener->setCampaign($this->campaign);

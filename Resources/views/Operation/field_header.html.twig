@@ -16,11 +16,7 @@ file that was distributed with this source code.
     <div id="campaignchain-operation-field">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <div class='campaignchain-medium-icon'>
-                    <img class='icon' src='{{ asset( location|campaignchain_medium_icon ) }}'/>
-                    <img class='context-icon' src='{{ asset( location|campaignchain_medium_context ) }}' style='background-image: url("{{ asset( location|campaignchain_medium_context ) }}");'/>
-                    <span class="text"><a href="{{ location.getUrl() }}" target="_blank">{{ location.getName() }}</a></span>
-                </div>
+                {{ location|campaignchain_tpl_teaser }}
             </div>
             <div class="panel-body">
 {% endspaceless %}

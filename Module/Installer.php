@@ -62,6 +62,26 @@ class Installer
 
     private $kernelConfig;
 
+    /**
+     * Specifies which routes must be defined by which type of module.
+     *
+     * @var array
+     */
+    private $requiredRoutes = array(
+        'campaignchain-channel' => array(
+            'new'
+        ),
+        'campaignchain-activity' => array(
+            'new', 'edit', 'edit_modal', 'edit_api', 'read'
+        ),
+        'campaignchain-campaign' => array(
+            'new', 'edit', 'edit_modal', 'edit_api', 'plan'
+        ),
+        'campaignchain-milestone' => array(
+            'new', 'edit', 'edit_modal', 'edit_api'
+        )
+    );
+
     public function __construct(EntityManager $em, ContainerInterface $container)
     {
         $this->em = $em;
@@ -69,7 +89,8 @@ class Installer
         $this->command = $this->container->get('campaignchain.core.util.command');
         $this->logger = $this->container->get('logger');
         $this->root = realpath(
-            __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR);
+            __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR
+            .'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR);
         $this->packageService = $this->container->get('campaignchain.core.module.package');
         $this->repositoryService = $this->container->get('campaignchain.core.module.repository');
         $this->kernelConfig = new KernelConfig();
@@ -207,20 +228,26 @@ class Installer
 
         $finder = new Finder();
         // Find all the CampaignChain module configuration files.
-        $finder->files()->in($this->root)->name('campaignchain.yml');
+        $finder->files()
+            ->in($this->root.DIRECTORY_SEPARATOR)
+            ->exclude('app')
+            ->exclude('bin')
+            ->exclude('component')
+            ->exclude('web')
+            ->name('campaignchain.yml');
 
         $bundles = null;
 
         // campaignchain-core package
-        $coreComposerFile = $this->root.DIRECTORY_SEPARATOR.'core'.DIRECTORY_SEPARATOR.'composer.json';
+        $coreComposerFile = $this->root.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'campaignchain'.DIRECTORY_SEPARATOR.'core'.DIRECTORY_SEPARATOR.'composer.json';
         $this->getNewBundle($coreComposerFile);
 
         foreach ($finder as $moduleConfig) {
             $bundleComposer = $this->root.DIRECTORY_SEPARATOR.str_replace(
-                    'campaignchain.yml',
-                    'composer.json',
-                    $moduleConfig->getRelativePathname()
-                );
+                'campaignchain.yml',
+                'composer.json',
+                $moduleConfig->getRelativePathname()
+            );
             $this->getNewBundle($bundleComposer);
         }
 
@@ -250,6 +277,7 @@ class Installer
             if($extra && isset($extra['campaignchain'])){
                 if(isset($extra['campaignchain']['kernel'])){
                     $this->kernelConfig->addClasses($extra['campaignchain']['kernel']['classes']);
+                    $bundle->setClass($extra['campaignchain']['kernel']['classes'][0]);
                 }
                 if(isset($extra['campaignchain']['kernel']['routing'])){
                     $this->kernelConfig->addRouting($extra['campaignchain']['kernel']['routing']);
@@ -276,12 +304,23 @@ class Installer
             $version = $this->packageService->getVersion($bundle->getName());
 
             /*
-             * If version does not exist, this means it is a package in
-             * require-dev of composer.json, but CampaignChain is not in
-             * dev mode.
+             * If version does not exist, this means two things:
+             *
+             * 1) Either, it is a package in* require-dev of composer.json, but
+             * CampaignChain is not in dev mode. Then we don't add this package.
+             *
+             * 2) Or it is a bundle in Symfony's src/ directory. Then we want to
+             * add it.
              */
             if(!$version){
-                return false;
+                // Check if bundle is in src/ dir.
+                $bundlePath = str_replace($this->root.DIRECTORY_SEPARATOR, '', $bundleComposer);
+                if(strpos($bundlePath, 'src'.DIRECTORY_SEPARATOR) !== 0){
+                    // Not in src/ dir, so don't add this bundle.
+                    return false;
+                } else {
+                    $version = 'dev-master';
+                }
             }
 
             $bundle->setVersion($version);
@@ -333,9 +372,24 @@ class Installer
     {
         if(is_array($params['hooks']) && count($params['hooks'])){
             foreach($params['hooks'] as $identifier => $hookParams){
-                $hook = new Hook();
-                $hook->setIdentifier($identifier);
-                $hook->setBundle($this->newBundle);
+
+                // Check whether this Hook has already been installed
+                switch($this->isRegisteredBundle($this->newBundle)){
+                    case self::STATUS_REGISTERED_NO :
+                        $hook = new Hook();
+                        $hook->setIdentifier($identifier);
+                        $hook->setBundle($this->newBundle);
+                        break;
+                    case self::STATUS_REGISTERED_OLDER :
+                        // Get the existing bundle.
+                        $hook = $this->em
+                            ->getRepository('CampaignChainCoreBundle:Hook')
+                            ->findOneByIdentifier(strtolower($identifier));
+                        break;
+                    case self::STATUS_REGISTERED_SAME :
+                        continue;
+                }
+
                 $hook->setServices($hookParams['services']);
                 $hook->setType($hookParams['type']);
                 $hook->setLabel($hookParams['label']);
@@ -443,9 +497,51 @@ class Installer
                     $module->setDescription($moduleParams['description']);
                 }
 
-                if(isset($moduleParams['routes']) && is_array($moduleParams['routes']) && count($moduleParams['routes'])){
+                // Verify routes.
+                if(
+                    $this->newBundle->getType() == 'campaignchain-activity'
+                    || $this->newBundle->getType() == 'campaignchain-channel'
+                    || $this->newBundle->getType() == 'campaignchain-campaign'
+                    || $this->newBundle->getType() == 'campaignchain-milestone'
+                ){
+                    // Throw error if no routes defined.
+                    if(
+                        !isset($moduleParams['routes'])
+                        || !is_array($moduleParams['routes'])
+                        || !count($moduleParams['routes'])
+                    ){
+                        throw new \Exception(
+                            'The module "'.$identifier
+                            .'" in bundle "'.$this->newBundle->getName().'"'
+                            .' does not provide any of the required routes.'
+                        );
+                    } else {
+                        // Throw error if one or more routes are missing.
+                        $hasMissingRoutes = false;
+                        $missingRoutes = '';
+
+                        foreach($this->requiredRoutes[$this->newBundle->getType()] as $requiredRoute){
+                            if (!array_key_exists($requiredRoute, $moduleParams['routes'])) {
+                                $hasMissingRoutes = true;
+                                $missingRoutes .= $requiredRoute.', ';
+                            }
+                        }
+
+                        if($hasMissingRoutes){
+                            throw new \Exception(
+                                'The module "'.$identifier
+                                .'" in bundle "'.$this->newBundle->getName().'"'
+                                .' must define the following route(s): '
+                                .rtrim($missingRoutes, ', ').'.'
+                            );
+                        } else {
+                            $module->setRoutes($moduleParams['routes']);
+                        }
+                    }
+                } elseif(isset($moduleParams['routes']) && is_array($moduleParams['routes']) && count($moduleParams['routes'])){
                     $module->setRoutes($moduleParams['routes']);
                 }
+
                 if(isset($moduleParams['services']) && is_array($moduleParams['services']) && count($moduleParams['services'])){
                     $module->setServices($moduleParams['services']);
                 }
@@ -481,13 +577,26 @@ class Installer
                                     'bundle' => $this->newBundle->getName()
                                     )
                                 );
+
+                            // Does the metric already exist?
                             if($metric){
-                                throw new \Exception(
-                                    "Metric '".$metricName."' of type '".$metricType."'"
-                                    ." already exists for bundle ".$this->newBundle->getName().". "
-                                    ."Please define another name "
-                                    ."in campaignchain.yml of ".$this->newBundle->getName()."."
-                                );
+                                /*
+                                 * Throw error if bundle is new and metric
+                                 * has already been registered.
+                                 */
+                                if(
+                                    $this->isRegisteredBundle($this->newBundle)
+                                    == self::STATUS_REGISTERED_NO
+                                ){
+                                    throw new \Exception(
+                                        "Metric '".$metricName."' of type '".$metricType."'"
+                                        ." already exists for bundle ".$this->newBundle->getName().". "
+                                        ."Please define another name "
+                                        ."in campaignchain.yml of ".$this->newBundle->getName()."."
+                                    );
+                                }
+                                // Skip if same or older version of bundle.
+                                continue;
                             } else {
                                 // Create new metric.
                                 $metricNamespacedClass = 'CampaignChain\\CoreBundle\\Entity\\'.$metricClass;

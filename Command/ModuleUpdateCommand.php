@@ -14,7 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Finder\Finder;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class ModuleUpdateCommand
@@ -58,6 +58,13 @@ EOT
             $kernel = $this->getContainer()->get('campaignchain.core.module.kernel');
             $types = array('configs' => true, 'routings' => true);
             $kernel->register($installer->getKernelConfig(), $types);
+            $output->writeln('Done');
+        } else {
+            $this->getContainer()->enterScope('request');
+            $this->getContainer()->set('request', new Request(), 'request');
+            $output->writeln('Updating system registry for all existing modules');
+            $installer = $this->getContainer()->get('campaignchain.core.module.installer');
+            $installer->install();
             $output->writeln('Done');
         }
     }

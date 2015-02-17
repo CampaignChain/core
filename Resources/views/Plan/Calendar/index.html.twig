@@ -53,13 +53,9 @@ file that was distributed with this source code.
                 }
 
                 // Render Activity icons
-                if (event.location_icon)
+                if (event.location_tpl)
                 {
-                    var icon = "<div class='campaignchain-medium-icon'>";
-                    icon = icon + "<img class='icon' src='" + event.location_icon + "'/>";
-                    icon = icon + "<img class='context-icon' src='" + event.activity_icon + "' style='background-image: url(\"" + event.activity_icon + "\");'/>";
-                    icon = icon + "</div>";
-                    element.prepend(icon);
+                    element.prepend(event.location_tpl);
                 }
 
                 // Edit in modal.
