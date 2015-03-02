@@ -145,6 +145,12 @@ ul.nav-tabs {
     background: #ffffff;
 }
 
+iframe {
+    background-image: url("/bundles/campaignchaincore/images/spinner.gif");
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+}
+
 .scroll-to-fixed-fixed {
     margin-top: 0;
 }

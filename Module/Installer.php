@@ -50,7 +50,7 @@ class Installer
 
     private $isRegisteredBundle = array();
 
-    private $processAllBundles = false;
+    private $skipVersion = false;
 
     private $systemParams = array();
 
@@ -94,6 +94,11 @@ class Installer
         $this->packageService = $this->container->get('campaignchain.core.module.package');
         $this->repositoryService = $this->container->get('campaignchain.core.module.repository');
         $this->kernelConfig = new KernelConfig();
+    }
+
+    public function setSkipVersion($skipVersion)
+    {
+        $this->skipVersion = $skipVersion;
     }
 
     public function install(){
@@ -222,10 +227,7 @@ class Installer
         }
     }
 
-    public function getNewBundles($getAll = false){
-
-        $this->processAllBundles = $getAll;
-
+    public function getNewBundles(){
         $finder = new Finder();
         // Find all the CampaignChain module configuration files.
         $finder->files()
@@ -334,7 +336,7 @@ class Installer
                 )
             );
 
-            if($this->processAllBundles == false){
+            if($this->skipVersion == false){
                 // Check whether this bundle has already been installed
                 switch($this->isRegisteredBundle($bundle)){
                     case self::STATUS_REGISTERED_NO:

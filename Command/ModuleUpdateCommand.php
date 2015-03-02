@@ -53,7 +53,8 @@ EOT
         if ($input->getOption('config-only')) {
             $output->writeln('Updating configuration');
             $installer = $this->getContainer()->get('campaignchain.core.module.installer');
-            $installer->getNewBundles(true);
+            $installer->setSkipVersion(true);
+            $installer->getNewBundles();
 
             $kernel = $this->getContainer()->get('campaignchain.core.module.kernel');
             $types = array('configs' => true, 'routings' => true);
@@ -64,6 +65,7 @@ EOT
             $this->getContainer()->set('request', new Request(), 'request');
             $output->writeln('Updating system registry for all existing modules');
             $installer = $this->getContainer()->get('campaignchain.core.module.installer');
+//            $installer->setSkipVersion(true);
             $installer->install();
             $output->writeln('Done');
         }

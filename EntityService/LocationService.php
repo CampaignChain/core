@@ -172,17 +172,22 @@ class LocationService
         return false;
     }
 
-    public function existsInCampaign($identifier, $campaign)
+    public function existsInCampaign(
+        $moduleIdentifier, $locationIdentifier, $identifier, $campaign
+    )
     {
+        $locationModule = $this->getLocationModule($moduleIdentifier, $locationIdentifier);
         $qb = $this->em->createQueryBuilder();
         $qb->select('l')
             ->from('CampaignChain\CoreBundle\Entity\Location', 'l')
             ->from('CampaignChain\CoreBundle\Entity\Operation', 'o')
             ->from('CampaignChain\CoreBundle\Entity\Activity', 'a')
-            ->where('l.identifier = :identifier')
+            ->where('l.locationModule = :locationModule')
+            ->andWhere('l.identifier = :identifier')
             ->andWhere('l.operation = o.id')
             ->andWhere('o.activity = a.id')
             ->andWhere('a.campaign = :campaign')
+            ->setParameter('locationModule', $locationModule)
             ->setParameter('identifier', $identifier)
             ->setParameter('campaign', $campaign)
             ->orderBy('a.startDate', 'ASC');
