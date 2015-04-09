@@ -241,3 +241,19 @@ body.campaignchain-svg-foreign-object {
     padding-top: 2px;
     background-color: transparent;
 }
+
+#campaignchain-activity-sidebar .campaignchain-sidebar-item {
+    padding-bottom: 7px;
+}
+
+#campaignchain-activity-sidebar .campaignchain-sidebar-icon {
+    float:left;
+}
+
+#campaignchain-activity-sidebar .campaignchain-sidebar-data {
+    padding-left: 20px;
+}
+
+.alert h4 {
+    padding-top: 10px;
+}

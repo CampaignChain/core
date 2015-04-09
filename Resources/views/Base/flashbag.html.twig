@@ -7,6 +7,12 @@ For the full copyright and license information, please view the LICENSE
 file that was distributed with this source code.
 #}
 
+{% for flashMessage in app.session.flashbag.get('warning') %}
+    <div class="alert alert-warning alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <p><span class="fa fa-exclamation-triangle"></span> {{ flashMessage|raw }}</p>
+    </div>
+{% endfor %}
 {% for flashMessage in app.session.flashbag.get('info') %}
     <div class="alert alert-info alert-dismissable">
         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
@@ -17,11 +23,5 @@ file that was distributed with this source code.
     <div class="alert alert-success alert-dismissable">
         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
         <p><span class="fa fa-check-circle"></span> {{ flashMessage|raw }}</p>
-    </div>
-{% endfor %}
-{% for flashMessage in app.session.flashbag.get('warning') %}
-    <div class="alert alert-warning alert-dismissable">
-        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-        <p><span class="fa fa-exclamation-triangle"></span> {{ flashMessage|raw }}</p>
     </div>
 {% endfor %}

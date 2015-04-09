@@ -30,10 +30,24 @@ file that was distributed with this source code.
     {% set show_date = false %}
 {% endif %}
 
-{% if activity.getStatus() == 'closed' or show_date == true %}
-    <p><i class="fa fa-clock-o"></i> {{ activity|campaignchain_tpl_trigger_hook_inline }}</p>
-{% endif %}
-{% if location.getUrl() != '' %}
-    <p><i class="fa fa-globe"></i> <a href="{{ location.getUrl() }}">{{ location.getUrl() }}</a></p>
-{% endif %}
-<p><i class="fa fa-bullhorn"></i> <a href="{{ path('campaignchain_core_campaign_edit', { 'id': campaign.getId() }) }}">{{ campaign.getName() }}</a></p>
+<div id="campaignchain-activity-sidebar">
+    {% if activity.getStatus() == 'closed' or show_date == true %}
+        <div class="campaignchain-sidebar-item">
+            <div class="sidebar-icon"><i class="fa fa-clock-o"></i></div>
+            <div class="campaignchain-sidebar-data">{{ activity|campaignchain_tpl_trigger_hook_inline }}</div>
+        </div>
+    {% endif %}
+    {% if location.getUrl() != '' %}
+        <div class="campaignchain-sidebar-item">
+            <div class="campaignchain-sidebar-icon"><i class="fa fa-globe"></i></div>
+            <div class="campaignchain-sidebar-data"><a href="{{ location.getUrl() }}">{{ location.getUrl() }}</a></div>
+        </div>
+    {% endif %}
+    <div class="campaignchain-sidebar-item">
+        <div class="campaignchain-sidebar-icon"><i class="fa fa-bullhorn"></i></div>
+        <div class="campaignchain-sidebar-data">
+            <a href="{{ path('campaignchain_core_campaign_edit', { 'id': campaign.getId() }) }}">{{ campaign.getName() }}</a><br/>
+            {{ campaign|campaignchain_tpl_trigger_hook_inline }}
+        </div>
+    </div>
+</div>

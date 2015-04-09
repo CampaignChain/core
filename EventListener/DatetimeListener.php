@@ -86,7 +86,7 @@ class DatetimeListener {
 
             // Round date to 5 minute increments, because that's the minimum time interval of the scheduler.
             // The frontend should actually take care of this. Hence, this is a fallback solution.
-            $value = DateTimeUtil::roundMinutes($value);
+            // $value = DateTimeUtil::roundMinutes($value);
 
             $prop->setValue($entity, $value);
             $prop->setAccessible(false);

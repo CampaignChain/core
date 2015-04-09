@@ -20,17 +20,18 @@ class Action extends Meta
     /**
      * Types of actions.
      */
-    const TYPE_CAMPAIGN = 'campaign';
-    const TYPE_MILESTONE = 'milestone';
-    const TYPE_ACTIVITY = 'activity';
-    const TYPE_OPERATION = 'operation';
+    const TYPE_CAMPAIGN     = 'campaign';
+    const TYPE_MILESTONE    = 'milestone';
+    const TYPE_ACTIVITY     = 'activity';
+    const TYPE_OPERATION    = 'operation';
 
     /**
      * Status constants.
      */
-    const STATUS_OPEN = 'open';
-    const STATUS_PAUSED = 'paused';
-    const STATUS_CLOSED = 'closed';
+    const STATUS_OPEN                   = 'open';
+    const STATUS_PAUSED                 = 'paused';
+    const STATUS_CLOSED                 = 'closed';
+    const STATUS_INTERACTION_REQUIRED   = 'interaction required';
 
     /**
      * @ORM\Column(type="string", length=100, nullable=true)
@@ -138,6 +139,7 @@ class Action extends Meta
             self::STATUS_OPEN,
             self::STATUS_PAUSED,
             self::STATUS_CLOSED,
+            self::STATUS_INTERACTION_REQUIRED,
         ))) {
             throw new \InvalidArgumentException("Invalid status in ".get_class($this).".");
         }

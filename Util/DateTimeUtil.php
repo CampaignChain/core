@@ -170,9 +170,9 @@ class DateTimeUtil
         return $datetime;
     }
 
-    static function isWithinDuration(\DateTime $start, \DateTime $moment, \DateTime $end){
+    static function isWithinDuration(\DateTime $start, \DateTime $moment, \DateTime $end, $timezone = 'UTC'){
         // Set all dates to UTC to normalize timezone.
-        $utc = new \DateTimeZone('UTC');
+        $utc = new \DateTimeZone($timezone);
         $start->setTimezone($utc);
         $moment->setTimezone($utc);
         $end->setTimezone($utc);
