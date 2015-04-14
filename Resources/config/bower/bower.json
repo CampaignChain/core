@@ -5,7 +5,7 @@
         "flot": "0.8",
         "flot.tooltip": "0.7",
         "jquery.flot.comments": "https://github.com/Jeff-Tian/jquery.flot.comments.js/archive/master.zip",
-        "moment": "~2.9",
+        "moment": ">=2.8",
         "moment-timezone": "0.2",
         "ScrollToFixed": "1.0",
         "gantt": "3.1",
