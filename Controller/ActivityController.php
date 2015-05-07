@@ -55,6 +55,9 @@ class ActivityController extends Controller
                 'property' => 'name',
                 'empty_value' => 'Select a Campaign',
                 'empty_data' => null,
+                'attr' => array(
+                    'selected' => $this->get('session')->get('campaignchain.campaign'),
+                )
             ))
         // TODO: Only show channels that actually have min. 1 related activity module.
             ->add('location', 'entity', array(

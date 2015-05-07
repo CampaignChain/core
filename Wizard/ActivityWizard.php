@@ -35,6 +35,7 @@ class ActivityWizard
         $this->session->set('campaignchain_channelModuleBundle', $bundle);
         $this->session->set('campaignchain_activity', $activity);
         $this->session->set('campaignchain_activityModule', $activityModule);
+        $this->session->set('campaignchain_referrer', $_SERVER['HTTP_REFERER']);
     }
 
     public function getCampaign(){
@@ -86,8 +87,15 @@ class ActivityWizard
         $this->session->set('campaignchain_activity', $activity);
     }
 
+    public function getReferrer(){
+        $this->session->get('campaignchain_referrer');
+    }
+
     public function end(){
         $this->session->resume();
+
+        // Reset memory of pre-selected campaign.
+        $this->container->get('session')->set('campaignchain.campaign', null);
 
         $repository = $this->container->get('doctrine')->getManager();
 

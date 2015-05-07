@@ -21,8 +21,8 @@ file that was distributed with this source code.
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Start Date</th>
-                    <th>End Date</th>
+                    <th>Type</th>
+                    <th>Execution</th>
                     <th></th>
                 </tr>
             </thead>
@@ -32,12 +32,16 @@ file that was distributed with this source code.
                             {% if campaign.status == "paused" %}text-muted {% endif %}
                             ">
                         <td>{{ campaign.name }}</td>
-                        <td>{{ campaign.startDate|campaignchain_datetime() }}</td>
-                        <td>{{ campaign.endDate|campaignchain_datetime() }}</td>
+                        <td>{{ campaign.getCampaignModule().getDisplayName() }}</td>
+                        <td>{{ campaign|campaignchain_tpl_trigger_hook_inline }}</td>
                         <td align="center">
                             <a class="btn btn-primary"
                                href="{{ path('campaignchain_core_campaign_edit',{'id':campaign.id}) }}">
                                <span class="fa fa-pencil"></span>
+                            </a>
+                            <a class="btn btn-primary"
+                               href="{{ path(campaign.getCampaignModule().getRoutes().plan_detail,{'id':campaign.id}) }}">
+                                <span class="fa fa-calendar"></span>
                             </a>
                             {#{% if campaign.status == 'inactive' %}#}
                                 {#<button type="button" class="btn btn-default btn-xs">#}

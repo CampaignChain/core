@@ -34,11 +34,28 @@ class DhtmlxGantt
      *
      * @return string|\Symfony\Component\Serializer\Encoder\scalar
      */
-    public function getTasks(){
+    public function getTasks($bundleName = null, $moduleIdentifier = null, $campaignId = null){
         $qb = $this->em->createQueryBuilder();
         $qb->select('c')
-            ->from('CampaignChain\CoreBundle\Entity\Campaign', 'c')
-            ->orderBy('c.startDate', 'DESC');
+            ->from('CampaignChain\CoreBundle\Entity\Campaign', 'c');
+
+        if(isset($bundleName) && isset($moduleIdentifier)){
+            $qb->from('CampaignChain\CoreBundle\Entity\Module', 'm')
+                ->from('CampaignChain\CoreBundle\Entity\Bundle', 'b')
+                ->where('b.name = :bundleName')
+                ->andWhere('m.identifier = :moduleIdentifier')
+                ->andWhere('m.id = c.campaignModule')
+                ->setParameter('bundleName', $bundleName)
+                ->setParameter('moduleIdentifier', $moduleIdentifier);
+        }
+
+        if(isset($campaignId)){
+            $qb->andWhere('c.id = :campaignId')
+                ->setParameter('campaignId', $campaignId);
+        }
+
+        $qb->orderBy('c.startDate', 'DESC');
+
         $query = $qb->getQuery();
         $campaigns = $query->getResult();
 
@@ -51,19 +68,21 @@ class DhtmlxGantt
         foreach($campaigns as $campaign){
             $campaign_data['text'] = $campaign->getName();
             // Define the trigger hook's identifier.
-            $campaign_data['trigger_identifier'] = str_replace('-', '_', $campaign->getTriggerHook()->getIdentifier());
-            // Retrieve the start and end date from the trigger hook.
-            $hookService = $this->container->get($campaign->getTriggerHook()->getServices()['entity']);
-            $hook = $hookService->getHook($campaign);
-            $campaign_data['start_date'] = $hook->getStartDate()->format(self::FORMAT_TIMELINE_DATE);
-            if($hook->getEndDate()){
-                $campaign_data['end_date'] = $hook->getEndDate()->format(self::FORMAT_TIMELINE_DATE);
-            } else {
-                $campaign_data['end_date'] = $campaign_data['start_date'];
+            if($campaign->getTriggerHook()){
+                $campaign_data['trigger_identifier'] = str_replace('-', '_', $campaign->getTriggerHook()->getIdentifier());
+                // Retrieve the start and end date from the trigger hook.
+                $hookService = $this->container->get($campaign->getTriggerHook()->getServices()['entity']);
+                $hook = $hookService->getHook($campaign);
+                $campaign_data['start_date'] = $hook->getStartDate()->format(self::FORMAT_TIMELINE_DATE);
+                if($hook->getEndDate()){
+                    $campaign_data['end_date'] = $hook->getEndDate()->format(self::FORMAT_TIMELINE_DATE);
+                } else {
+                    $campaign_data['end_date'] = $campaign_data['start_date'];
+                }
+                // Provide the hook's start and end date form field names.
+                $campaign_data['start_date_identifier'] = $hookService->getStartDateIdentifier();
+                $campaign_data['end_date_identifier'] = $hookService->getEndDateIdentifier();
             }
-            // Provide the hook's start and end date form field names.
-            $campaign_data['start_date_identifier'] = $hookService->getStartDateIdentifier();
-            $campaign_data['end_date_identifier'] = $hookService->getEndDateIdentifier();
             $campaignId = $campaign->getId();
 //            $campaign_data['id'] = (string) $ganttDataId;
             $campaign_data['id'] = (string) $campaign->getId().'_campaign';

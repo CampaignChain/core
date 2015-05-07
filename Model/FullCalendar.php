@@ -29,16 +29,36 @@ class FullCalendar
         $this->container = $container;
     }
 
-    public function getEvents(){
+    public function getEvents($bundleName = null, $moduleIdentifier = null, $campaignId = null){
         $calendarEvents = array();
 
         $encoders = array(new JsonEncoder());
         $normalizers = array(new GetSetMethodNormalizer());
         $serializer = new Serializer($normalizers, $encoders);
 
-        // Retrieve all campaigns
-        $repository = $this->em->getRepository('CampaignChainCoreBundle:Campaign');
-        $campaigns = $repository->findAll();
+        $qb = $this->em->createQueryBuilder();
+        $qb->select('c')
+            ->from('CampaignChain\CoreBundle\Entity\Campaign', 'c');
+
+        if(isset($bundleName) && isset($moduleIdentifier)){
+            $qb->from('CampaignChain\CoreBundle\Entity\Module', 'm')
+                ->from('CampaignChain\CoreBundle\Entity\Bundle', 'b')
+                ->where('b.name = :bundleName')
+                ->andWhere('m.identifier = :moduleIdentifier')
+                ->andWhere('m.id = c.campaignModule')
+                ->setParameter('bundleName', $bundleName)
+                ->setParameter('moduleIdentifier', $moduleIdentifier);
+        }
+
+        if(isset($campaign)){
+            $qb->andWhere('c.id = :campaignId')
+                ->setParameter('campaignId', $campaignId);
+        }
+
+        $qb->orderBy('c.startDate', 'DESC');
+
+        $query = $qb->getQuery();
+        $campaigns = $query->getResult();
 
         if(!count($campaigns)) {
             $docUrl = $this->container->get('templating.helper.assets')

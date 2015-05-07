@@ -75,7 +75,7 @@ class Installer
             'new', 'edit', 'edit_modal', 'edit_api', 'read'
         ),
         'campaignchain-campaign' => array(
-            'new', 'edit', 'edit_modal', 'edit_api', 'plan'
+            'new', 'edit', 'edit_modal', 'edit_api', 'plan', 'plan_detail'
         ),
         'campaignchain-milestone' => array(
             'new', 'edit', 'edit_modal', 'edit_api'
