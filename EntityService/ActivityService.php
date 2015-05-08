@@ -13,6 +13,7 @@ namespace CampaignChain\CoreBundle\EntityService;
 use CampaignChain\CoreBundle\Twig\CampaignChainCoreExtension;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use CampaignChain\CoreBundle\Entity\Action;
 
 class ActivityService
 {
@@ -43,8 +44,10 @@ class ActivityService
         $qb->select('a')
             ->from('CampaignChain\CoreBundle\Entity\Activity', 'a')
             ->where('a.startDate > :now')
+            ->andWhere('a.status != :paused')
             ->orderBy('a.startDate', 'ASC')
-            ->setParameter('now', new \DateTime('now'));
+            ->setParameter('now', new \DateTime('now'))
+            ->setParameter('paused', Action::STATUS_PAUSED);
         if(isset($options['limit'])){
             $qb->setMaxResults($options['limit']);
         }

@@ -12,6 +12,7 @@ namespace CampaignChain\CoreBundle\EntityService;
 
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use CampaignChain\CoreBundle\Entity\Action;
 
 class MilestoneService
 {
@@ -38,8 +39,10 @@ class MilestoneService
         $qb->select('m')
             ->from('CampaignChain\CoreBundle\Entity\Milestone', 'm')
             ->where('m.startDate > :now')
+            ->andWhere('m.status != :paused')
             ->orderBy('m.startDate', 'ASC')
-            ->setParameter('now', new \DateTime('now'));
+            ->setParameter('now', new \DateTime('now'))
+            ->setParameter('paused', Action::STATUS_PAUSED);
         if(isset($options['limit'])){
             $qb->setMaxResults($options['limit']);
         }

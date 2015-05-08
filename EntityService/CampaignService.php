@@ -15,6 +15,7 @@ use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use CampaignChain\CoreBundle\Entity\Action;
 
 class CampaignService
 {
@@ -42,8 +43,10 @@ class CampaignService
             ->from('CampaignChain\CoreBundle\Entity\Campaign', 'c')
             ->where('c.startDate < :now')
             ->andWhere('c.endDate > :now')
+            ->andWhere('c.status != :paused')
             ->orderBy('c.endDate', 'ASC')
-            ->setParameter('now', new \DateTime('now'));
+            ->setParameter('now', new \DateTime('now'))
+            ->setParameter('paused', Action::STATUS_PAUSED);
         if(isset($options['limit'])){
             $qb->setMaxResults($options['limit']);
         }
