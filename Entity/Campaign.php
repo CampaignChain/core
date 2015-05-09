@@ -57,6 +57,11 @@ class Campaign extends Action
     protected $timezone = 'UTC';
 
     /**
+     * @ORM\Column(type="boolean")
+     */
+    protected $hasRelativeDates = false;
+
+    /**
      * Get id
      *
      * @return integer
@@ -268,5 +273,28 @@ class Campaign extends Action
     public function getModule()
     {
         return $this->campaignModule;
+    }
+
+    /**
+     * Set hasRelativeDates
+     *
+     * @param boolean $hasRelativeDates
+     * @return Activity
+     */
+    public function setHasRelativeDates($hasRelativeDates)
+    {
+        $this->hasRelativeDates = $hasRelativeDates;
+
+        return $this;
+    }
+
+    /**
+     * Get hasRelativeDates
+     *
+     * @return boolean
+     */
+    public function getHasRelativeDates()
+    {
+        return $this->hasRelativeDates;
     }
 }
