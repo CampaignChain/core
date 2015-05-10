@@ -30,37 +30,15 @@ class MilestoneType extends HookListenerType
             ));
 
         // Campaign cannot be changed when editing a milestone.
-        if($options['data']->getId()){
-            $builder
-                ->add('campaign', 'text', array(
-                    'data' => $options['data']->getCampaign()->getName(),
-                    'read_only'  => true,
-                    'mapped' => false,
-                ));
-        } else {
-//            $campaignService = $this->get('campaignchain.core.campaign');
-//            $campaigns = $campaignService->getAllCampaigns();
-
-            $builder
-                ->add('campaign', 'entity', array(
-                    'label' => 'Campaign',
-                    'class' => 'CampaignChainCoreBundle:Campaign',
-                    'query_builder' => function(EntityRepository $er) {
-                            return $er->createQueryBuilder('campaign')
-                                ->where('campaign.endDate > :now')
-                                ->orderBy('campaign.startDate', 'ASC')
-                                ->setParameter('now', new \DateTime('now'));
-                        },
-                    'property' => 'name',
-                    'empty_value' => 'Select a Campaign',
-                    'empty_data' => null,
-                ));
-        }
+        $builder
+            ->add('campaign', 'text', array(
+                'data' => $this->campaign->getName(),
+                'read_only'  => true,
+                'mapped' => false,
+            ));
 
         $hookListener = $this->getHookListener($builder);
-        if($options['data']->getId()){
-            $hookListener->setCampaign($options['data']->getCampaign());
-        }
+        $hookListener->setCampaign($this->campaign);
 
         // Embed hook forms.
         $builder->addEventSubscriber($hookListener);

@@ -55,6 +55,19 @@ class MilestoneController extends Controller
                 'empty_value' => 'Select the type of milestone',
                 'empty_data' => null,
             ))
+            ->add('campaign', 'entity', array(
+                'label' => 'Campaign',
+                'class' => 'CampaignChainCoreBundle:Campaign',
+                'query_builder' => function(EntityRepository $er) {
+                        return $er->createQueryBuilder('campaign')
+                            ->where('campaign.endDate > :now')
+                            ->orderBy('campaign.startDate', 'ASC')
+                            ->setParameter('now', new \DateTime('now'));
+                    },
+                'property' => 'name',
+                'empty_value' => 'Select a Campaign',
+                'empty_data' => null,
+            ))
             ->getForm();
 
         $form->handleRequest($request);
@@ -66,7 +79,11 @@ class MilestoneController extends Controller
 
             $routes = $milestoneModule->getRoutes();
             return $this->redirect(
-                $this->generateUrl($routes['new'])
+                $this->generateUrl($routes['new'],
+                    array(
+                        'campaign' => $form['campaign']->getData(),
+                    )
+                )
             );
         }
 
