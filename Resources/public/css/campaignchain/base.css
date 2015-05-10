@@ -242,14 +242,17 @@ body.campaignchain-svg-foreign-object {
     background-color: transparent;
 }
 
+#campaignchain-milestone-sidebar .campaignchain-sidebar-item,
 #campaignchain-activity-sidebar .campaignchain-sidebar-item {
     padding-bottom: 7px;
 }
 
+#campaignchain-milestone-sidebar .campaignchain-sidebar-icon,
 #campaignchain-activity-sidebar .campaignchain-sidebar-icon {
     float:left;
 }
 
+#campaignchain-milestone-sidebar .campaignchain-sidebar-data,
 #campaignchain-activity-sidebar .campaignchain-sidebar-data {
     padding-left: 20px;
 }

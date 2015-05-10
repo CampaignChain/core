@@ -1,0 +1,41 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) Sandro Groganz <sandro@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+{#
+    When a new milestone gets created, these variables must be provided by the
+    controller:
+
+    - campaign
+
+    If the milestone exists, then it suffices to provide the milestone object as
+    a variable.
+#}
+{% if campaign is not defined %}
+    {% set campaign = milestone.getCampaign() %}
+{% endif %}
+
+{% if show_date is not defined %}
+    {% set show_date = false %}
+{% endif %}
+
+<div id="campaignchain-milestone-sidebar">
+    {% if milestone.getStatus() == 'closed' or show_date == true %}
+        <div class="campaignchain-sidebar-item">
+            <div class="sidebar-icon"><i class="fa fa-clock-o"></i></div>
+            <div class="campaignchain-sidebar-data">{{ milestone|campaignchain_tpl_trigger_hook_inline }}</div>
+        </div>
+    {% endif %}
+    <div class="campaignchain-sidebar-item">
+        <div class="campaignchain-sidebar-icon"><i class="fa fa-bullhorn"></i></div>
+        <div class="campaignchain-sidebar-data">
+            <a href="{{ path('campaignchain_core_campaign_edit', { 'id': campaign.getId() }) }}">{{ campaign.getName() }}</a><br/>
+            {{ campaign|campaignchain_tpl_trigger_hook_inline }}
+        </div>
+    </div>
+</div>
