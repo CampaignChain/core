@@ -113,18 +113,28 @@ assetic:
         dhtmlxgantt_tooltip_js:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/components/gantt/codebase/ext/dhtmlxgantt_tooltip.js"
-        campaignchain_dhtmlxgantt_global_js:
+        campaignchain_dhtmlxgantt_pre_init_global_js:
             inputs:
-                - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/global.js"
+                - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/pre_init_global.js"
         campaignchain_dhtmlxgantt_toolbar_js:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/toolbar.js"
-        campaignchain_dhtmlxgantt_pre_init_js:
+        campaignchain_dhtmlxgantt_pre_init_absolute_dates_js:
             inputs:
-                - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/pre_init.js"
-        campaignchain_dhtmlxgantt_post_init_js:
+                - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/pre_init_global.js"
+                - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/pre_init_absolute_dates.js"
+        campaignchain_dhtmlxgantt_post_init_absolute_dates_js:
             inputs:
-                - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/post_init.js"
+                - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/post_init_global.js"
+                - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/post_init_absolute_dates.js"
+        campaignchain_dhtmlxgantt_pre_init_relative_dates_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/pre_init_global.js"
+                - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/pre_init_relative_dates.js"
+        campaignchain_dhtmlxgantt_post_init_relative_dates_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/post_init_global.js"
+                - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/post_init_relative_dates.js"
         dhtmlxgantt_css:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/components/gantt/codebase/dhtmlxgantt.css"

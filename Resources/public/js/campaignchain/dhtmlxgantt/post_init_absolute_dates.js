@@ -32,18 +32,3 @@ gantt.templates.task_class = function(start, end, task){
 
     return class_name;
 }
-
-gantt.templates.task_text = function(start, end, task){
-    switch(task.type){
-        case 'campaign':
-            return '<img src="/bundles/campaignchaincampaignscheduledcampaign/images/icons/24x24/scheduled_campaign_white.png" class="campaignchain_gantt_icon_timeline" />' + task.text;
-            break;
-        case 'milestone':
-            return "<img src='" + task.icon_path_24px + "' class='campaignchain_gantt_icon_timeline' />"
-            break;
-        case 'activity':
-            return task.location_tpl;
-            break;
-    }
-    return task.text;
-};

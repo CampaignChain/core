@@ -60,9 +60,12 @@ file that was distributed with this source code.
 
                 // Edit in modal.
                 element.bind('dblclick', function() {
+                    // Done tasks cannot be edited.
+                    var today = campaignchainGetUserDateTime(moment());
+                    if(+event.start < +today && +event.end < +today){
+                        return false;
+                    }
                     campaignchainShowModal(
-                        event.start,
-                        event.end,
                         event.type, event.campaignchain_id, event.route_edit_api,
                         event, 'campaignchainCalendarTaskDblClickSuccess'
                     );

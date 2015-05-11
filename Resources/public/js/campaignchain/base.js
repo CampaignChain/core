@@ -25,13 +25,7 @@ function campaignchainGetUserDateTime(datetime){
     return moment.tz(datetime, window.campaignchainTimezone);
 }
 
-function campaignchainShowModal(start, end, type, id, api_route, action, successFunction){
-
-    // Done tasks cannot be edited.
-    var today = campaignchainGetUserDateTime(moment());
-    if(+start < +today && +end < +today){
-        return false;
-    }
+function campaignchainShowModal(type, id, api_route, action, successFunction){
 
     $('#remoteModal').on('hidden.bs.modal', function () {
         // Clean up submitted data before showing this modal.
