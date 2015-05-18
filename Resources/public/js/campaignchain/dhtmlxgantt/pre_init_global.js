@@ -183,6 +183,10 @@ function campaignchainGanttTaskDblClickSuccess(task, data) {
         moment(data.end_date, moment.ISO_8601)
     );
 
+    if(gantt.getTask(taskId).type == 'campaign'){
+        campaign_end_date = gantt.getTask(taskId).end_date;
+    }
+
     gantt.updateTask(taskId);
     gantt.render();
 }
