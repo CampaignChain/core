@@ -175,14 +175,13 @@ function campaignchainGanttTaskDblClickSuccess(task, data) {
 
     gantt.getTask(taskId).text =
         $('input[name="' + form_root_name + '[name]"]').val();
-    gantt.getTask(taskId).start_date =
-        moment(
-            $('input[name="' + form_root_name + '[campaignchain_hook_' + task.trigger_identifier + '][' + task.start_date_identifier + ']"]').val()
-        );
-    gantt.getTask(taskId).end_date =
-        moment(
-            $('input[name="' + form_root_name + '[campaignchain_hook_' + task.trigger_identifier + '][' + task.end_date_identifier + ']"]').val()
-        );
+
+    gantt.getTask(taskId).start_date = campaignchainGetUserDateTime(
+        moment(data.start_date, moment.ISO_8601)
+    );
+    gantt.getTask(taskId).end_date = campaignchainGetUserDateTime(
+        moment(data.end_date, moment.ISO_8601)
+    );
 
     gantt.updateTask(taskId);
     gantt.render();

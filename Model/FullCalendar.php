@@ -93,14 +93,14 @@ class FullCalendar
                 $campaignEvent['end'] = $campaignEvent['start'];
             }
             // Provide the hook's start and end date form field names.
-            $campaignEvent['start_date_identifier'] = $hookService->getStartDateIdentifier();
-            $campaignEvent['end_date_identifier'] = $hookService->getEndDateIdentifier();
+            //$campaignEvent['start_date_identifier'] = $hookService->getStartDateIdentifier();
+            //$campaignEvent['end_date_identifier'] = $hookService->getEndDateIdentifier();
 
             $campaignEvent['allDay'] = true;
             $campaignEvent['type'] = 'campaign';
             $campaignEvent['campaignchain_id'] = $campaign->getId();
             $campaignEvent['route_edit_api'] = $campaign->getCampaignModule()->getRoutes()['edit_api'];
-            $campaignEvent['trigger_identifier'] = str_replace('-', '_', $campaign->getTriggerHook()->getIdentifier());
+            //$campaignEvent['trigger_identifier'] = str_replace('-', '_', $campaign->getTriggerHook()->getIdentifier());
 
             if($hook->getStartDate() < $userNow && $hook->getEndDate() > $userNow){
                 $campaignEvents['ongoing'][] = $campaignEvent;
@@ -149,13 +149,13 @@ class FullCalendar
                 $hook = $hookService->getHook($activity);
                 $activityEvent['start'] = $hook->getStartDate()->format(self::FORMAT_CALENDAR_DATE);
                 // Provide the hook's start and end date form field names.
-                $activityEvent['start_date_identifier'] = $hookService->getStartDateIdentifier();
-                $activityEvent['end_date_identifier'] = $hookService->getEndDateIdentifier();
+                //$activityEvent['start_date_identifier'] = $hookService->getStartDateIdentifier();
+                //$activityEvent['end_date_identifier'] = $hookService->getEndDateIdentifier();
 
                 $activityEvent['campaignchain_id'] = $activity->getId();
                 $activityEvent['type'] = 'activity';
                 $activityEvent['route_edit_api'] = $activity->getActivityModule()->getRoutes()['edit_api'];
-                $activityEvent['trigger_identifier'] = str_replace('-', '_', $activity->getTriggerHook()->getIdentifier());
+                //$activityEvent['trigger_identifier'] = str_replace('-', '_', $activity->getTriggerHook()->getIdentifier());
                 // Get activity icons path
                 $activityService = $this->container->get('campaignchain.core.activity');
                 $activityEvent['location_tpl'] = $activityService->tplTeaser($activity, array('only_icon' => true));
@@ -199,13 +199,13 @@ class FullCalendar
                 $hook = $hookService->getHook($milestone);
                 $milestoneEvent['start'] = $hook->getStartDate()->format(self::FORMAT_CALENDAR_DATE);
                 // Provide the hook's start and end date form field names.
-                $milestoneEvent['start_date_identifier'] = $hookService->getStartDateIdentifier();
-                $milestoneEvent['end_date_identifier'] = $hookService->getEndDateIdentifier();
+                //$milestoneEvent['start_date_identifier'] = $hookService->getStartDateIdentifier();
+                //$milestoneEvent['end_date_identifier'] = $hookService->getEndDateIdentifier();
 
                 $milestoneEvent['type'] = 'milestone';
                 $milestoneEvent['campaignchain_id'] = $milestone->getId();
                 $milestoneEvent['route_edit_api'] = $milestone->getMilestoneModule()->getRoutes()['edit_api'];
-                $milestoneEvent['trigger_identifier'] = str_replace('-', '_', $milestone->getTriggerHook()->getIdentifier());
+                //$milestoneEvent['trigger_identifier'] = str_replace('-', '_', $milestone->getTriggerHook()->getIdentifier());
                 // Get icons path
                 $milestoneService = $this->container->get('campaignchain.core.milestone');
                 $icons = $milestoneService->getIcons($milestone);

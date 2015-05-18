@@ -100,7 +100,7 @@ function campaignchainShowModal(type, id, api_route, action, successFunction){
 
                     success: function(data, status) {
                         if(successFunction !== undefined){
-                            window[successFunction](action, data);
+                            window[successFunction](action, $.parseJSON(data));
                         }
 
                         $('#remoteModal').modal('hide');
@@ -147,7 +147,7 @@ function campaignchainMoveAction(id, start, type, action, successFunction){
         success: function(data, status) {
             // TODO: Show success message in Browser.
             if(successFunction !== undefined){
-                window[successFunction](action, data);
+                window[successFunction](action, $.parseJSON(data));
             }
         },
         error: function (xhr, ajaxOptions, thrownError) {

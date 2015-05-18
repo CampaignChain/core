@@ -116,9 +116,9 @@ assetic:
         campaignchain_dhtmlxgantt_pre_init_global_js:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/pre_init_global.js"
-        campaignchain_dhtmlxgantt_toolbar_js:
+        campaignchain_dhtmlxgantt_toolbar_absolute_dates_js:
             inputs:
-                - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/toolbar.js"
+                - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/toolbar_absolute_dates.js"
         campaignchain_dhtmlxgantt_pre_init_absolute_dates_js:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/pre_init_global.js"
@@ -127,6 +127,9 @@ assetic:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/post_init_global.js"
                 - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/post_init_absolute_dates.js"
+        campaignchain_dhtmlxgantt_toolbar_relative_dates_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/toolbar_relative_dates.js"
         campaignchain_dhtmlxgantt_pre_init_relative_dates_js:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/pre_init_global.js"

@@ -24,14 +24,12 @@ function campaignchainCalendarTaskDblClickSuccess(event, data){
 
     event.title =
         $('input[name="' + form_root_name + '[name]"]').val();
-    event.start =
-        moment(
-            $('input[name="' + form_root_name + '[campaignchain_hook_' + event.trigger_identifier + '][' + event.start_date_identifier + ']"]').val()
-        );
-    event.end =
-        moment(
-            $('input[name="' + form_root_name + '[campaignchain_hook_' + event.trigger_identifier + '][' + event.end_date_identifier + ']"]').val()
-        );
+    event.start = campaignchainGetUserDateTime(
+        moment(data.start_date, moment.ISO_8601)
+    );
+    event.end = campaignchainGetUserDateTime(
+        moment(data.end_date, moment.ISO_8601)
+    );
 
     $('#calendar').fullCalendar('updateEvent', event);
 }

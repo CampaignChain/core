@@ -69,7 +69,7 @@ class DhtmlxGantt
             $campaign_data['text'] = $campaign->getName();
             // Define the trigger hook's identifier.
             if($campaign->getTriggerHook()){
-                $campaign_data['trigger_identifier'] = str_replace('-', '_', $campaign->getTriggerHook()->getIdentifier());
+                //$campaign_data['trigger_identifier'] = str_replace('-', '_', $campaign->getTriggerHook()->getIdentifier());
                 // Retrieve the start and end date from the trigger hook.
                 $hookService = $this->container->get($campaign->getTriggerHook()->getServices()['entity']);
                 $hook = $hookService->getHook($campaign);
@@ -80,8 +80,8 @@ class DhtmlxGantt
                     $campaign_data['end_date'] = $campaign_data['start_date'];
                 }
                 // Provide the hook's start and end date form field names.
-                $campaign_data['start_date_identifier'] = $hookService->getStartDateIdentifier();
-                $campaign_data['end_date_identifier'] = $hookService->getEndDateIdentifier();
+                //$campaign_data['start_date_identifier'] = $hookService->getStartDateIdentifier();
+                //$campaign_data['end_date_identifier'] = $hookService->getEndDateIdentifier();
             }
             $campaignId = $campaign->getId();
 //            $campaign_data['id'] = (string) $ganttDataId;
@@ -111,7 +111,7 @@ class DhtmlxGantt
                     $activity_data['text'] = $activity->getName();
 
                     // Define the trigger hook's identifier.
-                    $activity_data['trigger_identifier'] = str_replace('-', '_', $activity->getTriggerHook()->getIdentifier());
+                    //$activity_data['trigger_identifier'] = str_replace('-', '_', $activity->getTriggerHook()->getIdentifier());
                     // Retrieve the start and end date from the trigger hook.
                     $hookService = $this->container->get($activity->getTriggerHook()->getServices()['entity']);
                     $hook = $hookService->getHook($activity);
@@ -122,8 +122,8 @@ class DhtmlxGantt
                         $activity_data['end_date'] = $activity_data['start_date'];
                     }
                     // Provide the hook's start and end date form field names.
-                    $activity_data['start_date_identifier'] = $hookService->getStartDateIdentifier();
-                    $activity_data['end_date_identifier'] = $hookService->getEndDateIdentifier();
+                    //$activity_data['start_date_identifier'] = $hookService->getStartDateIdentifier();
+                    //$activity_data['end_date_identifier'] = $hookService->getEndDateIdentifier();
 
 //                    $activity_data['start_date'] = $activity_data['end_date'] = $activity->getDue()->format(self::FORMAT_TIMELINE_DATE);
 //                    $activity_data['id'] = $ganttDataId;
@@ -165,7 +165,7 @@ class DhtmlxGantt
                 foreach($milestones as $milestone){
                     $milestone_data['text'] = $milestone->getName();
                     // Define the trigger hook's identifier.
-                    $milestone_data['trigger_identifier'] = str_replace('-', '_', $milestone->getTriggerHook()->getIdentifier());
+                    //$milestone_data['trigger_identifier'] = str_replace('-', '_', $milestone->getTriggerHook()->getIdentifier());
                     // Retrieve the start and end date from the trigger hook.
                     $hookService = $this->container->get($milestone->getTriggerHook()->getServices()['entity']);
                     $hook = $hookService->getHook($milestone);
@@ -176,8 +176,8 @@ class DhtmlxGantt
                         $milestone_data['end_date'] = $milestone_data['start_date'];
                     }
                     // Provide the hook's start and end date form field names.
-                    $milestone_data['start_date_identifier'] = $hookService->getStartDateIdentifier();
-                    $milestone_data['end_date_identifier'] = $hookService->getEndDateIdentifier();
+                    //$milestone_data['start_date_identifier'] = $hookService->getStartDateIdentifier();
+                    //$milestone_data['end_date_identifier'] = $hookService->getEndDateIdentifier();
 //                    $milestone_data['id'] = $ganttDataId;
                     $milestone_data['id'] = (string) $milestone->getId().'_milestone';
                     $ganttDataId++;
