@@ -304,6 +304,9 @@ class CampaignChainCoreExtension extends \Twig_Extension
         }
 
         return array(
+            "campaignchain_user_time_format" => array(
+                'moment_js' => $this->datetime->getUserTimeFormat(),
+            ),
             "campaignchain_user_datetime_format" => array(
                 'moment_js' => $this->datetime->getUserDatetimeFormat('moment_js'),
                 'iso8601' => $this->container->get('session')->get('campaignchain.dateFormat').' '.$this->container->get('session')->get('campaignchain.timeFormat'),

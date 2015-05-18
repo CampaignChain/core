@@ -26,6 +26,7 @@ file that was distributed with this source code.
                 <script src="{{ asset_url }}"></script>
             {% endjavascripts %}
             <script type="text/javascript">
+                window.campaignchainTimeFormat = "{{ campaignchain_user_time_format.moment_js }}";
                 window.campaignchainDatetimeFormat = "{{ campaignchain_user_datetime_format.moment_js }}";
                 window.campaignchainTimezone = "{{ app.session.get('campaignchain.timezone') }}";
                 window.campaignchainTimezoneOffset = "{{ campaignchain_user_timezone_offset }}";

@@ -95,16 +95,15 @@ gantt.templates.tooltip_text = function (start_date, end_date, e) {
 
     switch (e.type){
         case 'campaign':
-            end_date = campaignchainRoundMinutes(end_date);
-
-            // Adjust to user timezone.
-//            end_date = campaignchainGetUserDateTime(end_date);
-
-            return "<b>Start:</b> " + start_date.format(window.campaignchainDatetimeFormat) + " (" + window.campaignchainTimezoneAbbreviation + ") <br/><span class='campaignchain_dhxmlxgantt_tooltip_end_date'><b>End:</b> " + end_date.format(window.campaignchainDatetimeFormat) + " (" + window.campaignchainTimezoneAbbreviation + ")</span>";
+            var ms = moment(campaign_end_date).diff(campaign_start_date);
+            var days = Math.floor(moment.duration(ms).asDays());
+            return "<b>Duration:</b> " + days + " days";
             break;
         case 'milestone':
         case 'activity':
-            return "<b>Due:</b> " + start_date.format(window.campaignchainDatetimeFormat) + " (" + window.campaignchainTimezoneAbbreviation + ")";
+            var ms = moment(start_date).diff(campaign_start_date);
+            var days = Math.floor(moment.duration(ms).asDays());
+            return "<b>Due:</b> After " + days + " days at " + start_date.format(window.campaignchainTimeFormat);
             break;
     }
 };
