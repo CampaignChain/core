@@ -14,7 +14,7 @@
 
  <script type="text/javascript" src="[CAMPAIGNCHAIN INSTALLATION]/bundles/campaignchaincore/js/campaignchain/campaignchain_tracking.js"></script>
  <script type="text/javascript">
-    var campaignchainChannel = '[CAMPAIGNCHAIN CHANNEL TRACKING ID]';
+ var campaignchainChannel = '[CAMPAIGNCHAIN CHANNEL TRACKING ID]';
  </script>
  */
 
@@ -26,7 +26,7 @@ if(typeof jQuery == 'undefined'){
 }
 
 /*
-Include JQuery Cookies library.
+ Include JQuery Cookies library.
  */
 document.write('<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></'+'script>');
 
@@ -40,9 +40,9 @@ jQuery(document).ready(function() {
     // we want to report that.
     if(campaignchain.newVisit() == true){
         /*
-            We pass this page as the target. The tracking API will then
-            detect that the source equals the target and will understand
-            that the CTA is the actual source.
+         We pass this page as the target. The tracking API will then
+         detect that the source equals the target and will understand
+         that the CTA is the actual source.
          */
         campaignchain.sendUrlReport(window.location.href);
     }
@@ -167,7 +167,7 @@ CampaignChain.prototype.sendUrlReport = function(target)
                 if(this.mode == 'dev-stay'){
                     console.log(
                         'AJAX error: URL: ' + ajaxUrl + ', status: ' + xhr.status +
-                        ', message: ' +thrownError
+                            ', message: ' +thrownError
                     );
                 }
             }
@@ -176,6 +176,7 @@ CampaignChain.prototype.sendUrlReport = function(target)
         if(this.mode == 'dev' || this.mode == 'dev-stay'){
             console.log('No Tracking ID exists.');
         }
+        window.location.href = this.target;
     }
 }
 
@@ -225,16 +226,16 @@ CampaignChain.prototype.continueTracking = function(affiliation)
     }
 
     /*
-        No Tracking ID yet, so proceed depending on the target's affiliation:
+     No Tracking ID yet, so proceed depending on the target's affiliation:
 
-        1. 'current': If target is within the current channel, then store the Tracking ID
-           in a cookie.
+     1. 'current': If target is within the current channel, then store the Tracking ID
+     in a cookie.
 
-        2. 'connected': If target is outside the current channel, but within another
-           Channel registered with CampaignChain, then append the Tracking ID to the URL.
+     2. 'connected': If target is outside the current channel, but within another
+     Channel registered with CampaignChain, then append the Tracking ID to the URL.
 
-        3. 'unknown': If target is outside the current channel and not within a Channel
-           connected with CampaignChain, then keep the target URL as is.
+     3. 'unknown': If target is outside the current channel and not within a Channel
+     connected with CampaignChain, then keep the target URL as is.
      */
     switch (affiliation){
         case 'current':
