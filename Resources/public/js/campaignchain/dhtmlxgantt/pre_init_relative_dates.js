@@ -103,7 +103,8 @@ gantt.templates.tooltip_text = function (start_date, end_date, e) {
         case 'activity':
             var ms = moment(start_date).diff(campaign_start_date);
             var days = Math.floor(moment.duration(ms).asDays());
-            return "<b>Due:</b> After " + days + " days at " + start_date.format(window.campaignchainTimeFormat);
+            var days = +days+1;
+            return "<b>Due:</b> Day " + ('00' + days).slice(-3) + ", " + start_date.format(window.campaignchainTimeFormat);
             break;
     }
 };

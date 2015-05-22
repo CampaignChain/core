@@ -25,13 +25,21 @@ class HookListener implements EventSubscriberInterface
     protected $bundle;
     protected $entityModule;
     protected $hooks;
-    private $view;
+    private $view = 'default';
     private $campaign = null;
 
     public function __construct(EntityManager $em, ContainerInterface $container)
     {
         $this->em = $em;
         $this->container = $container;
+    }
+
+    public function setView($view){
+        $this->view = $view;
+    }
+
+    public function setCampaign($campaign){
+        $this->campaign = $campaign;
     }
 
     public function init($builder, $bundleName, $configIdentifier)
@@ -63,14 +71,6 @@ class HookListener implements EventSubscriberInterface
             'identifier' => $configIdentifier,
         ));
         $this->hooks = $this->entityModule->getHooks();
-    }
-
-    public function setView($view){
-        $this->view = $view;
-    }
-
-    public function setCampaign($campaign){
-        $this->campaign = $campaign;
     }
 
     static function getSubscribedEvents()
@@ -108,8 +108,8 @@ class HookListener implements EventSubscriberInterface
             }
         }
 
-        if(is_array($this->hooks) && count($this->hooks)){
-            foreach($this->hooks as $identifier => $active){
+        if(is_array($this->hooks[$this->view]) && count($this->hooks[$this->view])){
+            foreach($this->hooks[$this->view] as $identifier => $active){
                 if($active){
                     $hookConfig = $this->em->getRepository('CampaignChainCoreBundle:Hook')->findOneByIdentifier($identifier);
                     $hookForm = $this->container->get($hookConfig->getServices()['form']);

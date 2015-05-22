@@ -17,12 +17,17 @@ class HookService
 {
     protected $em;
     protected $container;
+    protected $view = 'default';
 
 
     public function __construct(EntityManager $em, ContainerInterface $container)
     {
         $this->em = $em;
         $this->container = $container;
+    }
+
+    public function setView($view){
+        $this->view = $view;
     }
 
     public function getHooks($bundleName, $configIdentifier){
@@ -48,7 +53,7 @@ class HookService
             'identifier' => $configIdentifier,
         ));
 
-        return $config->getHooks();
+        return $config->getHooks()[$this->view];
     }
 
     // TODO: Do we have to pass the $repository object or could we use $this->em just as well?

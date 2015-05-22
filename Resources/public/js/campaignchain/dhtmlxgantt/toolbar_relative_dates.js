@@ -13,28 +13,12 @@ function filter_tasks(node){
     gantt.refreshData();
 }
 
-function set_scale_units(mode){
-    switch (mode){
-        case "full_day":
-            gantt.config.subscales = [
-                {unit:"hour", step:1, date:"%H:%i"}
-            ];
-            gantt.ignore_time = null;
-            break;
-        default:
-            gantt.ignore_time = null;
-            break;
-    }
-    gantt.render();
-}
-
-
-function zoom_tasks(node, scale, scale_count){
+function zoom_tasks(node, scale_count){
 
     scale_count = typeof scale_count !== 'undefined' ? scale_count : 1;
 
     switch(node){
-        case "week":
+        case "hours":
             gantt.config.scale_unit = "day";
             gantt.config.date_scale = "";
             gantt.config.scale_height = 60;
@@ -57,10 +41,8 @@ function zoom_tasks(node, scale, scale_count){
             gantt.config.subscales = [
                 {unit:"hour", step:1, date:"%H:%i"}
             ];
-            set_scale_units(scale);
-            display_weekend_highlight();
             break;
-        case "trplweek":
+        case "days":
             gantt.config.min_column_width = 70;
             gantt.config.scale_unit = "week";
             gantt.config.date_scale = "";
@@ -98,9 +80,8 @@ function zoom_tasks(node, scale, scale_count){
                 {unit:"day", step:1, template:dayScaleTemplate }
             ];
 
-            set_scale_units(scale);
             break;
-        case "year":
+        case "weeks":
             gantt.config.min_column_width = 70;
             gantt.config.scale_unit = "month";
             gantt.config.date_scale = "";
@@ -139,7 +120,7 @@ function zoom_tasks(node, scale, scale_count){
             ];
 
             break;
-        case "fullyear":
+        case "months":
             gantt.config.scale_unit = "year";
             gantt.config.date_scale = "";
             gantt.config.min_column_width = 50;
@@ -191,4 +172,4 @@ gantt.attachEvent("onTaskCreated", function(obj){
     obj.progress = 0.25;
 })
 
-zoom_tasks('fullyear', 'fullyear', 0)
+zoom_tasks('months', 0)
