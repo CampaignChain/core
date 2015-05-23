@@ -144,10 +144,10 @@ class Action extends Meta
             throw new \InvalidArgumentException("Invalid status in ".get_class($this).".");
         }
 
-        // If end date is in the past, status is automatically "closed".
+        // If end date is in the past, status is automatically "closed" if status is not "paused".
         if(
-        ($status != self::STATUS_CLOSED && $this->endDate && $this->endDate < new \DateTime('now')) ||
-        ($status != self::STATUS_CLOSED && !$this->endDate && $this->startDate && $this->startDate < new \DateTime('now'))){
+        ($status != self::STATUS_CLOSED && $status != self::STATUS_PAUSED && $this->endDate && $this->endDate < new \DateTime('now')) ||
+        ($status != self::STATUS_CLOSED && $status != self::STATUS_PAUSED && !$this->endDate && $this->startDate && $this->startDate < new \DateTime('now'))){
             // TODO: Warning that status is different from what has been provided.
             $status = self::STATUS_CLOSED;
         }

@@ -22,6 +22,15 @@ use Doctrine\ORM\Mapping as ORM;
 
 abstract class Module extends Meta
 {
+    const REPOSITORY_CAMPAIGN = 'CampaignModule';
+    const REPOSITORY_MILESTONE = 'MilestoneModule';
+    const REPOSITORY_ACTIVITY = 'ActivityModule';
+    const REPOSITORY_OPERATION = 'OperationModule';
+    const REPOSITORY_CHANNEL = 'ChannelModule';
+    const REPOSITORY_LOCATION = 'LocationModule';
+    const REPOSITORY_SECURITY = 'SecurityModule';
+    const REPOSITORY_REPORT = 'ReportModule';
+
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id

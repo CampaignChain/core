@@ -14,6 +14,8 @@ use CampaignChain\CoreBundle\Twig\CampaignChainCoreExtension;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use CampaignChain\CoreBundle\Entity\Action;
+use CampaignChain\CoreBundle\Entity\Activity;
+use CampaignChain\CoreBundle\Entity\Campaign;
 
 class ActivityService
 {
@@ -106,6 +108,9 @@ class ActivityService
         if($hook->getEndDate() !== null){
             $hook->setEndDate(new \DateTime($hook->getEndDate()->add($interval)->format(\DateTime::ISO8601)));
         }
+
+        // TODO: Move all related operations.
+
         return $hookService->processHook($activity, $hook);
     }
 
@@ -132,5 +137,26 @@ class ActivityService
         return $twigExt->tplTeaser($activity, $options);
 
         return $icon;
+    }
+
+    public function cloneActivity(Campaign $campaign, Activity $activity)
+    {
+        $clonedActivity = clone $activity;
+        $clonedActivity->setCampaign($campaign);
+        $this->em->persist($clonedActivity);
+
+        // Clone all related Operations.
+        $operations = $activity->getOperations();
+        if($operations->count()){
+            $operationService = $this->container->get('campaignchain.core.operation');
+            foreach($operations as $operation){
+                $operation = $operationService->cloneOperation($activity, $operation);
+                $clonedActivity->addOperation($operation);
+            }
+        }
+
+        $this->em->flush();
+
+        return $clonedActivity;
     }
 }

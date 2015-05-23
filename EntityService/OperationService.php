@@ -12,6 +12,8 @@ namespace CampaignChain\CoreBundle\EntityService;
 
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use CampaignChain\CoreBundle\Entity\Operation;
+use CampaignChain\CoreBundle\Entity\Activity;
 
 class OperationService
 {
@@ -50,5 +52,15 @@ class OperationService
         }
 
         return $operationModule;
+    }
+
+    public function cloneOperation(Activity $activity, Operation $operation)
+    {
+        $clonedOperation = clone $operation;
+        $clonedOperation->setActivity($activity);
+        $this->em->persist($clonedOperation);
+        $this->em->flush();
+
+        return $clonedOperation;
     }
 }

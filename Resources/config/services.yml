@@ -47,6 +47,9 @@ services:
     campaignchain.core.util.datetime:
         class: CampaignChain\CoreBundle\Util\DateTimeUtil
         arguments: ["@service_container"]
+    campaignchain.core.module:
+        class: CampaignChain\CoreBundle\EntityService\ModuleService
+        arguments: [ @doctrine.orm.entity_manager, @service_container ]
     campaignchain.core.form.type.campaign:
         class: CampaignChain\CoreBundle\Form\Type\CampaignType
         arguments: [ @doctrine.orm.entity_manager, @service_container ]

@@ -19,6 +19,7 @@ abstract class HookListenerType extends AbstractType
     protected $view = 'default';
     protected $bundleName;
     protected $moduleIdentifier;
+    protected $hooksOptions = array();
 
     protected $em;
     protected $container;
@@ -41,12 +42,21 @@ abstract class HookListenerType extends AbstractType
         $this->view = $view;
     }
 
+    public function setHooksOptions(array $hooksOptions){
+        $this->hooksOptions = $hooksOptions;
+    }
+
     public function getHookListener($builder)
     {
         $hookListener = $this->container->get('campaignchain.core.listener.hook');
         // Initialize the hooks for this campaign.
-        $hookListener->init($builder, $this->bundleName, $this->moduleIdentifier);
+        $hookListener->init(
+            $builder,
+            $this->bundleName,
+            $this->moduleIdentifier
+        );
         $hookListener->setView($this->view);
+        $hookListener->setHooksOptions($this->hooksOptions);
 
         return $hookListener;
     }

@@ -13,6 +13,8 @@ namespace CampaignChain\CoreBundle\EntityService;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use CampaignChain\CoreBundle\Entity\Action;
+use CampaignChain\CoreBundle\Entity\Milestone;
+use CampaignChain\CoreBundle\Entity\Campaign;
 
 class MilestoneService
 {
@@ -112,5 +114,15 @@ class MilestoneService
         $icon['24px'] = '/'.$bundlePath.'/images/icons/24x24/'.$iconName;
 
         return $icon;
+    }
+
+    public function cloneMilestone(Campaign $campaign, Milestone $milestone)
+    {
+        $clonedMilestone = clone $milestone;
+        $clonedMilestone->setCampaign(($campaign));
+        $this->em->persist($clonedMilestone);
+        $this->em->flush();
+
+        return $clonedMilestone;
     }
 }

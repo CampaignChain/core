@@ -27,6 +27,7 @@ class HookListener implements EventSubscriberInterface
     protected $hooks;
     private $view = 'default';
     private $campaign = null;
+    private $hooksOptions = array();
 
     public function __construct(EntityManager $em, ContainerInterface $container)
     {
@@ -36,6 +37,10 @@ class HookListener implements EventSubscriberInterface
 
     public function setView($view){
         $this->view = $view;
+    }
+
+    public function setHooksOptions(array $hooksOptions){
+        $this->hooksOptions = $hooksOptions;
     }
 
     public function setCampaign($campaign){
@@ -126,14 +131,27 @@ class HookListener implements EventSubscriberInterface
 
                     $hookService = $this->container->get($hookConfig->getServices()['entity']);
                     $hookData = $hookService->getHook($entity);
+                    $hookLabel = $hookConfig->getLabel();
+                    $hookHelpText = null;
+
+                    if(isset($this->hooksOptions[$hookConfig->getIdentifier()])){
+                        $hookOptions = $this->hooksOptions[$hookConfig->getIdentifier()];
+                        if(isset($hookOptions['label'])){
+                            $hookLabel = $hookOptions['label'];
+                        }
+                        if(isset($hookOptions['help_text'])){
+                            $hookHelpText = $hookOptions['help_text'];
+                        }
+                    }
 
                     $hookFormIdentifier = str_replace('-', '_', $hookConfig->getIdentifier());
                     $form->add('campaignchain_hook_'.$hookFormIdentifier, $hookForm, array(
-                        'label' => $hookConfig->getLabel(),
+                        'label' => $hookLabel,
                         'mapped' => false,
                         'data' => $hookData,
                         'attr' => array(
                             'id' => 'campaignchain_hook_'.$hookFormIdentifier,
+                            'help_text' => $hookHelpText,
                         ),
                     ));
 

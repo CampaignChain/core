@@ -125,7 +125,6 @@ class CampaignController extends Controller
         $responseData = array();
 
         $id = $request->request->get('id');
-//        echo $request->request->get('start_date');
         $newStartDate = new \DateTime($request->request->get('start_date'));
         $newStartDate = DateTimeUtil::roundMinutes($newStartDate);
 
@@ -146,14 +145,8 @@ class CampaignController extends Controller
 
             // Calculate time difference.
             $interval = $campaign->getStartDate()->diff($newStartDate);
-    //        $responseData['campaign']['interval']['object'] = json_encode($interval, true);
-    //        $responseData['campaign']['interval']['string'] = $interval->format(self::FORMAT_DATEINTERVAL);
 
             $campaign = $campaignService->moveCampaign($campaign, $interval);
-
-//            // Set new start and end date for campaign.
-//            $campaign->setStartDate(new \DateTime($campaign->getStartDate()->add($interval)->format(\DateTime::ISO8601)));
-//            $campaign->setEndDate(new \DateTime($campaign->getEndDate()->add($interval)->format(\DateTime::ISO8601)));
 
             $responseData['campaign']['new_start_date'] = $campaign->getStartDate()->format(\DateTime::ISO8601);
             $responseData['campaign']['new_end_date'] = $campaign->getEndDate()->format(\DateTime::ISO8601);
@@ -164,24 +157,6 @@ class CampaignController extends Controller
                 $milestoneService = $this->get('campaignchain.core.milestone');
                 foreach($milestones as $milestone){
                     $milestone = $milestoneService->moveMilestone($milestone, $interval);
-
-//                    $oldMilestoneDate = clone $milestone->getStartDate();
-    //                $oldCampaignMilestoneInterval = $oldCampaignStartDate->diff($oldMilestoneDate);
-    //                echo 'OLD: Campaign <-> '.$milestone->getName().': '.$oldCampaignMilestoneInterval->format('Years: %Y, months: %m, days: %d, hours: %h, minutes: %i, seconds: %s').' ';
-//                    $milestone->setStartDate(new \DateTime($milestone->getStartDate()->add($interval)->format(\DateTime::ISO8601)));
-//                    $milestoneInterval = $oldMilestoneDate->diff($milestone->getStartDate());
-    //                $newCampaignMilestoneInterval = $campaign->getStartDate()->diff($milestone->getStartDate());
-    //                echo 'NEW: Campaign <-> '.$milestone->getName().': '.$newCampaignMilestoneInterval->format('Years: %Y, months: %m, days: %d, hours: %h, minutes: %i, seconds: %s').' ';
-    //                $responseData['milestones'][] = array(
-    //                    'id' => $milestone->getId(),
-    //                    'name' => $milestone->getName(),
-    //                    'old_due_date' => $oldMilestoneDate->format(\DateTime::ISO8601),
-    //                    'new_due_date' => $milestone->getStartDate()->format(\DateTime::ISO8601),
-    //                    'interval' => array(
-    //                        'object' => json_encode($milestoneInterval, true),
-    //                        'string' => $milestoneInterval->format(self::FORMAT_DATEINTERVAL),
-    //                    ),
-    //                );
                     $campaign->addMilestone($milestone);
                 }
             }
@@ -192,24 +167,6 @@ class CampaignController extends Controller
                 $activityService = $this->get('campaignchain.core.activity');
                 foreach($activities as $activity){
                     $activity = $activityService->moveActivity($activity, $interval);
-
-    //                $oldHookStartDate = clone $hook->getStartDate();
-    //                $oldHookEndDate = clone $hook->getEndDate();
-
-//                    $activityInterval = $oldActivityDate->diff($activity->getStartDate());
-    //                $oldActivityDate = clone $activity->getStartDate();
-    //                $activity->setStartDate(new \DateTime($activity->getStartDate()->add($interval)->format(\DateTime::ISO8601)));
-    //                $activityInterval = $oldActivityDate->diff($activity->getStartDate());
-    //                $responseData['activities'][] = array(
-    //                    'id' => $activity->getId(),
-    //                    'name' => $activity->getName(),
-    //                    'old_due_date' => $oldMilestoneDate->format(\DateTime::ISO8601),
-    //                    'new_due_date' => $activity->getStartDate()->format(\DateTime::ISO8601),
-    //                    'interval' => array(
-    //                        'object' => json_encode($activityInterval, true),
-    //                        'string' => $activityInterval->format(self::FORMAT_DATEINTERVAL),
-    //                    ),
-    //                );
                     $campaign->addActivity($activity);
                 }
             }
@@ -219,8 +176,8 @@ class CampaignController extends Controller
 
             $repository->getConnection()->commit();
         } catch (\Exception $e) {
+            // TODO: Respond with JSON and HTTP error code.
             $repository->getConnection()->rollback();
-            // TODO: Don't throw an exception, instead respond with JSON and HTTP error code.
             throw $e;
         }
 

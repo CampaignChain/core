@@ -16,6 +16,7 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use CampaignChain\CoreBundle\Entity\Action;
+use CampaignChain\CoreBundle\Entity\Campaign;
 
 class CampaignService
 {
@@ -109,7 +110,7 @@ class CampaignService
         return $serializer->serialize($campaignsDates, 'json');
     }
 
-    public function moveCampaign($campaign, $interval){
+    public function moveCampaign(Campaign $campaign, $interval){
         $hookService = $this->container->get($campaign->getTriggerHook()->getServices()['entity']);
         $hook = $hookService->getHook($campaign);
         if($hook->getStartDate() !== null){
@@ -119,5 +120,43 @@ class CampaignService
             $hook->setEndDate(new \DateTime($hook->getEndDate()->add($interval)->format(\DateTime::ISO8601)));
         }
         return $hookService->processHook($campaign, $hook);
+    }
+
+    public function cloneCampaign(Campaign $campaign){
+        try {
+            $this->em->getConnection()->beginTransaction();
+
+            $clonedCampaign = clone $campaign;
+
+            // Clone all related milestones.
+            $milestones = $campaign->getMilestones();
+            if($milestones->count()){
+                $milestoneService = $this->container->get('campaignchain.core.milestone');
+                foreach($milestones as $milestone){
+                    $milestone = $milestoneService->cloneMilestone($clonedCampaign, $milestone);
+                    $clonedCampaign->addMilestone($milestone);
+                }
+            }
+
+            // Clone all related activities.
+            $activities = $campaign->getActivities();
+            if($activities->count()){
+                $activityService = $this->container->get('campaignchain.core.activity');
+                foreach($activities as $activity){
+                    $activity = $activityService->cloneActivity($clonedCampaign, $activity);
+                    $clonedCampaign->addActivity($activity);
+                }
+            }
+
+            $this->em->persist($clonedCampaign);
+            $this->em->flush();
+
+            $this->em->getConnection()->commit();
+        } catch (\Exception $e) {
+            $this->em->getConnection()->rollback();
+            throw $e;
+        }
+
+        return $clonedCampaign;
     }
 }
