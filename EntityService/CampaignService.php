@@ -110,31 +110,85 @@ class CampaignService
         return $serializer->serialize($campaignsDates, 'json');
     }
 
-    public function moveCampaign(Campaign $campaign, $interval){
-        $hookService = $this->container->get($campaign->getTriggerHook()->getServices()['entity']);
-        $hook = $hookService->getHook($campaign);
-        if($hook->getStartDate() !== null){
-            $hook->setStartDate(new \DateTime($hook->getStartDate()->add($interval)->format(\DateTime::ISO8601)));
+    public function moveCampaign(Campaign $campaign, $newStartDate, $status = null){
+        // Make sure that data stays intact by using transactions.
+        try {
+            $this->em->getConnection()->beginTransaction();
+
+            // Calculate time difference.
+            $interval = $campaign->getStartDate()->diff($newStartDate);
+
+            $hookService = $this->container->get($campaign->getTriggerHook()->getServices()['entity']);
+            $hook = $hookService->getHook($campaign);
+            if($hook->getStartDate() !== null){
+                $hook->setStartDate(new \DateTime($hook->getStartDate()->add($interval)->format(\DateTime::ISO8601)));
+            }
+            if($hook->getEndDate() !== null){
+                $hook->setEndDate(new \DateTime($hook->getEndDate()->add($interval)->format(\DateTime::ISO8601)));
+            }
+
+            $campaign = $hookService->processHook($campaign, $hook);
+
+            if($status != null){
+                $campaign->setStatus($status);
+            }
+            echo 'Cloned Campaign ID: '.$campaign->getId()."\n";
+
+            // Change due date of all related milestones.
+            $milestones = $campaign->getMilestones();
+            if($milestones->count()){
+                $milestoneService = $this->container->get('campaignchain.core.milestone');
+                foreach($milestones as $milestone){
+                    if($status != null){
+                        $milestone->setStatus($status);
+                    }
+                    $milestone = $milestoneService->moveMilestone($milestone, $interval);
+                    $campaign->addMilestone($milestone);
+                }
+            }
+
+            // Change due date of all related activities.
+            $activities = $campaign->getActivities();
+            if($activities->count()){
+                $activityService = $this->container->get('campaignchain.core.activity');
+                foreach($activities as $activity){
+                    if($status != null){
+                        $activity->setStatus($status);
+                    }
+                    $activity = $activityService->moveActivity($activity, $interval);
+                    $campaign->addActivity($activity);
+                }
+            }
+
+            $this->em->persist($campaign);
+            $this->em->flush();
+
+            $this->em->getConnection()->commit();
+
+            return $campaign;
+        } catch (\Exception $e) {
+            // TODO: Respond with JSON and HTTP error code.
+            $this->em->getConnection()->rollback();
+            throw $e;
         }
-        if($hook->getEndDate() !== null){
-            $hook->setEndDate(new \DateTime($hook->getEndDate()->add($interval)->format(\DateTime::ISO8601)));
-        }
-        return $hookService->processHook($campaign, $hook);
     }
 
-    public function cloneCampaign(Campaign $campaign){
+    public function cloneCampaign(Campaign $campaign, $status = null){
         try {
             $this->em->getConnection()->beginTransaction();
 
             $clonedCampaign = clone $campaign;
+
+            if($status != null){
+                $clonedCampaign->setStatus($status);
+            }
 
             // Clone all related milestones.
             $milestones = $campaign->getMilestones();
             if($milestones->count()){
                 $milestoneService = $this->container->get('campaignchain.core.milestone');
                 foreach($milestones as $milestone){
-                    $milestone = $milestoneService->cloneMilestone($clonedCampaign, $milestone);
-                    $clonedCampaign->addMilestone($milestone);
+                    $clonedMilestone = $milestoneService->cloneMilestone($clonedCampaign, $milestone);
                 }
             }
 
@@ -143,8 +197,7 @@ class CampaignService
             if($activities->count()){
                 $activityService = $this->container->get('campaignchain.core.activity');
                 foreach($activities as $activity){
-                    $activity = $activityService->cloneActivity($clonedCampaign, $activity);
-                    $clonedCampaign->addActivity($activity);
+                    $clonedActivity = $activityService->cloneActivity($clonedCampaign, $activity);
                 }
             }
 
@@ -152,11 +205,11 @@ class CampaignService
             $this->em->flush();
 
             $this->em->getConnection()->commit();
+
+            return $clonedCampaign;
         } catch (\Exception $e) {
             $this->em->getConnection()->rollback();
             throw $e;
         }
-
-        return $clonedCampaign;
     }
 }

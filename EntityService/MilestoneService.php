@@ -86,16 +86,24 @@ class MilestoneService
         return $milestone->getMilestoneModule();
     }
 
-    public function moveMilestone($milestone, $interval){
+    public function moveMilestone(Milestone $milestone, $interval){
         $hookService = $this->container->get($milestone->getTriggerHook()->getServices()['entity']);
         $hook = $hookService->getHook($milestone);
+        echo $hook->getStartDate()->format(\DateTime::ISO8601);
         if($hook->getStartDate() !== null){
             $hook->setStartDate(new \DateTime($hook->getStartDate()->add($interval)->format(\DateTime::ISO8601)));
         }
+        echo ' - '.$hook->getStartDate()->format(\DateTime::ISO8601).' | ';
+
         if($hook->getEndDate() !== null){
             $hook->setEndDate(new \DateTime($hook->getEndDate()->add($interval)->format(\DateTime::ISO8601)));
         }
-        return $hookService->processHook($milestone, $hook);
+        $milestone = $hookService->processHook($milestone, $hook);
+
+        $this->em->persist($milestone);
+        $this->em->flush();
+
+        return $milestone;
     }
 
     /**
@@ -116,11 +124,18 @@ class MilestoneService
         return $icon;
     }
 
-    public function cloneMilestone(Campaign $campaign, Milestone $milestone)
+    public function cloneMilestone(Campaign $campaign, Milestone $milestone, $status = null)
     {
         $clonedMilestone = clone $milestone;
-        $clonedMilestone->setCampaign(($campaign));
+        $clonedMilestone->setCampaign($campaign);
+        $campaign->addMilestone($clonedMilestone);
+
+        if($status != null){
+            $clonedMilestone->setStatus($status);
+        }
+
         $this->em->persist($clonedMilestone);
+        $this->em->persist($campaign);
         $this->em->flush();
 
         return $clonedMilestone;

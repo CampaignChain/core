@@ -128,58 +128,21 @@ class CampaignController extends Controller
         $newStartDate = new \DateTime($request->request->get('start_date'));
         $newStartDate = DateTimeUtil::roundMinutes($newStartDate);
 
-        $repository = $this->getDoctrine()->getManager();
+        $campaignService = $this->get('campaignchain.core.campaign');
+        $campaign = $campaignService->getCampaign($id);
 
-        // Make sure that data stays intact by using transactions.
-        try {
-            $repository->getConnection()->beginTransaction();
+        // Preserve old campaign data for response.
+        $responseData['campaign']['id'] = $campaign->getId();
+        $oldCampaignStartDate = clone $campaign->getStartDate();
+        $responseData['campaign']['old_start_date'] = $oldCampaignStartDate->format(\DateTime::ISO8601);
+        $responseData['campaign']['old_end_date'] = $campaign->getEndDate()->format(\DateTime::ISO8601);
 
-            $campaignService = $this->get('campaignchain.core.campaign');
-            $campaign = $campaignService->getCampaign($id);
+        // Move campaign's start date.
+        $campaign = $campaignService->moveCampaign($campaign, $newStartDate);
 
-            $responseData['campaign']['id'] = $campaign->getId();
-
-            $oldCampaignStartDate = clone $campaign->getStartDate();
-            $responseData['campaign']['old_start_date'] = $oldCampaignStartDate->format(\DateTime::ISO8601);
-            $responseData['campaign']['old_end_date'] = $campaign->getEndDate()->format(\DateTime::ISO8601);
-
-            // Calculate time difference.
-            $interval = $campaign->getStartDate()->diff($newStartDate);
-
-            $campaign = $campaignService->moveCampaign($campaign, $interval);
-
-            $responseData['campaign']['new_start_date'] = $campaign->getStartDate()->format(\DateTime::ISO8601);
-            $responseData['campaign']['new_end_date'] = $campaign->getEndDate()->format(\DateTime::ISO8601);
-
-            // Change due date of all related milestones.
-            $milestones = $campaign->getMilestones();
-            if($milestones->count()){
-                $milestoneService = $this->get('campaignchain.core.milestone');
-                foreach($milestones as $milestone){
-                    $milestone = $milestoneService->moveMilestone($milestone, $interval);
-                    $campaign->addMilestone($milestone);
-                }
-            }
-
-            // Change due date of all related activities.
-            $activities = $campaign->getActivities();
-            if($activities->count()){
-                $activityService = $this->get('campaignchain.core.activity');
-                foreach($activities as $activity){
-                    $activity = $activityService->moveActivity($activity, $interval);
-                    $campaign->addActivity($activity);
-                }
-            }
-
-            $repository->persist($campaign);
-            $repository->flush();
-
-            $repository->getConnection()->commit();
-        } catch (\Exception $e) {
-            // TODO: Respond with JSON and HTTP error code.
-            $repository->getConnection()->rollback();
-            throw $e;
-        }
+        // Add new campaign dates to response.
+        $responseData['campaign']['new_start_date'] = $campaign->getStartDate()->format(\DateTime::ISO8601);
+        $responseData['campaign']['new_end_date'] = $campaign->getEndDate()->format(\DateTime::ISO8601);
 
         $response = new Response($serializer->serialize($responseData, 'json'));
         return $response->setStatusCode(Response::HTTP_OK);

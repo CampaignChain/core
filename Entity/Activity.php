@@ -290,4 +290,14 @@ class Activity extends Action
 
         return $this;
     }
+
+//    public function __clone() {
+//        $operations = $this->getOperations();
+//
+//        foreach ($operations as $operation) {
+//            $cloneOperation = clone $operation;
+//            $this->operations->add($cloneOperation);
+//            $cloneOperation->setCampaign($this);
+//        }
+//    }
 }

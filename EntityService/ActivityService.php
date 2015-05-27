@@ -99,7 +99,7 @@ class ActivityService
         return $operations[0];
     }
 
-    public function moveActivity($activity, $interval){
+    public function moveActivity(Activity $activity, $interval){
         $hookService = $this->container->get($activity->getTriggerHook()->getServices()['entity']);
         $hook = $hookService->getHook($activity);
         if($hook->getStartDate() !== null){
@@ -109,9 +109,23 @@ class ActivityService
             $hook->setEndDate(new \DateTime($hook->getEndDate()->add($interval)->format(\DateTime::ISO8601)));
         }
 
-        // TODO: Move all related operations.
+        $activity = $hookService->processHook($activity, $hook);
 
-        return $hookService->processHook($activity, $hook);
+        $this->em->persist($activity);
+
+        // Move all related Operations.
+        $operations = $activity->getOperations();
+        if($operations->count()){
+            $operationService = $this->container->get('campaignchain.core.operation');
+            foreach($operations as $operation){
+                $operation = $operationService->moveOperation($operation, $interval);
+                //$activity->addOperation($operation);
+            }
+        }
+
+        $this->em->flush();
+
+        return $activity;
     }
 
     /**
@@ -139,10 +153,15 @@ class ActivityService
         return $icon;
     }
 
-    public function cloneActivity(Campaign $campaign, Activity $activity)
+    public function cloneActivity(Campaign $campaign, Activity $activity, $status = null)
     {
         $clonedActivity = clone $activity;
         $clonedActivity->setCampaign($campaign);
+
+        if($status != null){
+            $clonedActivity->setStatus($status);
+        }
+
         $this->em->persist($clonedActivity);
 
         // Clone all related Operations.
@@ -150,8 +169,8 @@ class ActivityService
         if($operations->count()){
             $operationService = $this->container->get('campaignchain.core.operation');
             foreach($operations as $operation){
-                $operation = $operationService->cloneOperation($activity, $operation);
-                $clonedActivity->addOperation($operation);
+                $clonedOperation = $operationService->cloneOperation($activity, $operation);
+                $clonedActivity->addOperation($clonedOperation);
             }
         }
 

@@ -54,10 +54,33 @@ class OperationService
         return $operationModule;
     }
 
-    public function cloneOperation(Activity $activity, Operation $operation)
+    public function moveOperation(Operation $operation, $interval){
+        $hookService = $this->container->get($operation->getTriggerHook()->getServices()['entity']);
+        $hook = $hookService->getHook($operation);
+        if($hook->getStartDate() !== null){
+            $hook->setStartDate(new \DateTime($hook->getStartDate()->add($interval)->format(\DateTime::ISO8601)));
+        }
+        if($hook->getEndDate() !== null){
+            $hook->setEndDate(new \DateTime($hook->getEndDate()->add($interval)->format(\DateTime::ISO8601)));
+        }
+
+        $operation = $hookService->processHook($operation, $hook);
+
+        $this->em->persist($operation);
+        $this->em->flush();
+
+        return $operation;
+    }
+
+    public function cloneOperation(Activity $activity, Operation $operation, $status = null)
     {
         $clonedOperation = clone $operation;
         $clonedOperation->setActivity($activity);
+
+        if($status != null){
+            $clonedOperation->setStatus($status);
+        }
+
         $this->em->persist($clonedOperation);
         $this->em->flush();
 

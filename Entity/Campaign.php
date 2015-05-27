@@ -297,4 +297,22 @@ class Campaign extends Action
     {
         return $this->hasRelativeDates;
     }
+
+//    public function __clone() {
+//        $activities = $this->getActivities();
+//
+//        foreach ($activities as $activity) {
+//            $cloneActivity = clone $activity;
+//            $this->activities->add($cloneActivity);
+//            $cloneActivity->setCampaign($this);
+//        }
+//
+//        $milestones = $this->getMilestones();
+//
+//        foreach ($milestones as $milestone) {
+//            $cloneMilestone = clone $milestone;
+//            $this->milestones->add($cloneMilestone);
+//            $cloneMilestone->setCampaign($this);
+//        }
+//    }
 }
