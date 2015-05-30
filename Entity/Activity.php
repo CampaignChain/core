@@ -44,7 +44,7 @@ class Activity extends Action
     protected $location;
 
     /**
-     * @ORM\OneToMany(targetEntity="Operation", mappedBy="activity")
+     * @ORM\OneToMany(targetEntity="Operation", mappedBy="activity",cascade={"persist"})
      */
     protected $operations;
 
@@ -291,13 +291,10 @@ class Activity extends Action
         return $this;
     }
 
-//    public function __clone() {
-//        $operations = $this->getOperations();
-//
-//        foreach ($operations as $operation) {
-//            $cloneOperation = clone $operation;
-//            $this->operations->add($cloneOperation);
-//            $cloneOperation->setCampaign($this);
-//        }
-//    }
+    public function __clone()
+    {
+        if ($this->id) {
+            $this->id = null;
+        }
+    }
 }

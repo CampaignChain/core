@@ -27,7 +27,7 @@ class Campaign extends Action
     protected $id;
 
     /**
-     * @ORM\OneToMany(targetEntity="Activity", mappedBy="campaign")
+     * @ORM\OneToMany(targetEntity="Activity", mappedBy="campaign", cascade={"persist"})
      */
     protected $activities;
 
@@ -42,7 +42,7 @@ class Campaign extends Action
     protected $channelFacts;
 
     /**
-     * @ORM\OneToMany(targetEntity="Milestone", mappedBy="campaign")
+     * @ORM\OneToMany(targetEntity="Milestone", mappedBy="campaign", cascade={"persist"})
      */
     protected $milestones;
 
@@ -298,21 +298,22 @@ class Campaign extends Action
         return $this->hasRelativeDates;
     }
 
-//    public function __clone() {
-//        $activities = $this->getActivities();
+//    public function __clone()
+//    {
+//        if ($this->id) {
+//            $this->id = null;
 //
-//        foreach ($activities as $activity) {
-//            $cloneActivity = clone $activity;
-//            $this->activities->add($cloneActivity);
-//            $cloneActivity->setCampaign($this);
-//        }
+//            $activities = $this->getActivities();
+//            foreach($activities as $activity){
+//                $clonedActivity = clone $activity;
+//                $this->activities->add($clonedActivity);
+//            }
 //
-//        $milestones = $this->getMilestones();
-//
-//        foreach ($milestones as $milestone) {
-//            $cloneMilestone = clone $milestone;
-//            $this->milestones->add($cloneMilestone);
-//            $cloneMilestone->setCampaign($this);
+//            $milestones = $this->getMilestones();
+//            foreach($milestones as $milestone){
+//                $clonedMilestone = clone $milestone;
+//                $this->milestones->add($clonedMilestone);
+//            }
 //        }
 //    }
 }

@@ -157,6 +157,7 @@ class ActivityService
     {
         $clonedActivity = clone $activity;
         $clonedActivity->setCampaign($campaign);
+        $campaign->addActivity($clonedActivity);
 
         if($status != null){
             $clonedActivity->setStatus($status);
@@ -169,8 +170,7 @@ class ActivityService
         if($operations->count()){
             $operationService = $this->container->get('campaignchain.core.operation');
             foreach($operations as $operation){
-                $clonedOperation = $operationService->cloneOperation($activity, $operation);
-                $clonedActivity->addOperation($clonedOperation);
+                $operationService->cloneOperation($activity, $operation);
             }
         }
 

@@ -76,6 +76,7 @@ class OperationService
     {
         $clonedOperation = clone $operation;
         $clonedOperation->setActivity($activity);
+        $activity->addOperation($clonedOperation);
 
         if($status != null){
             $clonedOperation->setStatus($status);

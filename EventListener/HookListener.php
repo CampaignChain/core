@@ -113,7 +113,11 @@ class HookListener implements EventSubscriberInterface
             }
         }
 
-        if(is_array($this->hooks[$this->view]) && count($this->hooks[$this->view])){
+        if(
+            isset($this->hooks[$this->view]) &&
+            is_array($this->hooks[$this->view]) &&
+            count($this->hooks[$this->view])
+        ){
             foreach($this->hooks[$this->view] as $identifier => $active){
                 if($active){
                     $hookConfig = $this->em->getRepository('CampaignChainCoreBundle:Hook')->findOneByIdentifier($identifier);

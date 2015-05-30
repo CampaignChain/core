@@ -285,4 +285,11 @@ class Operation extends Action
     {
         return $this->fact;
     }
+
+    public function __clone()
+    {
+        if ($this->id) {
+            $this->id = null;
+        }
+    }
 }

@@ -113,4 +113,11 @@ class Milestone extends Action
     {
         return $this->milestoneModule;
     }
+
+    public function __clone()
+    {
+        if ($this->id) {
+            $this->id = null;
+        }
+    }
 }

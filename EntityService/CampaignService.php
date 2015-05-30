@@ -17,6 +17,9 @@ use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use CampaignChain\CoreBundle\Entity\Action;
 use CampaignChain\CoreBundle\Entity\Campaign;
+use DeepCopy\DeepCopy;
+use DeepCopy\Filter\Doctrine\DoctrineEmptyCollectionFilter;
+use DeepCopy\Matcher\PropertyMatcher;
 
 class CampaignService
 {
@@ -179,32 +182,37 @@ class CampaignService
 
             $clonedCampaign = clone $campaign;
 
-            if($status != null){
-                $clonedCampaign->setStatus($status);
-            }
-
-            // Clone all related milestones.
-            $milestones = $campaign->getMilestones();
-            if($milestones->count()){
-                $milestoneService = $this->container->get('campaignchain.core.milestone');
-                foreach($milestones as $milestone){
-                    $clonedMilestone = $milestoneService->cloneMilestone($clonedCampaign, $milestone);
-                }
-            }
-
-            // Clone all related activities.
-            $activities = $campaign->getActivities();
-            if($activities->count()){
-                $activityService = $this->container->get('campaignchain.core.activity');
-                foreach($activities as $activity){
-                    $clonedActivity = $activityService->cloneActivity($clonedCampaign, $activity);
-                }
-            }
-
             $this->em->persist($clonedCampaign);
             $this->em->flush();
 
-            $this->em->getConnection()->commit();
+            $activities = $clonedCampaign->getActivities();
+            foreach($activities as $activity){
+                $clonedActivity = clone $activity;
+                $clonedActivity->setCampaign($clonedCampaign);
+                $clonedCampaign->addActivity($clonedActivity);
+                $clonedCampaign->removeActivity($activity);
+                $this->em->persist($clonedActivity);
+
+                $operations = $clonedActivity->getOperations();
+                foreach($operations as $operation){
+                    $clonedOperation = clone $operation;
+                    $clonedOperation->setActivity($clonedActivity);
+                    $clonedActivity->addOperation($clonedOperation);
+                    $clonedActivity->removeOperation($operation);
+                    $this->em->persist($clonedOperation);
+                }
+            }
+
+            $milestones = $clonedCampaign->getMilestones();
+            foreach($milestones as $milestone){
+                $clonedMilestone = clone $milestone;
+                $clonedMilestone->setCampaign($clonedCampaign);
+                $clonedCampaign->addMilestone($clonedMilestone);
+                $clonedCampaign->removeMilestone($milestone);
+                $this->em->persist($clonedMilestone);
+            }
+
+            $this->em->commit();
 
             return $clonedCampaign;
         } catch (\Exception $e) {
