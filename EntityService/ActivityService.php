@@ -100,6 +100,7 @@ class ActivityService
     }
 
     public function moveActivity(Activity $activity, $interval){
+        echo 'Activity interval: '.$interval->format("%a").'<br>';
         $hookService = $this->container->get($activity->getTriggerHook()->getServices()['entity']);
         $hook = $hookService->getHook($activity);
         if($hook->getStartDate() !== null){
@@ -108,7 +109,7 @@ class ActivityService
         if($hook->getEndDate() !== null){
             $hook->setEndDate(new \DateTime($hook->getEndDate()->add($interval)->format(\DateTime::ISO8601)));
         }
-
+echo 'Activity start date: '.$hook->getStartDate()->format(\DateTime::ISO8601).'<br>';
         $activity = $hookService->processHook($activity, $hook);
 
         $this->em->persist($activity);

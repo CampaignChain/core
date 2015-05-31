@@ -135,7 +135,6 @@ class CampaignService
             if($status != null){
                 $campaign->setStatus($status);
             }
-            echo 'Cloned Campaign ID: '.$campaign->getId()."\n";
 
             // Change due date of all related milestones.
             $milestones = $campaign->getMilestones();
