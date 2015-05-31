@@ -55,11 +55,8 @@ class OperationService
     }
 
     public function moveOperation(Operation $operation, $interval){
-        echo 'Operation interval: '.$interval->format("%a").'<br>';
-
         $hookService = $this->container->get($operation->getTriggerHook()->getServices()['entity']);
         $hook = $hookService->getHook($operation);
-        echo 'Operation start date: '.$hook->getStartDate()->format(\DateTime::ISO8601).'<br>';
 
         if($hook->getStartDate() !== null){
             if($operation->getActivity()->getEqualsOperation() != true){
@@ -75,7 +72,6 @@ class OperationService
                 $hook->setEndDate($operation->getActivity()->getEndDate());
             }
         }
-        echo 'Operation start date + interval: '.$hook->getStartDate()->format(\DateTime::ISO8601).'<br>';
 
         $operation = $hookService->processHook($operation, $hook);
 

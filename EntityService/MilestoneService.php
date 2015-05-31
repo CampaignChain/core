@@ -87,7 +87,6 @@ class MilestoneService
     }
 
     public function moveMilestone(Milestone $milestone, $interval){
-        echo 'Milestone interval: '.$interval->format("%a").'<br>';
         $hookService = $this->container->get($milestone->getTriggerHook()->getServices()['entity']);
         $hook = $hookService->getHook($milestone);
         if($hook->getStartDate() !== null){
@@ -97,7 +96,7 @@ class MilestoneService
         if($hook->getEndDate() !== null){
             $hook->setEndDate(new \DateTime($hook->getEndDate()->add($interval)->format(\DateTime::ISO8601)));
         }
-        echo 'Milestone start date: '.$hook->getStartDate()->format(\DateTime::ISO8601).'<br>';
+
         $milestone = $hookService->processHook($milestone, $hook);
 
         $this->em->persist($milestone);
