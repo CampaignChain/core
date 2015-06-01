@@ -198,6 +198,18 @@ class CampaignService
                     $clonedOperation->setActivity($clonedActivity);
                     $clonedActivity->addOperation($clonedOperation);
                     $clonedActivity->removeOperation($operation);
+
+                    // Execute clone method of module.
+                    $moduleServices = $clonedOperation->getOperationModule()->getServices();
+                    if(
+                        $moduleServices != null &&
+                        is_array($moduleServices) &&
+                        isset($moduleServices['operation'])
+                    ){
+                        $moduleOperationService = $this->container->get($moduleServices['operation']);
+                        $moduleOperationService->cloneOperation($operation, $clonedOperation);
+                    }
+
                     $this->em->persist($clonedOperation);
                 }
             }

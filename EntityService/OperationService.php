@@ -94,6 +94,17 @@ class OperationService
         $this->em->persist($clonedOperation);
         $this->em->flush();
 
+        // Execute clone method of module.
+        $moduleServices = $clonedOperation->getOperationModule()->getServices();
+        if(
+            $moduleServices != null &&
+            is_array($moduleServices) &&
+            isset($moduleServices['operation'])
+        ){
+            $moduleOperationService = $this->container->get($moduleServices['operation']);
+            $moduleOperationService->clone($operation, $clonedOperation);
+        }
+
         return $clonedOperation;
     }
 }
