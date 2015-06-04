@@ -27,7 +27,7 @@ function zoom_tasks(node, scale_count){
             // Main scale
             var scale_string = '';
             gantt.templates.date_scale = function(date) {
-                if(+date < +campaign_start_date){
+                if(+date < +moment(campaign_start_date).subtract(1, 'hours')){
                     scale_count = 1;
                     return '';
                 }
@@ -51,7 +51,7 @@ function zoom_tasks(node, scale_count){
             // Main scale
             var scale_string = '';
             gantt.templates.date_scale = function(date) {
-                if(+date < +campaign_start_date){
+                if(+date < +moment(campaign_start_date).subtract(1, 'weeks')){
                     scale_count = 1;
                     return '';
                 }
@@ -66,7 +66,7 @@ function zoom_tasks(node, scale_count){
             var subscale_count = 1;
             var subscale_string = '';
             var dayScaleTemplate = function(date){
-                if(+date < +campaign_start_date){
+                if(+date < +moment(campaign_start_date).subtract(1, 'days')){
                     subscale_count = 1;
                     return '';
                 }
@@ -90,7 +90,7 @@ function zoom_tasks(node, scale_count){
             // Main scale
             var scale_string = '';
             gantt.templates.date_scale = function(date) {
-                if(+date < +campaign_start_date){
+                if(+date < +moment(campaign_start_date).subtract(1, 'days')){
                     scale_count = 1;
                     return '';
                 }
@@ -105,7 +105,7 @@ function zoom_tasks(node, scale_count){
             var subscale_count = 1;
             var subscale_string = '';
             var weekScaleTemplate = function(date){
-                if(+date < +campaign_start_date){
+                if(+date < +moment(campaign_start_date).subtract(1, 'weeks')){
                     subscale_count = 1;
                     return '';
                 }
@@ -129,7 +129,7 @@ function zoom_tasks(node, scale_count){
             // Main scale
             var scale_string = '';
             gantt.templates.date_scale = function(date) {
-                if(+date < +campaign_start_date){
+                if(+date < +moment(campaign_start_date).subtract(1, 'months')){
                     scale_count = 1;
                     return '';
                 }
@@ -144,7 +144,7 @@ function zoom_tasks(node, scale_count){
             var subscale_count = 1;
             var subscale_string = '';
             var monthScaleTemplate = function(date){
-                if(+date < +campaign_start_date){
+                if(+date < +moment(campaign_start_date).subtract(1, 'weeks')){
                     subscale_count = 1;
                     return '';
                 }
