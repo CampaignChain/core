@@ -52,6 +52,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
             new \Twig_SimpleFilter('campaignchain_parse_url', array($this, 'parseUrl')),
             new \Twig_SimpleFilter('campaignchain_ltrim', array($this, 'ltrim')),
             new \Twig_SimpleFilter('campaignchain_make_links', array($this, 'makeLinks')),
+            new \Twig_SimpleFilter('campaignchain_btn_convert_campaign', array($this, 'btnConvertCampaign'), array('is_safe' => array('html'))),
         );
     }
 
@@ -292,6 +293,31 @@ class CampaignChainCoreExtension extends \Twig_Extension
 
     public function makeLinks($text, $target='_blank', $class=''){
         return ParserUtil::makeLinks($text, $target, $class);
+    }
+
+    public function btnConvertCampaign($campaignId)
+    {
+        // Get the available campaign types for conversion
+        $qb = $this->em->createQueryBuilder();
+        $qb->select('cm')
+            ->from('CampaignChain\CoreBundle\Entity\Campaign', 'c')
+            ->from('CampaignChain\CoreBundle\Entity\CampaignModuleConversion', 'cmc')
+            ->from('CampaignChain\CoreBundle\Entity\CampaignModule', 'cm')
+            ->where('c.id = :campaignId')
+            ->andWhere('c.campaignModule = cmc.from')
+            ->andWhere('cmc.to = cm.id')
+            ->orderBy('cm.displayName', 'ASC')
+            ->setParameter('campaignId', $campaignId);
+        $query = $qb->getQuery();
+        $campaignTypes = $query->getResult();
+
+        return $this->container->get('templating')->render(
+            'CampaignChainCampaignTemplateBundle::btn_convert_tpl_widget.html.twig',
+            array(
+                'campaign_types' => $campaignTypes,
+                'template_id' => $campaignId,
+            )
+        );
     }
 
     public function getGlobals()

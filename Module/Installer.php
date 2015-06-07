@@ -15,6 +15,7 @@ use CampaignChain\CoreBundle\Entity\Bundle,
     CampaignChain\CoreBundle\Entity\ChannelModule,
     CampaignChain\CoreBundle\Entity\LocationModule,
     CampaignChain\CoreBundle\Entity\CampaignModule,
+    CampaignChain\CoreBundle\Entity\CampaignModuleConversion,
     CampaignChain\CoreBundle\Entity\MilestoneModule,
     CampaignChain\CoreBundle\Entity\ActivityModule,
     CampaignChain\CoreBundle\Entity\OperationModule,
@@ -53,6 +54,8 @@ class Installer
     private $skipVersion = false;
 
     private $systemParams = array();
+
+    private $campaignConversions = array();
 
     private $activityChannels = array();
 
@@ -148,6 +151,9 @@ class Installer
                 $this->em->persist($this->newBundle);
                 $this->em->flush();
             }
+
+            // Store the campaign types a campaign can be converted to.
+            $this->registerCampaignConversions();
 
             // Store the channels related to an activity.
             $this->registerActivityChannels();
@@ -627,6 +633,16 @@ class Installer
                 $addModuleMethod = 'add'.$reflect->getShortName();
                 $this->newBundle->$addModuleMethod($module);
 
+                // If a campaign module, remember the conversion to other campaign types.
+                if(
+                    $this->newBundle->getType() == 'campaignchain-campaign' &&
+                    isset($moduleParams['conversions']) &&
+                    is_array($moduleParams['conversions']) &&
+                    count($moduleParams['conversions'])
+                ){
+                    $this->campaignConversions[$this->newBundle->getName()][$module->getIdentifier()] = $moduleParams['conversions'];
+                }
+
                 // If an activity module, remember the related channels.
                 if($this->newBundle->getType() == 'campaignchain-activity'){
                     $this->activityChannels[$this->newBundle->getName()][$module->getIdentifier()] = $moduleParams['channels'];
@@ -656,6 +672,42 @@ class Installer
             }
 
             $this->em->flush();
+        }
+    }
+
+    private function registerCampaignConversions()
+    {
+        if(count($this->campaignConversions)){
+            foreach($this->campaignConversions as $campaignBundleName => $campaignModules){
+                $campaignBundle = $this->em->getRepository('CampaignChainCoreBundle:Bundle')
+                    ->findOneByName($campaignBundleName);
+
+                foreach($campaignModules as $campaignModuleIdentifier => $conversionURIs){
+                    $fromCampaignModule = $this->em->getRepository('CampaignChainCoreBundle:CampaignModule')
+                        ->findOneBy(array(
+                            'bundle' => $campaignBundle,
+                            'identifier' => $campaignModuleIdentifier
+                        ));
+
+                    foreach($conversionURIs as $conversionURI){
+                        $conversionURISplit = explode('/', $conversionURI);
+                        $toCampaignBundleName = $conversionURISplit[0].'/'.$conversionURISplit[1];
+                        $toCampaignModuleIdentifier = $conversionURISplit[2];
+                        $toCampaignBundle = $this->em->getRepository('CampaignChainCoreBundle:Bundle')
+                            ->findOneByName($toCampaignBundleName);
+                        $toCampaignModule = $this->em->getRepository('CampaignChainCoreBundle:CampaignModule')
+                            ->findOneBy(array(
+                                'bundle' => $toCampaignBundle,
+                                'identifier' => $toCampaignModuleIdentifier
+                            ));
+
+                        $campaignModuleConversion = new CampaignModuleConversion();
+                        $campaignModuleConversion->setFrom($fromCampaignModule);
+                        $campaignModuleConversion->setTo($toCampaignModule);
+                        $this->em->persist($campaignModuleConversion);
+                    }
+                }
+            }
         }
     }
 
