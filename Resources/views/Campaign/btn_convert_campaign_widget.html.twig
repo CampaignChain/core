@@ -1,0 +1,18 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) Sandro Groganz <sandro@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+<div class="btn-group">
+    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+        Convert to <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+        {% for campaign_type in campaign_types %}
+            <li><a href="{{ path(campaign_type.getRoutes().convert,{'id':template_id}) }}">{{ campaign_type.getDisplayName() }}</a></li>
+        {% endfor %}
+    </ul>
+</div>

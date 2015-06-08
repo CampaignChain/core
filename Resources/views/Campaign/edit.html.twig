@@ -1,0 +1,14 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) Sandro Groganz <sandro@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+{% extends 'CampaignChainCoreBundle:Base:edit.html.twig' %}
+
+{% block form_footer_btn_group %}
+    {{ campaign.id|campaignchain_btn_convert_campaign }}
+{% endblock %}

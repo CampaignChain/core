@@ -312,7 +312,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
         $campaignTypes = $query->getResult();
 
         return $this->container->get('templating')->render(
-            'CampaignChainCampaignTemplateBundle::btn_convert_tpl_widget.html.twig',
+            'CampaignChainCoreBundle:Campaign:btn_convert_campaign_widget.html.twig',
             array(
                 'campaign_types' => $campaignTypes,
                 'template_id' => $campaignId,
