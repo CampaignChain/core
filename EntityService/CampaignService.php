@@ -162,7 +162,7 @@ class CampaignService
                 }
             }
 
-            $this->em->persist($campaign);
+            //$this->em->persist($campaign);
             $this->em->flush();
 
             $this->em->getConnection()->commit();
@@ -230,5 +230,12 @@ class CampaignService
             $this->em->getConnection()->rollback();
             throw $e;
         }
+    }
+
+    public function getCampaignURI(Campaign $campaign)
+    {
+        $bundleName = $campaign->getCampaignModule()->getBundle()->getName();
+        $moduleIdentifier = $campaign->getCampaignModule()->getIdentifier();
+        return $bundleName.'/'.$moduleIdentifier;
     }
 }

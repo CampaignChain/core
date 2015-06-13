@@ -41,7 +41,6 @@ class DatetimeListener {
                     $prop->setAccessible(false);
                     continue;
                 }
-//                echo 'Timezone in DB: '.$value->getTimezone()->getName();
 
                 // Don't execute this upon login.
                 if( $this->container->get('request')->get('_route') != 'fos_user_security_check' ){

@@ -122,6 +122,10 @@ class HookListener implements EventSubscriberInterface
                 if($active){
                     $hookConfig = $this->em->getRepository('CampaignChainCoreBundle:Hook')->findOneByIdentifier($identifier);
                     $hookForm = $this->container->get($hookConfig->getServices()['form']);
+                    $hookForm->setView($this->view);
+                    if(isset($this->hooksOptions[$identifier])){
+                        $hookForm->setHooksOptions($this->hooksOptions[$identifier]);
+                    }
                     switch($this->bundle->getType()){
                         case 'campaignchain-milestone':
                         case 'campaignchain-activity':
