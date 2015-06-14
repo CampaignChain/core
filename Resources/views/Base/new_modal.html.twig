@@ -60,6 +60,7 @@ file that was distributed with this source code.
             <div class="col-lg-offset-3 col-lg-9">
                 <div class="btn-group pull-right" role="group" aria-label="...">
                     <button class="btn btn-default" data-dismiss="modal" name="campaignchain_core_campaign[actions][cancel]" id="campaignchain_core_campaign_actions_cancel" type="button"><i class="fa fa-close"></i> Cancel</button>
+                    {% block form_footer_btn_group %}{% endblock %}
                     {% if form_submit_label is defined %}
                         {% if form_submit_label == 'Save' %}
                             <button class="btn btn-primary" type="submit"><i class="fa fa-save"></i> Save</button>

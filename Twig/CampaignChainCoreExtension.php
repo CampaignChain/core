@@ -311,13 +311,17 @@ class CampaignChainCoreExtension extends \Twig_Extension
         $query = $qb->getQuery();
         $campaignTypes = $query->getResult();
 
-        return $this->container->get('templating')->render(
-            'CampaignChainCoreBundle:Campaign:btn_convert_campaign_widget.html.twig',
-            array(
-                'campaign_types' => $campaignTypes,
-                'template_id' => $campaignId,
-            )
-        );
+        if(count($campaignTypes)){
+            return $this->container->get('templating')->render(
+                'CampaignChainCoreBundle:Campaign:btn_convert_campaign_widget.html.twig',
+                array(
+                    'campaign_types' => $campaignTypes,
+                    'template_id' => $campaignId,
+                )
+            );
+        } else {
+            return false;
+        }
     }
 
     public function getGlobals()
