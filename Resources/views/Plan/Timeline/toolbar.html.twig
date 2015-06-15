@@ -9,7 +9,8 @@ file that was distributed with this source code.
 
         <div class="btn-toolbar" role="toolbar">
             <div class="btn-group">
-                <button type="button" class="btn btn-default dropdown-toggle btn-sm" data-toggle="dropdown">
+                <a href="#" onclick="scrollToToday()" class="btn btn-default" role="button">Today</a>
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                     <span class="fa fa-clock-o"></span> Time Scale <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
@@ -25,10 +26,10 @@ file that was distributed with this source code.
                     <li><a href="#" onclick="zoom_tasks('fullyear', 'fullyear')">Years</a></li>
                 </ul>
             </div>
-            <a href="#" onclick="scrollToToday()" class="btn btn-default btn-sm" role="button">Today</a>
+            {% block header_toolbar_btn_group %}{% endblock %}
             <div class="btn-group pull-right">
                 {% if gantt_toolbar_status != 'fullscreen' %}
-                    <a href="{{ path_fullscreen }}" class="btn btn-default btn-sm" role="button"><span class="fa fa-arrows-alt"></span></a>
+                    <a href="{{ path_fullscreen }}" class="btn btn-default" role="button"><span class="fa fa-arrows-alt"></span></a>
                 {% endif %}
             </div>
         </div>
