@@ -132,6 +132,7 @@ class ActivityController extends Controller
             array(
                 'page_title' => 'Create New Activity',
                 'form' => $form->createView(),
+                'form_submit_label' => 'Next',
                 'dependent_select_parent' => 'location',
                 'dependent_select_child' => 'activity',
                 'dependent_select_route' => 'campaignchain_core_location_list_activities_api',

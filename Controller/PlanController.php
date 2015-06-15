@@ -50,6 +50,7 @@ class PlanController extends Controller
             array(
                 'page_title' => 'Plan Campaign',
                 'form' => $form->createView(),
+                'form_submit_label' => 'Next',
             ));
     }
 }

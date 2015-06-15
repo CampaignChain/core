@@ -77,6 +77,7 @@ class CampaignController extends Controller
             array(
                 'page_title' => 'Create New Campaign',
                 'form' => $form->createView(),
+                'form_submit_label' => 'Next',
             ));
     }
 

@@ -56,20 +56,7 @@ file that was distributed with this source code.
             <div class="form-group">
                 <div class="col-lg-offset-2 col-lg-6">
                     <div class="btn-group pull-right" role="group" aria-label="...">
-                        {% if form_cancel_route is defined %}
-                            <a href="{{ path(form_cancel_route) }}" class="btn btn-default" role="button"><i class="fa fa-close"></i> Cancel</a>
-                        {% endif %}
-                        {% if form_submit_label is defined %}
-                            {% if form_submit_label == 'Save' %}
-                                <button class="btn btn-primary" type="submit"><i class="fa fa-save"></i> Save</button>
-                            {% elseif form_submit_label == 'Upload' %}
-                                <button class="btn btn-primary" type="submit"><i class="fa fa-upload"></i> Upload</button>
-                            {% elseif form_submit_label == 'Reset' %}
-                                <button class="btn btn-primary" type="submit"><i class="fa fa-undo"></i> Reset</button>
-                            {% endif %}
-                        {% else %}
-                            <button class="btn btn-primary" type="submit">Next <i class="fa fa-arrow-right"></i></button>
-                        {% endif %}
+                        {% include 'CampaignChainCoreBundle:Base:form_footer_buttons.html.twig' %}
                     </div>
                 </div>
             </div>

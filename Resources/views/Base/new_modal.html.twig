@@ -59,23 +59,35 @@ file that was distributed with this source code.
         <div class="form-group">
             <div class="col-lg-offset-3 col-lg-9">
                 <div class="btn-group pull-right" role="group" aria-label="...">
-                    <button class="btn btn-default" data-dismiss="modal" name="campaignchain_core_campaign[actions][cancel]" id="campaignchain_core_campaign_actions_cancel" type="button"><i class="fa fa-close"></i> Cancel</button>
+                    <button class="btn btn-default" data-dismiss="modal"
+                            name="campaignchain_core_campaign[actions][cancel]"
+                            id="campaignchain_core_campaign_actions_cancel"
+                            type="button"
+                            data-toggle="tooltip" data-placement="top" data-original-title="Cancel">
+                        <i class="fa fa-close"></i>
+                    </button>
                     {% block form_footer_btn_group %}{% endblock %}
                     {% if form_submit_label is defined %}
                         {% if form_submit_label == 'Save' %}
-                            <button class="btn btn-primary" type="submit"><i class="fa fa-save"></i> Save</button>
+                            <button class="btn btn-primary" type="submit" data-toggle="tooltip" data-placement="top" data-original-title="Save"><i class="fa fa-save"></i></button>
                         {% elseif form_submit_label == 'Upload' %}
-                            <button class="btn btn-primary" type="submit"><i class="fa fa-upload"></i> Upload</button>
+                            <button class="btn btn-primary" type="submit" data-toggle="tooltip" data-placement="top" data-original-title="Upload"><i class="fa fa-upload"></i></button>
+                        {% elseif form_submit_label == 'Upload' %}
+                            <button class="btn btn-primary" type="submit" data-toggle="tooltip" data-placement="top" data-original-title="Next"><i class="fa fa-arrow-right"></i></button>
                         {% endif %}
                     {% else %}
-                        <button class="btn btn-primary" type="submit">Next <i class="fa fa-arrow-right"></i></button>
+                        <button class="btn btn-primary" type="submit" data-toggle="tooltip" data-placement="top" data-original-title="Save"><i class="fa fa-save"></i></button>
                     {% endif %}
                 </div>
             </div>
         </div>
         {{ form_rest(form) }}
     </form>
-
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
     {% block form_footer %}{% endblock %}
 
 {% endblock %}
