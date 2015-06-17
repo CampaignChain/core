@@ -152,7 +152,7 @@ class Installer
                 $this->em->flush();
             }
 
-            // Store the campaign types a campaign can be converted to.
+            // Store the campaign types a campaign can be copied to.
             $this->registerCampaignConversions();
 
             // Store the channels related to an activity.

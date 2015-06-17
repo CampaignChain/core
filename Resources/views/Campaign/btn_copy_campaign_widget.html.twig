@@ -12,7 +12,7 @@ file that was distributed with this source code.
     </button>
     <ul class="dropdown-menu" role="menu">
         {% for campaign_type in campaign_types %}
-            <li><a href="{{ path(campaign_type.getRoutes().convert,{'id':template_id}) }}">{{ campaign_type.getDisplayName() }}</a></li>
+            <li><a href="{{ path(campaign_type.getRoutes().copy,{'id':template_id}) }}">{{ campaign_type.getDisplayName() }}</a></li>
         {% endfor %}
     </ul>
 </div>

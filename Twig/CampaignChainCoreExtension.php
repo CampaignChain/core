@@ -52,7 +52,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
             new \Twig_SimpleFilter('campaignchain_parse_url', array($this, 'parseUrl')),
             new \Twig_SimpleFilter('campaignchain_ltrim', array($this, 'ltrim')),
             new \Twig_SimpleFilter('campaignchain_make_links', array($this, 'makeLinks')),
-            new \Twig_SimpleFilter('campaignchain_btn_convert_campaign', array($this, 'btnConvertCampaign'), array('is_safe' => array('html'))),
+            new \Twig_SimpleFilter('campaignchain_btn_copy_campaign', array($this, 'btnCopyCampaign'), array('is_safe' => array('html'))),
         );
     }
 
@@ -295,7 +295,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
         return ParserUtil::makeLinks($text, $target, $class);
     }
 
-    public function btnConvertCampaign($campaignId)
+    public function btnCopyCampaign($campaignId)
     {
         // Get the available campaign types for conversion
         $qb = $this->em->createQueryBuilder();
@@ -313,7 +313,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
 
         if(count($campaignTypes)){
             return $this->container->get('templating')->render(
-                'CampaignChainCoreBundle:Campaign:btn_convert_campaign_widget.html.twig',
+                'CampaignChainCoreBundle:Campaign:btn_copy_campaign_widget.html.twig',
                 array(
                     'campaign_types' => $campaignTypes,
                     'template_id' => $campaignId,
