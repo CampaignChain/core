@@ -83,6 +83,16 @@ class HookService
             }
         }
 
+        // Post process entity per campaign.
+        if(
+            $entity->getCampaign()->getCampaignModule()->getServices() &&
+            is_array($entity->getCampaign()->getCampaignModule()->getServices()) &&
+            null !== $entity->getCampaign()->getCampaignModule()->getServices()['campaign']
+        ){
+            $campaignModuleService = $this->container->get($entity->getCampaign()->getCampaignModule()->getServices()['campaign']);
+            $entity = $campaignModuleService->processAction($entity);
+        }
+
         return $entity;
     }
 
