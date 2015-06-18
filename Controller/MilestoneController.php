@@ -60,9 +60,9 @@ class MilestoneController extends Controller
                 'class' => 'CampaignChainCoreBundle:Campaign',
                 'query_builder' => function(EntityRepository $er) {
                         return $er->createQueryBuilder('campaign')
-                            ->where('campaign.endDate > :now')
-                            ->orderBy('campaign.startDate', 'ASC')
-                            ->setParameter('now', new \DateTime('now'));
+                            //->where('campaign.endDate > :now')
+                            ->orderBy('campaign.startDate', 'ASC');
+                            //->setParameter('now', new \DateTime('now'));
                     },
                 'property' => 'name',
                 'empty_value' => 'Select a Campaign',
