@@ -209,12 +209,20 @@ class Installer
 
             if(!$registeredBundle){
                 $this->isRegisteredBundle[$newBundle->getName()] = self::STATUS_REGISTERED_NO;
+            // This case covers development of modules.
+            } elseif(
+                $registeredBundle->getVersion() == 'dev-master' &&
+                $newBundle->getVersion() == 'dev-master'
+            ) {
+                $this->isRegisteredBundle[$newBundle->getName()] = self::STATUS_REGISTERED_OLDER;
             } elseif(version_compare($registeredBundle->getVersion(), $newBundle->getVersion(), '==')){
                 // Bundle with same version is already registered.
                 $this->isRegisteredBundle[$newBundle->getName()] = self::STATUS_REGISTERED_SAME;
-            } elseif(version_compare(
-                $registeredBundle->getVersion(), $newBundle->getVersion(), '<'
-            )){
+            } elseif(
+                version_compare(
+                    $registeredBundle->getVersion(), $newBundle->getVersion(), '<'
+                )
+            ){
                 // Bundle with older version is already registered.
                 $this->isRegisteredBundle[$newBundle->getName()] = self::STATUS_REGISTERED_OLDER;
             }
