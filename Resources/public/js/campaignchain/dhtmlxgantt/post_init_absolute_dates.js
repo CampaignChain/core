@@ -7,6 +7,30 @@
  file that was distributed with this source code.
  */
 
+// Mark today with a line
+gantt.attachEvent("onGanttRender", onGanttRender_todayLine(today));
+
+function onGanttRender_todayLine(today) {
+    return function f() {
+        var $today = $("#campaignchain_gantt_today");
+        if (!$today.length) {
+            var elem = document.createElement("div");
+            elem.id = "campaignchain_gantt_today";
+            gantt.$task_data.appendChild(elem);
+            $today = $(elem);
+        }
+
+        var x_start = gantt.posFromDate(today);
+        var x_end = gantt.posFromDate(today.add(1, 'minute'));
+
+        // Show the today line only if start date of time scale is prior to it.
+        if(x_end != 0){
+            $today.css("left", Math.floor(x_start + 0.5 * (x_end - x_start)) + "px");
+            $today.css("height", $(".gantt_data_area").innerHeight());
+        }
+    };
+}
+
 gantt.templates.task_class = function(start, end, task){
     if(+campaignchainGetUserDateTime(start) < +today && +campaignchainGetUserDateTime(end) > +today){
         // Give running campaigns a different color.

@@ -12,26 +12,6 @@
 // Furthermore, make sure that they move together with a campaign
 // if a campaign is being moved.
 
-// Mark today with a line
-gantt.attachEvent("onGanttRender", onGanttRender_todayLine(today));
-
-function onGanttRender_todayLine(today) {
-    return function f() {
-        var $today = $("#campaignchain_gantt_today");
-        if (!$today.length) {
-            var elem = document.createElement("div");
-            elem.id = "campaignchain_gantt_today";
-            gantt.$task_data.appendChild(elem);
-            $today = $(elem);
-        }
-
-        var x_start = gantt.posFromDate(today);
-        var x_end = gantt.posFromDate(today.add(1, 'minute'));
-        $today.css("left", Math.floor(x_start + 0.5 * (x_end - x_start)) + "px");
-        $today.css("height", $(".gantt_data_area").innerHeight());
-    };
-}
-
 function limitMoveLeft(task, limit){
     var dur = task.end_date - task.start_date;
     task.end_date = new Date(limit.end_date);

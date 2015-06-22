@@ -31,7 +31,7 @@ gantt.config.grid_width = 240;
 gantt.config.row_height = 40;
 //gantt.config.autosize = true;
 gantt.config.columns = [
-    {name:"text", label:"Campaigns, Activities, Milestones", tree:true, width:100 },
+    {name:"text", label:"Campaigns, Activities, Milestones", tree:true, width:200 },
 //        {name:"start_date", label:"Start Date", align: "center", width:100 },
 //        {name:"end_date", label:"End Date", align: "center", width:100 },
 ];
