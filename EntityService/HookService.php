@@ -85,6 +85,7 @@ class HookService
 
         // Post process entity per campaign.
         if(
+            strpos(get_class($entity), 'CoreBundle\Entity\Campaign') === false &&
             $entity->getCampaign()->getCampaignModule()->getServices() &&
             is_array($entity->getCampaign()->getCampaignModule()->getServices()) &&
             null !== $entity->getCampaign()->getCampaignModule()->getServices()['campaign']
