@@ -468,7 +468,10 @@ class Installer
                     == self::STATUS_REGISTERED_OLDER){
                     $module = $this->em
                         ->getRepository('CampaignChainCoreBundle:Module')
-                        ->findOneByIdentifier(strtolower($identifier));
+                        ->findOneBy(array(
+                            'bundle' => $this->newBundle,
+                            'identifier' => strtolower($identifier)
+                        ));
                 }
 
                 if(!$module){
