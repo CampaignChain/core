@@ -78,6 +78,7 @@ class HookService
                     } elseif(is_object($data) && get_class($data) == 'Symfony\Component\Form\Form'){
                         $hook = $data->get('campaignchain_hook_'.str_replace('-', '_', $identifier))->getData();
                     }
+
                     $entity = $hookService->processHook($entity, $hook);
                 }
             }

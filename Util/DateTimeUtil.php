@@ -65,15 +65,19 @@ class DateTimeUtil
     }
 
     public function getUserDatetimeFormat($format = 'default'){
+        $datetimeFormat = $this->container->get('session')->get('campaignchain.dateFormat').' '.$this->container->get('session')->get('campaignchain.timeFormat');
         switch($format){
+            case 'php_date':
+                return $this->convertToPHPDateFormat($datetimeFormat);
+                break;
             case 'moment_js':
-                return $this->convertToMomentJSFormat($this->container->get('session')->get('campaignchain.dateFormat').' '.$this->container->get('session')->get('campaignchain.timeFormat'));
+                return $this->convertToMomentJSFormat($datetimeFormat);
                 break;
             case 'datepicker':
-                return $this->convertToDatepickerFormat($this->container->get('session')->get('campaignchain.dateFormat').' '.$this->container->get('session')->get('campaignchain.timeFormat'));
+                return $this->convertToDatepickerFormat($datetimeFormat);
                 break;
-            default:
-                return $this->container->get('session')->get('campaignchain.dateFormat').' '.$this->container->get('session')->get('campaignchain.timeFormat');
+            case 'default':
+                return $datetimeFormat;
                 break;
         }
     }
@@ -224,6 +228,22 @@ class DateTimeUtil
         );
         $localeFormat->setPattern($this->container->get('session')->get('campaignchain.timeFormat'));
         return $localeFormat->format($object);
+    }
+
+    private function convertToPHPDateFormat($format){
+        $patterns[] = '/mm/';
+        $patterns[] = '/dd/';
+        $patterns[] = '/MM/';
+        $patterns[] = '/HH/';
+        $patterns[] = '/yyyy/';
+
+        $replacements[] = 'i';
+        $replacements[] = 'd';
+        $replacements[] = 'm';
+        $replacements[] = 'H';
+        $replacements[] = 'Y';
+
+        return preg_replace($patterns, $replacements, $format);
     }
 
     private function convertToMomentJSFormat($format){

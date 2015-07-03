@@ -44,9 +44,39 @@ class Action extends Meta
     protected $startDate;
 
     /**
+     * A string defining the interval range as a relative date format with a
+     * value in the future. For example, if the report operation is supposed
+     * to run every hour, the interval would be "1 hour".
+     *
+     * Relative date formats are defined here:
+     * http://php.net/manual/en/datetime.formats.relative.php
+     *
+     * TODO: Make sure that provided interval has a future value (not pointing
+     * to the past).
+     *
+     * @ORM\Column(name="`interval`", type="string", length=100, nullable=true)
+     */
+    protected $interval;
+
+    /**
+     * The date when the Action will be run the next time. It will be
+     * increased by the scheduler.
+     *
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    protected $nextRun;
+
+    /**
      * @ORM\Column(type="datetime", nullable=true)
      */
     protected $endDate;
+
+    /**
+     * The number of times an Action is supposed to be repeated.
+     *
+     * @ORM\Column(type="smallint", nullable=true)
+     */
+    protected $endOccurrence;
 
     /**
      * @ORM\Column(type="string", length=20)
@@ -105,6 +135,52 @@ class Action extends Meta
     }
 
     /**
+     * Set interval
+     *
+     * @param string $interval
+     * @return Action
+     */
+    public function setInterval($interval)
+    {
+        $this->interval = $interval;
+
+        return $this;
+    }
+
+    /**
+     * Get interval
+     *
+     * @return string
+     */
+    public function getInterval()
+    {
+        return $this->interval;
+    }
+
+    /**
+     * Set nextRun
+     *
+     * @param \DateTime $nextRun
+     * @return Action
+     */
+    public function setNextRun($nextRun)
+    {
+        $this->nextRun = $nextRun;
+
+        return $this;
+    }
+
+    /**
+     * Get nextRun
+     *
+     * @return \DateTime
+     */
+    public function getNextRun()
+    {
+        return $this->nextRun;
+    }
+
+    /**
      * Set endDate
      *
      * @param \DateTime $endDate
@@ -125,6 +201,22 @@ class Action extends Meta
     public function getEndDate()
     {
         return $this->endDate;
+    }
+
+    /**
+     * @param mixed $endOccurrence
+     */
+    public function setEndOccurrence($endOccurrence)
+    {
+        $this->endOccurrence = $endOccurrence;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEndOccurrence()
+    {
+        return $this->endOccurrence;
     }
 
     /**

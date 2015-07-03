@@ -260,3 +260,7 @@ body.campaignchain-svg-foreign-object {
 .alert h4 {
     padding-top: 10px;
 }
+
+.form-inline .radio {
+    padding-right: 10px;
+}

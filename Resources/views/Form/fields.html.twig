@@ -11,61 +11,63 @@ file that was distributed with this source code.
 
 {% block choice_widget_collapsed %}
     {% spaceless %}
-        <script>
-            $('.select2').select2({ placeholder: "Select a State", maximumSelectionSize: 6 });
-            $(':checkbox').on( "click", function() {
-                $(this).parent().nextAll('select').select2("enable", this.checked );
-            });
-        </script>
-        {% set attr = attr|merge({ 'class': (attr.class|default('') ~ ' form-control')|trim }) %}
+        <div id="{{ id }}">
+            <script>
+                $('.select2').select2({ placeholder: "Select a State", maximumSelectionSize: 6 });
+                $(':checkbox').on( "click", function() {
+                    $(this).parent().nextAll('select').select2("enable", this.checked );
+                });
+            </script>
+            {% set attr = attr|merge({ 'class': (attr.class|default('') ~ ' form-control')|trim }) %}
 
-        <select class="form-control {{ id }}-select2" {{ block('widget_attributes') }}{% if multiple %} multiple="multiple"{% endif %}>
-            {% if empty_value is not none %}
-                <option></option>
-            {% endif %}
-            {% if preferred_choices|length > 0 %}
-                {% set options = preferred_choices %}
-                {{ block('choice_widget_options') }}
-                {% if choices|length > 0 and separator is not none %}
-                    <option disabled="disabled">{{ separator }}</option>
-                {% endif %}
-            {% endif %}
-            {% set options = choices %}
-            {{ block('choice_widget_options') }}
-        </select>
-        <script>
-            {% if attr.show_image is defined and attr.show_image == true %}
-                function format(optionnode) {
-                    if (!optionnode.id) return optionnode.text; // optgroup
-                    var originalOption = optionnode.element;
-
-                    return campaignchainTplMedium(
-                            $(originalOption).data('icon'),
-                            $(originalOption).data('context-icon'),
-                            optionnode.text
-                    );
-                }
-            {% endif %}
-            $('.{{ id }}-select2').select2({
+            <select class="form-control {{ id }}-select2" {{ block('widget_attributes') }}{% if multiple %} multiple="multiple"{% endif %}>
                 {% if empty_value is not none %}
-                    placeholder: "{{ empty_value|trans({}, translation_domain) }}", allowClear: true,
+                    <option></option>
                 {% endif %}
+                {% if preferred_choices|length > 0 %}
+                    {% set options = preferred_choices %}
+                    {{ block('choice_widget_options') }}
+                    {% if choices|length > 0 and separator is not none %}
+                        <option disabled="disabled">{{ separator }}</option>
+                    {% endif %}
+                {% endif %}
+                {% set options = choices %}
+                {{ block('choice_widget_options') }}
+            </select>
+            <script>
                 {% if attr.show_image is defined and attr.show_image == true %}
-                    formatResult: format,
-                    formatSelection: format,
-                    escapeMarkup: function(m) { return m; },
+                    function format(optionnode) {
+                        if (!optionnode.id) return optionnode.text; // optgroup
+                        var originalOption = optionnode.element;
+
+                        return campaignchainTplMedium(
+                                $(originalOption).data('icon'),
+                                $(originalOption).data('context-icon'),
+                                optionnode.text
+                        );
+                    }
                 {% endif %}
-                {% if attr.minimum_resulsts_for_search is defined and attr.minimum_resulsts_for_search is not empty %}
-                    {% set minimum_resulsts_for_search = attr.minimum_resulsts_for_search %}
-                {% else %}
-                    {% set minimum_resulsts_for_search = '5' %}
-                {% endif %}
-                minimumResultsForSearch : {{ minimum_resulsts_for_search }}
-            });
-            $(':checkbox').on( "click", function() {
-                $(this).parent().nextAll('select').select2("enable", this.checked );
-            });
-        </script>
+                $('.{{ id }}-select2').select2({
+                    {% if empty_value is not none %}
+                        placeholder: "{{ empty_value|trans({}, translation_domain) }}", allowClear: true,
+                    {% endif %}
+                    {% if attr.show_image is defined and attr.show_image == true %}
+                        formatResult: format,
+                        formatSelection: format,
+                        escapeMarkup: function(m) { return m; },
+                    {% endif %}
+                    {% if attr.minimum_results_for_search is defined and attr.minimum_results_for_search is not empty %}
+                        {% set minimum_results_for_search = attr.minimum_results_for_search %}
+                    {% else %}
+                        {% set minimum_results_for_search = '5' %}
+                    {% endif %}
+                    minimumResultsForSearch : {{ minimum_results_for_search }}
+                });
+                $(':checkbox').on( "click", function() {
+                    $(this).parent().nextAll('select').select2("enable", this.checked );
+                });
+            </script>
+        </div>
     {% endspaceless %}
 {% endblock choice_widget_collapsed %}
 
