@@ -157,6 +157,71 @@ class Action extends Meta
         return $this->interval;
     }
 
+    public function getIntervalHumanReadable()
+    {
+        if (strpos($this->interval,'days') !== false) {
+            $intervalParts = explode(' ',$this->interval);
+            $days = str_replace('+', '', $intervalParts[0]);
+            if($days == '1'){
+                return 'Every day';
+            } else {
+                return "Every ".$days." days";
+            }
+        } elseif (strpos($this->interval,'weeks') !== false) {
+            $intervalParts = explode(' ',$this->interval);
+            $weeks = str_replace('+', '', $intervalParts[2]);
+            $dayOfWeek = $intervalParts[1];
+            if($weeks == '1'){
+                return 'Every '.$dayOfWeek;
+            } else {
+                return $dayOfWeek.' every '.$weeks.' weeks';
+            }
+        } elseif (strpos($this->interval,'month') !== false) {
+            $intervalParts = explode(' ',$this->interval);
+
+            if (strpos($this->interval,'hours') !== false) {
+                // Day of month
+                $days = str_replace('+', '', $intervalParts[5])/24;
+                $months = str_replace('+', '', $intervalParts[7]);
+                if($days == '1'){
+                    if($months == '1'){
+                        return 'Day 1 of every month';
+                    } else {
+                        return 'Day 1 of a month every '.$months.' months';
+                    }
+                } else {
+                    if($months == '1'){
+                        return 'Day '.$days.' of every month';
+                    } else {
+                        return 'Day '.$days.' of a month every '.$months.' months';
+                    }
+                }
+
+                $dataMonthly['repeat_by'] = 'day_of_month';
+
+
+            } else {
+                // Day of week
+                $months = str_replace('+', '', $intervalParts[5]);
+                $occurrence = $intervalParts[0];
+                $dayOfWeek = $intervalParts[1];
+                if($months == '1'){
+                    return 'Every '.$occurrence.' '.$dayOfWeek.' of a month';
+                } else {
+                    return 'Every '.$occurrence.' '.$dayOfWeek.' every '.$months.' months';
+                }
+            }
+        } elseif (strpos($this->interval,'years') !== false) {
+            $intervalParts = explode(' ',$this->interval);
+            $years = str_replace('+', '', $intervalParts[0]);
+            if($years == '1'){
+                return 'Every year';
+            } else {
+                return "Every ".$years." years";
+            }
+        }
+    }
+
     /**
      * Set nextRun
      *

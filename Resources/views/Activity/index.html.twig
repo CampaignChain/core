@@ -46,7 +46,7 @@ file that was distributed with this source code.
                         <td>
                             {{ activity|campaignchain_tpl_trigger_hook_inline }}
                         </td>
-                        <td align="center">
+                        <td align="left">
                             {% if activity.status == "open" or activity.status == "paused" %}
                                 <a  class="btn btn-primary"
                                     href="{{ path('campaignchain_core_activity_edit',{'id':activity.id}) }}">

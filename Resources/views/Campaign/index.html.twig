@@ -34,7 +34,7 @@ file that was distributed with this source code.
                         <td>{{ campaign.name }}</td>
                         <td>{{ campaign.getCampaignModule().getDisplayName() }}</td>
                         <td>{{ campaign|campaignchain_tpl_trigger_hook_inline }}</td>
-                        <td align="center">
+                        <td align="left">
                             <a class="btn btn-primary"
                                href="{{ path('campaignchain_core_campaign_edit',{'id':campaign.id}) }}">
                                <span class="fa fa-pencil"></span>
