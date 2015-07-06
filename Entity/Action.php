@@ -44,6 +44,11 @@ class Action extends Meta
     protected $startDate;
 
     /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    protected $endDate;
+
+    /**
      * A string defining the interval range as a relative date format with a
      * value in the future. For example, if the report operation is supposed
      * to run every hour, the interval would be "1 hour".
@@ -59,24 +64,29 @@ class Action extends Meta
     protected $interval;
 
     /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    protected $intervalStartDate;
+
+    /**
      * The date when the Action will be run the next time. It will be
      * increased by the scheduler.
      *
      * @ORM\Column(type="datetime", nullable=true)
      */
-    protected $nextRun;
+    protected $intervalNextRun;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
-    protected $endDate;
+    protected $intervalEndDate;
 
     /**
      * The number of times an Action is supposed to be repeated.
      *
      * @ORM\Column(type="smallint", nullable=true)
      */
-    protected $endOccurrence;
+    protected $intervalEndOccurrence;
 
     /**
      * @ORM\Column(type="string", length=20)
@@ -132,6 +142,29 @@ class Action extends Meta
     public function getStartDate()
     {
         return $this->startDate;
+    }
+
+    /**
+     * Set intervalStartDate
+     *
+     * @param \DateTime $intervalStartDate
+     * @return Action
+     */
+    public function setIntervalStartDate($intervalStartDate)
+    {
+        $this->intervalStartDate = $intervalStartDate;
+
+        return $this;
+    }
+
+    /**
+     * Get intervalStartDate
+     *
+     * @return \DateTime
+     */
+    public function getIntervalStartDate()
+    {
+        return $this->intervalStartDate;
     }
 
     /**
@@ -223,26 +256,65 @@ class Action extends Meta
     }
 
     /**
-     * Set nextRun
+     * Set intervalNextRun
      *
-     * @param \DateTime $nextRun
+     * @param \DateTime $intervalNextRun
      * @return Action
      */
-    public function setNextRun($nextRun)
+    public function setIntervalNextRun($intervalNextRun)
     {
-        $this->nextRun = $nextRun;
+        $this->intervalNextRun = $intervalNextRun;
 
         return $this;
     }
 
     /**
-     * Get nextRun
+     * Get intervalNextRun
      *
      * @return \DateTime
      */
-    public function getNextRun()
+    public function getIntervalNextRun()
     {
-        return $this->nextRun;
+        return $this->intervalNextRun;
+    }
+
+    /**
+     * Set intervalEndDate
+     *
+     * @param \DateTime $intervalEndDate
+     * @return Action
+     */
+    public function setIntervalEndDate($intervalEndDate)
+    {
+        $this->intervalEndDate = $intervalEndDate;
+
+        return $this;
+    }
+
+    /**
+     * Get intervalEndDate
+     *
+     * @return \DateTime
+     */
+    public function getIntervalEndDate()
+    {
+        return $this->intervalEndDate;
+    }
+
+    /**
+     * @param mixed $intervalEndOccurrence
+     */
+    public function setIntervalEndOccurrence($intervalEndOccurrence)
+    {
+        $this->intervalEndOccurrence = $intervalEndOccurrence;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIntervalEndOccurrence()
+    {
+        return $this->intervalEndOccurrence;
     }
 
     /**
@@ -266,22 +338,6 @@ class Action extends Meta
     public function getEndDate()
     {
         return $this->endDate;
-    }
-
-    /**
-     * @param mixed $endOccurrence
-     */
-    public function setEndOccurrence($endOccurrence)
-    {
-        $this->endOccurrence = $endOccurrence;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getEndOccurrence()
-    {
-        return $this->endOccurrence;
     }
 
     /**
