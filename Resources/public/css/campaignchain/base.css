@@ -264,3 +264,11 @@ body.campaignchain-svg-foreign-object {
 .form-inline .radio {
     padding-right: 10px;
 }
+
+.campaignchain-navbar .btn {
+    height: 8px;
+    margin-top: 8px;
+    padding-bottom: 26px;
+    padding-top: 6px;
+}
+
