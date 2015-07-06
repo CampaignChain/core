@@ -1,5 +1,5 @@
 function campaignchainDependentSelect2(parent, child, route){
-    $parentSelect = $("#form_" + parent);
+    $parentSelect = $("select#form_" + parent);
     $childSelect = $("#form_" + child);
     $childLabel = $('label[for="form_' + child + '"]');
 
@@ -11,6 +11,7 @@ function campaignchainDependentSelect2(parent, child, route){
     $parentSelect.select2("val", "");
 
     $parentSelect.change(function(){
+        console.log($(this).val());
         if ($(this).val() != '') {
             var $route = Routing.generate(route, { id: $parentSelect.val() });
             $.getJSON( $route )
