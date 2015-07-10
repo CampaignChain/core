@@ -45,7 +45,8 @@ class SchedulerCommand extends ContainerAwareCommand
     /**
      * @var int Interval in minutes.
      */
-    protected $interval = 9600;
+    protected $interval = 5;
+
     /**
      * @var int Process timeout in seconds.
      */
@@ -84,6 +85,11 @@ class SchedulerCommand extends ContainerAwareCommand
 
         // Start capturing duration of scheduler.
         $stopwatchScheduler->start('scheduler');
+
+        // If in dev mode, use a long interval to make testing the scheduler easier.
+        if($this->getContainer()->getParameter('campaignchain_dev')){
+            $this->interval = 9600;
+        }
 
         $this->logger = $this->getContainer()->get('logger');
         $this->em = $this->getContainer()->get('doctrine.orm.entity_manager');
