@@ -19,7 +19,7 @@ use CampaignChain\CoreBundle\Entity\Location;
  * @author Sandro Groganz <sandro@campaignchain.com>
  * @package CampaignChain\CoreBundle\Job
  */
-interface CTAJobInterface
+interface JobCTAInterface
 {
     /*
      * @return Location

@@ -11,17 +11,15 @@
 namespace CampaignChain\CoreBundle\Controller;
 
 use CampaignChain\CoreBundle\Entity\Medium;
-use Guzzle\Common\FromConfigInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use CampaignChain\CoreBundle\Entity\Activity;
-use CampaignChain\CoreBundle\Entity\Operation;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Finder\Finder;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
+use CampaignChain\CoreBundle\Entity\Action;
 
 class ActivityController extends Controller
 {
@@ -48,7 +46,10 @@ class ActivityController extends Controller
                 'class' => 'CampaignChainCoreBundle:Campaign',
                 'query_builder' => function(EntityRepository $er) {
                         return $er->createQueryBuilder('campaign')
-                            //->where('campaign.endDate > :now')
+                            ->where('campaign.status != :statusClosed')
+                            ->andWhere('campaign.status != :statusBackgroundProcess')
+                            ->setParameter('statusClosed', Action::STATUS_CLOSED)
+                            ->setParameter('statusBackgroundProcess', Action::STATUS_BACKGROUND_PROCESS)
                             ->orderBy('campaign.startDate', 'ASC');
                             //->setParameter('now', new \DateTime('now'));
                     },

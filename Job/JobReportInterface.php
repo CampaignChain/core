@@ -18,7 +18,7 @@ namespace CampaignChain\CoreBundle\Job;
  * @author Sandro Groganz <sandro@campaignchain.com>
  * @package CampaignChain\CoreBundle\Job
  */
-interface JobReportInterface extends JobOperationInterface
+interface JobReportInterface extends JobActionInterface
 {
      /**
      * @param $action The object of an action (Operation, Activity or Milestone).

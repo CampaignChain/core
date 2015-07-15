@@ -13,7 +13,7 @@ namespace CampaignChain\CoreBundle\Command;
 use CampaignChain\CoreBundle\Entity\Action;
 use CampaignChain\CoreBundle\Entity\Scheduler;
 use CampaignChain\CoreBundle\Entity\Job;
-use CampaignChain\CoreBundle\Job\JobOperationInterface;
+use CampaignChain\CoreBundle\Job\JobActionInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -74,14 +74,14 @@ class JobCommand extends ContainerAwareCommand
                 $jobService = $this->getContainer()->get($job->getName());
 
                 // A Job service must implement the respective interface.
-                if($jobService instanceof JobOperationInterface){
+                if($jobService instanceof JobActionInterface){
                     try{
                         $status = $jobService->execute($job->getActionId());
                         switch($status){
-                            case JobOperationInterface::STATUS_OK:
+                            case JobActionInterface::STATUS_OK:
                                 $job->setStatus(JOB::STATUS_CLOSED);
                                 break;
-                            case JobOperationInterface::STATUS_ERROR:
+                            case JobActionInterface::STATUS_ERROR:
                                 $job->setStatus(JOB::STATUS_ERROR);
                                 break;
                         }
@@ -92,7 +92,7 @@ class JobCommand extends ContainerAwareCommand
                         // TODO: Notify owner of operation of error.
                     }
                 } else {
-                    $errorMsg = 'The job service "'.$job->getName().'" with the class "'.get_class($jobService).'" does not implement the interface CampaignChain\CoreBundle\Job\JobOperationInterface as required.';
+                    $errorMsg = 'The job service "'.$job->getName().'" with the class "'.get_class($jobService).'" does not implement the interface CampaignChain\CoreBundle\Job\JobActionInterface as required.';
 
                     $job->setStatus(JOB::STATUS_ERROR);
                     $job->setMessage($errorMsg);

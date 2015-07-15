@@ -32,6 +32,7 @@ class Action extends Meta
     const STATUS_PAUSED                 = 'paused';
     const STATUS_CLOSED                 = 'closed';
     const STATUS_INTERACTION_REQUIRED   = 'interaction required';
+    const STATUS_BACKGROUND_PROCESS     = 'background process';
 
     /**
      * @ORM\Column(type="string", length=100, nullable=true)
@@ -353,14 +354,16 @@ class Action extends Meta
             self::STATUS_PAUSED,
             self::STATUS_CLOSED,
             self::STATUS_INTERACTION_REQUIRED,
+            self::STATUS_BACKGROUND_PROCESS,
         ))) {
             throw new \InvalidArgumentException("Invalid status in ".get_class($this).".");
         }
 
         // If end date is in the past, status is automatically "closed" if status is not "paused".
         if(
-        ($status != self::STATUS_CLOSED && $status != self::STATUS_PAUSED && $this->endDate && $this->endDate < new \DateTime('now')) ||
-        ($status != self::STATUS_CLOSED && $status != self::STATUS_PAUSED && !$this->endDate && $this->startDate && $this->startDate < new \DateTime('now'))){
+        ($status != self::STATUS_BACKGROUND_PROCESS && $status != self::STATUS_CLOSED && $status != self::STATUS_PAUSED && $this->endDate && $this->endDate < new \DateTime('now'))
+        ||
+        ($status != self::STATUS_BACKGROUND_PROCESS && $status != self::STATUS_CLOSED && $status != self::STATUS_PAUSED && !$this->endDate && $this->startDate && $this->startDate < new \DateTime('now'))){
             // TODO: Warning that status is different from what has been provided.
             $status = self::STATUS_CLOSED;
         }

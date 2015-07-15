@@ -30,12 +30,6 @@ use Symfony\Component\Process\Process;
  * Configuration:
  * Create a cron job that runs this command every minute.
  *
- * Order of execution:
- * 1. Operations
- * 2. Activities
- * 3. Milestones
- * 4. Campaigns
- *
  * @package CampaignChain\CoreBundle\Command
  * @author Sandro Groganz <sandro@campaignchain.com>
  */
@@ -55,13 +49,20 @@ class SchedulerCommand extends ContainerAwareCommand
     /**
      * The order of actions to be executed.
      *
+     * Campaigns first, because they might create Milestones, Activities and
+     * Operations that have to be executed immediately after creation.
+     *
+     * Next are milestones.
+     *
+     * Then come Activities, which can create Operations.
+     *
      * @var array
      */
     protected $actionsOrder = array(
-        0 => Action::TYPE_OPERATION,
-        1 => Action::TYPE_ACTIVITY,
-        2 => Action::TYPE_MILESTONE,
-        3 => Action::TYPE_CAMPAIGN
+        3 => Action::TYPE_OPERATION,
+        2 => Action::TYPE_ACTIVITY,
+        1 => Action::TYPE_MILESTONE,
+        0 => Action::TYPE_CAMPAIGN
     );
 
     protected $logger;
@@ -112,10 +113,10 @@ class SchedulerCommand extends ContainerAwareCommand
             $this->output->writeln('Period ends: '.$this->scheduler->getPeriodEnd()->format('Y-m-d H:i:s T'));
 
             foreach($this->actionsOrder as $actionType){
-                // Find all Operations to be processed.
+                // Find all Actions to be processed.
                 $actions = $this->getActions($actionType, $this->scheduler->getPeriodStart(), $this->scheduler->getPeriodEnd());
 
-                // Store all the operation-related info in the Job entity.
+                // Store all the Action-related info in the Job entity.
                 if($actions){
                     $table = new Table($this->output);
                     $tableHeaders = array('ID', 'Start Date', 'End Date', 'Name', 'Status');
@@ -132,53 +133,51 @@ class SchedulerCommand extends ContainerAwareCommand
                     $outputTableRows = array();
 
                     foreach($actions as $action){
-                        // Check whether this operation is executable per its trigger hook.
-                        if($this->isExecutable($action)){
-                            // Has a job been defined for the module?
-                            $actionServices = $action->getModule()->getServices();
-                            if(!is_array($actionServices) || !isset($actionServices['job'])){
-                                $message =
-                                    'No job service defined for module "'
-                                    .$action->getModule()->getIdentifier()
-                                    .'" in bundle "'
-                                    .$action->getModule()->getBundle()->getName().'".';
-                                $this->output->writeln($message);
-                                $this->logger->info($message);
-                            } else {
-                                // Queue new Job.
-                                $this->queueJob(
-                                    $action->getType(),
-                                    $action->getId(),
-                                    $action->getModule()->getServices()['job']
-                                );
+                        // Has a scheduler job been defined in the Action's module?
+                        $actionServices = $action->getModule()->getServices();
+                        if(!is_array($actionServices) || !isset($actionServices['job'])){
+                            $message =
+                                'No job service defined for module "'
+                                .$action->getModule()->getIdentifier()
+                                .'" in bundle "'
+                                .$action->getModule()->getBundle()->getName().'".';
+                            $this->output->writeln($message);
+                            $this->logger->info($message);
+                        } else {
+                            // Queue new Job.
+                            $this->queueJob(
+                                $action->getType(),
+                                $action->getId(),
+                                $action->getModule()->getServices()['job'],
+                                'action'
+                            );
 
-                                // Highlight the date that is within the execution period.
-                                $startDate = $action->getStartDate()->format('Y-m-d H:i:s');
-                                $endDate = null;
+                            // Highlight the date that is within the execution period.
+                            $startDate = $action->getStartDate()->format('Y-m-d H:i:s');
+                            $endDate = null;
 
-                                if($action->getStartDate() >= $this->scheduler->getPeriodStart()){
-                                    $startDate = '<options=bold>'.$startDate.'</options=bold>';
-                                } elseif($action->getEndDate()) {
-                                    $endDate = $action->getEndDate()->format('Y-m-d H:i:s');
-                                    $endDate = '<options=bold>'.$endDate.'</options=bold>';
-                                }
-
-                                $tableRows = array(
-                                    $action->getId(), $startDate, $endDate, $action->getName(), $action->getStatus()
-                                );
-                                if($actionType == Action::TYPE_ACTIVITY || $actionType == Action::TYPE_MILESTONE){
-                                    $tableRows[] = $action->getCampaign()->getId();
-                                    $tableRows[] = $action->getCampaign()->getStatus();
-                                }
-                                if($actionType == Action::TYPE_OPERATION){
-                                    $tableRows[] = $action->getActivity()->getCampaign()->getId();
-                                    $tableRows[] = $action->getActivity()->getCampaign()->getStatus();
-                                    $tableRows[] = $action->getActivity()->getId();
-                                    $tableRows[] = $action->getActivity()->getStatus();
-                                }
-
-                                $outputTableRows[] = $tableRows;
+                            if($action->getStartDate() >= $this->scheduler->getPeriodStart()){
+                                $startDate = '<options=bold>'.$startDate.'</options=bold>';
+                            } elseif($action->getEndDate()) {
+                                $endDate = $action->getEndDate()->format('Y-m-d H:i:s');
+                                $endDate = '<options=bold>'.$endDate.'</options=bold>';
                             }
+
+                            $tableRows = array(
+                                $action->getId(), $startDate, $endDate, $action->getName(), $action->getStatus()
+                            );
+                            if($actionType == Action::TYPE_ACTIVITY || $actionType == Action::TYPE_MILESTONE){
+                                $tableRows[] = $action->getCampaign()->getId();
+                                $tableRows[] = $action->getCampaign()->getStatus();
+                            }
+                            if($actionType == Action::TYPE_OPERATION){
+                                $tableRows[] = $action->getActivity()->getCampaign()->getId();
+                                $tableRows[] = $action->getActivity()->getCampaign()->getStatus();
+                                $tableRows[] = $action->getActivity()->getId();
+                                $tableRows[] = $action->getActivity()->getStatus();
+                            }
+
+                            $outputTableRows[] = $tableRows;
                         }
                     }
 
@@ -200,7 +199,7 @@ class SchedulerCommand extends ContainerAwareCommand
              * Execute the scheduled report jobs.
              */
 
-            // TODO: Make this work with milestones and activities as well.
+            // TODO: Make this work with Milestones and Activities as well.
             $qb = $this->em->createQueryBuilder();
             $qb->select('sr')
                 ->from('CampaignChain\CoreBundle\Entity\SchedulerReportOperation', 'sr')
@@ -481,21 +480,33 @@ class SchedulerCommand extends ContainerAwareCommand
                     ->from('CampaignChain\CoreBundle\Entity\Activity', 'a')
                     ->from('CampaignChain\CoreBundle\Entity\Campaign', 'c')
                     // We only want operations with status "open":
-                    ->where('o.status = :status')
+                    ->where('o.status != :status')
                     // We don't want operations to already be processed by another scheduler, that's why we check all Job entities:
                     ->andWhere(
                         "NOT EXISTS (SELECT j.id FROM CampaignChain\CoreBundle\Entity\Job j WHERE j.status = :jobStatus AND o.id = j.actionId AND j.actionType = :actionType)"
                     )
                     // The parent activity of the operation should also have the status "open":
                     ->andWhere('o.activity = a')
-                    ->andWhere('a.status = :status')
+                    ->andWhere('a.status != :status')
                     // The campaign within which the operation and parent activity reside must also have the status "open":
                     ->andWhere('a.campaign = c')
-                    ->andWhere('c.status = :status')
+                    ->andWhere('c.status != :status')
                     // Get all operations where the start date is within the execution period
                     // or get all operations where the start date is outside the period, but the end date - if not NULL - is within the period.
-                    ->andWhere('(o.startDate >= :periodStart AND o.startDate <= :periodEnd) OR (o.endDate IS NOT NULL AND o.startDate <= :periodStart AND o.endDate >= :periodStart AND o.endDate <= :periodEnd)')
-                    ->setParameter('status', 'open')
+                    ->andWhere(
+                        '(o.startDate IS NOT NULL AND o.startDate >= :periodStart AND o.startDate <= :periodEnd)'.
+                        ' OR '.
+                        '(o.endDate IS NOT NULL AND o.startDate <= :periodStart AND o.endDate >= :periodStart AND o.endDate <= :periodEnd)'.
+                        ' OR '.
+                        '('.
+                            '(o.intervalStartDate IS NULL OR o.intervalStartDate <= :periodEnd)'.
+                            ' AND '.
+                            '(o.intervalEndDate IS NULL OR o.intervalEndDate <= :periodEnd)'.
+                            ' AND '.
+                            'o.intervalNextRun IS NOT NULL AND o.intervalNextRun >= :periodStart AND o.intervalNextRun <= :periodEnd'.
+                        ')'
+                    )
+                    ->setParameter('status', ACTION::STATUS_CLOSED)
                     ->setParameter('jobStatus', JOB::STATUS_OPEN)
                     ->setParameter('actionType', $actionType)
                     ->setParameter('periodEnd', $periodEnd->format('Y-m-d H:i:s'))
@@ -506,18 +517,30 @@ class SchedulerCommand extends ContainerAwareCommand
                     ->from('CampaignChain\CoreBundle\Entity\Activity', 'a')
                     ->from('CampaignChain\CoreBundle\Entity\Campaign', 'c')
                     // We only want activities with status "open":
-                    ->where('a.status = :status')
+                    ->where('a.status != :status')
                     // We don't want activities to already be processed by another scheduler, that's why we check all Job entities:
                     ->andWhere(
                         "NOT EXISTS (SELECT j.id FROM CampaignChain\CoreBundle\Entity\Job j WHERE j.status = :jobStatus AND a.id = j.actionId AND j.actionType = :actionType)"
                     )
                     // The campaign within which the activity resides must also have the status "open":
                     ->andWhere('a.campaign = c')
-                    ->andWhere('c.status = :status')
+                    ->andWhere('c.status != :status')
                     // Get all activities where the start date is within the execution period
                     // or get all activities where the start date is outside the period, but the end date - if not NULL - is within the period.
-                    ->andWhere('(a.startDate >= :periodStart AND a.startDate <= :periodEnd) OR (a.endDate IS NOT NULL AND a.startDate <= :periodStart AND a.endDate >= :periodStart AND a.endDate <= :periodEnd)')
-                    ->setParameter('status', 'open')
+                    ->andWhere(
+                        '(a.startDate IS NOT NULL AND a.startDate >= :periodStart AND a.startDate <= :periodEnd)'.
+                        ' OR '.
+                        '(a.endDate IS NOT NULL AND a.startDate <= :periodStart AND a.endDate >= :periodStart AND a.endDate <= :periodEnd)'.
+                        ' OR '.
+                        '('.
+                            '(a.intervalStartDate IS NULL OR a.intervalStartDate <= :periodEnd)'.
+                            ' AND '.
+                            '(a.intervalEndDate IS NULL OR a.intervalEndDate <= :periodEnd)'.
+                            ' AND '.
+                            'a.intervalNextRun IS NOT NULL AND a.intervalNextRun >= :periodStart AND a.intervalNextRun <= :periodEnd'.
+                        ')'
+                    )
+                    ->setParameter('status', ACTION::STATUS_CLOSED)
                     ->setParameter('jobStatus', JOB::STATUS_OPEN)
                     ->setParameter('actionType', $actionType)
                     ->setParameter('periodEnd', $periodEnd->format('Y-m-d H:i:s'))
@@ -528,18 +551,30 @@ class SchedulerCommand extends ContainerAwareCommand
                     ->from('CampaignChain\CoreBundle\Entity\Milestone', 'm')
                     ->from('CampaignChain\CoreBundle\Entity\Campaign', 'c')
                     // We only want milestones with status "open":
-                    ->where('m.status = :status')
+                    ->where('m.status != :status')
                     // We don't want milestones to already be processed by another scheduler, that's why we check all Job entities:
                     ->andWhere(
                         "NOT EXISTS (SELECT j.id FROM CampaignChain\CoreBundle\Entity\Job j WHERE j.status = :jobStatus AND m.id = j.actionId AND j.actionType = :actionType)"
                     )
                     // The campaign within which the milestone resides must also have the status "open":
                     ->andWhere('m.campaign = c')
-                    ->andWhere('c.status = :status')
+                    ->andWhere('c.status != :status')
                     // Get all milestones where the start date is within the execution period
                     // or get all milestones where the start date is outside the period, but the end date - if not NULL - is within the period.
-                    ->andWhere('(m.startDate >= :periodStart AND m.startDate <= :periodEnd) OR (m.endDate IS NOT NULL AND m.startDate <= :periodStart AND m.endDate >= :periodStart AND m.endDate <= :periodEnd)')
-                    ->setParameter('status', 'open')
+                    ->andWhere(
+                        '(m.startDate IS NOT NULL AND m.startDate >= :periodStart AND m.startDate <= :periodEnd)'.
+                        ' OR '.
+                        '(m.endDate IS NOT NULL AND m.startDate <= :periodStart AND m.endDate >= :periodStart AND m.endDate <= :periodEnd)'.
+                        ' OR '.
+                        '('.
+                            '(m.intervalStartDate IS NULL OR m.intervalStartDate <= :periodEnd)'.
+                            ' AND '.
+                            '(m.intervalEndDate IS NULL OR m.intervalEndDate <= :periodEnd)'.
+                            ' AND '.
+                            'm.intervalNextRun IS NOT NULL AND m.intervalNextRun >= :periodStart AND m.intervalNextRun <= :periodEnd'.
+                        ')'
+                    )
+                    ->setParameter('status', ACTION::STATUS_CLOSED)
                     ->setParameter('jobStatus', JOB::STATUS_OPEN)
                     ->setParameter('actionType', $actionType)
                     ->setParameter('periodEnd', $periodEnd->format('Y-m-d H:i:s'))
@@ -549,15 +584,27 @@ class SchedulerCommand extends ContainerAwareCommand
                 $qb->select('c')
                     ->from('CampaignChain\CoreBundle\Entity\Campaign', 'c')
                     // We only want campaigns with status "open":
-                    ->where('c.status = :status')
+                    ->where('c.status != :status')
                     // We don't want campaigns to already be processed by another scheduler, that's why we check all Job entities:
                     ->andWhere(
                         "NOT EXISTS (SELECT j.id FROM CampaignChain\CoreBundle\Entity\Job j WHERE j.status = :jobStatus AND c.id = j.actionId AND j.actionType = :actionType)"
                     )
                     // Get all campaigns where the start date is within the execution period
                     // or get all campaigns where the start date is outside the period, but the end date - if not NULL - is within the period.
-                    ->andWhere('(c.startDate >= :periodStart AND c.startDate <= :periodEnd) OR (c.endDate IS NOT NULL AND c.startDate <= :periodStart AND c.endDate >= :periodStart AND c.endDate <= :periodEnd)')
-                    ->setParameter('status', 'open')
+                    ->andWhere(
+                        '(c.startDate IS NOT NULL AND c.startDate >= :periodStart AND c.startDate <= :periodEnd)'.
+                        ' OR '.
+                        '(c.endDate IS NOT NULL AND c.startDate <= :periodStart AND c.endDate >= :periodStart AND c.endDate <= :periodEnd)'.
+                        ' OR '.
+                        '('.
+                            '(c.intervalStartDate IS NULL OR c.intervalStartDate <= :periodEnd)'.
+                            ' AND '.
+                            '(c.intervalEndDate IS NULL OR c.intervalEndDate <= :periodEnd)'.
+                            ' AND '.
+                            'c.intervalNextRun IS NOT NULL AND c.intervalNextRun >= :periodStart AND c.intervalNextRun <= :periodEnd'.
+                        ')'
+                    )
+                    ->setParameter('status', ACTION::STATUS_CLOSED)
                     ->setParameter('jobStatus', JOB::STATUS_OPEN)
                     ->setParameter('actionType', $actionType)
                     ->setParameter('periodEnd', $periodEnd->format('Y-m-d H:i:s'))
@@ -605,11 +652,6 @@ class SchedulerCommand extends ContainerAwareCommand
         }
     }
 
-    protected function isExecutable($action){
-        $hookServiceName = $action->getTriggerHook()->getServices()['entity'];
-        $hookService = $this->getContainer()->get($hookServiceName);
-        return $hookService->isExecutable($action);
-    }
 
     protected function queueReportJob($scheduledReport)
     {

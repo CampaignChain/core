@@ -19,16 +19,6 @@ namespace CampaignChain\CoreBundle\EntityService;
 interface HookServiceTriggerInterface extends HookServiceDefaultInterface
 {
     /**
-     * This method is being called by the scheduler to check whether
-     * an entity's trigger hook allows the scheduler to execute
-     * the entity's Job.
-     *
-     * @param $entity
-     * @return bool
-     */
-    public function isExecutable($entity);
-
-    /**
      * @return string The hook's start date field attribute name as specified in the respective form type.
      */
     public function getStartDateIdentifier();

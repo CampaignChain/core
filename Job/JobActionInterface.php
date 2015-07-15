@@ -18,7 +18,7 @@ namespace CampaignChain\CoreBundle\Job;
  * @author Sandro Groganz <sandro@campaignchain.com>
  * @package CampaignChain\CoreBundle\Job
  */
-interface JobOperationInterface
+interface JobActionInterface
 {
     const STATUS_OK = 'ok';
     const STATUS_WARNING = 'warning';

@@ -20,6 +20,7 @@ use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 use Doctrine\ORM\EntityRepository;
+use CampaignChain\CoreBundle\Entity\Action;
 
 class CampaignController extends Controller
 {
@@ -30,6 +31,8 @@ class CampaignController extends Controller
             ->getRepository('CampaignChainCoreBundle:Campaign');
 
         $query = $repository->createQueryBuilder('campaign')
+            ->where('campaign.status != :statusBackgroundProcess')
+            ->setParameter('statusBackgroundProcess', Action::STATUS_BACKGROUND_PROCESS)
             ->orderBy('campaign.startDate', 'DESC')
             ->getQuery();
 
