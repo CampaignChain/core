@@ -12,7 +12,7 @@ namespace CampaignChain\CoreBundle\EntityService;
 
 use CampaignChain\CoreBundle\Entity\Action;
 
-interface CampaignModuleServiceInterface
+interface CampaignHookServiceInterface
 {
     public function processAction(Action $action);
 }

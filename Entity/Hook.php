@@ -18,6 +18,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Hook
 {
+    const MODE_DEFAULT  = 'default';
+    const MODE_MOVE     = 'move';
+
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id

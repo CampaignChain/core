@@ -10,6 +10,7 @@
 
 namespace CampaignChain\CoreBundle\EntityService;
 
+use CampaignChain\CoreBundle\Entity\Hook;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use CampaignChain\CoreBundle\Entity\Action;
@@ -88,7 +89,7 @@ class MilestoneService
 
     public function moveMilestone(Milestone $milestone, $interval){
         $hookService = $this->container->get($milestone->getTriggerHook()->getServices()['entity']);
-        $hook = $hookService->getHook($milestone);
+        $hook = $hookService->getHook($milestone, Hook::MODE_MOVE);
         if($hook->getStartDate() !== null){
             $hook->setStartDate(new \DateTime($hook->getStartDate()->add($interval)->format(\DateTime::ISO8601)));
         }

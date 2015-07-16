@@ -10,6 +10,7 @@
 
 namespace CampaignChain\CoreBundle\EntityService;
 
+use CampaignChain\CoreBundle\Entity\Hook;
 use CampaignChain\CoreBundle\Twig\CampaignChainCoreExtension;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -101,7 +102,7 @@ class ActivityService
 
     public function moveActivity(Activity $activity, $interval){
         $hookService = $this->container->get($activity->getTriggerHook()->getServices()['entity']);
-        $hook = $hookService->getHook($activity);
+        $hook = $hookService->getHook($activity, Hook::MODE_MOVE);
         if($hook->getStartDate() !== null){
             $hook->setStartDate(new \DateTime($hook->getStartDate()->add($interval)->format(\DateTime::ISO8601)));
         }

@@ -10,6 +10,7 @@
 
 namespace CampaignChain\CoreBundle\EntityService;
 
+use CampaignChain\CoreBundle\Entity\Hook;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -17,9 +18,6 @@ use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use CampaignChain\CoreBundle\Entity\Action;
 use CampaignChain\CoreBundle\Entity\Campaign;
-use DeepCopy\DeepCopy;
-use DeepCopy\Filter\Doctrine\DoctrineEmptyCollectionFilter;
-use DeepCopy\Matcher\PropertyMatcher;
 
 class CampaignService
 {
@@ -122,7 +120,7 @@ class CampaignService
             $interval = $campaign->getStartDate()->diff($newStartDate);
 
             $hookService = $this->container->get($campaign->getTriggerHook()->getServices()['entity']);
-            $hook = $hookService->getHook($campaign);
+            $hook = $hookService->getHook($campaign, Hook::MODE_MOVE);
             if($hook->getStartDate() !== null){
                 $hook->setStartDate(new \DateTime($hook->getStartDate()->add($interval)->format(\DateTime::ISO8601)));
             }
@@ -162,7 +160,6 @@ class CampaignService
                 }
             }
 
-            //$this->em->persist($campaign);
             $this->em->flush();
 
             $this->em->getConnection()->commit();
