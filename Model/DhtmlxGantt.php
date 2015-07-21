@@ -226,16 +226,15 @@ class DhtmlxGantt
                 $ganttTasks['links'] = $ganttActivityLinks;
             }
         } else {
-            $docUrl = $this->container->get('templating.helper.assets')
-                ->getUrl(
-                    'bundles/campaignchaindochtml/user/get_started.html#create-a-campaign',
-                    null
-                );
-
             $this->container->get('session')->getFlashBag()->add(
                 'warning',
-                'No campaigns defined yet. To learn how to create one, please <a href="#" onclick="popupwindow(\''.$docUrl.'\',\'\',900,600)">consult the documentation</a>.'
+                'No campaigns available yet. Please create one.'
             );
+
+            header('Location: '.
+                $this->container->get('router')->generate('campaignchain_core_campaign_new')
+            );
+            exit;
         }
 
         $encoders = array(new JsonEncoder());

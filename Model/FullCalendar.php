@@ -61,18 +61,15 @@ class FullCalendar
         $campaigns = $query->getResult();
 
         if(!count($campaigns)) {
-            $docUrl = $this->container->get('templating.helper.assets')
-                ->getUrl(
-                    'bundles/campaignchaindochtml/user/get_started.html#create-a-campaign',
-                    null
-                );
-
             $this->container->get('session')->getFlashBag()->add(
                 'warning',
-                'No campaigns defined yet. To learn how to create one, please <a href="#" onclick="popupwindow(\''.$docUrl.'\',\'\',900,600)">consult the documentation</a>.'
+                'No campaigns available yet. Please create one.'
             );
 
-            return false;
+            header('Location: '.
+                $this->container->get('router')->generate('campaignchain_core_campaign_new')
+            );
+            exit;
         }
 
         $datetimeUtil = $this->container->get('campaignchain.core.util.datetime');

@@ -286,4 +286,14 @@ class System extends Meta
     {
         return $this->modules;
     }
+
+    public function getDocsURL()
+    {
+        if($this->version == 'dev-master'){
+            $docVersion = 'latest';
+        } else {
+            $docVersion = $this->version;
+        }
+        return 'http://campaignchain-docs.readthedocs.org/en/'.$docVersion;
+    }
 }
