@@ -7,25 +7,28 @@ For the full copyright and license information, please view the LICENSE
 file that was distributed with this source code.
 #}
 
-<h3>{{ settings.title }}</h3>
-<ul class="list-group">
-{% for activity in activities %}
-    <li class="list-group-item">
-        {{ activity.startDate|campaignchain_remaining_time_badge|raw }}
-        <h5 class="list-group-item-heading">
-            {{ activity|campaignchain_tpl_teaser }}
-        </h5>
-        <p class="list-group-item-text">
-            <i class="fa fa-clock-o fa-fw"></i> In {{ activity.startDate|campaignchain_remaining_time|raw }}
-        </p>
-        <p class="list-group-item-text">
-            <i class="fa fa-bullhorn fa-fw"></i>
-            <a href="{{ path('campaignchain_core_campaign_edit',{'id':activity.getCampaign().id}) }}">{{ activity.getCampaign().getName() }}</a>
-        </p>
-    </li>
-{% else %}
-    <li class="list-group-item">
-        <h5 class="list-group-item-heading">No activities.</h5>
-    </li>
-{% endfor %}
-</ul>
+{% set campaign_tpl_options = {'size': '16'} %}
+
+<div id="campaignchain-block">
+    <h3>{{ settings.title }}</h3>
+    <ul class="list-group">
+        {% for activity in activities %}
+            <li class="list-group-item">
+                {{ activity.startDate|campaignchain_remaining_time_badge|raw }}
+                <h5 class="list-group-item-heading">
+                    {{ activity|campaignchain_tpl_teaser }}
+                </h5>
+                <p class="list-group-item-text">
+                    <i class="fa fa-clock-o fa-fw"></i> In {{ activity.startDate|campaignchain_remaining_time|raw }}
+                </p>
+                <p class="list-group-item-text">
+                    {{ activity.getCampaign()|campaignchain_tpl_teaser(campaign_tpl_options) }}
+                </p>
+            </li>
+        {% else %}
+            <li class="list-group-item">
+                <h5 class="list-group-item-heading">No activities.</h5>
+            </li>
+        {% endfor %}
+    </ul>
+</div>

@@ -10,9 +10,30 @@ file that was distributed with this source code.
 {% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
 
 {% block body %}
+    <style>
+        .equal, .equal > div[class*='col-'] {
+            display: -webkit-box;
+            display: -moz-box;
+            display: -ms-flexbox;
+            display: -webkit-flex;
+            display: flex;
+            flex:1 1 auto;
+        }
+
+        .panel {
+            display: flex;
+            flex-direction:column;
+            align-content:stretch;
+        }
+
+        .panel-body {
+            display: flex;
+            flex-grow:1;
+        }
+    </style>
     {% for campaign_module in campaign_modules %}
         {% if loop.first or loop.index is divisible by(4) %}
-            <div class="row">
+            <div class="row equal">
         {% endif %}
         <div class="col-md-4">
             <div class="panel panel-default">
@@ -20,7 +41,7 @@ file that was distributed with this source code.
                 <div class="panel-body">
                     {{ campaign_module.getDescription() }}
                 </div>
-                <div class="panel-footer">
+                <div class="panel-footer pull-down">
                     <a href="{{ path(campaign_module.getRoutes().plan) }}" class="btn btn-primary pull-right btn-sm" role="button" data-toggle="tooltip" data-placement="top" data-original-title="Start planning"><i class="fa fa-arrow-right"></i></a>
                     <div class="clearfix"></div>
                 </div>

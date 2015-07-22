@@ -21,7 +21,6 @@ file that was distributed with this source code.
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Type</th>
                     <th>Execution</th>
                     <th></th>
                 </tr>
@@ -31,8 +30,7 @@ file that was distributed with this source code.
                     <tr class="
                             {% if campaign.status == "paused" %}text-muted {% endif %}
                             ">
-                        <td>{{ campaign.name }}</td>
-                        <td>{{ campaign.getCampaignModule().getDisplayName() }}</td>
+                        <td>{{ campaign|campaignchain_tpl_teaser }}</td>
                         <td>{{ campaign|campaignchain_tpl_trigger_hook_inline }}</td>
                         <td align="left">
                             <a class="btn btn-primary"

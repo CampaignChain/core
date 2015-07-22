@@ -20,13 +20,6 @@ class CampaignChainCoreExtension extends \Twig_Extension
     protected $container;
     protected $datetime;
 
-    protected $teaserOptions = array(
-        'only_icon' => false,
-        'activity_name' => 'activity',
-        'show_trigger' => false,
-        'truncate_middle' => 0,
-    );
-
     public function __construct(EntityManager $em, ContainerInterface $container)
     {
         $this->em = $em;
@@ -128,23 +121,25 @@ class CampaignChainCoreExtension extends \Twig_Extension
         );
     }
 
-    public function bundleName2IconFileName($bundleName, $channelIdentifier, $color = null)
+    public function bundleName2IconFileName($bundleName, $channelIdentifier)
     {
         $bundleNameParts    = explode('/', $bundleName);
         $bundleVendor       = $bundleNameParts[0];
 
-        $colorString = '';
-        if($color != null){
-            $colorString = '_'.$color;
-        }
-
-        return str_replace($bundleVendor.'-', '', $channelIdentifier).$colorString.'.png';
+        return str_replace($bundleVendor.'-', '', $channelIdentifier).'.png';
     }
 
     public function tplTeaser($object, $options = array())
     {
+        $teaserOptions = array(
+            'only_icon' => false,
+            'activity_name' => 'activity',
+            'show_trigger' => false,
+            'truncate_middle' => 0,
+        );
+
         if(is_array($options) && count($options)){
-            $this->teaserOptions = array_merge($this->teaserOptions, $options);
+            $teaserOptions = array_merge($teaserOptions, $options);
         }
 
         $class = get_class($object);
@@ -154,7 +149,8 @@ class CampaignChainCoreExtension extends \Twig_Extension
             $tplVars['icon_path'] = $this->mediumIcon($object);
             $tplVars['context_icon_path'] = $this->mediumContext($object);
             if(!$tplVars['icon_path']){
-                $tplVars['icon_path'] = $this->mediumContext($object, '32');
+                $tplVars['icon_size'] = 32;
+                $tplVars['icon_path'] = $this->mediumContext($object, $tplVars['icon_size']);
                 $tplVars['context_icon_path'] = null;
             }
             $tplVars['name'] = $object->getName();
@@ -167,15 +163,16 @@ class CampaignChainCoreExtension extends \Twig_Extension
             $tplVars['icon_path'] = $this->mediumIcon($object->getLocation());
             $tplVars['context_icon_path'] = $this->mediumContext($object->getLocation());
             if(!$tplVars['icon_path']){
-                $tplVars['icon_path'] = $this->mediumContext($object->getLocation(), '32');
+                $tplVars['icon_size'] = 32;
+                $tplVars['icon_path'] = $this->mediumContext($object->getLocation(), $tplVars['icon_size']);
                 $tplVars['context_icon_path'] = null;
             }
-            if($this->teaserOptions['activity_name'] == 'activity'){
+            if($teaserOptions['activity_name'] == 'activity'){
                 $tplVars['name'] = $object->getName();
             } else {
                 $tplVars['name'] = $object->getLocation()->getName();
             }
-            if($this->teaserOptions['show_trigger'] == true){
+            if($teaserOptions['show_trigger'] == true){
                 $tplVars['trigger'] = $this->tplTriggerHookInline($object);
             }
         } elseif(strpos($class, 'CoreBundle\Entity\CampaignModule') !== false){
@@ -184,20 +181,37 @@ class CampaignChainCoreExtension extends \Twig_Extension
                 array(),
                 true
             );
-            if(!isset($options['color'])){
-                $options['color'] = null;
-            }
+
             if(!isset($options['size'])){
-                $options['size'] = 32;
+                $tplVars['icon_size'] = 32;
+            } else {
+                $tplVars['icon_size'] = $options['size'];
             }
             $tplVars['icon_path'] = $object->getBundle()->getWebAssetsPath().
-                '/images/icons/'.$options['size'].'x'.$options['size'].'/'.$this->bundleName2IconFileName(
+                '/images/icons/'.$tplVars['icon_size'].'x'.$tplVars['icon_size'].'/'.$this->bundleName2IconFileName(
                     $object->getBundle()->getName(),
-                    $object->getIdentifier(),
-                    $options['color']
+                    $object->getIdentifier()
                 );
             $tplVars['context_icon_path'] = null;
             $tplVars['name'] = $object->getDisplayName();
+        } elseif(strpos($class, 'CoreBundle\Entity\Campaign') !== false){
+            $tplVars['url'] = $this->container->get('router')->generate(
+                'campaignchain_core_campaign_edit',
+                array('id' => $object->getId()),
+                true
+            );
+            if(!isset($options['size'])){
+                $tplVars['icon_size'] = 32;
+            } else {
+                $tplVars['icon_size'] = $options['size'];
+            }
+            $tplVars['icon_path'] = $object->getCampaignModule()->getBundle()->getWebAssetsPath().
+                '/images/icons/'.$tplVars['icon_size'].'x'.$tplVars['icon_size'].'/'.$this->bundleName2IconFileName(
+                    $object->getCampaignModule()->getBundle()->getName(),
+                    $object->getCampaignModule()->getIdentifier()
+                );
+            $tplVars['context_icon_path'] = null;
+            $tplVars['name'] = $object->getName();
         } else {
             throw new \Exception(
                 'Value must either be instance of CampaignChain\CoreBundle\Entity\Activity, '.
@@ -206,13 +220,17 @@ class CampaignChainCoreExtension extends \Twig_Extension
             );
         }
 
-        if($this->teaserOptions['truncate_middle'] > 5){
+        if($teaserOptions['truncate_middle'] > 5){
             $tplVars['name'] = ParserUtil::truncateMiddle(
-                $tplVars['name'], $this->teaserOptions['truncate_middle']
+                $tplVars['name'], $teaserOptions['truncate_middle']
             );
         }
 
-        $tplVars['options'] = $this->teaserOptions;
+        $tplVars['options'] = $teaserOptions;
+
+        if(!isset($tplVars['icon_size'])){
+            $tplVars['icon_size'] = 32;
+        }
 
         return $this->container->get('templating')->render(
             'CampaignChainCoreBundle:Base:teaser_widget.html.twig',

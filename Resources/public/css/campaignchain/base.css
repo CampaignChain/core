@@ -201,11 +201,15 @@ iframe {
 .select2-container .icon,
 .select2-result .icon,
 .campaignchain-teaser .icon {
-    height: 32px;
-    width: 32px;
     margin-top: -4px;
     padding-top: 2px;
     padding-bottom: 2px;
+}
+
+.select2-container .icon,
+.select2-result .icon {
+    height: 32px;
+    width: 32px;
 }
 
 .select2-container .context-icon,
@@ -252,6 +256,11 @@ body.campaignchain-svg-foreign-object {
     float:left;
 }
 
+.campaignchain-sidebar-icon .icon {
+    width: 16px;
+    height: 16px;
+}
+
 #campaignchain-milestone-sidebar .campaignchain-sidebar-data,
 #campaignchain-activity-sidebar .campaignchain-sidebar-data {
     padding-left: 20px;
@@ -271,4 +280,3 @@ body.campaignchain-svg-foreign-object {
     padding-bottom: 26px;
     padding-top: 6px;
 }
-
