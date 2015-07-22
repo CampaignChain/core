@@ -150,8 +150,6 @@ class ActivityService
         $twigExt = new CampaignChainCoreExtension($this->em, $this->container);
 
         return $twigExt->tplTeaser($activity, $options);
-
-        return $icon;
     }
 
     public function cloneActivity(Campaign $campaign, Activity $activity, $status = null)

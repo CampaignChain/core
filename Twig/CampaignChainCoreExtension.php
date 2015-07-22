@@ -122,14 +122,23 @@ class CampaignChainCoreExtension extends \Twig_Extension
             return false;
         }
 
-        $bundleName         = $channelModule->getBundle()->getName();
+        return $this->bundleName2IconFileName(
+            $channelModule->getBundle()->getName(),
+            $channelModule->getIdentifier()
+        );
+    }
+
+    public function bundleName2IconFileName($bundleName, $channelIdentifier, $color = null)
+    {
         $bundleNameParts    = explode('/', $bundleName);
         $bundleVendor       = $bundleNameParts[0];
-        $channelIdentifier  = $channelModule->getIdentifier();
 
-        $iconName = str_replace($bundleVendor.'-', '', $channelIdentifier).'.png';
+        $colorString = '';
+        if($color != null){
+            $colorString = '_'.$color;
+        }
 
-        return $iconName;
+        return str_replace($bundleVendor.'-', '', $channelIdentifier).$colorString.'.png';
     }
 
     public function tplTeaser($object, $options = array())
@@ -169,10 +178,31 @@ class CampaignChainCoreExtension extends \Twig_Extension
             if($this->teaserOptions['show_trigger'] == true){
                 $tplVars['trigger'] = $this->tplTriggerHookInline($object);
             }
+        } elseif(strpos($class, 'CoreBundle\Entity\CampaignModule') !== false){
+            $tplVars['url'] = $this->container->get('router')->generate(
+                $object->getRoutes()['plan'],
+                array(),
+                true
+            );
+            if(!isset($options['color'])){
+                $options['color'] = null;
+            }
+            if(!isset($options['size'])){
+                $options['size'] = 32;
+            }
+            $tplVars['icon_path'] = $object->getBundle()->getWebAssetsPath().
+                '/images/icons/'.$options['size'].'x'.$options['size'].'/'.$this->bundleName2IconFileName(
+                    $object->getBundle()->getName(),
+                    $object->getIdentifier(),
+                    $options['color']
+                );
+            $tplVars['context_icon_path'] = null;
+            $tplVars['name'] = $object->getDisplayName();
         } else {
             throw new \Exception(
-                'Value must either be instance of CampaignChain\CoreBundle\Entity\Activity'
-                .'or CampaignChain\CoreBundle\Entity\Location.'
+                'Value must either be instance of CampaignChain\CoreBundle\Entity\Activity, '.
+                'CampaignChain\CoreBundle\Entity\CampaignModule '.
+                'or CampaignChain\CoreBundle\Entity\Location.'
             );
         }
 

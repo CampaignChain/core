@@ -97,6 +97,14 @@ class FullCalendar
             $campaignEvent['type'] = 'campaign';
             $campaignEvent['campaignchain_id'] = $campaign->getId();
             $campaignEvent['route_edit_api'] = $campaign->getCampaignModule()->getRoutes()['edit_api'];
+            $campaignService = $this->container->get('campaignchain.core.campaign');
+            $campaignEvent['tpl_teaser'] = $campaignService->tplTeaser(
+                $campaign->getCampaignModule(),
+                array(
+                    'only_icon' => true,
+                    'size' => 24,
+                )
+            );
             //$campaignEvent['trigger_identifier'] = str_replace('-', '_', $campaign->getTriggerHook()->getIdentifier());
 
             if($hook->getStartDate() < $userNow && $hook->getEndDate() > $userNow){
@@ -155,7 +163,7 @@ class FullCalendar
                 //$activityEvent['trigger_identifier'] = str_replace('-', '_', $activity->getTriggerHook()->getIdentifier());
                 // Get activity icons path
                 $activityService = $this->container->get('campaignchain.core.activity');
-                $activityEvent['location_tpl'] = $activityService->tplTeaser($activity, array('only_icon' => true));
+                $activityEvent['tpl_teaser'] = $activityService->tplTeaser($activity, array('only_icon' => true));
 
                 if($hook->getStartDate() < $userNow){
                     $activityEvents['done'][] = $activityEvent;

@@ -52,10 +52,10 @@ file that was distributed with this source code.
                     element.css({"background-image":"url('" + event.icon_path_16px +"')"});
                 }
 
-                // Render Activity icons
-                if (event.location_tpl)
+                // Render Activity and Campaign icons
+                if (event.tpl_teaser)
                 {
-                    element.prepend(event.location_tpl);
+                    element.prepend(event.tpl_teaser);
                 }
 
                 // Edit in modal.

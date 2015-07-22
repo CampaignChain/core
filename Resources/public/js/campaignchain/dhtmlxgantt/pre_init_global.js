@@ -116,6 +116,9 @@ gantt.templates.rightside_text = function(start, end, task){
     if(task.type == 'milestone' || task.type == 'activity'){
         return task.text;
     }
+    if(task.type == 'campaign'){
+        return task.tpl_teaser + ' ' + task.text;
+    }
     return "";
 };
 
@@ -135,14 +138,22 @@ gantt.attachEvent("onBeforeTaskDrag", function(id, mode, e){
     return true;
 });
 
+// Add a class per type of Action to the column row
+gantt.templates.grid_row_class = function(start, end, task){
+    return "campaignchain_gantt_" + task.type;
+};
+
 // Show the channel icon in the left column
 gantt.templates.grid_blank = function(item) {
     switch(item.type){
+        case 'campaign':
+            return "<div class='gantt_tree_icon gantt_blank'><span class='fa fa-exclamation-triangle'></span></div>" + item.tpl_teaser;
+            break;
         case 'milestone':
             return "<img src='" + item.icon_path_16px + "' class='campaignchain_gantt_icon_column' />";
             break;
         case 'activity':
-            return item.location_tpl;
+            return item.tpl_teaser;
             break;
     }
 
@@ -152,7 +163,8 @@ gantt.templates.grid_blank = function(item) {
 gantt.templates.grid_folder = function(item) {
     switch(item.type){
         case 'campaign':
-            return '<img src="/bundles/campaignchaincampaignscheduledcampaign/images/icons/24x24/scheduled_campaign.png" class="campaignchain_gantt_icon_column_campaign" />';
+            //return '<img src="/bundles/campaignchaincampaignscheduledcampaign/images/icons/24x24/scheduled_campaign.png" class="campaignchain_gantt_icon_column_campaign" />';
+            return item.tpl_teaser;
             break;
     }
 };

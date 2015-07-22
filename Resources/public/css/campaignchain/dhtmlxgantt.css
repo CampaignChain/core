@@ -93,6 +93,22 @@ border: "#777777"
     padding-left: 7px;
 }
 
+.campaignchain_gantt_campaign .gantt_side_content.gantt_right {
+    padding-top: 7px;
+    padding-left: 10px;
+    font-size: 13px;
+}
+
+.campaignchain_gantt_campaign .campaignchain-teaser .icon {
+    height: 24px;
+    width: 24px;
+    margin-right: 3px;
+}
+
+.campaignchain_gantt_campaign  .gantt_tree_content {
+    padding-left: 42px !important;
+}
+
 .campaignchain_gantt_activity .gantt_side_content.gantt_right {
     padding-top: 7px;
     padding-left: 10px;

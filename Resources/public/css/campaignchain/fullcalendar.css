@@ -35,27 +35,39 @@ file that was distributed with this source code.
     filter:alpha(opacity=40); /* For IE8 and earlier */
 }
 
+.campaignchain-calendar-campaign .campaignchain-teaser .icon {
+    height: 24px;
+    width: 24px;
+    padding-left: 2px;
+}
+
+.campaignchain-calendar-campaign {
+    padding: 2px;
+}
+
+.campaignchain-calendar-campaign .campaignchain-teaser {
+    float: left;
+}
+
 .campaignchain-calendar-campaign .fc-content {
     padding: 2px;
     font-size: 13px;
+    color: #000;
 }
 
 .campaignchain-calendar-done.fc-event {
     background-color: #cccccc !important;
     border: 1px solid #777777 !important;
-    color: #ffffff;
 }
 
 .campaignchain-calendar-ongoing.fc-event {
     background-color: #F0AD4E !important;
     border: 1px solid #EEA236 !important;
-    color: #ffffff;
 }
 
 .campaignchain-calendar-upcoming.fc-event {
     background-color: #5BC0DE !important;
     border: 1px solid #46B8DA !important;
-    color: #ffffff;
 }
 
 .fc-title {

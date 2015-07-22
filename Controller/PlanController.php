@@ -18,39 +18,47 @@ class PlanController extends Controller
 {
     public function indexAction(Request $request)
     {
-        $form = $this->createFormBuilder()
-            ->add('campaign_module', 'entity', array(
-                'label' => 'Type',
-                'class' => 'CampaignChainCoreBundle:CampaignModule',
-                'query_builder' => function(EntityRepository $er) {
-                        return $er->createQueryBuilder('cm')
-                            ->orderBy('cm.displayName', 'ASC');
-                    },
-                'property' => 'displayName',
-                'empty_value' => 'Select the type of campaign',
-                'empty_data' => null,
-            ))
-            ->getForm();
+        $repository = $this->getDoctrine()
+            ->getRepository('CampaignChainCoreBundle:CampaignModule');
 
-        $form->handleRequest($request);
+        $query = $repository->createQueryBuilder('cm')
+            ->orderBy('cm.displayName', 'ASC')
+            ->getQuery();
 
-        if ($form->isValid()) {
-            // Get the activity module's activity.
-            $campaignService = $this->get('campaignchain.core.campaign');
-            $campaignModule = $campaignService->getCampaignModule($form->get('campaign_module')->getData());
-
-            $routes = $campaignModule->getRoutes();
-            return $this->redirect(
-                $this->generateUrl($routes['plan'])
-            );
-        }
+        $campaignModules = $query->getResult();
 
         return $this->render(
-            'CampaignChainCoreBundle:Base:new.html.twig',
+            'CampaignChainCoreBundle:Plan:index.html.twig',
             array(
-                'page_title' => 'Plan Campaign',
-                'form' => $form->createView(),
-                'form_submit_label' => 'Next',
+                'page_title' => 'Select Campaign Type',
+                'campaign_modules' => $campaignModules,
             ));
     }
 }
+
+//        $form = $this->createFormBuilder()
+//            ->add('campaign_module', 'entity', array(
+//                'label' => 'Type',
+//                'class' => 'CampaignChainCoreBundle:CampaignModule',
+//                'query_builder' => function(EntityRepository $er) {
+//                        return $er->createQueryBuilder('cm')
+//                            ->orderBy('cm.displayName', 'ASC');
+//                    },
+//                'property' => 'displayName',
+//                'empty_value' => 'Select the type of campaign',
+//                'empty_data' => null,
+//            ))
+//            ->getForm();
+//
+//        $form->handleRequest($request);
+//
+//        if ($form->isValid()) {
+//            // Get the activity module's activity.
+//            $campaignService = $this->get('campaignchain.core.campaign');
+//            $campaignModule = $campaignService->getCampaignModule($form->get('campaign_module')->getData());
+//
+//            $routes = $campaignModule->getRoutes();
+//            return $this->redirect(
+//                $this->generateUrl($routes['plan'])
+//            );
+//        }

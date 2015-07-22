@@ -89,6 +89,14 @@ class DhtmlxGantt
             $campaign_data['campaignchain_id'] = (string) $campaign->getId();
             $campaign_data['type'] = 'campaign';
             $campaign_data['route_edit_api'] = $campaign->getCampaignModule()->getRoutes()['edit_api'];
+            $campaignService = $this->container->get('campaignchain.core.campaign');
+            $campaign_data['tpl_teaser'] = $campaignService->tplTeaser(
+                $campaign->getCampaignModule(),
+                array(
+                    'only_icon' => true,
+                    'size' => 24,
+                )
+            );
             $ganttDataId++;
 //            $campaign['entity'] = array(
 //                'id' => $campaignId,
@@ -136,7 +144,7 @@ class DhtmlxGantt
                     $activity_data['route_edit_api'] = $activity->getActivityModule()->getRoutes()['edit_api'];
                     // Get activity icons path
                     $activityService = $this->container->get('campaignchain.core.activity');
-                    $activity_data['location_tpl'] = $activityService->tplTeaser($activity, array('only_icon' => true));
+                    $activity_data['tpl_teaser'] = $activityService->tplTeaser($activity, array('only_icon' => true));
 
                     $ganttActivityData[] = $activity_data;
                     $ganttActivityLinks[] = array(

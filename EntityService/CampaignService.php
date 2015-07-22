@@ -18,6 +18,7 @@ use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use CampaignChain\CoreBundle\Entity\Action;
 use CampaignChain\CoreBundle\Entity\Campaign;
+use CampaignChain\CoreBundle\Twig\CampaignChainCoreExtension;
 
 class CampaignService
 {
@@ -234,5 +235,12 @@ class CampaignService
         $bundleName = $campaign->getCampaignModule()->getBundle()->getName();
         $moduleIdentifier = $campaign->getCampaignModule()->getIdentifier();
         return $bundleName.'/'.$moduleIdentifier;
+    }
+
+    public function tplTeaser($campaign, $options = array())
+    {
+        $twigExt = new CampaignChainCoreExtension($this->em, $this->container);
+
+        return $twigExt->tplTeaser($campaign, $options);
     }
 }
