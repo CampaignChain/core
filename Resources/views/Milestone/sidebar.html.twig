@@ -27,14 +27,16 @@ file that was distributed with this source code.
 {% set campaign_tpl_options = {'size': '16'} %}
 
 <div id="campaignchain-milestone-sidebar">
+    <div class="campaignchain-sidebar-item">
+        <h5>Campaign</h5>
+        {{ campaign|campaignchain_tpl_teaser(campaign_tpl_options) }}<br/>
+        {{ campaign|campaignchain_tpl_trigger_hook_inline }}
+    </div>
     {% if milestone.getStatus() == 'closed' or show_date == true %}
         <div class="campaignchain-sidebar-item">
+            <h5>Execution</h5>
             <div class="sidebar-icon"><i class="fa fa-clock-o"></i></div>
             <div class="campaignchain-sidebar-data">{{ milestone|campaignchain_tpl_trigger_hook_inline }}</div>
         </div>
     {% endif %}
-    <div class="campaignchain-sidebar-item">
-        {{ campaign|campaignchain_tpl_teaser(campaign_tpl_options) }}<br/>
-        {{ campaign|campaignchain_tpl_trigger_hook_inline }}
-    </div>
 </div>
