@@ -23,13 +23,14 @@ file that was distributed with this source code.
     {% set channel_module_bundle = activity.getChannel().getChannelModule().getBundle() %}
     {% set channel_module = activity.getChannel().getChannelModule() %}
     {% set campaign = activity.getCampaign() %}
-    {% set campaign_module = activity.getCampaign().getCampaignModule() %}
     {% set location = activity.getLocation() %}
 {% endif %}
 
 {% if show_date is not defined %}
     {% set show_date = false %}
 {% endif %}
+
+{% set campaign_tpl_options = {'size': '16'} %}
 
 <div id="campaignchain-activity-sidebar">
     {% if activity.getStatus() == 'closed' or show_date == true %}
@@ -45,12 +46,7 @@ file that was distributed with this source code.
         </div>
     {% endif %}
     <div class="campaignchain-sidebar-item">
-        <div class="campaignchain-sidebar-icon">
-            {% set options = {'only_icon': true, 'size': '16'} %}
-            {{ campaign_module|campaignchain_tpl_teaser(options) }}</div>
-        <div class="campaignchain-sidebar-data">
-            <a href="{{ path('campaignchain_core_campaign_edit', { 'id': campaign.getId() }) }}">{{ campaign.getName() }}</a><br/>
-            {{ campaign|campaignchain_tpl_trigger_hook_inline }}
-        </div>
+        {{ campaign|campaignchain_tpl_teaser(campaign_tpl_options) }}<br/>
+        {{ campaign|campaignchain_tpl_trigger_hook_inline }}
     </div>
 </div>

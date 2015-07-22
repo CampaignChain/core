@@ -24,6 +24,8 @@ file that was distributed with this source code.
     {% set show_date = false %}
 {% endif %}
 
+{% set campaign_tpl_options = {'size': '16'} %}
+
 <div id="campaignchain-milestone-sidebar">
     {% if milestone.getStatus() == 'closed' or show_date == true %}
         <div class="campaignchain-sidebar-item">
@@ -32,10 +34,7 @@ file that was distributed with this source code.
         </div>
     {% endif %}
     <div class="campaignchain-sidebar-item">
-        <div class="campaignchain-sidebar-icon"><i class="fa fa-bullhorn"></i></div>
-        <div class="campaignchain-sidebar-data">
-            <a href="{{ path('campaignchain_core_campaign_edit', { 'id': campaign.getId() }) }}">{{ campaign.getName() }}</a><br/>
-            {{ campaign|campaignchain_tpl_trigger_hook_inline }}
-        </div>
+        {{ campaign|campaignchain_tpl_teaser(campaign_tpl_options) }}<br/>
+        {{ campaign|campaignchain_tpl_trigger_hook_inline }}
     </div>
 </div>
