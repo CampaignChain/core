@@ -173,7 +173,7 @@ class LocationService
     }
 
     public function existsInCampaign(
-        $moduleIdentifier, $locationIdentifier, $identifier, $campaign
+        $moduleIdentifier, $locationIdentifier, $identifier, $campaign = null
     )
     {
         $locationModule = $this->getLocationModule($moduleIdentifier, $locationIdentifier);
@@ -185,16 +185,27 @@ class LocationService
             ->where('l.locationModule = :locationModule')
             ->andWhere('l.identifier = :identifier')
             ->andWhere('l.operation = o.id')
-            ->andWhere('o.activity = a.id')
-            ->andWhere('a.campaign = :campaign')
-            ->setParameter('locationModule', $locationModule)
+            ->andWhere('o.activity = a.id');
+        if($campaign != null){
+            $qb->andWhere('a.campaign = :campaign')
+                ->setParameter('campaign', $campaign);
+        }
+        $qb->setParameter('locationModule', $locationModule)
             ->setParameter('identifier', $identifier)
-            ->setParameter('campaign', $campaign)
             ->orderBy('a.startDate', 'ASC');
         $query = $qb->getQuery();
         $locations = $query->getResult();
 
         return is_array($locations) && count($locations) >= 1;
+    }
+
+    public function existsInAllCampaigns(
+        $moduleIdentifier, $locationIdentifier, $identifier
+    )
+    {
+        return $this->existsInCampaign(
+            $moduleIdentifier, $locationIdentifier, $identifier
+        );
     }
 
     public function getLocationByOperation($operation)
