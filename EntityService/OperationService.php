@@ -26,6 +26,20 @@ class OperationService
         $this->container = $container;
     }
 
+    public function getOperation($id){
+        $activity = $this->em
+            ->getRepository('CampaignChainCoreBundle:Operation')
+            ->find($id);
+
+        if (!$activity) {
+            throw new \Exception(
+                'No Operation found for id '.$id
+            );
+        }
+
+        return $activity;
+    }
+
     public function getOperationModule($bundleIdentifier, $operationIdentifier){
         // Get bundle.
         $bundle = $this->em
