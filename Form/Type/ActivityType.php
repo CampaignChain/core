@@ -53,6 +53,9 @@ class ActivityType extends HookListenerType
                     'label' => 'Activity Name',
                     'attr' => array('placeholder' => 'What should be the name of the Activity?')
                 ));
+        } else {
+            $builder
+                ->add('name', 'hidden');
         }
 
         $hookListener = $this->getHookListener($builder);
