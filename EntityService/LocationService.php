@@ -177,6 +177,7 @@ class LocationService
     )
     {
         $locationModule = $this->getLocationModule($moduleIdentifier, $locationIdentifier);
+
         $qb = $this->em->createQueryBuilder();
         $qb->select('l')
             ->from('CampaignChain\CoreBundle\Entity\Location', 'l')

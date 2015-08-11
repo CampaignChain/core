@@ -42,7 +42,7 @@ file that was distributed with this source code.
                                   module_params['cta_tracking'] %}
                                 <a href="{{ path('campaignchain_core_channel_cta_test',{'id':channel.id}) }}" class="btn btn-primary" role="button">Enable & Test</a>
                             {% else %}
-                                <p>Not available</p>
+                                <i class="fa fa-ban"></i>
                             {% endif %}
                         </td>
                     </tr>
