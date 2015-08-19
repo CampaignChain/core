@@ -36,7 +36,6 @@
         "knplabs/knp-paginator-bundle": "dev-master",
         "knplabs/knp-menu-bundle":"dev-master",
         "stephanecollot/datetimepicker-bundle": "dev-master",
-        "datatables/datatables": "1.10.4",
         "friendsofsymfony/user-bundle": "dev-master",
         "bmatzner/fontawesome-bundle": "dev-master",
         "ivaynberg/select2": "3.5.0",

@@ -2,6 +2,7 @@
     "name": "campaignchain-core",
     "dependencies": {
         "bootstrap-daterangepicker": "1.3",
+        "datatables": "1.10",
         "flot": "0.8",
         "flot.tooltip": "0.7",
         "jquery.flot.comments": "https://github.com/Jeff-Tian/jquery.flot.comments.js/archive/master.zip",
