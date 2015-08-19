@@ -23,10 +23,15 @@ function onGanttRender_todayLine(today) {
         var x_start = gantt.posFromDate(today);
         var x_end = gantt.posFromDate(today.add(1, 'minute'));
 
-        // Show the today line only if start date of time scale is prior to it.
+        // Show the today line only if start date of time scale is prior to today.
         if(x_end != 0){
             $today.css("left", Math.floor(x_start + 0.5 * (x_end - x_start)) + "px");
-            $today.css("height", $(".gantt_data_area").innerHeight());
+            if($(".gantt_data_area").innerHeight() > $(".gantt_task_bg").innerHeight()){
+                var css_height = $(".gantt_data_area").innerHeight();
+            } else {
+                var css_height = $(".gantt_task_bg").innerHeight();
+            }
+            $today.css("height", css_height);
         }
     };
 }
