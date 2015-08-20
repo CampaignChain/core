@@ -322,7 +322,7 @@ class Installer
             /*
              * If version does not exist, this means two things:
              *
-             * 1) Either, it is a package in* require-dev of composer.json, but
+             * 1) Either, it is a package in require-dev of composer.json, but
              * CampaignChain is not in dev mode. Then we don't add this package.
              *
              * 2) Or it is a bundle in Symfony's src/ directory. Then we want to
