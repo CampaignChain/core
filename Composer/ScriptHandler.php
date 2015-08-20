@@ -12,8 +12,9 @@ namespace CampaignChain\CoreBundle\Composer;
 
 use Symfony\Component\Filesystem\Filesystem;
 use Composer\Script\CommandEvent;
+use Sensio\Bundle\DistributionBundle\Composer\ScriptHandler as SensioScriptHandler;
 
-class ScriptHandler
+class ScriptHandler extends SensioScriptHandler
 {
     /**
      * Asks if the new directory structure should be used, installs the structure if needed.
@@ -38,5 +39,17 @@ class ScriptHandler
         if(!$fs->exists($routingFile)){
             $fs->copy($routingFile.'.dist', $routingFile, true);
         }
+    }
+
+    public static function registerModules(CommandEvent $event)
+    {
+        $options = self::getOptions($event);
+        $consoleDir = self::getConsoleDir($event, 'register modules');
+
+        if (null === $consoleDir) {
+            return;
+        }
+
+        self::executeCommand($event, $consoleDir, 'campaignchain:module:update', $options['process-timeout']);
     }
 }

@@ -171,7 +171,7 @@ class CommandUtil
         return $this->run($command, $arguments);*/
     }
 
-    public function warumupCache()
+    public function warmupCache()
     {
         $this->application->add(new CacheWarmupCommand());
         $command = $this->application->find('cache:warmup');
@@ -183,7 +183,7 @@ class CommandUtil
 
     public function bowerInstall()
     {
-        $command = 'php app/console sp:bower:install';
+        $command = 'php app/console sp:bower:install --interactive=false';
 
         return $this->shell($command);
     }
