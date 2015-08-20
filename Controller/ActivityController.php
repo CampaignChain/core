@@ -51,7 +51,6 @@ class ActivityController extends Controller
                             ->setParameter('statusClosed', Action::STATUS_CLOSED)
                             ->setParameter('statusBackgroundProcess', Action::STATUS_BACKGROUND_PROCESS)
                             ->orderBy('campaign.startDate', 'ASC');
-                            //->setParameter('now', new \DateTime('now'));
                     },
                 'property' => 'name',
                 'empty_value' => 'Select a Campaign',
