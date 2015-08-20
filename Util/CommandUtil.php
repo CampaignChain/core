@@ -180,4 +180,11 @@ class CommandUtil
         );
         return $this->run($command, $arguments);
     }
+
+    public function bowerInstall()
+    {
+        $command = 'php app/console sp:bower:install';
+
+        return $this->shell($command);
+    }
 }

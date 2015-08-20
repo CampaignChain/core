@@ -195,6 +195,11 @@ class Installer
         $this->logger->info('Output of doctrine:schema:update --force');
         $this->logger->info($output);
 
+        // Install or update bower JavaScript libraries.
+        $output = $this->command->bowerInstall();
+        $this->logger->info('Output of sp:bower:install');
+        $this->logger->info($output);
+
         $this->logger->info('END: MODULES INSTALLER');
 
         return true;
