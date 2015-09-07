@@ -44,26 +44,50 @@ EOT
                 'config-only',
                 null,
                 InputOption::VALUE_NONE,
-                'Update the configuration only.'
+                'Register config.yml files of all modules.'
+            )
+            ->addOption(
+                'routing-only',
+                null,
+                InputOption::VALUE_NONE,
+                'Register routing.yml files of all modules.'
+            )
+            ->addOption(
+                'class-only',
+                null,
+                InputOption::VALUE_NONE,
+                'Register bundle classes of all modules in AppKernel.php.'
             );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if ($input->getOption('config-only')) {
-            $output->writeln('Updating CampaignChain configuration files');
+        if (
+            $input->getOption('config-only') ||
+            $input->getOption('routing-only') ||
+            $input->getOption('class-only')
+        ) {
             $installer = $this->getContainer()->get('campaignchain.core.module.installer');
             $installer->setSkipVersion(true);
             $installer->getNewBundles();
 
             $kernel = $this->getContainer()->get('campaignchain.core.module.kernel');
-            $types = array('configs' => true, 'routings' => true);
+            if($input->getOption('config-only')){
+                $types = array('configs' => true);
+                $output->writeln('Registering config.yml files of all modules');
+            } elseif($input->getOption('routing-only')){
+                $types = array('routings' => true);
+                $output->writeln('Registering routing.yml files of all modules');
+            } elseif($input->getOption('class-only')){
+                $types = array('classes' => true);
+                $output->writeln('Registering bundle classes of all modules in AppKernel.php.');
+            }
             $kernel->register($installer->getKernelConfig(), $types);
             $output->writeln('Done');
         } else {
             $this->getContainer()->enterScope('request');
             $this->getContainer()->set('request', new Request(), 'request');
-            $output->writeln('Updating CampaignChain system registry for all existing modules');
+            $output->writeln('Updating CampaignChain system registry for all modules');
             $installer = $this->getContainer()->get('campaignchain.core.module.installer');
 //            $installer->setSkipVersion(true);
             $installer->install();
