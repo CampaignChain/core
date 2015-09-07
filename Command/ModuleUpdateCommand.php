@@ -74,13 +74,13 @@ EOT
             $kernel = $this->getContainer()->get('campaignchain.core.module.kernel');
             if($input->getOption('config-only')){
                 $types = array('configs' => true);
-                $output->writeln('Registering config.yml files of all modules');
+                $output->writeln('Registering config.yml files of all CampaignChain modules');
             } elseif($input->getOption('routing-only')){
                 $types = array('routings' => true);
-                $output->writeln('Registering routing.yml files of all modules');
+                $output->writeln('Registering routing.yml files of all CampaignChain modules');
             } elseif($input->getOption('class-only')){
                 $types = array('classes' => true);
-                $output->writeln('Registering bundle classes of all modules in AppKernel.php.');
+                $output->writeln('Registering bundle classes of all CampaignChain modules in AppKernel.php.');
             }
             $kernel->register($installer->getKernelConfig(), $types);
             $output->writeln('Done');
