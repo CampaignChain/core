@@ -50,6 +50,7 @@ class ScriptHandler extends SensioScriptHandler
             return;
         }
 
+        self::executeCommand($event, $consoleDir, 'doctrine:schema:update --force', $options['process-timeout']);
         self::executeCommand($event, $consoleDir, 'campaignchain:module:update', $options['process-timeout']);
     }
 }

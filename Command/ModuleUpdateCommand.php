@@ -51,7 +51,7 @@ EOT
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         if ($input->getOption('config-only')) {
-            $output->writeln('Updating configuration');
+            $output->writeln('Updating CampaignChain configuration files');
             $installer = $this->getContainer()->get('campaignchain.core.module.installer');
             $installer->setSkipVersion(true);
             $installer->getNewBundles();
@@ -63,7 +63,7 @@ EOT
         } else {
             $this->getContainer()->enterScope('request');
             $this->getContainer()->set('request', new Request(), 'request');
-            $output->writeln('Updating system registry for all existing modules');
+            $output->writeln('Updating CampaignChain system registry for all existing modules');
             $installer = $this->getContainer()->get('campaignchain.core.module.installer');
 //            $installer->setSkipVersion(true);
             $installer->install();
