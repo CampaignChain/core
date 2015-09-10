@@ -11,6 +11,13 @@
             "email": "sandro@campaignchain.com"
         }
     ],
+    "repositories":
+    [
+        {
+            "type": "vcs",
+            "url": "https://github.com/groganz/SpBowerBundle.git"
+        }
+    ],
     "require": {
         "php": ">=5.4",
         "symfony/symfony": "~2.5",
@@ -42,7 +49,7 @@
         "h4cc/alice-fixtures-bundle": "dev-master",
         "friendsofsymfony/jsrouting-bundle": "dev-master",
         "hpatoio/bitly-bundle": "dev-master",
-        "sp/bower-bundle": "dev-master",
+        "sp/bower-bundle": "dev-patch-1",
         "sonata-project/admin-bundle": "~2.2",
         "sonata-project/block-bundle": "~2.2",
         "myclabs/deep-copy": "dev-master"
