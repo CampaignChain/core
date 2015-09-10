@@ -128,7 +128,7 @@ class Installer
             foreach($this->newBundles as $this->newBundle){
                 $params = $this->getModule(
                     $this->root.DIRECTORY_SEPARATOR.$this->newBundle->getPath().DIRECTORY_SEPARATOR.'campaignchain.yml'
-                    );
+                );
 
                 switch($this->newBundle->getType()){
                     case 'campaignchain-core':
@@ -214,7 +214,7 @@ class Installer
 
             if(!$registeredBundle){
                 $this->isRegisteredBundle[$newBundle->getName()] = self::STATUS_REGISTERED_NO;
-            // This case covers development of modules.
+                // This case covers development of modules.
             } elseif(
                 $registeredBundle->getVersion() == 'dev-master' &&
                 $newBundle->getVersion() == 'dev-master'
@@ -224,9 +224,9 @@ class Installer
                 // Bundle with same version is already registered.
                 $this->isRegisteredBundle[$newBundle->getName()] = self::STATUS_REGISTERED_SAME;
             } elseif(
-                version_compare(
-                    $registeredBundle->getVersion(), $newBundle->getVersion(), '<'
-                )
+            version_compare(
+                $registeredBundle->getVersion(), $newBundle->getVersion(), '<'
+            )
             ){
                 // Bundle with older version is already registered.
                 $this->isRegisteredBundle[$newBundle->getName()] = self::STATUS_REGISTERED_OLDER;
@@ -265,10 +265,10 @@ class Installer
 
         foreach ($finder as $moduleConfig) {
             $bundleComposer = $this->root.DIRECTORY_SEPARATOR.str_replace(
-                'campaignchain.yml',
-                'composer.json',
-                $moduleConfig->getRelativePathname()
-            );
+                    'campaignchain.yml',
+                    'composer.json',
+                    $moduleConfig->getRelativePathname()
+                );
             $this->getNewBundle($bundleComposer);
         }
 
@@ -314,7 +314,14 @@ class Installer
                     $symfonyRoot = str_replace('app','',
                         $this->container->get('kernel')->getRootDir()
                     );
-                    $configFile = '..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.
+
+                    // Make sure that even on Windows, the directory separator
+                    // is "/".
+                    if (DIRECTORY_SEPARATOR == '\\') {
+                        $configFile = str_replace(DIRECTORY_SEPARATOR, '/', $configFile);
+                    }
+
+                    $configFile = '../../'.
                         str_replace($symfonyRoot, '', $configFile);
 
                     $this->kernelConfig->addConfig($configFile);
@@ -348,7 +355,7 @@ class Installer
 
             // Set relative path of bundle.
             $bundle->setPath(
-                // Remove the root directory to get the relative path
+            // Remove the root directory to get the relative path
                 str_replace($this->root.DIRECTORY_SEPARATOR, '',
                     // Remove the composer file from the path
                     str_replace(DIRECTORY_SEPARATOR.'composer.json', '', $bundleComposer)
@@ -596,11 +603,11 @@ class Installer
                         foreach($metricNames as $metricName){
                             $metric = $this->em->getRepository(
                                 'CampaignChainCoreBundle:'.$metricClass
-                                )->findOneBy(array(
+                            )->findOneBy(array(
                                     'name' => $metricName,
                                     'bundle' => $this->newBundle->getName()
-                                    )
-                                );
+                                )
+                            );
 
                             // Does the metric already exist?
                             if($metric){
@@ -769,7 +776,7 @@ class Installer
                          */
                         if($this->isRegisteredBundle($activityBundle)
                             == self::STATUS_REGISTERED_OLDER
-                            ){
+                        ){
                             $qb = $this->em->getRepository('CampaignChainCoreBundle:ChannelModule')
                                 ->createQueryBuilder('cm');
                             $qb->join('cm.activityModules', 'am')

@@ -35,12 +35,12 @@ class KernelConfig
          * app/config/config.yml.
          */
         if(
-            strpos($config, '..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR)
+            strpos($config, '../../')
             === false
         ){
             throw new \Exception(
                 'File path must be relative to app/config/config.yml and thus '.
-                'start with "..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'".'
+                'start with "../../".'
             );
         }
         $this->configs[] = $config;
