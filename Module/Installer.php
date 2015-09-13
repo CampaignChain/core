@@ -318,6 +318,7 @@ class Installer
                     // Make sure that even on Windows, the directory separator
                     // is "/".
                     if (DIRECTORY_SEPARATOR == '\\') {
+                        $symfonyRoot = str_replace(DIRECTORY_SEPARATOR, '/', $symfonyRoot);
                         $configFile = str_replace(DIRECTORY_SEPARATOR, '/', $configFile);
                     }
 
