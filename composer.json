@@ -1,16 +1,21 @@
 {
     "name": "campaignchain/core",
     "description": "Core bundle of CampaignChain.",
-    "keywords": ["campaignchain","core"],
+    "keywords": ["campaignchain"],
     "type": "campaignchain-core",
     "homepage": "http://www.campaignchain.com",
     "license": "Apache-2.0",
     "authors": [
         {
-            "name": "Sandro Groganz",
-            "email": "sandro@campaignchain.com"
+            "name": "CampaignChain Inc.",
+            "email": "info@campaignchain.com",
+            "homepage": "http://www.campaignchain.com"
         }
     ],
+    "support": {
+        "issues": "https://github.com/CampaignChain/campaignchain-ce/issues",
+        "docs": "http://doc.campaignchain.com"
+    },
     "require": {
         "php": ">=5.4",
         "symfony/symfony": "~2.5",
