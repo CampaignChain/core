@@ -21,7 +21,7 @@ use CampaignChain\CoreBundle\Entity\Bundle,
     CampaignChain\CoreBundle\Entity\OperationModule,
     CampaignChain\CoreBundle\Entity\Report;
 use CampaignChain\CoreBundle\Entity\System;
-use CampaignChain\CoreBundle\Util\CommandUtil;
+use CampaignChain\CoreBundle\Util\ParserUtil;
 use Doctrine\ORM\EntityManager;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -311,7 +311,7 @@ class Installer
                      * Make the absolute config file path relative to
                      * app/config/config.yml.
                      */
-                    $symfonyRoot = str_replace('app','',
+                    $symfonyRoot = ParserUtil::strReplaceLast('app','',
                         $this->container->get('kernel')->getRootDir()
                     );
 
