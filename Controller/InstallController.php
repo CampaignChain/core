@@ -12,6 +12,7 @@ namespace CampaignChain\CoreBundle\Controller;
 
 use Symfony\Component\DependencyInjection\ContainerAware;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * InstallController.
@@ -45,43 +46,42 @@ class InstallController extends ContainerAware
     }
 
     /**
+     * @param Request $request
+     * @param int $index
      * @return Response A Response instance
      */
-    public function stepAction($index = 0)
+    public function stepAction(Request $request, $index = 0)
     {
         $installWizard = $this->container->get('campaignchain.core.install.wizard');
 
         $step = $installWizard->getStep($index);
         $form = $this->container->get('form.factory')->create($step->getFormType(), $step);
+        $form->handleRequest($request);
 
-        $request = $this->container->get('request');
-        if ($request->isMethod('POST')) {
-            $form->submit($request);
-            if ($form->isValid()) {
-                $installWizard->execute($step, $step->update($form->getData()));
+        if ($form->isValid()) {
+            $installWizard->execute($step, $step->update($form->getData()));
 
-                $index++;
+            $index++;
 
-                if ($index < $installWizard->getStepCount()) {
-                    /*
-                     * This is a hack to avoid that an error about a missing
-                     * bundle for a route will be shown after installing the
-                     * system modules.
-                     *
-                     * By redirecting to the next step without calling the
-                     * Symfony router component, we can avoid the above issue.
-                     *
-                     * TODO: Fix this in a proper way :)
-                     */
-                    if($index == 1){
-                        header('Location: /install/step/1');
-                        exit;
-                    }
-                    return new RedirectResponse($this->container->get('router')->generate('campaignchain_core_install_step', array('index' => $index)));
+            if ($index < $installWizard->getStepCount()) {
+                /*
+                 * This is a hack to avoid that an error about a missing
+                 * bundle for a route will be shown after installing the
+                 * system modules.
+                 *
+                 * By redirecting to the next step without calling the
+                 * Symfony router component, we can avoid the above issue.
+                 *
+                 * TODO: Fix this in a proper way :)
+                 */
+                if($index == 1){
+                    header('Location: /install/step/1');
+                    exit;
                 }
-
-                return new RedirectResponse($this->container->get('router')->generate('campaignchain_core_homepage'));
+                return new RedirectResponse($this->container->get('router')->generate('campaignchain_core_install_step', array('index' => $index)));
             }
+
+            return new RedirectResponse($this->container->get('router')->generate('campaignchain_core_homepage'));
         }
 
         return $this->container->get('templating')->renderResponse($step->getTemplate(), array(

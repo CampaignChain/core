@@ -10,7 +10,9 @@
 
 namespace CampaignChain\CoreBundle\Util;
 
+use CampaignChain\CoreBundle\Entity\User;
 use Composer\Command\RequireCommand;
+use FOS\UserBundle\Doctrine\UserManager;
 use Symfony\Bundle\FrameworkBundle\Command\CacheClearCommand;
 use Symfony\Bundle\FrameworkBundle\Command\CacheWarmupCommand;
 use Symfony\Component\HttpKernel\Kernel;
@@ -123,19 +125,21 @@ class CommandUtil
         return $this->run($command, $arguments);*/
     }
 
-    public function createAdminUser($email, $password)
+    public function createAdminUser(array $parameters)
     {
-        $this->application->add(new CreateUserCommand());
-        $command = $this->application->find('fos:user:create');
+        /** @var UserManager $userManager */
+        $userManager = $this->kernel->getContainer()->get('fos_user.user_manager');
+        /** @var User $user */
+        $user = $userManager->createUser();
+        $user->setUsername($parameters['username']);
+        $user->setEmail($parameters['email']);
+        $user->setPlainPassword($parameters['password']);
+        $user->setEnabled(true);
+        $user->setSuperAdmin(true);
+        $user->setFirstName($parameters['firstName']);
+        $user->setLastName($parameters['lastName']);
 
-        $arguments = array(
-            'doctrine:schema:update',
-            'username' => 'admin',
-            '--super-admin' => true,
-            'email' => $email,
-            'password' => $password,
-        );
-        return $this->run($command, $arguments);
+        $userManager->updateUser($user);
     }
 
     public function composerRequire($name, $version)
