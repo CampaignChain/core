@@ -20,6 +20,12 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class User extends BaseUser
 {
+    private static $ROLE_NAMES = [
+        'ROLE_USER' => 'User',
+        'ROLE_ADMIN' => 'Admin',
+        'ROLE_SUPER_ADMIN' => 'Super Admin'
+    ];
+
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
@@ -318,6 +324,20 @@ class User extends BaseUser
     public function setLastName($lastName)
     {
         $this->lastName = $lastName;
+    }
+
+    public function getName()
+    {
+        return $this->firstName.' '.$this->lastName;
+    }
+
+    public function getHumanRole()
+    {
+        return join(',', array_map(function($role) {
+            if (isset(self::$ROLE_NAMES[$role])) {
+                return self::$ROLE_NAMES[$role];
+            }
+        }, $this->getRoles()));
     }
 
     /**

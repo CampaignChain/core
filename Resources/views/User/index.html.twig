@@ -12,7 +12,9 @@
             <thead>
                 <tr>
                     <th>Name</th>
+                    <th>Username</th>
                     <th>Email</th>
+                    <th>Role</th>
                     <th></th>
                 </tr>
             </thead>
@@ -21,8 +23,10 @@
                     <tr class="
                             {% if user.expired == true %}text-muted {% endif %}
                             ">
+                        <td>{{ user.name }}</td>
                         <td>{{ user.username }}</td>
                         <td>{{ user.email }}</td>
+                        <td>{{ user.humanRole }}</td>
                         <td>
                             <a role="button" class="btn btn-default btn-xs"
                                href="{{ path('campaignchain_core_profile_edit',{'id':user.id}) }}">
