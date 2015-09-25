@@ -77,6 +77,16 @@ class User extends BaseUser
     protected $modifiedDate;
 
     /**
+     * @ORM\Column(type="string", nullable=false)
+     */
+    protected $firstName;
+
+    /**
+     * @ORM\Column(type="string", nullable=false)
+     */
+    protected $lastName;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -276,6 +286,38 @@ class User extends BaseUser
     public function getModifiedDate()
     {
         return $this->modifiedDate;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFirstName()
+    {
+        return $this->firstName;
+    }
+
+    /**
+     * @param mixed $firstName
+     */
+    public function setFirstName($firstName)
+    {
+        $this->firstName = $firstName;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLastName()
+    {
+        return $this->lastName;
+    }
+
+    /**
+     * @param mixed $lastName
+     */
+    public function setLastName($lastName)
+    {
+        $this->lastName = $lastName;
     }
 
     /**

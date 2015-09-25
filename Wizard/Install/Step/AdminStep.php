@@ -38,6 +38,11 @@ class AdminStep implements StepInterface
      */
     public $email;
 
+    /**
+     * @Assert\NotBlank
+     */
+    public $user;
+
     private $context;
 
     private $command;
@@ -101,14 +106,17 @@ class AdminStep implements StepInterface
 
     /**
      * @see StepInterface
+     * @param StepInterface $data
+     * @return array
      */
     public function update(StepInterface $data)
     {
         return array(
-            'first_name' => $data->first_name,
-            'last_name' => $data->last_name,
+            'firstName' => $data->first_name,
+            'lastName' => $data->last_name,
             'email' => $data->email,
             'password' => $data->password,
+            'username' => $data->user,
         );
     }
 
@@ -122,7 +130,6 @@ class AdminStep implements StepInterface
 
     public function execute($parameters)
     {
-        // Load schemas of entities into database
-        $this->command->createAdminUser($this->email, $this->password);
+        $this->command->createAdminUser($parameters);
     }
 }
