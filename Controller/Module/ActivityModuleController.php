@@ -354,6 +354,27 @@ class ActivityModuleController extends Controller
         return $response->setStatusCode(Response::HTTP_OK);
     }
 
+    public function readAction(Request $request, $id)
+    {
+        $activityService = $this->get('campaignchain.core.activity');
+        $this->activity = $activityService->getActivity($id);
+
+        if($this->parameters['equals_operation']) {
+            // Get the one operation.
+            $this->operations[] = $activityService->getOperation($id);
+        } else {
+            throw new \Exception(
+                'Multiple Operations for one Activity not implemented yet.'
+            );
+        }
+
+        if($this->handler){
+            return $this->handler->readOperationDetail($this->operations[0]);
+        } else {
+            throw new \Exception('No read handler defined.');
+        }
+    }
+
     /**
      * Configure an Activity's form type.
      *
