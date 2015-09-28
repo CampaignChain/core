@@ -23,11 +23,13 @@ class ActivityModuleController extends Controller
 {
     protected $parameters;
 
-    protected $handler = null;
+    protected $handler;
 
     protected $campaign;
 
     protected $activity;
+
+    protected $location;
 
     protected $operations = array();
 
@@ -263,6 +265,36 @@ class ActivityModuleController extends Controller
             ));
     }
 
+    public function editModalAction(Request $request, $id)
+    {
+        $activityService = $this->get('campaignchain.core.activity');
+        $this->activity = $activityService->getActivity($id);
+        $this->campaign = $this->activity->getCampaign();
+
+        if($this->parameters['equals_operation']) {
+            // Get the one operation.
+            $this->operations[] = $activityService->getOperation($id);
+        } else {
+            throw new \Exception(
+                'Multiple Operations for one Activity not implemented yet.'
+            );
+        }
+
+        $activityFormType = $this->getActivityFormType();
+        $activityFormType->setView('default');
+
+        $form = $this->createForm($activityFormType, $this->activity);
+
+        $form->handleRequest($request);
+
+        return $this->render(
+            'CampaignChainCoreBundle:Base:new_modal.html.twig',
+            array(
+                'page_title' => 'Edit Activity',
+                'form' => $form->createView(),
+            ));
+    }
+
     /**
      * Configure an Activity's form type.
      *
@@ -301,7 +333,9 @@ class ActivityModuleController extends Controller
                     $this->get('service_container')
                 );
 
-                $operationFormType->setLocation($this->location);
+                if($this->location) {
+                    $operationFormType->setLocation($this->location);
+                }
 
                 if($this->handler && isset($this->operations[0])){
                     $operationFormType->setOperationDetail(
