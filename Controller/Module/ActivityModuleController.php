@@ -10,7 +10,6 @@
 
 namespace CampaignChain\CoreBundle\Controller\Module;
 
-use CampaignChain\CoreBundle\Entity\Campaign;
 use CampaignChain\CoreBundle\Entity\Location;
 use CampaignChain\CoreBundle\Entity\Medium;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -18,6 +17,9 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use CampaignChain\CoreBundle\Entity\Operation;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 
 class ActivityModuleController extends Controller
 {
@@ -293,6 +295,63 @@ class ActivityModuleController extends Controller
                 'page_title' => 'Edit Activity',
                 'form' => $form->createView(),
             ));
+    }
+
+    public function editApiAction(Request $request, $id)
+    {
+        $responseData = array();
+
+        $data = $request->get('campaignchain_core_activity');
+
+        $activityService = $this->get('campaignchain.core.activity');
+        $this->activity = $activityService->getActivity($id);
+        $this->activity->setName($data['name']);
+
+        if($this->parameters['equals_operation']) {
+            // Get the one operation.
+            $operation = $activityService->getOperation($id);
+            // The activity equals the operation. Thus, we update the operation
+            // with the same data.
+            $operation->setName($data['name']);
+            $this->operations[] = $operation;
+
+            if($this->handler){
+                $operationDetails = $this->handler->processOperationDetail(
+                    $this->operations[0],
+                    $data[$this->parameters['operation_module_identifier']]
+                );
+            }
+        } else {
+            throw new \Exception(
+                'Multiple Operations for one Activity not implemented yet.'
+            );
+        }
+
+        $repository = $this->getDoctrine()->getManager();
+        $repository->persist($this->activity);
+        $repository->persist($this->operations[0]);
+        $repository->persist($operationDetails);
+
+        $hookService = $this->get('campaignchain.core.hook');
+        $this->activity = $hookService->processHooks(
+            $this->parameters['activity_bundle_name'],
+            $this->parameters['activity_module_identifier'],
+            $this->activity,
+            $data
+        );
+
+        $repository->flush();
+
+        $responseData['start_date'] =
+        $responseData['end_date'] =
+            $this->activity->getStartDate()->format(\DateTime::ISO8601);
+
+        $encoders = array(new JsonEncoder());
+        $normalizers = array(new GetSetMethodNormalizer());
+        $serializer = new Serializer($normalizers, $encoders);
+
+        $response = new Response($serializer->serialize($responseData, 'json'));
+        return $response->setStatusCode(Response::HTTP_OK);
     }
 
     /**
