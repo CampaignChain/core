@@ -43,6 +43,13 @@ class ActivityModuleController extends Controller
         }
     }
 
+    /**
+     * Symfony controller action for creating a new CampaignChain Activity.
+     *
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
+     * @throws \Exception
+     */
     public function newAction(Request $request)
     {
         /*
@@ -172,6 +179,14 @@ class ActivityModuleController extends Controller
 
     }
 
+    /**
+     * Symfony controller action for editing a CampaignChain Activity.
+     *
+     * @param Request $request
+     * @param $id
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
+     * @throws \Exception
+     */
     public function editAction(Request $request, $id)
     {
         $activityService = $this->get('campaignchain.core.activity');
@@ -181,7 +196,7 @@ class ActivityModuleController extends Controller
 
         if($this->parameters['equals_operation']) {
             // Get the one operation.
-            $this->operations[] = $activityService->getOperation($id);
+            $this->operations[0] = $activityService->getOperation($id);
         } else {
             throw new \Exception(
                 'Multiple Operations for one Activity not implemented yet.'
@@ -267,15 +282,25 @@ class ActivityModuleController extends Controller
             ));
     }
 
+    /**
+     * Symfony controller action for editing a CampaignChain Activity in a
+     * pop-up window.
+     *
+     * @param Request $request
+     * @param $id
+     * @return Response
+     * @throws \Exception
+     */
     public function editModalAction(Request $request, $id)
     {
         $activityService = $this->get('campaignchain.core.activity');
         $this->activity = $activityService->getActivity($id);
+        $this->location = $this->activity->getLocation();
         $this->campaign = $this->activity->getCampaign();
 
         if($this->parameters['equals_operation']) {
             // Get the one operation.
-            $this->operations[] = $activityService->getOperation($id);
+            $this->operations[0] = $activityService->getOperation($id);
         } else {
             throw new \Exception(
                 'Multiple Operations for one Activity not implemented yet.'
@@ -297,6 +322,15 @@ class ActivityModuleController extends Controller
             ));
     }
 
+    /**
+     * Symfony controller action that takes the data posted by the editModalAction
+     * and persists it.
+     *
+     * @param Request $request
+     * @param $id
+     * @return Response
+     * @throws \Exception
+     */
     public function editApiAction(Request $request, $id)
     {
         $responseData = array();
@@ -313,7 +347,7 @@ class ActivityModuleController extends Controller
             // The activity equals the operation. Thus, we update the operation
             // with the same data.
             $operation->setName($data['name']);
-            $this->operations[] = $operation;
+            $this->operations[0] = $operation;
 
             if($this->handler){
                 $operationDetails = $this->handler->processOperationDetail(
@@ -354,6 +388,14 @@ class ActivityModuleController extends Controller
         return $response->setStatusCode(Response::HTTP_OK);
     }
 
+    /**
+     * Symfony controller action for viewing the data of a CampaignChain Activity.
+     *
+     * @param Request $request
+     * @param $id
+     * @return mixed
+     * @throws \Exception
+     */
     public function readAction(Request $request, $id)
     {
         $activityService = $this->get('campaignchain.core.activity');
@@ -361,7 +403,7 @@ class ActivityModuleController extends Controller
 
         if($this->parameters['equals_operation']) {
             // Get the one operation.
-            $this->operations[] = $activityService->getOperation($id);
+            $this->operations[0] = $activityService->getOperation($id);
         } else {
             throw new \Exception(
                 'Multiple Operations for one Activity not implemented yet.'
@@ -417,9 +459,14 @@ class ActivityModuleController extends Controller
                     $operationFormType->setLocation($this->location);
                 }
 
-                if($this->handler && isset($this->operations[0])){
+                if($this->handler){
+                    if(isset($this->operations[0])){
+                        $operation = $this->operations[0];
+                    } else {
+                        $operation = null;
+                    }
                     $operationFormType->setOperationDetail(
-                        $this->handler->getOperationDetail($this->operations[0])
+                        $this->handler->getOperationDetail($this->location, $operation)
                     );
                 }
 

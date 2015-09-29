@@ -15,6 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 abstract class OperationType extends AbstractType
 {
@@ -52,5 +53,17 @@ abstract class OperationType extends AbstractType
         } else {
             $view->vars['location'] = $options['data']->getOperation()->getActivity()->getLocation();
         }
+    }
+
+    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    {
+        $defaults = array(
+            'data_class' => get_class($this->operationDetail),
+        );
+
+        if($this->operationDetail){
+            $defaults['data'] = $this->operationDetail;
+        }
+        $resolver->setDefaults($defaults);
     }
 }
