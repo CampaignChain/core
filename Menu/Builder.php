@@ -43,10 +43,12 @@ class Builder extends ContainerAware
 
     public function profileListTab(FactoryInterface $factory, array $options)
     {
+        $request = $this->container->get('request_stack')->getMasterRequest();
+
         $menu = $factory->createItem('root');
 
-        $menu->addChild('Settings', array('route' => 'campaignchain_core_profile_edit'));
-        $menu->addChild('Password', array('route' => 'fos_user_change_password'));
+        $menu->addChild('Settings', array('route' => 'campaignchain_core_profile_edit', 'routeParameters' => array('id' => $request->attributes->getInt('id') )));
+        $menu->addChild('Password', array('route' => 'campaignchain_core_profile_change_password', 'routeParameters' => array('id' => $request->attributes->getInt('id') )));
 
         return $menu;
     }

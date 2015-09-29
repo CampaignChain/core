@@ -59,6 +59,11 @@ services:
     campaignchain.core.form.type.location:
         class: CampaignChain\CoreBundle\Form\Type\LocationType
         arguments: [ @doctrine.orm.entity_manager, @service_container ]
+    campaignchain.core.form.type.user:
+        class: CampaignChain\CoreBundle\Form\Type\UserType
+        arguments: [ "%campaignchain_core%" ]
+        tags:
+            - {name: form.type, alias: "campaignchain_core_user" }
     campaignchain.core.location:
         class: CampaignChain\CoreBundle\EntityService\LocationService
         arguments: [ @doctrine.orm.entity_manager, @service_container ]

@@ -7,6 +7,12 @@
 {% block body %}
     {% include 'CampaignChainCoreBundle:Base:datatable.html.twig' %}
 
+    <div>
+        <a class="btn btn-primary" href="{{ url('campaignchain_core_user_new') }}">
+            New user</span>
+        </a>
+    </div>
+
     <!--<div class="table-responsive">-->
         <table id="example" class="table table-striped table-bordered dataTable">
             <thead>
