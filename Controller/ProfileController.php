@@ -17,21 +17,25 @@ use Doctrine\ORM\EntityRepository;
 
 class ProfileController extends Controller
 {
-    public function editAction(Request $request){
-        $user = $this->get('security.context')->getToken()->getUser();
+    public function editAction(Request $request, $id){
+        $user = $this->getDoctrine()
+            ->getRepository('CampaignChainCoreBundle:User')
+            ->find($id);
 
-        $formUserType = new UserType($this->container->getParameter('campaignchain_core')['formats']);
+        if (!$user) {
+            return $this->createNotFoundException('No user found');
+        }
 
-        $form = $this->createForm($formUserType, $user);
+        $form = $this->createForm('campaignchain_core_user', $user);
 
         $form->handleRequest($request);
 
         if ($form->isValid()) {
             // Change new profile in user's session
-            $this->container->get('session')->set('campaignchain.locale', $user->getLocale());
-            $this->container->get('session')->set('campaignchain.timezone', $user->getTimezone());
-            $this->container->get('session')->set('campaignchain.dateFormat', $user->getDateFormat());
-            $this->container->get('session')->set('campaignchain.timeFormat', $user->getTimeFormat());
+            $request->getSession()->set('campaignchain.locale', $user->getLocale());
+            $request->getSession()->set('campaignchain.timezone', $user->getTimezone());
+            $request->getSession()->set('campaignchain.dateFormat', $user->getDateFormat());
+            $request->getSession()->set('campaignchain.timeFormat', $user->getTimeFormat());
 
             $repository = $this->getDoctrine()->getManager();
             $repository->persist($user);
@@ -51,6 +55,41 @@ class ProfileController extends Controller
                 'page_title' => 'Profile',
                 'form' => $form->createView(),
                 'form_submit_label' => 'Save',
+                'user' => $user,
             ));
+    }
+
+    public function changePasswordAction(Request $request, $id)
+    {
+        $user = $this->getDoctrine()
+            ->getRepository('CampaignChainCoreBundle:User')
+            ->find($id);
+
+        if (!$user) {
+            return $this->createNotFoundException('No user found');
+        }
+
+        /** @var $formFactory \FOS\UserBundle\Form\Factory\FactoryInterface */
+        $formFactory = $this->get('fos_user.change_password.form.factory');
+
+        $form = $formFactory->createForm();
+        $form->setData($user);
+
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            /** @var $userManager \FOS\UserBundle\Model\UserManagerInterface */
+            $userManager = $this->get('fos_user.user_manager');
+            $userManager->updateUser($user);
+
+            $this->addFlash('success', 'Your password was successfully changed!');
+
+            return $this->redirectToRoute('campaignchain_core_user');
+        }
+
+        return $this->render('CampaignChainCoreBundle:Profile:changePassword.html.twig', array(
+            'form' => $form->createView(),
+            'page_title' => 'Change Password',
+        ));
     }
 }

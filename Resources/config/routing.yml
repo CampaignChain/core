@@ -192,8 +192,16 @@ campaignchain_core_user:
     defaults: { _controller: CampaignChainCoreBundle:User:index }
 
 campaignchain_core_profile_edit:
-    pattern:  /profile/edit
+    pattern:  /profile/edit/{id}
     defaults: { _controller: CampaignChainCoreBundle:Profile:edit }
+
+campaignchain_core_profile_change_password:
+    pattern:  /profile/change_password/{id}
+    defaults: { _controller: CampaignChainCoreBundle:Profile:changePassword }
+
+campaignchain_core_user_new:
+    path: /users/new
+    defaults: { _controller: CampaignChainCoreBundle:User:new }
 
 # FOS User
 
@@ -211,10 +219,6 @@ fos_user_register:
 fos_user_resetting:
     resource: "@FOSUserBundle/Resources/config/routing/resetting.xml"
     prefix: /user/resetting
-
-fos_user_change_password:
-    resource: "@FOSUserBundle/Resources/config/routing/change_password.xml"
-    prefix: /user/profile
 
 fos_user_group:
     resource: "@FOSUserBundle/Resources/config/routing/group.xml"

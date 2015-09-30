@@ -10,21 +10,60 @@
 
 namespace CampaignChain\CoreBundle\Controller;
 
+use CampaignChain\CoreBundle\Entity\User;
+use CampaignChain\CoreBundle\Form\Type\UserType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Doctrine\ORM\EntityRepository;
 
 class UserController extends Controller
 {
+    /**
+     * List every user from the DB
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function indexAction(){
         $userManager = $this->get('fos_user.user_manager');
         $users = $userManager->findUsers();
-
 
         return $this->render('CampaignChainCoreBundle:User:index.html.twig',
             array(
                 'users' =>   $users,
                 'page_title' => 'Users',
+            ));
+    }
+
+    /**
+     * Create a new user
+     *
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function newAction(Request $request)
+    {
+        $userManager = $this->get('fos_user.user_manager');
+        /** @var User  $user */
+        $user = $userManager->createUser();
+
+        $form = $this->createForm('campaignchain_core_user', $user, ['new' => true]);
+
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $user->setEnabled(true);
+            $user->setPlainPassword($form->get('password')->getData());
+
+            $userManager->updateUser($user);
+
+            $this->addFlash('success', 'New user successfully created!');
+
+            return $this->redirectToRoute('campaignchain_core_user');
+        }
+
+        return $this->render('CampaignChainCoreBundle:User:new.html.twig',
+            array(
+                'form' => $form->createView(),
+                'page_title' => 'New User',
             ));
     }
 }
