@@ -46,7 +46,7 @@ class ProfileController extends Controller
                 'Your profile was edited successfully.'
             );
 
-            return $this->redirect($this->generateUrl('campaignchain_core_profile_edit'));
+            return $this->redirect($this->generateUrl('campaignchain_core_profile_edit', ['id' => $id]));
         }
 
         return $this->render(
