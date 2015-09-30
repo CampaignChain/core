@@ -73,6 +73,7 @@ class ProfileController extends Controller
         $formFactory = $this->get('fos_user.change_password.form.factory');
 
         $form = $formFactory->createForm();
+        $form->setData($user);
 
         $form->handleRequest($request);
 
