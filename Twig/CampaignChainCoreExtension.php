@@ -50,7 +50,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
     }
 
     public function system(){
-        return $this->em->getRepository('CampaignChainCoreBundle:System')->find(1);
+        return $this->container->get('campaignchain.core.system')->getActiveSystem();
     }
 
     public function mediumIcon($object)
