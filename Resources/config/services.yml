@@ -96,6 +96,9 @@ services:
     campaignchain.core.cta:
         class: CampaignChain\CoreBundle\EntityService\CTAService
         arguments: [ @doctrine.orm.entity_manager, @service_container ]
+    campaignchain.core.system:
+        class: CampaignChain\CoreBundle\EntityService\SystemService
+        arguments: [ @doctrine.orm.entity_manager ]
     campaignchain.core.model.dhtmlxgantt:
         class: CampaignChain\CoreBundle\Model\DhtmlxGantt
         arguments: [ @doctrine.orm.entity_manager, @service_container ]
@@ -188,3 +191,11 @@ services:
         arguments: [ %campaignchain_dev% ]
         tags:
             - { name: security.voter }
+    campaignchain.core.menu.dropdown_renderer:
+        class: Knp\Menu\Renderer\TwigRenderer
+        arguments:
+            - @twig
+            - "CampaignChainCoreBundle:Menu:dropdown_theme.html.twig"
+            - @knp_menu.matcher
+        tags:
+            - { name: knp_menu.renderer, alias: dropdown }

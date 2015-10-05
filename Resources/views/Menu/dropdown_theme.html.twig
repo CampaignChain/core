@@ -1,0 +1,24 @@
+{% extends 'knp_menu.html.twig' %}
+
+{% block list %}
+    {# Add 'dropdown-menu' to root item attributes #}
+    {% set listAttributes = listAttributes|merge({
+        class: "dropdown-menu " ~ listAttributes.class|default(""),
+    }) %}
+    {{ parent() }}
+{% endblock %}
+
+{% block item %}
+    {# Prepend or append divider if extra option is set #}
+    {% if item.extras.prependDivider|default(false) %}
+        {{ block('divider') }}
+    {% endif %}
+    {{ parent() }}
+    {% if item.extras.appendDivider|default(false) %}
+        {{ block('divider') }}
+    {% endif %}
+{% endblock %}
+
+{% block divider %}
+    <li class="divider"></li>
+{% endblock %}
