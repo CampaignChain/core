@@ -7,6 +7,17 @@
     right: -300px;
 }
 
+#sidemenu-drape {
+    display: none;
+    background-color: transparent;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1030;
+}
+
 /* Prevent horizontal scroll bars from showing when side menu is visible */
 body.sidemenu-transition {
     overflow-x: hidden;
@@ -14,6 +25,7 @@ body.sidemenu-transition {
 
 /* Enable transitions */
 body.sidemenu-transition #sidemenu,
+body.sidemenu-transition #sidemenu-drape,
 body.sidemenu-transition #main-content,
 body.sidemenu-transition .footer,
 body.sidemenu-transition .navbar-fixed-top {
@@ -21,11 +33,14 @@ body.sidemenu-transition .navbar-fixed-top {
 }
 
 /* Show side menu when transition is enabled, ready to be moved into the view */
-body.sidemenu-transition #sidemenu {
+body.sidemenu-transition #sidemenu,
+body.sidemenu-transition #sidemenu-drape {
     display: block;
 }
 
 /* Move stuff around */
+
+
 body.sidemenu-show #sidemenu {
     right: 0;
 }
@@ -39,8 +54,13 @@ body.sidemenu-show .footer {
     -ms-transform: translate(-300px, 0px);
     transform: translate(-300px, 0px);
 }
-/* navbar is `position: fixed`, so `translate()` should be avoided. Transitions works here though */
+/* navbar is `position: fixed`, so `translate()` should be avoided. Transitions works here thoughy */
 body.sidemenu-show .navbar-fixed-top {
     right: 300px;
     left: -300px;
+}
+
+body.sidemenu-show #sidemenu-drape {
+    background-color: rgba(0, 0, 0, 0.75);
+    right: 300px;
 }
