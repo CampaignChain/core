@@ -1,0 +1,46 @@
+/* Position side menu off the right side of the page */
+#sidemenu {
+    display: none;
+    position: fixed;
+    width: 300px;
+    top: 0;
+    right: -300px;
+}
+
+/* Prevent horizontal scroll bars from showing when side menu is visible */
+body.sidemenu-transition {
+    overflow-x: hidden;
+}
+
+/* Enable transitions */
+body.sidemenu-transition #sidemenu,
+body.sidemenu-transition #main-content,
+body.sidemenu-transition .footer,
+body.sidemenu-transition .navbar-fixed-top {
+    transition: all .5s ease-out;
+}
+
+/* Show side menu when transition is enabled, ready to be moved into the view */
+body.sidemenu-transition #sidemenu {
+    display: block;
+}
+
+/* Move stuff around */
+body.sidemenu-show #sidemenu {
+    right: 0;
+}
+
+/* Using translate() to move body & footer, animating `right` doesn't seem to be possible */
+body.sidemenu-show #main-content,
+body.sidemenu-show .footer {
+    -moz-transform: translate(-300px, 0px);
+    -webkit-transform: translate(-300px, 0px);
+    -o-transform: translate(-300px, 0px);
+    -ms-transform: translate(-300px, 0px);
+    transform: translate(-300px, 0px);
+}
+/* navbar is `position: fixed`, so `translate()` should be avoided. Transitions works here though */
+body.sidemenu-show .navbar-fixed-top {
+    right: 300px;
+    left: -300px;
+}

@@ -1,0 +1,55 @@
+{% extends 'knp_menu.html.twig' %}
+
+{# TODO: Add support for nested menus if neccessary #}
+
+{% block list %}
+    {% if item.hasChildren and options.depth is not same as(0) and item.displayChildren %}
+        {# Add 'dropdown-menu' to root item attributes #}
+        {% set listAttributes = listAttributes|merge({
+            class: "list-group " ~ listAttributes.class|default(""),
+        }) %}
+
+        {% import 'knp_menu.html.twig' as knp_menu %}
+        <div{{ knp_menu.attributes(listAttributes) }}>
+            {{ block('children') }}
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block item %}
+    {% if item.displayed %}
+        {# building the class of the item #}
+        {%- set classes = ['list-group-item']|merge(item.attribute('class') is not empty ? [item.attribute('class')] : []) %}
+
+        {%- if matcher.isCurrent(item) %}
+            {%- set classes = classes|merge([options.currentClass]) %}
+        {%- elseif matcher.isAncestor(item, options.matchingDepth) %}
+            {%- set classes = classes|merge([options.ancestorClass]) %}
+        {%- endif %}
+        {%- if item.actsLikeFirst %}
+            {%- set classes = classes|merge([options.firstClass]) %}
+        {%- endif %}
+        {%- if item.actsLikeLast %}
+            {%- set classes = classes|merge([options.lastClass]) %}
+        {%- endif %}
+
+        {# Mark item as "leaf" (no children) or as "branch" (has children that are displayed) #}
+        {% if item.hasChildren and options.depth is not same as(0) %}
+            {% if options.branch_class is not empty and item.displayChildren %}
+                {%- set classes = classes|merge([options.branch_class]) %}
+            {% endif %}
+        {% elseif options.leaf_class is not empty %}
+            {%- set classes = classes|merge([options.leaf_class]) %}
+        {%- endif %}
+
+        {%- set attributes = item.attributes %}
+        {%- if classes is not empty %}
+            {%- set attributes = attributes|merge({'class': classes|join(' ')}) %}
+        {%- endif %}
+
+        {# displaying the item #}
+        {% import 'knp_menu.html.twig' as knp_menu %}
+
+        <a href="{{ item.uri }}" {{ knp_menu.attributes(attributes) }}>{{ block('label') }}</a>
+    {% endif %}
+{% endblock %}

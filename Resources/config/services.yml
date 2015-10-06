@@ -191,6 +191,16 @@ services:
         arguments: [ %campaignchain_dev% ]
         tags:
             - { name: security.voter }
+
+    campaignchain.core.menu.list_group_renderer:
+        class: Knp\Menu\Renderer\TwigRenderer
+        arguments:
+            - @twig
+            - "CampaignChainCoreBundle:Menu:list_group_theme.html.twig"
+            - @knp_menu.matcher
+        tags:
+            - { name: knp_menu.renderer, alias: list-group }
+
     campaignchain.core.menu.dropdown_renderer:
         class: Knp\Menu\Renderer\TwigRenderer
         arguments:

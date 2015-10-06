@@ -60,17 +60,22 @@ file that was distributed with this source code.
         <![endif]-->
     </head>
     <body>
+        <div id="sidemenu">
+            {% include 'CampaignChainCoreBundle:Base:side_menu.html.twig' %}
+        </div>
         {% include 'CampaignChainCoreBundle:Base:navbar.html.twig' %}
-        <div class="container">
-            <div class="page-header">
-                <h1>{{ page_title }}{% if page_secondary_title is defined and page_secondary_title is not empty %} <small>{{ page_secondary_title }}</small>{% endif %}</h1>
+        <div id="main-content">
+            <div class="container">
+                <div class="page-header">
+                    <h1>{{ page_title }}{% if page_secondary_title is defined and page_secondary_title is not empty %} <small>{{ page_secondary_title }}</small>{% endif %}</h1>
+                </div>
+
+                {% block bodytabs %}{% endblock %}
+
+                {% include 'CampaignChainCoreBundle:Base:flashbag.html.twig' %}
+
+                {% block body %}{% endblock %}
             </div>
-
-            {% block bodytabs %}{% endblock %}
-
-            {% include 'CampaignChainCoreBundle:Base:flashbag.html.twig' %}
-
-            {% block body %}{% endblock %}
         </div>
         <footer class="footer">
                 <p class="navbar-text text-muted">
