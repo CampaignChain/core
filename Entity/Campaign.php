@@ -62,6 +62,12 @@ class Campaign extends Action
     protected $hasRelativeDates = false;
 
     /**
+     * @ORM\ManyToOne(targetEntity="CampaignChain\CoreBundle\Entity\User", inversedBy="campaigns")
+     * @ORM\JoinColumn(name="assignee", referencedColumnName="id")
+     */
+    protected $assignee;
+
+    /**
      * Get id
      *
      * @return integer
@@ -296,6 +302,22 @@ class Campaign extends Action
     public function getHasRelativeDates()
     {
         return $this->hasRelativeDates;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAssignee()
+    {
+        return $this->assignee;
+    }
+
+    /**
+     * @param mixed $assignee
+     */
+    public function setAssignee($assignee)
+    {
+        $this->assignee = $assignee;
     }
 
 //    public function __clone()

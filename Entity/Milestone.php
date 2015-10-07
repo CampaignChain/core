@@ -37,6 +37,12 @@ class Milestone extends Action
     protected $milestoneModule;
 
     /**
+     * @ORM\ManyToOne(targetEntity="CampaignChain\CoreBundle\Entity\User", inversedBy="milestones")
+     * @ORM\JoinColumn(name="assignee", referencedColumnName="id")
+     */
+    protected $assignee;
+
+    /**
      * Get id
      *
      * @return integer 
@@ -119,5 +125,21 @@ class Milestone extends Action
         if ($this->id) {
             $this->id = null;
         }
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAssignee()
+    {
+        return $this->assignee;
+    }
+
+    /**
+     * @param mixed $assignee
+     */
+    public function setAssignee($assignee)
+    {
+        $this->assignee = $assignee;
     }
 }

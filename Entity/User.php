@@ -10,6 +10,7 @@
 
 namespace CampaignChain\CoreBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -93,11 +94,29 @@ class User extends BaseUser
     protected $lastName;
 
     /**
+     * @ORM\OneToMany(targetEntity="CampaignChain\CoreBundle\Entity\Campaign", mappedBy="user")
+     */
+    protected $campaigns;
+
+    /**
+     * @ORM\OneToMany(targetEntity="CampaignChain\CoreBundle\Entity\Activity", mappedBy="user")
+     */
+    protected $activities;
+
+    /**
+     * @ORM\OneToMany(targetEntity="CampaignChain\CoreBundle\Entity\Milestone", mappedBy="user")
+     */
+    protected $milestones;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
         parent::__construct();
+        $this->campaigns = new ArrayCollection();
+        $this->activities = new ArrayCollection();
+        $this->milestones = new ArrayCollection();
     }
 
     /**
@@ -352,5 +371,101 @@ class User extends BaseUser
         } else {
             $this->setModifiedDate(new \DateTime('now', new \DateTimeZone('UTC')));
         }
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCampaigns()
+    {
+        return $this->campaigns;
+    }
+
+    /**
+     * @param mixed $campaigns
+     */
+    public function setCampaigns($campaigns)
+    {
+        $this->campaigns = $campaigns;
+    }
+
+    /**
+     * @param Campaign $campaign
+     */
+    public function addCampaign(Campaign $campaign)
+    {
+        $this->campaigns[] = $campaign;
+    }
+
+    /**
+     * @param Campaign $campaign
+     */
+    public function removeCampaign(Campaign $campaign)
+    {
+        $this->campaigns->removeElement($campaign);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getActivities()
+    {
+        return $this->activities;
+    }
+
+    /**
+     * @param mixed $activities
+     */
+    public function setActivities($activities)
+    {
+        $this->activities = $activities;
+    }
+
+    /**
+     * @param Activity $activity
+     */
+    public function addActivity(Activity $activity)
+    {
+        $this->activities[] = $activity;
+    }
+
+    /**
+     * @param Activity $activity
+     */
+    public function removeActivity(Activity $activity)
+    {
+        $this->activities->removeElement($activity);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMilestones()
+    {
+        return $this->milestones;
+    }
+
+    /**
+     * @param mixed $milestones
+     */
+    public function setMilestones($milestones)
+    {
+        $this->milestones = $milestones;
+    }
+
+    /**
+     * @param Milestone $milestone
+     */
+    public function addMilestone(Milestone $milestone)
+    {
+        $this->milestones[] = $milestone;
+    }
+
+    /**
+     * @param Milestone $milestone
+     */
+    public function removeMilestone(Milestone $milestone)
+    {
+        $this->milestones->removeElement($milestone);
     }
 }

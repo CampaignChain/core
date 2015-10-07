@@ -64,6 +64,13 @@ class Activity extends Action
     protected $equalsOperation = true;
 
     /**
+     * @ORM\ManyToOne(targetEntity="CampaignChain\CoreBundle\Entity\User", inversedBy="activities")
+     * @ORM\JoinColumn(name="assignee", referencedColumnName="id")
+     */
+    protected $assignee;
+
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -297,4 +304,22 @@ class Activity extends Action
             $this->id = null;
         }
     }
+
+    /**
+     * @return mixed
+     */
+    public function getAssignee()
+    {
+        return $this->assignee;
+    }
+
+    /**
+     * @param mixed $assignee
+     */
+    public function setAssignee($assignee)
+    {
+        $this->assignee = $assignee;
+    }
+
+
 }
