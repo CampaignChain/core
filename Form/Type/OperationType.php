@@ -18,7 +18,7 @@ use Symfony\Component\Form\FormInterface;
 
 abstract class OperationType extends AbstractType
 {
-    protected $operationDetail;
+    protected $content;
     protected $view = 'default';
     protected $em;
     protected $container;
@@ -30,8 +30,8 @@ abstract class OperationType extends AbstractType
         $this->container = $container;
     }
 
-    public function setOperationDetail($operationDetail){
-        $this->operationDetail = $operationDetail;
+    public function setContent($content){
+        $this->content = $content;
     }
 
     public function setView($view){

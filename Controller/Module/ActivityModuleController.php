@@ -37,23 +37,31 @@ class ActivityModuleController extends Controller
 
     private $locationBundleName;
     private $locationModuleIdentifier;
-    private $operationBundleName;
-    private $operationModuleIdentifier;
-    private $operationFormType;
+    private $contentBundleName;
+    private $contentModuleIdentifier;
+    private $contentFormType;
 
     public function setParameters($parameters){
         $this->parameters = $parameters;
 
-        if(!isset($this->parameters['controller_handler'])){
-            throw new \Exception('No controller handler defined in services.yml.');
+        if(!isset($this->parameters['handler'])){
+            throw new \Exception('No Activity handler defined in services.yml.');
         }
-        $this->handler = $this->get($this->parameters['controller_handler']);
+        $this->handler = $this->get($this->parameters['handler']);
+
+        if(!isset($this->parameters['equals_operation'])){
+            $this->parameters['equals_operation'] = false;
+        }
 
         $this->locationBundleName = $this->parameters['location']['bundle_name'];
         $this->locationModuleIdentifier = $this->parameters['location']['module_identifier'];
-        $this->operationBundleName = $this->parameters['operations'][0]['bundle_name'];
-        $this->operationModuleIdentifier = $this->parameters['operations'][0]['module_identifier'];
-        $this->operationFormType = $this->parameters['operations'][0]['form_type'];
+        if($this->parameters['equals_operation']) {
+            $this->contentBundleName = $this->parameters['operations'][0]['bundle_name'];
+            $this->contentModuleIdentifier = $this->parameters['operations'][0]['module_identifier'];
+            $this->contentFormType = $this->parameters['operations'][0]['form_type'];
+        } else {
+            $this->contentFormType = $this->parameters['content_form_type'];
+        }
     }
 
     /**
@@ -76,6 +84,8 @@ class ActivityModuleController extends Controller
         $locationService = $this->get('campaignchain.core.location');
         $this->location = $locationService->getLocation($wizard->getLocation());
 
+        $this->location = $this->handler->processActivityLocation($this->location);
+
         $form = $this->createForm(
             $this->getActivityFormType('new'), $this->activity
         );
@@ -87,14 +97,14 @@ class ActivityModuleController extends Controller
             // Allow a module's handler to modify the Activity data.
             $this->activity = $this->handler->processActivity(
                 $this->activity,
-                $form->get($this->operationModuleIdentifier)->getData()
+                $form->get($this->contentModuleIdentifier)->getData()
             );
 
             // Get the operation module.
             $operationService = $this->get('campaignchain.core.operation');
             $operationModule = $operationService->getOperationModule(
-                $this->operationBundleName,
-                $this->operationModuleIdentifier
+                $this->contentBundleName,
+                $this->contentModuleIdentifier
             );
 
             if($this->parameters['equals_operation']) {
@@ -115,27 +125,27 @@ class ActivityModuleController extends Controller
                     $this->locationModuleIdentifier
                 );
 
-                $operationLocation = new Location();
-                $operationLocation->setLocationModule($locationModule);
-                $operationLocation->setParent($this->activity->getLocation());
-                $operationLocation->setName($this->activity->getName());
-                $operationLocation->setStatus(Medium::STATUS_UNPUBLISHED);
-                $operationLocation->setOperation($operation);
-                $operation->addLocation($operationLocation);
+                $contentLocation = new Location();
+                $contentLocation->setLocationModule($locationModule);
+                $contentLocation->setParent($this->activity->getLocation());
+                $contentLocation->setName($this->activity->getName());
+                $contentLocation->setStatus(Medium::STATUS_UNPUBLISHED);
+                $contentLocation->setOperation($operation);
+                $operation->addLocation($contentLocation);
                 // Allow a module's handler to modify the Operation's Location.
-                $operationLocation = $this->handler->processOperationLocation(
-                    $operationLocation,
-                    $form->get($this->operationModuleIdentifier)->getData()
+                $contentLocation = $this->handler->processContentLocation(
+                    $contentLocation,
+                    $form->get($this->contentModuleIdentifier)->getData()
                 );
 
                 // Process the Operation details.
-                $operationDetails = $this->handler->processOperationDetails(
+                $content = $this->handler->processContent(
                     $operation,
-                    $form->get($this->operationModuleIdentifier)->getData()
+                    $form->get($this->contentModuleIdentifier)->getData()
                 );
 
                 // Link the Operation details with the operation.
-                $operationDetails->setOperation($operation);
+                $content->setOperation($operation);
             } else {
                 throw new \Exception(
                     'Multiple Operations for one Activity not implemented yet.'
@@ -149,7 +159,7 @@ class ActivityModuleController extends Controller
                 $repository->getConnection()->beginTransaction();
 
                 $repository->persist($this->activity);
-                $repository->persist($operationDetails);
+                $repository->persist($content);
 
                 // We need the activity ID for storing the hooks. Hence we must
                 // flush here.
@@ -171,20 +181,12 @@ class ActivityModuleController extends Controller
                 throw $e;
             }
 
-            $this->handler->postPersistNewAction($operation);
-
             $this->get('session')->getFlashBag()->add(
                 'success',
                 'Your new activity <a href="'.$this->generateUrl('campaignchain_core_activity_edit', array('id' => $this->activity->getId())).'">'.$this->activity->getName().'</a> was created successfully.'
             );
 
-            // Status Update to be sent immediately?
-            // TODO: This is an intermediary hardcoded hack and should be instead handled by the scheduler.
-            if ($form->get('campaignchain_hook_campaignchain_due')->has('execution_choice') && $form->get('campaignchain_hook_campaignchain_due')->get('execution_choice')->getData() == 'now') {
-                $job = $this->get($this->parameters['operation_job']);
-                $job->execute($operation->getId());
-                // TODO: Add different flashbag which includes link to posted message on Facebook
-            }
+            $this->handler->postPersistNewEvent($operation, $form, $content);
 
             return $this->redirect($this->generateUrl('campaignchain_core_activities'));
         }
@@ -230,7 +232,7 @@ class ActivityModuleController extends Controller
             );
         }
 
-        $this->handler->preFormCreateEditAction($this->operations[0]);
+        $content = $this->handler->preFormSubmitEditEvent($this->operations[0]);
 
         $form = $this->createForm(
             $this->getActivityFormType('edit'), $this->activity
@@ -245,10 +247,10 @@ class ActivityModuleController extends Controller
             try {
                 $repository->getConnection()->beginTransaction();
 
-                if($this->handler->hasOperationForm('edit')) {
+                if($this->handler->hasContent('edit')) {
                     // Get the status data from request.
-                    $operationDetails =
-                        $form->get($this->operationModuleIdentifier)
+                    $content =
+                        $form->get($this->contentModuleIdentifier)
                             ->getData();
 
                     if ($this->parameters['equals_operation']) {
@@ -261,7 +263,7 @@ class ActivityModuleController extends Controller
                         );
                     }
 
-                    $repository->persist($operationDetails);
+                    $repository->persist($content);
                 }
 
                 $hookService = $this->get('campaignchain.core.hook');
@@ -275,13 +277,6 @@ class ActivityModuleController extends Controller
 
                 $repository->flush();
 
-    //            // Status Update should be sent immediately
-    //            if ($form->get('actions')->get('send')->isClicked()) {
-    //                $job = $this->get('campaignchain.job.operation.twitter.update_status');
-    //                $job->execute($operation);
-    //
-    //                // TODO: If this previously was a scheduled activity, then reset the schedule
-    //            }
                 $repository->getConnection()->commit();
             } catch (\Exception $e) {
                 $repository->getConnection()->rollback();
@@ -292,6 +287,8 @@ class ActivityModuleController extends Controller
                 'success',
                 'Your activity <a href="'.$this->generateUrl('campaignchain_core_activity_edit', array('id' => $this->activity->getId())).'">'.$this->activity->getName().'</a> was edited successfully.'
             );
+
+            $this->handler->postPersistEditEvent($this->operations[0], $form, $content);
 
             if ($form->get('campaignchain_hook_campaignchain_due')->has('execution_choice') && $form->get('campaignchain_hook_campaignchain_due')->get('execution_choice')->getData() == 'now') {
                 $job = $this->get($this->parameters['operation_job']);
@@ -317,7 +314,7 @@ class ActivityModuleController extends Controller
             )
         );
 
-        $handlerRenderOptions = $this->handler->getRenderOptionsEditAction(
+        $handlerRenderOptions = $this->handler->getEditRenderOptions(
             $this->operations[0]
         );
 
@@ -352,7 +349,7 @@ class ActivityModuleController extends Controller
         $activityFormType = $this->getActivityFormType('editModal');
         $activityFormType->setView('default');
 
-        $this->handler->preFormCreateEditModalAction($this->operations[0]);
+        $this->handler->preFormSubmitEditModalEvent($this->operations[0]);
 
         $form = $this->createForm($activityFormType, $this->activity);
 
@@ -370,7 +367,7 @@ class ActivityModuleController extends Controller
             )
         );
 
-        $handlerRenderOptions = $this->handler->getRenderOptionsEditModalAction(
+        $handlerRenderOptions = $this->handler->getEditModalRenderOptions(
             $this->operations[0]
         );
 
@@ -404,10 +401,10 @@ class ActivityModuleController extends Controller
             $operation->setName($data['name']);
             $this->operations[0] = $operation;
 
-            if($this->handler->hasOperationForm('editModal')){
-                $operationDetails = $this->handler->processOperationDetails(
+            if($this->handler->hasContent('editModal')){
+                $content = $this->handler->processContent(
                     $this->operations[0],
-                    $data[$this->operationModuleIdentifier]
+                    $data[$this->contentModuleIdentifier]
                 );
             }
         } else {
@@ -419,8 +416,8 @@ class ActivityModuleController extends Controller
         $repository = $this->getDoctrine()->getManager();
         $repository->persist($this->activity);
         $repository->persist($this->operations[0]);
-        if($this->handler->hasOperationForm('editModal')) {
-            $repository->persist($operationDetails);
+        if($this->handler->hasContent('editModal')) {
+            $repository->persist($content);
         }
 
         $hookService = $this->get('campaignchain.core.hook');
@@ -468,7 +465,7 @@ class ActivityModuleController extends Controller
         }
 
         if($this->handler){
-            return $this->handler->readOperationDetail($this->operations[0]);
+            return $this->handler->readAction($this->operations[0]);
         } else {
             throw new \Exception('No read handler defined.');
         }
@@ -486,9 +483,9 @@ class ActivityModuleController extends Controller
         $activityFormType->setModuleIdentifier(
             $this->parameters['module_identifier']
         );
-        if($this->handler->hasOperationForm($view)) {
-            $activityFormType->setOperationForms(
-                $this->getOperationFormTypes()
+        if($this->handler->hasContent($view)) {
+            $activityFormType->setContentForms(
+                $this->getContentFormTypes()
             );
         }
         $activityFormType->setCampaign($this->campaign);
@@ -502,33 +499,33 @@ class ActivityModuleController extends Controller
      * @return array
      * @throws \Exception
      */
-    private function getOperationFormTypes()
+    private function getContentFormTypes()
     {
         if($this->parameters['equals_operation']) {
-            $operationForm = $this->operationFormType;
-            $operationFormType = new $operationForm(
+            $operationForm = $this->contentFormType;
+            $contentFormType = new $operationForm(
                 $this->getDoctrine()->getManager(),
                 $this->get('service_container')
             );
 
             if($this->location) {
-                $operationFormType->setLocation($this->location);
+                $contentFormType->setLocation($this->location);
             }
 
             if($this->handler){
                 if(isset($this->operations[0])){
-                    $operation = $this->operations[0];
+                    $content = $this->handler->getContent(
+                        $this->location, $this->operations[0]
+                    );
                 } else {
-                    $operation = null;
+                    $content = $this->handler->createContent($this->location);
                 }
-                $operationFormType->setOperationDetail(
-                    $this->handler->getOperationDetail($this->location, $operation)
-                );
+                $contentFormType->setContent($content);
             }
 
             $operationForms[] = array(
-                'identifier' => $this->operationModuleIdentifier,
-                'form' => $operationFormType
+                'identifier' => $this->contentModuleIdentifier,
+                'form' => $contentFormType
             );
         } else {
             throw new \Exception(
