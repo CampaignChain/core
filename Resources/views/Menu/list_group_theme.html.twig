@@ -42,6 +42,14 @@
             {%- set classes = classes|merge([options.leaf_class]) %}
         {%- endif %}
 
+        {# Dividers #}
+        {% if item.extras.prependDivider|default(false) %}
+            {%- set classes = classes|merge(['prepend-divider']) %}
+        {% endif %}
+        {% if item.extras.appendDivider|default(false) %}
+            {%- set classes = classes|merge(['append-divider']) %}
+        {% endif %}
+
         {%- set attributes = item.attributes %}
         {%- if classes is not empty %}
             {%- set attributes = attributes|merge({'class': classes|join(' ')}) %}

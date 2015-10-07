@@ -82,3 +82,11 @@ body.sidemenu-show #sidemenu-drape {
     font-size: 18px;
     border-bottom: 1px solid #DDD;
 }
+
+#sidemenu .list-group-item.prepend-divider {
+    margin-top: 15px;
+}
+
+#sidemenu .list-group-item.append-divider {
+    margin-bottom: 15px;
+}
