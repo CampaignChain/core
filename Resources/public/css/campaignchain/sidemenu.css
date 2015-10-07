@@ -1,3 +1,5 @@
+/*** Base styles ***/
+
 /* Position side menu off the right side of the page */
 #sidemenu {
     display: none;
@@ -17,6 +19,8 @@
     left: 0;
     z-index: 1030;
 }
+
+/*** Animation ***/
 
 /* Prevent horizontal scroll bars from showing when side menu is visible */
 body.sidemenu-transition {
@@ -63,4 +67,18 @@ body.sidemenu-show .navbar-fixed-top {
 body.sidemenu-show #sidemenu-drape {
     background-color: rgba(0, 0, 0, 0.75);
     right: 300px;
+}
+
+/*** Sidebar content ***/
+
+#sidemenu .list-group-item:first-child,
+#sidemenu .list-group-item:last-child {
+    border-radius: 0;
+}
+
+#sidemenu h1 {
+    margin: 0 0 45px;
+    padding: 15px;
+    font-size: 18px;
+    border-bottom: 1px solid #DDD;
 }
