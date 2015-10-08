@@ -3,9 +3,11 @@ assetic:
         campaignchain_base_css:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/css/campaignchain/base.css"
+                - "@CampaignChainCoreBundle/Resources/public/css/campaignchain/sidemenu.css"
         campaignchain_base_js:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/base.js"
+                - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/sidemenu.js"
                 - "@CampaignChainCoreBundle/Resources/public/components/ScrollToFixed/jquery-scrolltofixed.js"
         jquery_js:
             inputs:

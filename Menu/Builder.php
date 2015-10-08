@@ -61,4 +61,50 @@ class Builder extends ContainerAware
 
         return $menu;
     }
+
+    public function settingsMenu(FactoryInterface $factory, array $options)
+    {
+        $menu = $factory->createItem('root');
+
+        $menu->addChild('Users', [
+            'route' => 'campaignchain_core_user',
+        ]);
+        $menu->addChild('Teams', [
+            'uri' => '#',
+            'extras' => [
+                'appendDivider' => true,
+            ]
+        ]);
+
+        $menu->addChild('Channels', [
+            'route' => 'campaignchain_core_channel',
+        ]);
+        $menu->addChild('Locations', [
+            'route' => 'campaignchain_core_location',
+            'extras' => [
+                'appendDivider' => true,
+            ]
+        ]);
+
+        $menu->addChild('Modules', [
+            'route' => 'campaignchain_core_module',
+            'extras' => [
+                'appendDivider' => true,
+            ]
+        ]);
+
+        $system = $this->container->get('campaignchain.core.system')->getActiveSystem();
+        $systemNavigation = $system->getNavigation();
+
+        foreach ($systemNavigation['settings'] as $systemSetting) {
+            list($label, $route) = $systemSetting;
+
+            $menu->addChild($label, [
+                'route' => $route,
+            ]);
+        }
+
+
+        return $menu;
+    }
 }
