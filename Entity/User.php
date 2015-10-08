@@ -94,6 +94,11 @@ class User extends BaseUser
     protected $lastName;
 
     /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    protected $avatarImage;
+
+    /**
      * @ORM\OneToMany(targetEntity="CampaignChain\CoreBundle\Entity\Campaign", mappedBy="user")
      */
     protected $campaigns;
@@ -348,6 +353,33 @@ class User extends BaseUser
     public function getName()
     {
         return $this->firstName.' '.$this->lastName;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAvatarImage()
+    {
+        return $this->avatarImage;
+    }
+
+    /**
+     * @param string|null $avatarImage
+     *
+     * @return self
+     */
+    public function setAvatarImage($avatarImage)
+    {
+        $this->avatarImage = $avatarImage;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGravatarUrl()
+    {
+        return "https://secure.gravatar.com/avatar/".md5($this->getEmail())."?s=250&d=identicon";
     }
 
     public function getHumanRole()

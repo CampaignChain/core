@@ -12,6 +12,9 @@ parameters:
             # Date and time formats as per http://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table
             date: ['yyyy-MM-dd', 'd. MMMM, yyyy', 'EEEE, d. MMMM, yyyy', 'EEE, d. MMMM, yyyy']
             time: ['hh:mm a', 'HH:mm', 'HH:mm:ss']
+    # Defaults for these are set by CampaignChainCoreExtension
+    campaignchain.core.upload_storage.path: ~
+    campaignchain.core.upload_storage.url_prefix: ~
 
 services:
     campaignchain.core.channel.wizard:
@@ -44,6 +47,13 @@ services:
         class: CampaignChain\CoreBundle\EventListener\DoctrineMetaListener
         tags:
             - { name: doctrine.event_listener, event: onFlush }
+    campaignchain.core.listerner.user_avatar:
+        class: CampaignChain\CoreBundle\EventListener\UserAvatarListener
+        arguments:
+            - @campaignchain.core.user
+        tags:
+            - { name: doctrine.event_listener, event: prePersist }
+            - { name: doctrine.event_listener, event: preUpdate }
     campaignchain.core.util.datetime:
         class: CampaignChain\CoreBundle\Util\DateTimeUtil
         arguments: ["@service_container"]
@@ -96,6 +106,9 @@ services:
     campaignchain.core.cta:
         class: CampaignChain\CoreBundle\EntityService\CTAService
         arguments: [ @doctrine.orm.entity_manager, @service_container ]
+    campaignchain.core.user:
+        class: CampaignChain\CoreBundle\EntityService\UserService
+        arguments: [ '%campaignchain.core.upload_storage.path%', @campaignchain.core.http_client]
     campaignchain.core.system:
         class: CampaignChain\CoreBundle\EntityService\SystemService
         arguments: [ @doctrine.orm.entity_manager ]
@@ -209,3 +222,6 @@ services:
             - @knp_menu.matcher
         tags:
             - { name: knp_menu.renderer, alias: dropdown }
+
+    campaignchain.core.http_client:
+        class: GuzzleHttp\Client
