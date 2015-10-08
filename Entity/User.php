@@ -18,6 +18,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  * @ORM\Table(name="campaignchain_user")
  * @ORM\HasLifecycleCallbacks
+ *
+ * @ORM\EntityListeners({"CampaignChain\CoreBundle\EventListener\UserAvatarListener"})
  */
 class User extends BaseUser
 {

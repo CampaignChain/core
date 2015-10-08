@@ -52,8 +52,7 @@ services:
         arguments:
             - @campaignchain.core.user
         tags:
-            - { name: doctrine.event_listener, event: prePersist }
-            - { name: doctrine.event_listener, event: preUpdate }
+            - { name: doctrine.orm.entity_listener }
     campaignchain.core.util.datetime:
         class: CampaignChain\CoreBundle\Util\DateTimeUtil
         arguments: ["@service_container"]

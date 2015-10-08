@@ -22,24 +22,18 @@ class UserAvatarListener
     /**
      * Download avatar image from Gravatar if there wasn't one uploaded
      *
+     * @param User $user
      * @param LifecycleEventArgs $event
      */
-    public function prePersist(LifecycleEventArgs $event)
+    public function prePersist(User $user, LifecycleEventArgs $event)
     {
-        /** @var User $user */
-        $user = $event->getEntity();
-
-        if (!($user instanceof User)) {
-            return;
-        }
-
         $avatarImage = $user->getAvatarImage();
         if (empty($avatarImage)) {
             $this->userService->downloadGravatar($user);
         }
     }
 
-    public function preUpdate(PreUpdateEventArgs $event)
+    public function preUpdate(User $user, PreUpdateEventArgs $event)
     {
         // TODO: delete old image when avatar has been changed
     }
