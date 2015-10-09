@@ -64,7 +64,6 @@ class ActivityType extends HookListenerType
 
         // Embed hook forms.
         $builder->addEventSubscriber($hookListener);
-        $builder->add('assignee', 'campaignchain_hook_campaignchain_assignee');
     }
 
     public function configureOptions(OptionsResolver $resolver)

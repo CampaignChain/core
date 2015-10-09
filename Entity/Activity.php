@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  * @ORM\Table(name="campaignchain_activity")
  */
-class Activity extends Action
+class Activity extends Action implements AssignableInterface
 {
 
     /**
