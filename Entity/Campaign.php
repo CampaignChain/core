@@ -47,7 +47,8 @@ class Campaign extends Action
     protected $milestones;
 
     /**
-     * @ORM\ManyToOne(targetEntity="CampaignModule")
+     * @ORM\ManyToOne(targetEntity="CampaignModule", inversedBy="campaigns")
+     * @ORM\JoinColumn(referencedColumnName="id")
      */
     protected $campaignModule;
 

@@ -29,7 +29,7 @@ class ReportCTA
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="CTA")
+     * @ORM\ManyToOne(targetEntity="CTA", inversedBy="reports")
      * @ORM\JoinColumn(name="cta_id", referencedColumnName="id", nullable=false)
      */
     protected $CTA;
@@ -59,7 +59,7 @@ class ReportCTA
     protected $channel;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Location")
+     * @ORM\ManyToOne(targetEntity="Location", inversedBy="referrerCtas")
      * @ORM\JoinColumn(name="referrer_location_id", referencedColumnName="id", nullable=false)
      */
     protected $referrerLocation;
@@ -75,7 +75,7 @@ class ReportCTA
     protected $referrerName;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Location")
+     * @ORM\ManyToOne(targetEntity="Location", inversedBy="sourceCtas")
      * @ORM\JoinColumn(name="source_location_id", referencedColumnName="id", nullable=false)
      */
     protected $sourceLocation;
@@ -91,7 +91,7 @@ class ReportCTA
     protected $sourceName;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Location", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="Location", cascade={"persist"}, inversedBy="targetCtas")
      * @ORM\JoinColumn(name="target_location_id", referencedColumnName="id", nullable=true)
      */
     protected $targetLocation;
