@@ -16,11 +16,11 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 class ActivityType extends HookListenerType
 {
     private $campaign;
-    private $operationForms;
+    private $contentForms;
     private $showNameField = true;
 
-    public function setOperationForms(array $operationForms){
-        $this->operationForms = $operationForms;
+    public function setContentForms(array $contentForms){
+        $this->contentForms = $contentForms;
     }
 
     public function setCampaign($campaign){
@@ -34,8 +34,8 @@ class ActivityType extends HookListenerType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        if(is_array($this->operationForms) && count($this->operationForms)){
-            foreach($this->operationForms as $form){
+        if(is_array($this->contentForms) && count($this->contentForms)){
+            foreach($this->contentForms as $form){
                 $builder
                     ->add($form['identifier'], $form['form'], array(
                         'mapped' => false,
