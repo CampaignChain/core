@@ -27,6 +27,12 @@ class CampaignChainCoreExtension extends \Twig_Extension
         $this->datetime = $this->container->get('campaignchain.core.util.datetime');
     }
 
+    private function loggedIn()
+    {
+        return $this->container->get('security.token_storage')->getToken()
+            && $this->container->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED');
+    }
+
     public function getFilters()
     {
         return array(
@@ -398,7 +404,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
 
     private function getGlobalTimezoneOffset(){
         // Execute only if the user is logged in.
-        if( $this->container->get('security.context')->isGranted('IS_AUTHENTICATED_REMEMBERED') ){
+        if( $this->loggedIn() ){
             $timezoneUser = new \DateTimeZone($this->container->get('session')->get('campaignchain.timezone'));
             $timezoneUTC = new \DateTimeZone("UTC");
     //
@@ -422,7 +428,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
 
     private function getGlobalTimezoneAbbreviation(){
         // Execute only if the user is logged in.
-        if( $this->container->get('security.context')->isGranted('IS_AUTHENTICATED_REMEMBERED') ){
+        if( $this->loggedIn() ){
             $timezoneUser = new \DateTimeZone($this->container->get('session')->get('campaignchain.timezone'));
             $dateUser = new \DateTime("now", $timezoneUser);
             return $dateUser->format('T');
