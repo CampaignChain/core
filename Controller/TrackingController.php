@@ -53,10 +53,11 @@ class TrackingController extends Controller
         }
 
         // Check whether required parameters have been provided.
+        $target = $request->get('target');
         if(!$request->get('source')){
             $hasError = true;
             $msg = 'URL of source Location missing.';
-        } elseif(!$request->get('target')){
+        } elseif(!$target){
             $hasError = true;
             $msg = 'URL of target Location missing.';
         }
@@ -71,8 +72,9 @@ class TrackingController extends Controller
         $constraint = new Url();
 
         $constraint->message = "Source Location '".$request->get('source')."' is not a valid URL.";
+        $source = $request->get('source');
         $errors = $this->get('validator')->validateValue(
-            $request->get('source'),
+            $source,
             $constraint
         );
         if(count($errors)){
@@ -80,11 +82,21 @@ class TrackingController extends Controller
             $msg = $errors[0]->getMessage();
         }
 
-        $constraint->message = "Target Location '".$request->get('target')."' is not a valid URL.";
+        // Check if we get an absolute or a relative path, if relative, then we can assume it goes to the source host
+        if (!parse_url($target, PHP_URL_HOST) && parse_url($source, PHP_URL_HOST)) {
+            $parsedSource = parse_url($source);
+            $target = (array_key_exists('scheme', $parsedSource) ? $parsedSource['scheme'] : 'http' ).
+                '://'.
+                $parsedSource['host'].
+                $target;
+        }
+
+        $constraint->message = "Target Location '". $target ."' is not a valid URL.";
         $errors = $this->get('validator')->validateValue(
-            $request->get('target'),
+            $target,
             $constraint
         );
+
         if(count($errors)){
             $hasError = true;
             $msg = $errors[0]->getMessage();
@@ -137,7 +149,7 @@ class TrackingController extends Controller
                 return $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
             }
 
-            if($request->get('source') == $request->get('target')){
+            if($request->get('source') == $target){
                 /*
                  * If the source equals the target, then the source is actually
                  * an Activity's CTA.
@@ -145,13 +157,13 @@ class TrackingController extends Controller
                 $sourceUrl = $referrerLocation->getUrl();
                 $sourceLocation = $referrerLocation;
                 // Remove the Tracking ID from the URL.
-                $targetUrl = ParserUtil::removeUrlParam($request->get('target'), CTAService::TRACKING_ID_NAME);
+                $targetUrl = ParserUtil::removeUrlParam($target, CTAService::TRACKING_ID_NAME);
 
             } else {
                 // Remove the Tracking ID from the URL.
                 $sourceUrl = ParserUtil::removeUrlParam($request->get('source'), CTAService::TRACKING_ID_NAME);
                 $sourceLocation = $cta->getLocation();
-                $targetUrl = $request->get('target');
+                $targetUrl = $target;
             }
 
 //            /*
@@ -227,7 +239,7 @@ class TrackingController extends Controller
              *              Location which is _not_ connected with
              *              CampaignChain.
              */
-            if($request->get('source') == $request->get('target')){
+            if($request->get('source') == $target){
                 $targetAffiliation = 'connected';
             } elseif($reportCTA->getTargetLocation()){
                 if($reportCTA->getTargetLocation()->getChannel()->getTrackingId()

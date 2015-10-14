@@ -169,6 +169,8 @@ CampaignChain.prototype.sendUrlReport = function(target)
                         'AJAX error: URL: ' + ajaxUrl + ', status: ' + xhr.status +
                             ', message: ' +thrownError
                     );
+                } else {
+                    window.location.href = this.target;
                 }
             }
         });
