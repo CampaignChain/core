@@ -10,6 +10,7 @@
 
 namespace CampaignChain\CoreBundle\Twig;
 
+use CampaignChain\CoreBundle\Entity\User;
 use CampaignChain\CoreBundle\Util\ParserUtil;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Doctrine\ORM\EntityManager;
@@ -46,7 +47,13 @@ class CampaignChainCoreExtension extends \Twig_Extension
             new \Twig_SimpleFilter('campaignchain_ltrim', array($this, 'ltrim')),
             new \Twig_SimpleFilter('campaignchain_make_links', array($this, 'makeLinks')),
             new \Twig_SimpleFilter('campaignchain_btn_copy_campaign', array($this, 'btnCopyCampaign'), array('is_safe' => array('html'))),
+            new \Twig_SimpleFilter('campaignchain_user_avatar', array($this, 'userAvatar')),
         );
+    }
+
+    public function userAvatar(User $user, $size = 50)
+    {
+        return "http://www.gravatar.com/avatar/".md5($user->getEmail())."?s=".$size."&d=identicon";
     }
 
     public function system(){
