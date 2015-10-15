@@ -69,9 +69,6 @@ class Builder extends ContainerAware
         $menu->addChild('Users', [
             'route' => 'campaignchain_core_user',
         ]);
-        $menu->addChild('Teams', [
-            'uri' => '#',
-        ]);
 
         $menu->addChild('Channels', [
             'route' => 'campaignchain_core_channel',
