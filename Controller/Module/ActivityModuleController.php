@@ -10,6 +10,7 @@
 
 namespace CampaignChain\CoreBundle\Controller\Module;
 
+use CampaignChain\CoreBundle\Entity\Activity;
 use CampaignChain\CoreBundle\Entity\Location;
 use CampaignChain\CoreBundle\Entity\Medium;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -94,6 +95,12 @@ class ActivityModuleController extends Controller
 
         if ($form->isValid()) {
             $this->activity = $wizard->end();
+
+            $this->handler->postFormSubmitNewEvent(
+                $this->activity,
+                $form->get($this->contentModuleIdentifier)->getData()
+            );
+
             // Allow a module's handler to modify the Activity data.
             $this->activity = $this->handler->processActivity(
                 $this->activity,
@@ -111,6 +118,9 @@ class ActivityModuleController extends Controller
                 // The activity equals the operation. Thus, we create a new operation with the same data.
                 $operation = new Operation();
                 $operation->setName($this->activity->getName());
+                $operation->setStartDate($this->activity->getStartDate());
+                $operation->setEndDate($this->activity->getEndDate());
+                $operation->setTriggerHook($this->activity->getTriggerHook());
                 $operation->setActivity($this->activity);
                 $this->activity->addOperation($operation);
                 $operationModule->addOperation($operation);
@@ -518,7 +528,7 @@ class ActivityModuleController extends Controller
                         $this->location, $this->operations[0]
                     );
                 } else {
-                    $content = $this->handler->createContent($this->location);
+                    $content = $this->handler->createContent($this->location, $this->campaign);
                 }
                 $contentFormType->setContent($content);
             }
