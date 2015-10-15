@@ -1,3 +1,15 @@
-<h1>Settings</h1>
+{#
+This file is part of the CampaignChain package.
+
+(c) CampaignChain Inc. <info@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+<div class="modal-header">
+    <a href="#" id="sidemenu-btn-close" class="button close" aria-hidden="true">&times;</a>
+    <h4 class="modal-title" id="myModalLabel">Settings</h4>
+</div>
 
 {{ knp_menu_render('CampaignChainCoreBundle:Builder:settingsMenu', {currentClass: 'active'}, 'list-group') }}
