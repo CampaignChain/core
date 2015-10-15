@@ -10,6 +10,7 @@
 
 namespace CampaignChain\CoreBundle\Controller\Module;
 
+use CampaignChain\CoreBundle\Entity\Campaign;
 use CampaignChain\CoreBundle\Entity\Activity;
 use CampaignChain\CoreBundle\Entity\Location;
 use CampaignChain\CoreBundle\Entity\Operation;
@@ -29,9 +30,10 @@ abstract class AbstractActivityHandler
      * - new
      *
      * @param Location $location
+     * @param Campaign $campaign
      * @return null
      */
-    public function createContent(Location $location)
+    public function createContent(Location $location, Campaign $campaign)
     {
         return null;
     }
@@ -72,6 +74,9 @@ abstract class AbstractActivityHandler
 
     /**
      * Modifies the Location of the Activity.
+     *
+     * Called in these views:
+     * - new
      *
      * @param Location $location The Activity's Location.
      * @return Location
@@ -122,6 +127,17 @@ abstract class AbstractActivityHandler
      * @return mixed
      */
     abstract public function readAction(Operation $operation);
+
+    /**
+     * The Activity controller calls this method after the form was submitted
+     * and the new activity was persisted.
+     *
+     * @param Activity $activity
+     * @param $data
+     */
+    public function postFormSubmitNewEvent(Activity $activity, $data)
+    {
+    }
 
     /**
      * This event is being called after the new Activity and its related
