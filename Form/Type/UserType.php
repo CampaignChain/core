@@ -76,7 +76,9 @@ class UserType extends AbstractType
                 'constraints' => array(
                     new Assert\NotBlank(),
                 )
-            ));
+            ))
+            ->add('timezone', 'timezone')
+        ;
 
         if ($options['new']) {
             $builder->add('password', 'repeated', array(
@@ -97,7 +99,6 @@ class UserType extends AbstractType
 //                'data' => 'en_US',
 //                'disabled' => true,
 //            ))
-//            ->add('timezone', 'timezone')
 //            ->add('currency', 'currency', array(
 //                'data' => 'USD',
 //                'disabled' => true
