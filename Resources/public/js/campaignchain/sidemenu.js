@@ -38,18 +38,11 @@ $(document).ready(function () {
         e.preventDefault();
     });
 
-    $('#sidemenu-drape').on("click", function(e) {
-        transitionFinished("#sidemenu", function(e) {
+    $('#sidemenu-btn-close, #sidemenu-drape').on("click", function(e) {
+        transitionFinished("#sidemenu", function() {
             $body.removeClass("sidemenu-transition");
         });
 
-        $body.removeClass("sidemenu-show");
-    });
-
-    $('#sidemenu-btn-close').on("click", function(e) {
-        transitionFinished("#sidemenu", function(e) {
-            $body.removeClass("sidemenu-transition");
-        });
         $body.removeClass("sidemenu-show");
     });
 });
