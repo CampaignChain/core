@@ -84,14 +84,15 @@ class Builder extends ContainerAware
         $system = $this->container->get('campaignchain.core.system')->getActiveSystem();
         $systemNavigation = $system->getNavigation();
 
-        foreach ($systemNavigation['settings'] as $systemSetting) {
-            list($label, $route) = $systemSetting;
+        if($systemNavigation) {
+            foreach ($systemNavigation['settings'] as $systemSetting) {
+                list($label, $route) = $systemSetting;
 
-            $menu->addChild($label, [
-                'route' => $route,
-            ]);
+                $menu->addChild($label, [
+                    'route' => $route,
+                ]);
+            }
         }
-
 
         return $menu;
     }
