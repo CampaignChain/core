@@ -1,3 +1,12 @@
+/*
+ This file is part of the CampaignChain package.
+
+ (c) CampaignChain Inc. <info@campaignchain.com>
+
+ For the full copyright and license information, please view the LICENSE
+ file that was distributed with this source code.
+ */
+
 $(document).ready(function () {
     var $body = $(document.body);
     // Do something after the next transition is finished. If the browser
@@ -29,8 +38,8 @@ $(document).ready(function () {
         e.preventDefault();
     });
 
-    $('#sidemenu-drape').on("click", function(e) {
-        transitionFinished("#sidemenu", function(e) {
+    $('#sidemenu-btn-close, #sidemenu-drape').on("click", function(e) {
+        transitionFinished("#sidemenu", function() {
             $body.removeClass("sidemenu-transition");
         });
 
