@@ -69,28 +69,16 @@ class Builder extends ContainerAware
         $menu->addChild('Users', [
             'route' => 'campaignchain_core_user',
         ]);
-        $menu->addChild('Teams', [
-            'uri' => '#',
-            'extras' => [
-                'appendDivider' => true,
-            ]
-        ]);
 
         $menu->addChild('Channels', [
             'route' => 'campaignchain_core_channel',
         ]);
         $menu->addChild('Locations', [
             'route' => 'campaignchain_core_location',
-            'extras' => [
-                'appendDivider' => true,
-            ]
         ]);
 
         $menu->addChild('Modules', [
             'route' => 'campaignchain_core_module',
-            'extras' => [
-                'appendDivider' => true,
-            ]
         ]);
 
         $system = $this->container->get('campaignchain.core.system')->getActiveSystem();

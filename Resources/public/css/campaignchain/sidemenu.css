@@ -80,22 +80,6 @@ body.sidemenu-show #sidemenu-drape {
 
 /*** Sidebar content ***/
 
-#sidemenu .list-group-item:first-child,
-#sidemenu .list-group-item:last-child {
-    border-radius: 0;
-}
-
-#sidemenu h1 {
-    margin: 0 0 45px;
-    padding: 15px;
-    font-size: 18px;
-    border-bottom: 1px solid #DDD;
-}
-
-#sidemenu .list-group-item.prepend-divider {
-    margin-top: 15px;
-}
-
-#sidemenu .list-group-item.append-divider {
-    margin-bottom: 15px;
+#sidemenu .nav-pills > li > a {
+    border-radius: 0px;
 }
