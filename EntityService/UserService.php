@@ -5,13 +5,14 @@ namespace CampaignChain\CoreBundle\EntityService;
 
 
 use CampaignChain\CoreBundle\Entity\User;
+use CampaignChain\CoreBundle\Service\FileUploadService;
 use GuzzleHttp\ClientInterface as HttpClient;
 use GuzzleHttp\Stream\GuzzleStreamWrapper;
 
 class UserService
 {
-    /** @var string */
-    private $uploadDirectory;
+    /** @var FileUploadService */
+    private $fileUploadService;
 
     /** @var HttpClient */
     private $httpClient;
@@ -39,43 +40,36 @@ class UserService
         return null;
     }
 
-    public function __construct($uploadDirectory, HttpClient $httpClient)
+    public function __construct(FileUploadService $fileUploadService, HttpClient $httpClient)
     {
-        $this->uploadDirectory = $uploadDirectory;
+        $this->fileUploadService = $fileUploadService;
         $this->httpClient = $httpClient;
     }
 
-    public function generateAvatarBasename(User $user)
+    public function generateAvatarPath($mimeType)
     {
-        return "{$user->getId()}_".bin2hex(openssl_random_pseudo_bytes(8));
+        // TODO: Do something sensible on unknown content type
+        $extension = self::getExtensionForContentType($mimeType) ?: "jpg";
+        return self::AVATAR_DIR . "/" . $this->fileUploadService->generateFileName(".{$extension}");
     }
 
     public function downloadGravatar(User $user)
     {
         $gravatarUrl = $user->getGravatarUrl();
-        
+
         $response = $this->httpClient->get($gravatarUrl);
-
-        // TODO: Do something sensible on unknown content type
-        $extension = self::getExtensionForContentType($response->getHeader('Content-Type')) ?: "jpg";
-        $avatarPath = self::AVATAR_DIR . "/{$this->generateAvatarBasename($user)}.{$extension}";
-
-        // Make sure the upload directory exists
-        $avatarStoragePath = "{$this->uploadDirectory}/" . self::AVATAR_DIR;
-        if (!file_exists($avatarStoragePath)) {
-            mkdir($avatarStoragePath, 0755, true);
-        }
+        $avatarPath = $this->generateAvatarPath($response->getHeader('Content-Type'));
 
         // Copy response body to file
-        $f = fopen("{$this->uploadDirectory}/{$avatarPath}", "w");
+        $f = $this->fileUploadService->openFile($avatarPath, "w");
         stream_copy_to_stream(GuzzleStreamWrapper::getResource($response->getBody()), $f);
         fclose($f);
 
         $user->setAvatarImage($avatarPath);
     }
 
-    public function getAvatarImageFilePath($avatarPath)
+    public function deleteAvatar($avatarPath)
     {
-        return "{$this->uploadDirectory}/{$avatarPath}";
+        $this->fileUploadService->deleteFile($avatarPath);
     }
 }

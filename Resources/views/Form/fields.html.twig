@@ -278,3 +278,55 @@ file that was distributed with this source code.
         </script>
     {% endspaceless %}
 {% endblock bootstrap_collection_widget %}
+
+{% block avatar_upload_widget %}
+    {% set modalContent %}
+        {% include 'CampaignChainCoreBundle:Form:avatarUploadModal.html.twig' %}
+    {% endset %}
+    {% set containerId = "avatar_upload_"~id %}
+    <div class="avatar-upload-container" id="{{ containerId }}">
+        {% if data is not empty %}
+            <img class="avatar-image" src="{{ data|campaignchain_user_avatar }}" alt="">
+        {% else %}
+            <span class="avatar-image no-avatar"></span>
+        {% endif %}
+        <input type="hidden" {{ block('widget_attributes') }} value="{{ value }}">
+        <script type="application/javascript">
+            (function() {
+                var settings = {{ {
+                    modalContent: modalContent,
+                    containerId: containerId,
+                    widgetId: id,
+                }|json_encode|raw  }};
+                var $container = $("#" + settings.containerId);
+
+                $container.on("click", function() {
+                    var $modal = $("#campaignchain-default-modal");
+
+                    $modal
+                        .find(".modal-content")
+                            .html(settings.modalContent)
+                        .end()
+                        .one("show.modal.bs", function() {
+                            $modal.find("input[type=file]")
+                                .fileupload({
+                                    dataType: 'json',
+                                    done: function(e, data) {
+                                        var response = data.response();
+                                        var result = response.result;
+
+                                        console.log(result);
+                                        $container.find('.avatar-image').replaceWith($("<img class='avatar-image' alt='' />").attr({src: result.url}));
+                                        $('#'+settings.widgetId).val(result.path);
+                                        $modal.modal("hide");
+                                    }
+                                });
+                        })
+                        .modal("show");
+                });
+
+                console.log(settings);
+            }());
+        </script>
+    </div>
+{% endblock %}

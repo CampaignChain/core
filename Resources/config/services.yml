@@ -51,8 +51,17 @@ services:
         class: CampaignChain\CoreBundle\EventListener\UserAvatarListener
         arguments:
             - @campaignchain.core.user
+            - @campaignchain.core.service.file_upload
+            - @liip_imagine.binary.loader.uploads
+            - @liip_imagine.filter.manager
         tags:
             - { name: doctrine.orm.entity_listener }
+            - { name: kernel.event_listener, event: oneup_uploader.post_persist, method: onUpload }
+    campaignchain.core.service.file_upload:
+        class: CampaignChain\CoreBundle\Service\FileUploadService
+        arguments:
+            - %campaignchain.core.upload_storage.path%
+            - %campaignchain.core.upload_storage.url_prefix%
     campaignchain.core.util.datetime:
         class: CampaignChain\CoreBundle\Util\DateTimeUtil
         arguments: ["@service_container"]
@@ -107,7 +116,7 @@ services:
         arguments: [ @doctrine.orm.entity_manager, @service_container ]
     campaignchain.core.user:
         class: CampaignChain\CoreBundle\EntityService\UserService
-        arguments: [ '%campaignchain.core.upload_storage.path%', @campaignchain.core.http_client]
+        arguments: [ @campaignchain.core.service.file_upload, @campaignchain.core.http_client]
     campaignchain.core.system:
         class: CampaignChain\CoreBundle\EntityService\SystemService
         arguments: [ @doctrine.orm.entity_manager ]

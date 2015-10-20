@@ -18,6 +18,12 @@ assetic:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/components/moment/moment.js"
                 - "@CampaignChainCoreBundle/Resources/public/components/moment-timezone/builds/moment-timezone-with-data.js"
+        jquery_file_upload_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/jquery-file-upload/js/vendor/jquery.ui.widget.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/jquery-file-upload/js/jquery.fileupload.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/jquery-file-upload/js/jquery.fileupload-process.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/jquery-file-upload/js/jquery.fileupload-validate.js"
         bootstrap_js:
             inputs:
                 - "%kernel.root_dir%/../vendor/twbs/bootstrap/js/transition.js"
@@ -238,3 +244,17 @@ sonata_block:
         campaignchain.block.milestone.upcoming.listgroup: null
         campaignchain.block.campaign.ongoing.listgroup: null
         campaignchain.block.rss: null
+oneup_uploader:
+    mappings:
+        avatar:
+            frontend: blueimp
+            storage:
+                directory: %campaignchain.core.upload_storage.path%/avatar
+liip_imagine:
+    loaders:
+        uploads:
+            filesystem: {data_root: %campaignchain.core.upload_storage.path%}
+    filter_sets:
+        auto_rotate:
+            filters:
+                auto_rotate: ~

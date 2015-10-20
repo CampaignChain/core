@@ -1,0 +1,12 @@
+{% extends 'CampaignChainCoreBundle:Base:base_modal.html.twig' %}
+
+{% block title %}Upload Profile Image{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <h1 class="col-sm-12">Upload Image</h1>
+        <div class="col-sm-12">
+            <input type="file" data-url="{{ oneup_uploader_endpoint('avatar') }}">
+        </div>
+    </div>
+{% endblock %}
