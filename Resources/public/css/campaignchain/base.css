@@ -310,6 +310,7 @@ div.scrollable {
     overflow: auto;
 }
 
+/*** Avatar image in navbar ***/
 .navbar-profile-dropdown .dropdown-toggle {
     padding-left: 50px;
 }
@@ -320,4 +321,41 @@ div.scrollable {
     position: absolute;
     top: 7px;
     left: 7px;
+}
+
+/*** Avatar upload ***/
+.avatar-upload-container {
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+}
+
+.avatar-upload-container .avatar-image {
+    display: inline-block;
+    width: 200px;
+}
+
+.avatar-upload-container .avatar-image.no-avatar {
+    background-color: #e7e7e7;
+    height: 200px;
+}
+
+.avatar-upload-container .hover-text {
+    display: none;
+
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    line-height: 200px;
+    text-align: center;
+
+    background-color: rgba(0,0,0,0.75);
+    color: #fff;
+}
+
+.avatar-upload-container:hover .hover-text {
+    display: block;
 }

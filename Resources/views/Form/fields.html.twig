@@ -290,6 +290,7 @@ file that was distributed with this source code.
         {% else %}
             <span class="avatar-image no-avatar"></span>
         {% endif %}
+        <span class="hover-text">Set Image</span>
         <input type="hidden" {{ block('widget_attributes') }} value="{{ value }}">
         <script type="application/javascript">
             (function() {
@@ -315,7 +316,6 @@ file that was distributed with this source code.
                                         var response = data.response();
                                         var result = response.result;
 
-                                        console.log(result);
                                         $container.find('.avatar-image').replaceWith($("<img class='avatar-image' alt='' />").attr({src: result.url}));
                                         $('#'+settings.widgetId).val(result.path);
                                         $modal.modal("hide");
@@ -324,8 +324,6 @@ file that was distributed with this source code.
                         })
                         .modal("show");
                 });
-
-                console.log(settings);
             }());
         </script>
     </div>
