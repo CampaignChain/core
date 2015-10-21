@@ -258,3 +258,6 @@ liip_imagine:
         auto_rotate:
             filters:
                 auto_rotate: ~
+        navbar_avatar:
+            filters:
+                thumbnail: {size: [27, 27], mode: outbound}

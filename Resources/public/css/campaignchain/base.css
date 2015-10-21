@@ -309,3 +309,15 @@ div.scrollable {
     padding: 0;
     overflow: auto;
 }
+
+.navbar-profile-dropdown .dropdown-toggle {
+    padding-left: 50px;
+}
+
+.navbar-profile-avatar {
+    width: 36px;
+    height: 36px;
+    position: absolute;
+    top: 7px;
+    left: 7px;
+}
