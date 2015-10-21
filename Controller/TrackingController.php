@@ -98,15 +98,17 @@ class TrackingController extends Controller
                 $target,
                 $constraint
             );
+
+            if(count($errors)){
+                $hasError = true;
+                $msg = $errors[0]->getMessage();
+            }
         } else {
             // mailto links are not tracked
-            $errors[] = 'Mailto links are not tracked';
+            $hasError = true;
+            $msg = 'Mailto links are not tracked';
         }
 
-        if(count($errors)){
-            $hasError = true;
-            $msg = $errors[0]->getMessage();
-        }
 
         if($hasError){
             $logger->error($msg);
