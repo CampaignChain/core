@@ -34,8 +34,7 @@ class TrackingController extends Controller
         if(!$channel){
             $msg = 'No Channel Tracking ID provided.';
             $logger->error($msg);
-            $response = new Response($msg);
-            return $response->setStatusCode(Response::HTTP_BAD_REQUEST);
+            return $this->errorResponse($msg, $request);
         }
 
         $logger->info('Channel Tracking ID: '.$channel);
@@ -48,8 +47,7 @@ class TrackingController extends Controller
         if (!$channel) {
             $msg = 'Unknown Channel Tracking ID';
             $logger->error($msg);
-            $response = new Response($msg);
-            return $response->setStatusCode(Response::HTTP_BAD_REQUEST);
+            return $this->errorResponse($msg, $request);
         }
 
         // Check whether required parameters have been provided.
@@ -64,8 +62,7 @@ class TrackingController extends Controller
 
         if($hasError){
             $logger->error($msg);
-            $response = new Response($msg);
-            return $response->setStatusCode(Response::HTTP_BAD_REQUEST);
+            return $this->errorResponse($msg, $request);
         }
 
         // Check if URLs are valid.
@@ -112,24 +109,21 @@ class TrackingController extends Controller
 
         if($hasError){
             $logger->error($msg);
-            $response = new Response($msg);
-            return $response->setStatusCode(Response::HTTP_BAD_REQUEST);
+            return $this->errorResponse($msg, $request);
         }
 
         // Check whether the Tracking ID name has been provided.
         if($request->get('id_name') == null){
             $msg = 'No Tracking ID name provided.';
             $logger->error($msg);
-            $response = new Response($msg);
-            return $response->setStatusCode(Response::HTTP_BAD_REQUEST);
+            return $this->errorResponse($msg, $request);
         }
 
         // Check whether the Tracking ID name is correct.
         if($request->get('id_name') != CTAService::TRACKING_ID_NAME){
             $msg = 'Provided Tracking ID name ("'.$request->get('id_name').'") does not match, should be "'.CTAService::TRACKING_ID_NAME.'".';
             $logger->error($msg);
-            $response = new Response($msg);
-            return $response->setStatusCode(Response::HTTP_BAD_REQUEST);
+            return $this->errorResponse($msg, $request);
         }
 
         if($request->get('id_value') != null){
@@ -143,8 +137,7 @@ class TrackingController extends Controller
             if (!$cta) {
                 $msg = 'Unknown CTA Tracking ID "'.$trackingId.'".';
                 $logger->error($msg);
-                $response = new Response($msg);
-                return $response->setStatusCode(Response::HTTP_BAD_REQUEST);
+                return $this->errorResponse($msg, $request);
             }
 
             // TODO: Set Referer info by going CTA -> Operation -> Location.
@@ -153,8 +146,7 @@ class TrackingController extends Controller
             if(!$referrerLocation){
                 $msg = Response::HTTP_INTERNAL_SERVER_ERROR.': No referrer Location.';
                 $logger->error($msg);
-                $response = new Response($msg);
-                return $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+                return $this->errorResponse($msg, $request);
             }
 
             if($request->get('source') == $target){
@@ -261,15 +253,25 @@ class TrackingController extends Controller
                 $targetAffiliation = 'unknown';
             }
 
-            $response = array('target_affiliation' => $targetAffiliation);
-            $response = new JsonResponse($response, 200, array());
+            $response = new JsonResponse([
+                'target_affiliation' => $targetAffiliation,
+                'success' => true,
+            ]);
             $response->setCallback($request->get('callback'));
             return $response;
         } else {
             $msg = 'Tracking ID missing as part of source Location.';
             $logger->error($msg);
-            $response = new Response($msg);
-            return $response->setStatusCode(Response::HTTP_BAD_REQUEST);
+            return $this->errorResponse($msg, $request);
         }
+    }
+
+    private function errorResponse($msg, Request $request)
+    {
+        $response = new JsonResponse([
+            'message' => $msg,
+            'success' => false,
+        ]);
+        return $response->setCallback($request->get('callback'));
     }
 }

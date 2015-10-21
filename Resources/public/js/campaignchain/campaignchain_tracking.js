@@ -149,12 +149,13 @@ CampaignChain.prototype.sendUrlReport = function(target)
             context: this,
 
             success: function(data, status) {
-                console.log(data);
-                /*
-                 If an external target URL, then append the Tracking ID if it is not
-                 already appended.
-                 */
-                this.continueTracking(data.target_affiliation);
+                if (data.success) {
+                    /*
+                     If an external target URL, then append the Tracking ID if it is not
+                     already appended.
+                     */
+                    this.continueTracking(data.target_affiliation);
+                }
 
                 if(this.mode != 'dev-stay'){
                     window.location.href = this.target;
