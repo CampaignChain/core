@@ -1,11 +1,18 @@
 {% extends 'CampaignChainCoreBundle:Base:base_modal.html.twig' %}
 
-{% block title %}Upload Profile Image{% endblock %}
+{% block title %}Set Profile Image{% endblock %}
 {% block modalBodyClass %}avatar-modal{% endblock %}
 {% block modalBodyId %}{{ modalId|default('') }}{% endblock %}
 
 {% block body %}
-    <div class="row">
+    <div class="row row-loading" style="display: none;">
+        <div class="col-sm-12 text-center">
+            {% image '@CampaignChainCoreBundle/Resources/public/images/spinner.gif' %}
+            <img src="{{ asset_url }}" alt="Loading…">
+            {% endimage %}
+        </div>
+    </div>
+    <div class="row row-avatar-upload">
         <div class="col-sm-12 text-center">
             <div class="upload-button-container">
                 <button class="btn btn-default">Upload Image</button>

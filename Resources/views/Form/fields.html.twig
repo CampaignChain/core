@@ -303,6 +303,8 @@ file that was distributed with this source code.
                     modalId: modalId,
                     gravatarDownloaderUrl: path("campaignchain_core_profile_grab_gavatar"),
                 }|json_encode|raw }};
+
+                var $modal = $("#campaignchain-default-modal");
                 var $container = $("#" + settings.containerId);
                 var $widget = $("#" + settings.widgetId);
                 var getEmail = function() {
@@ -314,29 +316,44 @@ file that was distributed with this source code.
                     $container.find('.avatar-image').replaceWith($("<img class='avatar-image' alt='' />").attr({src: previewUrl}));
                     $('#'+settings.widgetId).val(value);
                 };
+                var showContent = function(selector) {
+                    $modal.find('.row').hide().filter(selector).show();
+                };
 
                 $container.on("click", function() {
-                    var $modal = $("#campaignchain-default-modal");
-
                     $modal
                         .find(".modal-content")
                             .html(settings.modalContent)
                         .end()
-                        .one("show.modal.bs", function() {
-                            $modal.find("input[type=file]")
-                                .fileupload({
-                                    dataType: 'json',
-                                    done: function(e, data) {
-                                        var response = data.response();
-                                        var result = response.result;
+                        .on("show.modal.bs", function() {
+                            // ignore event if it doesn't contain our modal content
+                            if ($modal.find('#'+settings.modalId).length < 1) {
+                                return;
+                            }
 
-                                        updateImage(result.path, result.url);
-                                        $modal.modal("hide");
-                                    }
-                                });
+                            showContent('.row-avatar-upload');
+                            var $fileInput = $modal.find("input[type=file]");
+                            if (!$fileInput.data('fileupload-initialized')) {
+                                $fileInput
+                                    .fileupload({
+                                        dataType: 'json',
+                                        start: function() {
+                                            showContent('.row-loading');
+                                        },
+                                        done: function(e, data) {
+                                            var response = data.response();
+                                            var result = response.result;
+
+                                            updateImage(result.path, result.url);
+                                            $modal.modal("hide");
+                                        }
+                                    })
+                                    .data('fileupload-initialized', true);
+                            }
                         })
                         .on("click", "#"+settings.modalId+" .btn-download-gravatar", function(e) {
                             e.preventDefault();
+                            showContent('.row-loading');
                             $
                                 .ajax({
                                     url: settings.gravatarDownloaderUrl,
