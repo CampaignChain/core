@@ -82,20 +82,26 @@ class TrackingController extends Controller
             $msg = $errors[0]->getMessage();
         }
 
-        // Check if we get an absolute or a relative path, if relative, then we can assume it goes to the source host
-        if (!parse_url($target, PHP_URL_HOST) && parse_url($source, PHP_URL_HOST)) {
-            $parsedSource = parse_url($source);
-            $target = (array_key_exists('scheme', $parsedSource) ? $parsedSource['scheme'] : 'http' ).
-                '://'.
-                $parsedSource['host'].
-                $target;
-        }
+        if (strpos($target, 'mailto') === false) {
+            // mailto links are not tracked
+            $errors[] = 'Mailto links are not tracked';
+        } else {
+            // Check if we get an absolute or a relative path, if relative, then we can assume it goes to the source host
+            if (!parse_url($target, PHP_URL_HOST) && parse_url($source, PHP_URL_HOST)) {
+                $parsedSource = parse_url($source);
+                $target = (array_key_exists('scheme', $parsedSource) ? $parsedSource['scheme'] : 'http' ).
+                    '://'.
+                    rtrim($parsedSource['host'], '/').
+                    '/'.
+                    $target;
+            }
 
-        $constraint->message = "Target Location '". $target ."' is not a valid URL.";
-        $errors = $this->get('validator')->validateValue(
-            $target,
-            $constraint
-        );
+            $constraint->message = "Target Location '". $target ."' is not a valid URL.";
+            $errors = $this->get('validator')->validateValue(
+                $target,
+                $constraint
+            );
+        }
 
         if(count($errors)){
             $hasError = true;
