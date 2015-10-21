@@ -83,9 +83,6 @@ class TrackingController extends Controller
         }
 
         if (strpos($target, 'mailto') === false) {
-            // mailto links are not tracked
-            $errors[] = 'Mailto links are not tracked';
-        } else {
             // Check if we get an absolute or a relative path, if relative, then we can assume it goes to the source host
             if (!parse_url($target, PHP_URL_HOST) && parse_url($source, PHP_URL_HOST)) {
                 $parsedSource = parse_url($source);
@@ -101,6 +98,9 @@ class TrackingController extends Controller
                 $target,
                 $constraint
             );
+        } else {
+            // mailto links are not tracked
+            $errors[] = 'Mailto links are not tracked';
         }
 
         if(count($errors)){
