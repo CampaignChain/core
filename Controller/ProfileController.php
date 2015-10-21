@@ -12,6 +12,7 @@ namespace CampaignChain\CoreBundle\Controller;
 
 use CampaignChain\CoreBundle\Form\Type\UserType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityRepository;
 
@@ -57,6 +58,17 @@ class ProfileController extends Controller
                 'form_submit_label' => 'Save',
                 'user' => $user,
             ));
+    }
+
+    public function grabGravatarAction(Request $request)
+    {
+        $email = $request->request->get('email');
+        $avatarPath = $this->get('campaignchain.core.user')->downloadGravatarImage($email);
+
+        return new JsonResponse([
+            'path' => $avatarPath,
+            'url' => $this->get('campaignchain.core.service.file_upload')->getPublicUrl($avatarPath),
+        ]);
     }
 
     public function changePasswordAction(Request $request, $id)

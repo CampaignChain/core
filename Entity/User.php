@@ -376,14 +376,6 @@ class User extends BaseUser
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getGravatarUrl()
-    {
-        return "https://secure.gravatar.com/avatar/".md5($this->getEmail())."?s=250&d=identicon";
-    }
-
     public function getHumanRole()
     {
         return join(',', array_map(function($role) {

@@ -281,9 +281,11 @@ file that was distributed with this source code.
 
 {% block avatar_upload_widget %}
     {% set modalContent %}
-        {% include 'CampaignChainCoreBundle:Form:avatarUploadModal.html.twig' %}
-    {% endset %}
+    {% set modalId = "avatar_modal_"~id %}
     {% set containerId = "avatar_upload_"~id %}
+        {% include 'CampaignChainCoreBundle:Form:avatarUploadModal.html.twig' with {modalId: modalId} %}
+    {% endset %}
+
     <div class="avatar-upload-container" id="{{ containerId }}">
         {% if data is not empty %}
             <img class="avatar-image" src="{{ data|campaignchain_user_avatar }}" alt="">
@@ -293,13 +295,25 @@ file that was distributed with this source code.
         <span class="hover-text">Set Image</span>
         <input type="hidden" {{ block('widget_attributes') }} value="{{ value }}">
         <script type="application/javascript">
-            (function() {
+            $(document).ready(function() {
                 var settings = {{ {
                     modalContent: modalContent,
                     containerId: containerId,
                     widgetId: id,
-                }|json_encode|raw  }};
+                    modalId: modalId,
+                    gravatarDownloaderUrl: path("campaignchain_core_profile_grab_gavatar"),
+                }|json_encode|raw }};
                 var $container = $("#" + settings.containerId);
+                var $widget = $("#" + settings.widgetId);
+                var getEmail = function() {
+                    // Find email input by finding an input with name ending with '[email]' and
+                    // getting its value.
+                    return $widget.parents('form').find('input[name$="[email]"]').val();
+                };
+                var updateImage = function(value, previewUrl) {
+                    $container.find('.avatar-image').replaceWith($("<img class='avatar-image' alt='' />").attr({src: previewUrl}));
+                    $('#'+settings.widgetId).val(value);
+                };
 
                 $container.on("click", function() {
                     var $modal = $("#campaignchain-default-modal");
@@ -316,15 +330,28 @@ file that was distributed with this source code.
                                         var response = data.response();
                                         var result = response.result;
 
-                                        $container.find('.avatar-image').replaceWith($("<img class='avatar-image' alt='' />").attr({src: result.url}));
-                                        $('#'+settings.widgetId).val(result.path);
+                                        updateImage(result.path, result.url);
                                         $modal.modal("hide");
                                     }
                                 });
                         })
+                        .on("click", "#"+settings.modalId+" .btn-download-gravatar", function(e) {
+                            e.preventDefault();
+                            $
+                                .ajax({
+                                    url: settings.gravatarDownloaderUrl,
+                                    method: 'POST',
+                                    dataType: 'json',
+                                    data: {email: getEmail()}
+                                })
+                                .success(function(data, status, xhr) {
+                                    updateImage(data.path, data.url);
+                                    $modal.modal("hide");
+                                });
+                        })
                         .modal("show");
                 });
-            }());
+            });
         </script>
     </div>
 {% endblock %}

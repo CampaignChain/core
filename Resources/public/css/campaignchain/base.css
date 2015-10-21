@@ -359,3 +359,26 @@ div.scrollable {
 .avatar-upload-container:hover .hover-text {
     display: block;
 }
+
+.upload-button-container {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+}
+
+/* Emulate button hover since the invisible upload file input will be above the actual button
+ * and the button's hover won't be triggered */
+.upload-button-container:hover .btn-default {
+    color: #333;
+    background-color: #E6E6E6;
+    border-color: #ADADAD;
+}
+
+.upload-button-container input[type=file] {
+    position: absolute;
+    font-size: 999px;
+    top: -200px;
+    left: -180px;
+    cursor: pointer;
+    opacity: 0;
+}

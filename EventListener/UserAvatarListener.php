@@ -53,7 +53,7 @@ class UserAvatarListener
     {
         $avatarImage = $user->getAvatarImage();
         if (empty($avatarImage)) {
-            $this->userService->downloadGravatar($user);
+            $this->userService->downloadAndSetGravatarImage($user);
         }
     }
 

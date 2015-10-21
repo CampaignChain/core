@@ -1,12 +1,19 @@
 {% extends 'CampaignChainCoreBundle:Base:base_modal.html.twig' %}
 
 {% block title %}Upload Profile Image{% endblock %}
+{% block modalBodyClass %}avatar-modal{% endblock %}
+{% block modalBodyId %}{{ modalId|default('') }}{% endblock %}
 
 {% block body %}
     <div class="row">
-        <h1 class="col-sm-12">Upload Image</h1>
-        <div class="col-sm-12">
-            <input type="file" data-url="{{ oneup_uploader_endpoint('avatar') }}">
+        <div class="col-sm-12 text-center">
+            <div class="upload-button-container">
+                <button class="btn btn-default">Upload Image</button>
+                <input type="file" data-url="{{ oneup_uploader_endpoint('avatar') }}">
+            </div>
+        </div>
+        <div class="col-sm-12 text-center">
+            <button class="btn btn-default btn-download-gravatar">Use Gravatar Image</button>
         </div>
     </div>
 {% endblock %}
