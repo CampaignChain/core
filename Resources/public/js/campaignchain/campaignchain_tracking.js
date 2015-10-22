@@ -147,7 +147,7 @@ CampaignChain.prototype.sendUrlReport = function(target)
             dataType: 'jsonp',
             cache: false,
             context: this,
-
+            timeout: 5000,
             success: function(data, status) {
                 if (data.success) {
                     /*
