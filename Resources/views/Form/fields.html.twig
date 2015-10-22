@@ -302,6 +302,7 @@ file that was distributed with this source code.
                     widgetId: id,
                     modalId: modalId,
                     gravatarDownloaderUrl: path("campaignchain_core_profile_grab_gavatar"),
+                    avatarCropUrl: path("campaignchain_core_profile_crop_avatar"),
                 }|json_encode|raw }};
 
                 var $modal = $("#campaignchain-default-modal");
@@ -321,6 +322,17 @@ file that was distributed with this source code.
                 };
 
                 $container.on("click", function() {
+                    // Modal is already initialized, just show it
+                    if ($modal.data('modal-initialized')) {
+                        $modal
+                            .find(".modal-content")
+                                .html(settings.modalContent)
+                            .end()
+                            .modal('show');
+                        return;
+                    }
+
+                    // Set up event handlers for modal
                     $modal
                         .find(".modal-content")
                             .html(settings.modalContent)
@@ -344,8 +356,20 @@ file that was distributed with this source code.
                                             var response = data.response();
                                             var result = response.result;
 
-                                            updateImage(result.path, result.url);
-                                            $modal.modal("hide");
+                                            $modal.find('.avatar-cropper').html(
+                                                $("<img>").attr("src", result.url)
+                                            );
+                                            $modal.find('.avatar-cropper > img').cropper({
+                                                aspectRatio: 1,
+                                                autoCropArea: 0.9,
+                                                guides: false,
+                                                highlight: false
+                                            });
+                                            showContent('.row-avatar-crop');
+
+
+//                                            updateImage(result.path, result.url);
+//                                            $modal.modal("hide");
                                         }
                                     })
                                     .data('fileupload-initialized', true);
@@ -366,7 +390,38 @@ file that was distributed with this source code.
                                     $modal.modal("hide");
                                 });
                         })
-                        .modal("show");
+                        .on("click", "#"+settings.modalId+" .btn-rotate", function(e) {
+                            e.preventDefault();
+
+                            var $button = $(this);
+                            var $cropperImage = $modal.find('.avatar-cropper > img');
+                            var rotation = $button.hasClass('.btn-rotate-left') ? -90 : 90;
+
+                            $cropperImage.cropper("rotate", rotation);
+                        })
+                        .on("click", "#"+settings.modalId+" .btn-crop-cancel", function(e) {
+                            e.preventDefault();
+                            showContent('.row-avatar-upload');
+                        })
+                        .on("click", "#"+settings.modalId+" .btn-crop-confirm", function(e) {
+                            e.preventDefault();
+                            showContent('.row-loading');
+
+                            var $cropperImage = $modal.find('.avatar-cropper > img')
+                            $
+                                .ajax({
+                                    url: settings.avatarCropUrl,
+                                    method: 'POST',
+                                    dataType: 'json',
+                                    data: $cropperImage.cropper('getData')
+                                })
+                                .success(function(data, status, xhr) {
+                                    updateImage(data.path, data.url);
+                                    $modal.modal('hide');
+                                });
+                        })
+                        .modal("show")
+                        .data('modal-initialized', true);
                 });
             });
         </script>

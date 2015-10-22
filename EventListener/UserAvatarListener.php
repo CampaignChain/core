@@ -101,5 +101,7 @@ class UserAvatarListener
 
         $response['path'] = $avatarPath;
         $response['url'] = $this->fileUploadService->getPublicUrl($avatarPath);
+
+        $event->getRequest()->getSession()->set('campaignchain_last_uploaded_avatar', $avatarPath);
     }
 }

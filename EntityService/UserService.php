@@ -8,6 +8,7 @@ use CampaignChain\CoreBundle\Entity\User;
 use CampaignChain\CoreBundle\Service\FileUploadService;
 use GuzzleHttp\ClientInterface as HttpClient;
 use GuzzleHttp\Stream\GuzzleStreamWrapper;
+use Liip\ImagineBundle\Binary\BinaryInterface;
 
 class UserService
 {
@@ -23,6 +24,7 @@ class UserService
         'image/png' => 'png',
         'image/jpeg' => 'jpg',
         'image/pjpeg' => 'jpg',
+        'image/gif' => 'gif'
     ];
 
     private static function getExtensionForContentType($mimeType)
@@ -81,5 +83,15 @@ class UserService
     public function deleteAvatar($avatarPath)
     {
         $this->fileUploadService->deleteFile($avatarPath);
+    }
+
+    public function storeImageAsAvatar(BinaryInterface $image)
+    {
+        $path = $this->generateAvatarPath($image->getMimeType());
+        $f = $this->fileUploadService->openFile($path, "w");
+        fwrite($f, $image->getContent());
+        fclose($f);
+
+        return $path;
     }
 }

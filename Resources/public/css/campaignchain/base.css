@@ -382,3 +382,16 @@ div.scrollable {
     cursor: pointer;
     opacity: 0;
 }
+
+.avatar-modal .avatar-cropper {
+    width: 100%;
+    height: 300px;
+}
+
+.avatar-modal .avatar-cropper > img {
+    max-width: 100%;
+}
+
+.avatar-modal .avatar-rotation-controls {
+    margin: 5px 0 15px;
+}

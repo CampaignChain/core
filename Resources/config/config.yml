@@ -24,6 +24,12 @@ assetic:
                 - "@CampaignChainCoreBundle/Resources/public/components/jquery-file-upload/js/jquery.fileupload.js"
                 - "@CampaignChainCoreBundle/Resources/public/components/jquery-file-upload/js/jquery.fileupload-process.js"
                 - "@CampaignChainCoreBundle/Resources/public/components/jquery-file-upload/js/jquery.fileupload-validate.js"
+        jquery_cropper_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/cropper/dist/cropper.js"
+        jquery_cropper_css:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/cropper/dist/cropper.css"
         bootstrap_js:
             inputs:
                 - "%kernel.root_dir%/../vendor/twbs/bootstrap/js/transition.js"
@@ -258,6 +264,10 @@ liip_imagine:
         auto_rotate:
             filters:
                 auto_rotate: ~
+        cropper:
+            filters:
+                crop: ~
+                rotate: ~
         navbar_avatar:
             filters:
                 thumbnail: {size: [36, 36], mode: outbound}

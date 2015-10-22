@@ -14,7 +14,7 @@ file that was distributed with this source code.
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
         <title>{{ page_title }} - CampaignChain</title>
         {% block javascripts %}
-            {% javascripts '@jquery_js' '@bootstrap_js' '@jquery_file_upload_js' filter='?yui_js' combine=true %}
+            {% javascripts '@jquery_js' '@bootstrap_js' '@jquery_file_upload_js' '@jquery_cropper_js' filter='?yui_js' combine=true %}
                 <script src="{{ asset_url }}"></script>
             {% endjavascripts %}
             <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
@@ -35,7 +35,7 @@ file that was distributed with this source code.
         {% endblock %}
 
         {% block stylesheets %}
-            {% stylesheets '@bootstrap_less' combine=true %}
+            {% stylesheets '@bootstrap_less' '@jquery_cropper_css' combine=true %}
                 <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
             {% endstylesheets %}
             {% stylesheets '@campaignchain_base_css' filter="cssrewrite"
