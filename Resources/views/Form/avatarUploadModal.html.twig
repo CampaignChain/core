@@ -16,7 +16,9 @@
         <div class="col-sm-12 text-center">
             <div class="upload-button-container">
                 <button class="btn btn-default">Upload Image</button>
-                <input type="file" data-url="{{ oneup_uploader_endpoint('avatar') }}">
+                <input type="file"
+                       accept=".jpg,.jpeg,.png,.gif,image/jpeg,image/png,image/gif"
+                       data-url="{{ oneup_uploader_endpoint('avatar') }}">
             </div>
         </div>
         <div class="col-sm-12 text-center">

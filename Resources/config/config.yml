@@ -256,6 +256,10 @@ oneup_uploader:
             frontend: blueimp
             storage:
                 directory: %campaignchain.core.upload_storage.path%/avatar
+            allowed_mimetypes:
+                - image/jpeg
+                - image/png
+                - image/gif
 liip_imagine:
     loaders:
         uploads:
