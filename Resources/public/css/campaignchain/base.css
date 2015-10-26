@@ -260,6 +260,13 @@ body.campaignchain-svg-foreign-object {
     width: 16px;
     height: 16px;
 }
+.avatar {
+    width: 36px;
+    margin: -8px 0px;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
 
 #campaignchain-milestone-sidebar .campaignchain-sidebar-data,
 #campaignchain-activity-sidebar .campaignchain-sidebar-data {
