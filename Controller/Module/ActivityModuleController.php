@@ -74,6 +74,8 @@ class ActivityModuleController extends Controller
      */
     public function newAction(Request $request)
     {
+        $operation = null;
+
         /*
          * Get context from user's choice.
          */
@@ -201,9 +203,13 @@ class ActivityModuleController extends Controller
             return $this->redirect($this->generateUrl('campaignchain_core_activities'));
         }
 
-        return $this->render(
-            'CampaignChainCoreBundle:Operation:new.html.twig',
-            array(
+        /*
+         * Define default rendering options and then apply those defined by the
+         * module's handler if applicable.
+         */
+        $defaultRenderOptions = array(
+            'template' => 'CampaignChainCoreBundle:Operation:new.html.twig',
+            'vars' => array(
                 'page_title' => 'New Activity',
                 'activity' => $this->activity,
                 'campaign' => $this->campaign,
@@ -214,8 +220,14 @@ class ActivityModuleController extends Controller
                 'form' => $form->createView(),
                 'form_submit_label' => 'Save',
                 'form_cancel_route' => 'campaignchain_core_activities_new'
-            ));
+            )
+        );
 
+        $handlerRenderOptions = $this->handler->getNewRenderOptions(
+            $operation
+        );
+
+        return $this->renderWithHandlerOptions($defaultRenderOptions, $handlerRenderOptions);
     }
 
     /**
@@ -555,7 +567,10 @@ class ActivityModuleController extends Controller
      */
     private function renderWithHandlerOptions($default, $handler)
     {
-        if($handler){
+        if(
+            $handler && is_array($handler) && count($handler) &&
+            $default && is_array($default) && count($default)
+        ){
             if(isset($handler['template'])){
                 $default['template'] = $handler['template'];
             }

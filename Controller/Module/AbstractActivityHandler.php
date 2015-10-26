@@ -117,6 +117,29 @@ abstract class AbstractActivityHandler
     abstract public function processContent(Operation $operation, $data);
 
     /**
+     * Define custom template rendering options for the new view in this method
+     * as an array. Here's a sample of such an array:
+     *
+     * array(
+     *     'template' => 'foo_template::edit.html.twig',
+     *     'vars' => array(
+     *         'foo1' => $bar1,
+     *         'foo2' => $bar2
+     *         )
+     *     );
+     *
+     * Called in these views:
+     * - new
+     *
+     * @param Operation $operation
+     * @return null
+     */
+    public function getNewRenderOptions(Operation $operation = null)
+    {
+        return null;
+    }
+
+    /**
      * Overwrite this method to define how the Content is supposed to be
      * displayed.
      *
