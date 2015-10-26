@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  * @ORM\Table(name="campaignchain_campaign")
  */
-class Campaign extends Action
+class Campaign extends Action implements AssignableInterface
 {
 
     /**
@@ -61,6 +61,12 @@ class Campaign extends Action
      * @ORM\Column(type="boolean")
      */
     protected $hasRelativeDates = false;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="CampaignChain\CoreBundle\Entity\User", inversedBy="campaigns")
+     * @ORM\JoinColumn(name="assignee", referencedColumnName="id")
+     */
+    protected $assignee;
 
     /**
      * Get id
@@ -297,6 +303,22 @@ class Campaign extends Action
     public function getHasRelativeDates()
     {
         return $this->hasRelativeDates;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAssignee()
+    {
+        return $this->assignee;
+    }
+
+    /**
+     * @param mixed $assignee
+     */
+    public function setAssignee($assignee)
+    {
+        $this->assignee = $assignee;
     }
 
 //    public function __clone()

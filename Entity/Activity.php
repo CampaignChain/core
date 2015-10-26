@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  * @ORM\Table(name="campaignchain_activity")
  */
-class Activity extends Action
+class Activity extends Action implements AssignableInterface
 {
 
     /**
@@ -64,6 +64,13 @@ class Activity extends Action
      * @ORM\Column(type="boolean")
      */
     protected $equalsOperation = true;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="CampaignChain\CoreBundle\Entity\User", inversedBy="activities")
+     * @ORM\JoinColumn(name="assignee", referencedColumnName="id")
+     */
+    protected $assignee;
+
 
     /**
      * Constructor
@@ -299,4 +306,22 @@ class Activity extends Action
             $this->id = null;
         }
     }
+
+    /**
+     * @return mixed
+     */
+    public function getAssignee()
+    {
+        return $this->assignee;
+    }
+
+    /**
+     * @param mixed $assignee
+     */
+    public function setAssignee($assignee)
+    {
+        $this->assignee = $assignee;
+    }
+
+
 }
