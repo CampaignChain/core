@@ -27,17 +27,20 @@ class ReportAnalyticsActivityFact
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Operation")
+     * @ORM\ManyToOne(targetEntity="Operation", inversedBy="fact")
+     * @ORM\JoinColumn(referencedColumnName="id")
      */
     protected $operation;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Activity")
+     * @ORM\ManyToOne(targetEntity="Activity", inversedBy="fact")
+     * @ORM\JoinColumn(referencedColumnName="id")
      */
     protected $activity;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Campaign")
+     * @ORM\ManyToOne(targetEntity="Campaign", inversedBy="activityFacts")
+     * @ORM\JoinColumn(referencedColumnName="id")
      */
     protected $campaign;
 

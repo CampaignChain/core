@@ -36,7 +36,8 @@ class Job extends Meta
     protected $pid;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Scheduler")
+     * @ORM\ManyToOne(targetEntity="Scheduler", inversedBy="jobs")
+     * @ORM\JoinColumn(referencedColumnName="id")
      */
     protected $scheduler;
 

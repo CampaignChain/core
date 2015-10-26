@@ -13,7 +13,7 @@ namespace CampaignChain\CoreBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="MilestoneRepository")
  * @ORM\Table(name="campaignchain_milestone")
  */
 class Milestone extends Action
@@ -27,12 +27,14 @@ class Milestone extends Action
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Campaign", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="Campaign", cascade={"persist"}, inversedBy="milestones")
+     * @ORM\JoinColumn(referencedColumnName="id")
      */
     protected $campaign;
 
     /**
-     * @ORM\ManyToOne(targetEntity="MilestoneModule")
+     * @ORM\ManyToOne(targetEntity="MilestoneModule", inversedBy="milestones")
+     * @ORM\JoinColumn(referencedColumnName="id")
      */
     protected $milestoneModule;
 

@@ -95,7 +95,8 @@ class Action extends Meta
     protected $status = self::STATUS_OPEN;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Hook")
+     * @ORM\ManyToOne(targetEntity="Hook", inversedBy="activities")
+     * @ORM\JoinColumn(referencedColumnName="id")
      */
     protected $triggerHook;
 

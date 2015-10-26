@@ -39,12 +39,14 @@ class Location extends Medium
     protected $parent;
 
     /**
-     * @ORM\ManyToOne(targetEntity="LocationModule", cascade={"merge"})
+     * @ORM\ManyToOne(targetEntity="LocationModule", cascade={"merge"}, inversedBy="locations")
+     * @ORM\JoinColumn(referencedColumnName="id")
      */
     protected $locationModule;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Channel")
+     * @ORM\ManyToOne(targetEntity="Channel", inversedBy="locations")
+     * @ORM\JoinColumn(referencedColumnName="id")
      */
     protected $channel;
 
@@ -54,7 +56,7 @@ class Location extends Medium
     protected $activities;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Operation", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="Operation", cascade={"persist"}, inversedBy="locations")
      * @ORM\JoinColumn(name="operation_id", referencedColumnName="id", nullable=true)
      */
     protected $operation;

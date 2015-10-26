@@ -26,7 +26,8 @@ class Operation extends Action
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="OperationModule")
+     * @ORM\ManyToOne(targetEntity="OperationModule", inversedBy="operations")
+     * @ORM\JoinColumn(referencedColumnName="id")
      */
     protected $operationModule;
 
@@ -34,7 +35,7 @@ class Operation extends Action
      * This column has to be nullable=true, because the module installer will
      * add the Activity after it already persisted the Operation.
      *
-     * @ORM\ManyToOne(targetEntity="Activity")
+     * @ORM\ManyToOne(targetEntity="Activity", inversedBy="operations")
      * @ORM\JoinColumn(name="activity_id", referencedColumnName="id", nullable=true)
      */
     protected $activity;

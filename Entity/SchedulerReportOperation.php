@@ -18,7 +18,8 @@ use Doctrine\ORM\Mapping as ORM;
 class SchedulerReportOperation extends SchedulerReport
 {
     /**
-     * @ORM\ManyToOne(targetEntity="Operation")
+     * @ORM\ManyToOne(targetEntity="Operation", inversedBy="scheduledReports")
+     * @ORM\JoinColumn(referencedColumnName="id")
      */
     protected $operation;
 

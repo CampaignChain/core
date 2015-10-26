@@ -28,13 +28,13 @@ class CTA extends Meta
     protected $id;
 
     /**
-    * @ORM\ManyToOne(targetEntity="Operation")
+    * @ORM\ManyToOne(targetEntity="Operation", inversedBy="outboundCTAs")
     * @ORM\JoinColumn(name="operation_id", referencedColumnName="id", nullable=false)
     */
     protected $operation;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Location", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="Location", cascade={"persist"}, inversedBy="ctas")
      * @ORM\JoinColumn(name="location_id", referencedColumnName="id", nullable=false)
      */
     protected $location;

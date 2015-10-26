@@ -27,7 +27,8 @@ class Channel extends Medium
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="ChannelModule")
+     * @ORM\ManyToOne(targetEntity="ChannelModule", inversedBy="channels")
+     * @ORM\JoinColumn(referencedColumnName="id")
      */
     protected $channelModule;
 

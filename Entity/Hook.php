@@ -29,7 +29,8 @@ class Hook
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Bundle")
+     * @ORM\ManyToOne(targetEntity="Bundle", inversedBy="hooks")
+     * @ORM\JoinColumn(referencedColumnName="id")
      */
     protected $bundle;
 
