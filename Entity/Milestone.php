@@ -13,7 +13,7 @@ namespace CampaignChain\CoreBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="MilestoneRepository")
+ * @ORM\Entity
  * @ORM\Table(name="campaignchain_milestone")
  */
 class Milestone extends Action implements AssignableInterface
