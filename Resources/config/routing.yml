@@ -204,6 +204,10 @@ campaignchain_core_profile_grab_gavatar:
     defaults: { _controller: CampaignChainCoreBundle:Profile:grabGravatar }
     methods: [POST]
 
+campaignchain_core_profile_preview_gravatar:
+    pattern: /profile/preview_gravatar
+    defaults: { _controller: CampaignChainCoreBundle:Profile:previewGravatar }
+
 campaignchain_core_profile_crop_avatar:
     pattern: /profile/crop_avatar
     defaults: { _controller: CampaignChainCoreBundle:Profile:cropAvatar }

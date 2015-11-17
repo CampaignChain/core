@@ -360,10 +360,38 @@ div.scrollable {
     display: block;
 }
 
-.upload-button-container {
+.upload-button-container, .btn-download-gravatar {
     position: relative;
     display: inline-block;
     overflow: hidden;
+    width: 260px;
+    height: 260px;
+}
+
+.upload-button-container:hover, .upload-button-container.drag-drop,
+.btn-download-gravatar:hover {
+    background-color: #e6e6e6;
+    border-color: #adadad;
+}
+
+.upload-button-container span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    font-size: 18px;
+}
+
+.btn-download-gravatar {
+    padding: 0;
+}
+
+.upload-button-container .fa {
+    font-size: 30px;
 }
 
 /* Emulate button hover since the invisible upload file input will be above the actual button
@@ -374,6 +402,7 @@ div.scrollable {
     border-color: #ADADAD;
 }
 
+/* Make the upload button huge to intercept all clicks inside the upload-button-container */
 .upload-button-container input[type=file] {
     position: absolute;
     font-size: 999px;

@@ -280,9 +280,9 @@ file that was distributed with this source code.
 {% endblock bootstrap_collection_widget %}
 
 {% block avatar_upload_widget %}
-    {% set modalContent %}
     {% set modalId = "avatar_modal_"~id %}
     {% set containerId = "avatar_upload_"~id %}
+    {% set modalContent %}
         {% include 'CampaignChainCoreBundle:Form:avatarUploadModal.html.twig' with {modalId: modalId} %}
     {% endset %}
 
@@ -302,6 +302,7 @@ file that was distributed with this source code.
                     widgetId: id,
                     modalId: modalId,
                     gravatarDownloaderUrl: path("campaignchain_core_profile_grab_gavatar"),
+                    gravatarPreviewUrl: path("campaignchain_core_profile_preview_gravatar"),
                     avatarCropUrl: path("campaignchain_core_profile_crop_avatar"),
                 }|json_encode|raw }};
 
@@ -343,6 +344,10 @@ file that was distributed with this source code.
                                 return;
                             }
 
+                            $modal
+                                .find('.gravatar-preview')
+                                .attr('src', settings.gravatarPreviewUrl + "?email=" + encodeURIComponent(getEmail()));
+
                             showContent('.row-avatar-upload');
                             var $fileInput = $modal.find("input[type=file]");
                             if (!$fileInput.data('fileupload-initialized')) {
@@ -367,10 +372,6 @@ file that was distributed with this source code.
                                                 highlight: false
                                             });
                                             showContent('.row-avatar-crop');
-
-
-//                                            updateImage(result.path, result.url);
-//                                            $modal.modal("hide");
                                         }
                                     })
                                     .data('fileupload-initialized', true);
@@ -424,6 +425,19 @@ file that was distributed with this source code.
                         .modal("show")
                         .data('modal-initialized', true);
                 });
+
+                var dragenterDepth = 0;
+                $(document)
+                    .on("dragenter dragleave", ".modal-content", function(e) {
+                        // dragenter and dragleave are also triggered for child elements. We track depth
+                        // here so we can detect when the drag left the element
+                        dragenterDepth += (e.type === "dragenter") ? 1 : -1;
+                        $modal.find(".upload-button-container").toggleClass("drag-drop", dragenterDepth > 0);
+                    })
+                    .on("drop", function() {
+                        // Remove highlighting when a drop happened
+                        $modal.find(".upload-button-container").removeClass("drag-drop");
+                    });
             });
         </script>
     </div>

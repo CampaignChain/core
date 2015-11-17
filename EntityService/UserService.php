@@ -55,13 +55,31 @@ class UserService
         return self::AVATAR_DIR . "/" . $this->fileUploadService->generateFileName(".{$extension}");
     }
 
-    public function downloadGravatarImage($email)
+
+    /**
+     * Generate Gravatar URL for the given email address
+     *
+     * @param $email
+     * @return string Gravatar URL
+     */
+    public function generateGravatarUrl($email)
     {
         // If email is missing, just use a random string that looks like an MD5 hash
         // to generate a random identicon
         $emailHash = empty($email) ? bin2hex(openssl_random_pseudo_bytes(16)) : md5($email);
 
-        $gravatarUrl = "https://secure.gravatar.com/avatar/{$emailHash}?s=250&d=identicon";
+        return "https://secure.gravatar.com/avatar/{$emailHash}?s=250&d=identicon";
+    }
+
+    /**
+     * Download Gravatar image and store it to the user upload directory.
+     *
+     * @param $email
+     * @return string path to downloaded image, relative to the storage directory
+     */
+    public function downloadGravatarImage($email)
+    {
+        $gravatarUrl = $this->generateGravatarUrl($email);
 
         $response = $this->httpClient->get($gravatarUrl);
         $avatarPath = $this->generateAvatarPath($response->getHeader('Content-Type'));
@@ -84,7 +102,6 @@ class UserService
     {
         $this->fileUploadService->deleteFile($avatarPath);
     }
-
     public function storeImageAsAvatar(BinaryInterface $image)
     {
         $path = $this->generateAvatarPath($image->getMimeType());

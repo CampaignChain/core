@@ -62,6 +62,12 @@ class ProfileController extends Controller
             ));
     }
 
+    public function previewGravatarAction(Request $request)
+    {
+        $email = $request->query->get('email');
+        return $this->redirect($this->get('campaignchain.core.user')->generateGravatarUrl($email));
+    }
+
     public function grabGravatarAction(Request $request)
     {
         $email = $request->request->get('email');

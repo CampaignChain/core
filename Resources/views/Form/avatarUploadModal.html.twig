@@ -13,16 +13,20 @@
         </div>
     </div>
     <div class="row row-avatar-upload">
-        <div class="col-sm-12 text-center">
-            <div class="upload-button-container">
-                <button class="btn btn-default">Upload Image</button>
+        <div class="col-sm-6 text-center">
+            <h4>Upload Image</h4>
+            <div class="btn btn-default upload-button-container">
+                <span><i class="fa fa-upload"></i></span>
                 <input type="file"
                        accept=".jpg,.jpeg,.png,.gif,image/jpeg,image/png,image/gif"
                        data-url="{{ oneup_uploader_endpoint('avatar') }}">
             </div>
         </div>
-        <div class="col-sm-12 text-center">
-            <button class="btn btn-default btn-download-gravatar">Use Gravatar Image</button>
+        <div class="col-sm-6 text-center">
+            <h4>Use Gravatar Image</h4>
+            <button class="btn btn-default btn-download-gravatar">
+                <img src="" alt="" class="gravatar-preview">
+            </button>
         </div>
     </div>
     <div class="row row-avatar-crop" style="display: none;">
