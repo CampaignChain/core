@@ -328,6 +328,7 @@ div.scrollable {
     display: inline-block;
     position: relative;
     cursor: pointer;
+    min-height: 200px;
 }
 
 .avatar-upload-container .avatar-image {

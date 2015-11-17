@@ -288,7 +288,7 @@ file that was distributed with this source code.
 
     <div class="avatar-upload-container" id="{{ containerId }}">
         {% if data is not empty %}
-            <img class="avatar-image" src="{{ data|campaignchain_user_avatar }}" alt="">
+            <img class="avatar-image image-selected" src="{{ data|campaignchain_user_avatar }}" alt="">
         {% else %}
             <span class="avatar-image no-avatar"></span>
         {% endif %}
@@ -309,14 +309,26 @@ file that was distributed with this source code.
                 var $modal = $("#campaignchain-default-modal");
                 var $container = $("#" + settings.containerId);
                 var $widget = $("#" + settings.widgetId);
+                var getEmailField = function() {
+                    return $widget.parents('form').find('input[name$="[email]"]');
+                };
                 var getEmail = function() {
                     // Find email input by finding an input with name ending with '[email]' and
                     // getting its value.
-                    return $widget.parents('form').find('input[name$="[email]"]').val();
+                    return getEmailField().val();
+                };
+                var getGravatarUrl = function() {
+                    return settings.gravatarPreviewUrl + "?email=" + encodeURIComponent(getEmail());
                 };
                 var updateImage = function(value, previewUrl) {
-                    $container.find('.avatar-image').replaceWith($("<img class='avatar-image' alt='' />").attr({src: previewUrl}));
-                    $('#'+settings.widgetId).val(value);
+                    var cssClasses = 'avatar-image';
+
+                    if (value) {
+                        cssClasses += ' image-selected';
+                        $('#'+settings.widgetId).val(value);
+                    }
+
+                    $container.find('.avatar-image').replaceWith($("<img class='"+cssClasses+"' alt='' />").attr({src: previewUrl}));
                 };
                 var showContent = function(selector) {
                     $modal.find('.row').hide().filter(selector).show();
@@ -346,7 +358,7 @@ file that was distributed with this source code.
 
                             $modal
                                 .find('.gravatar-preview')
-                                .attr('src', settings.gravatarPreviewUrl + "?email=" + encodeURIComponent(getEmail()));
+                                .attr('src', getGravatarUrl());
 
                             showContent('.row-avatar-upload');
                             var $fileInput = $modal.find("input[type=file]");
@@ -425,6 +437,16 @@ file that was distributed with this source code.
                         .modal("show")
                         .data('modal-initialized', true);
                 });
+
+                var updateGravatarIfNotSet = function() {
+                    // Preview gravatar from email address if avatar hasn't been set yet
+                    if ($container.find('.avatar-image').is('.image-selected')) {
+                        return;
+                    }
+                    updateImage(null, getGravatarUrl());
+                };
+                updateGravatarIfNotSet();
+                getEmailField().on("blur", updateGravatarIfNotSet);
 
                 var dragenterDepth = 0;
                 $(document)
