@@ -440,7 +440,7 @@ file that was distributed with this source code.
 
                 var updateGravatarIfNotSet = function() {
                     // Preview gravatar from email address if avatar hasn't been set yet
-                    if ($container.find('.avatar-image').is('.image-selected')) {
+                    if (getEmail() === '' || $container.find('.avatar-image').is('.image-selected')) {
                         return;
                     }
                     updateImage(null, getGravatarUrl());
