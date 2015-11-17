@@ -110,9 +110,11 @@ class ProfileController extends Controller
         $newPath = $userService->storeImageAsAvatar($croppedImage);
         $fileUploadService->deleteFile($lastUpload);
 
+        $imageUrl = $this->get('liip_imagine.cache.manager')->getBrowserPath($fileUploadService->getPublicUrl($newPath), 'avatar');
+
         return new JsonResponse(array(
             'path' => $newPath,
-            'url' => $fileUploadService->getPublicUrl($newPath),
+            'url' => $imageUrl,
         ));
     }
 

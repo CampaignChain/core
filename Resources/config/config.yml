@@ -275,3 +275,6 @@ liip_imagine:
         navbar_avatar:
             filters:
                 thumbnail: {size: [36, 36], mode: outbound}
+        avatar:
+            filters:
+                thumbnail: {size: [200, 200], mode: outbound}
