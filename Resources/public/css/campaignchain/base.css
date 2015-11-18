@@ -36,6 +36,16 @@ body {
     margin: 0 auto -50px;
 }
 
+/* external links */
+a.external:after {
+    content: "\00a0\00a0\f08e";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+    font-size: 70%;
+}
+
 .footer {
     height: 50px;
     background-color: #f8f8f8;
