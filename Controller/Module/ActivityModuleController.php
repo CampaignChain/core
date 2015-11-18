@@ -300,12 +300,6 @@ class ActivityModuleController extends Controller
 
             $this->handler->postPersistEditEvent($this->operations[0], $form, $content);
 
-            if ($form->get('campaignchain_hook_campaignchain_due')->has('execution_choice') && $form->get('campaignchain_hook_campaignchain_due')->get('execution_choice')->getData() == 'now') {
-                $job = $this->get($this->parameters['operation_job']);
-                $job->execute($this->operations[0]->getId());
-                // TODO: Add different flashbag which includes link to posted message on Facebook
-            }
-
             return $this->redirect($this->generateUrl('campaignchain_core_activities'));
         }
 

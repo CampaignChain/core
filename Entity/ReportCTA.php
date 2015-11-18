@@ -11,6 +11,7 @@
 namespace CampaignChain\CoreBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use CampaignChain\CoreBundle\Util\ParserUtil;
 
 /**
  * Call to Action (CTA)
@@ -262,7 +263,7 @@ class ReportCTA
      */
     public function setSourceUrl($sourceUrl)
     {
-        $this->sourceUrl = $sourceUrl;
+        $this->sourceUrl = ParserUtil::sanitizeUrl($sourceUrl);
 
         return $this;
     }
@@ -308,7 +309,7 @@ class ReportCTA
      */
     public function setTargetUrl($targetUrl)
     {
-        $this->targetUrl = $targetUrl;
+        $this->targetUrl = ParserUtil::sanitizeUrl($targetUrl);
 
         return $this;
     }
@@ -400,7 +401,7 @@ class ReportCTA
      */
     public function setReferrerUrl($referrerUrl)
     {
-        $this->referrerUrl = $referrerUrl;
+        $this->referrerUrl = ParserUtil::sanitizeUrl($referrerUrl);
 
         return $this;
     }
