@@ -11,6 +11,7 @@
 namespace CampaignChain\CoreBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use CampaignChain\CoreBundle\Util\ParserUtil;
 
 /**
  * Call to Action (CTA)
@@ -100,7 +101,7 @@ class CTA extends Meta
      */
     public function setUrl($url)
     {
-        $this->url = $url;
+        $this->url = ParserUtil::sanitizeUrl($url);
 
         return $this;
     }
