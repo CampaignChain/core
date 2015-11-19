@@ -231,3 +231,11 @@ sonata_block:
         campaignchain.block.milestone.upcoming.listgroup: null
         campaignchain.block.campaign.ongoing.listgroup: null
         campaignchain.block.rss: null
+fos_oauth_server:
+    db_driver: orm       # Driver availables: orm, mongodb, or propel
+    client_class:        CampaignChain\CoreBundle\Entity\OAuthServer\Client
+    access_token_class:  CampaignChain\CoreBundle\Entity\OAuthServer\AccessToken
+    refresh_token_class: CampaignChain\CoreBundle\Entity\OAuthServer\RefreshToken
+    auth_code_class:     CampaignChain\CoreBundle\Entity\OAuthServer\AuthCode
+    service:
+        user_provider: fos_user.user_manager
