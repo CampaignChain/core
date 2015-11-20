@@ -374,12 +374,24 @@ file that was distributed with this source code.
                                             var response = data.response();
                                             var result = response.result;
 
+                                            // Default to make it a bit smaller so it's easier to resize and move around
+                                            var autoCropArea = 0.9;
+
+                                            if (result.width && result.height) {
+                                                var aspectRatio = result.width / result.height;
+                                                // The image is square so it is already cropped. Default to not cropping
+                                                // in this case
+                                                if (aspectRatio >= 0.99 && aspectRatio <= 1.01) {
+                                                    autoCropArea = 1;
+                                                }
+                                            }
+
                                             $modal.find('.avatar-cropper').html(
                                                 $("<img>").attr("src", result.url)
                                             );
                                             $modal.find('.avatar-cropper > img').cropper({
                                                 aspectRatio: 1,
-                                                autoCropArea: 0.9,
+                                                autoCropArea: autoCropArea,
                                                 guides: false,
                                                 highlight: false
                                             });

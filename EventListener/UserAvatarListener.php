@@ -99,8 +99,11 @@ class UserAvatarListener
         $rotatedImage = $this->filterManager->applyFilter($image, "auto_rotate");
         $file->openFile('w')->fwrite($rotatedImage->getContent());
 
+        $imageSize = getimagesize($file->getPathname());
         $response['path'] = $avatarPath;
         $response['url'] = $this->fileUploadService->getPublicUrl($avatarPath);
+        $response['type'] = $rotatedImage->getMimeType();
+        list($response['width'], $response['height']) = $imageSize;
 
         $event->getRequest()->getSession()->set('campaignchain_last_uploaded_avatar', $avatarPath);
     }
