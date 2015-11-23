@@ -15,6 +15,7 @@
         "ladda": "",
         "blockui": "",
         "d3": "3.5.*",
-        "d3-plugins": ""
+        "d3-plugins": "",
+        "hideshowpassword": "2.*"
     }
 }

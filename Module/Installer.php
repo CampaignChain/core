@@ -29,6 +29,7 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
+use Symfony\Component\Validator\Constraints\UrlValidator;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
@@ -122,7 +123,8 @@ class Installer
 
         $loggerResult = '';
 
-        try {
+        try
+        {
             $this->em->getConnection()->beginTransaction();
 
             foreach($this->newBundles as $this->newBundle){
@@ -303,30 +305,18 @@ class Installer
                 if(isset($extra['campaignchain']['kernel']['routing'])){
                     $this->kernelConfig->addRouting($extra['campaignchain']['kernel']['routing']);
                 }
+
+                // Register the bundle's config.yml file.
                 $configFile = dirname($bundleComposer).DIRECTORY_SEPARATOR.
                     'Resources'.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.
                     'config.yml';
-                if(file_exists($configFile)){
-                    /*
-                     * Make the absolute config file path relative to
-                     * app/config/config.yml.
-                     */
-                    $symfonyRoot = ParserUtil::strReplaceLast('app','',
-                        $this->container->get('kernel')->getRootDir()
-                    );
+                $this->registerConfigurationFile($configFile);
 
-                    // Make sure that even on Windows, the directory separator
-                    // is "/".
-                    if (DIRECTORY_SEPARATOR == '\\') {
-                        $symfonyRoot = str_replace(DIRECTORY_SEPARATOR, '/', $symfonyRoot);
-                        $configFile = str_replace(DIRECTORY_SEPARATOR, '/', $configFile);
-                    }
-
-                    $configFile = '../../'.
-                        str_replace($symfonyRoot, '', $configFile);
-
-                    $this->kernelConfig->addConfig($configFile);
-                }
+                // Register the bundle's security.yml file.
+                $securityFile = dirname($bundleComposer).DIRECTORY_SEPARATOR.
+                    'Resources'.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.
+                    'security.yml';
+                $this->registerConfigurationFile($securityFile, 'security');
             }
 
             // Set the version of the installed bundle.
@@ -397,6 +387,37 @@ class Installer
         }
     }
 
+    private function registerConfigurationFile($configFile, $type = 'config')
+    {
+        if(file_exists($configFile)){
+            /*
+             * Make the absolute config file path relative to
+             * app/config/config.yml.
+             */
+            $symfonyRoot = ParserUtil::strReplaceLast('app','',
+                $this->container->get('kernel')->getRootDir()
+            );
+
+            // Make sure that even on Windows, the directory separator
+            // is "/".
+            if (DIRECTORY_SEPARATOR == '\\') {
+                $symfonyRoot = str_replace(DIRECTORY_SEPARATOR, '/', $symfonyRoot);
+                $configFile = str_replace(DIRECTORY_SEPARATOR, '/', $configFile);
+            }
+
+            switch($type){
+                case 'config':
+                    $configFile = '../../../'.
+                        str_replace($symfonyRoot, '', $configFile);
+                    $this->kernelConfig->addConfig($configFile);
+                    break;
+                case 'security':
+                    $this->kernelConfig->addSecurity($configFile);
+                    break;
+            }
+        }
+    }
+
     private function registerHook($params)
     {
         if(is_array($params['hooks']) && count($params['hooks'])){
@@ -460,6 +481,10 @@ class Installer
         }
 
         $system->setModules($params['modules']);
+
+        if(isset($params['terms_url']) && !empty($params['terms_url'])){
+            $system->setTermsUrl($params['terms_url']);
+        }
 
         $this->em->persist($system);
     }
@@ -582,7 +607,7 @@ class Installer
                     $module->setHooks($moduleParams['hooks']);
                 }
                 if(isset($moduleParams['system']) && is_array($moduleParams['system']) && count($moduleParams['system'])){
-                    $this->systemParams = array_merge($this->systemParams, $moduleParams['system']);
+                    $this->systemParams[] = $moduleParams['system'];
                 }
                 // Are metrics for the reports defined?
                 if(isset($moduleParams['metrics']) && is_array($moduleParams['metrics']) && count($moduleParams['metrics'])){
@@ -675,23 +700,37 @@ class Installer
         }
     }
 
+    /**
+     * Store a module's system parameters.
+     */
     private function registerModuleSystemParams()
     {
-        // Store the system parameters.
         if(count($this->systemParams)){
-            foreach($this->systemParams as $key => $params){
-                switch($key){
-                    case 'navigation':
-                        /*
-                         * If a system entry already exists, then update it. Otherwise, create a new one.
-                         */
-                        $system = $this->em->getRepository('CampaignChainCoreBundle:System')->find(1);
+            /*
+             * If a system entry already exists, then update it. Otherwise,
+             * create a new one.
+             */
+            $system = $this->em->getRepository('CampaignChainCoreBundle:System')->find(1);
+            if(!$system){
+                $system = new System();
+                $system->setNavigation(array());
+                $this->em->persist($system);
+            }
 
-                        if(!$system){
-                            $system = new System();
-                        }
-                        $system->setNavigation($params);
-                        break;
+            if(!is_array($system->getNavigation())){
+                $system->setNavigation(array());
+            }
+
+            foreach($this->systemParams as $moduleParams){
+                foreach($moduleParams as $key => $params) {
+                    switch ($key) {
+                        case 'navigation':
+                            // Merge existing navigations.
+                            $navigation = array_merge_recursive($system->getNavigation(), $params);
+
+                            $system->setNavigation($navigation);
+                            break;
+                    }
                 }
             }
 

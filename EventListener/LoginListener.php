@@ -55,6 +55,16 @@ class LoginListener
      */
     public function onSecurityInteractiveLogin(InteractiveLoginEvent $event)
     {
+        /*
+         * Avoid OAuth Authorization attack as described at
+         * http://software-security.sans.org/blog/2011/03/07/oauth-authorization-attacks-secure-implementation.
+         */
+        if ($this->session->has('_security.target_path')) {
+            if (false !== strpos($this->session->get('_security.target_path'), $this->generateUrl('fos_oauth_server_authorize'))) {
+                $this->session->set('_fos_oauth_server.ensure_logout', true);
+            }
+        }
+
         $this->session->set('campaignchain.locale', $this->tokenStorage->getToken()->getUser()->getLocale());
         $this->session->set('campaignchain.timezone', $this->tokenStorage->getToken()->getUser()->getTimezone());
         $this->session->set('campaignchain.dateFormat', $this->tokenStorage->getToken()->getUser()->getDateFormat());

@@ -70,8 +70,7 @@
                     "Hpatoio\\BitlyBundle\\HpatoioBitlyBundle",
                     "Sp\\BowerBundle\\SpBowerBundle",
                     "Sonata\\CoreBundle\\SonataCoreBundle",
-                    "Sonata\\BlockBundle\\SonataBlockBundle",
-                    "FOS\\OAuthServerBundle\\FOSOAuthServerBundle"
+                    "Sonata\\BlockBundle\\SonataBlockBundle"
                 ]
             }
         }

@@ -186,6 +186,13 @@ assetic:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/components/blockui/jquery.blockUI.js"
                 - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/blockui.js"
+        hideshowpassword_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/hideShowPassword/hideShowPassword.min.js"
+        hideshowpassword_css:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/hideShowPassword/css/example.minimal.css"
+                - "@CampaignChainCoreBundle/Resources/public/css/campaignchain/hideshowpassword.css"
     bundles:
         - "CampaignChainCoreBundle"
         - "FOSUserBundle"
@@ -231,11 +238,3 @@ sonata_block:
         campaignchain.block.milestone.upcoming.listgroup: null
         campaignchain.block.campaign.ongoing.listgroup: null
         campaignchain.block.rss: null
-fos_oauth_server:
-    db_driver: orm       # Driver availables: orm, mongodb, or propel
-    client_class:        CampaignChain\CoreBundle\Entity\OAuthServer\Client
-    access_token_class:  CampaignChain\CoreBundle\Entity\OAuthServer\AccessToken
-    refresh_token_class: CampaignChain\CoreBundle\Entity\OAuthServer\RefreshToken
-    auth_code_class:     CampaignChain\CoreBundle\Entity\OAuthServer\AuthCode
-    service:
-        user_provider: fos_user.user_manager

@@ -230,3 +230,51 @@ file that was distributed with this source code.
         {% endif %}
     {% endspaceless %}
 {% endblock textarea_widget %}
+
+{% block bootstrap_collection_widget %}
+    {% spaceless %}
+        {% if prototype is defined %}
+            {% set prototype_vars = {} %}
+            {% if style is defined %}
+                {% set prototype_vars = prototype_vars|merge({'style': style}) %}
+            {% endif %}
+            {% set prototype_html = '<div class="col-xs-' ~ form.vars.sub_widget_col ~ '">' ~ form_widget(prototype, prototype_vars) ~ '</div>' %}
+            {% if form.vars.allow_delete %}
+                {% set prototype_html = prototype_html ~ '<div class="col-xs-' ~ form.vars.button_col ~ '"><a href="#" class="btn btn-danger btn-sm" data-removefield="collection" data-field="__id__">' ~ form.vars.delete_button_text|trans({}, translation_domain)|parse_icons|raw ~ '</a></div>' %}
+            {% endif %}
+            {% set prototype_html = '<div class="row">' ~ prototype_html ~ '</div>' %}
+
+            {% set attr = attr|merge({'data-prototype': prototype_html }) %}
+            {% set attr = attr|merge({'data-prototype-name': prototype_name }) %}
+        {% endif %}
+        <div {{ block('widget_container_attributes') }}>
+            <ul class="bc-collection list-unstyled">
+                {% for field in form %}
+                    <li>
+                        <div class="row">
+                            <div class="col-xs-{{ form.vars.sub_widget_col }}">
+                                {{ form_widget(field) }}
+                                {{ form_errors(field) }}
+                            </div>
+                            {% if form.vars.allow_delete %}
+                                <div class="col-xs-{{ form.vars.button_col }}">
+                                    <a href="#" class="btn btn-danger btn-sm" data-removefield="collection" data-field="{{ field.vars.id }}">{{ form.vars.delete_button_text|trans({}, translation_domain)|parse_icons|raw }}</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+            {% if form.vars.allow_add %}
+                <a href="#" class="btn btn-primary btn-sm" data-addfield="collection" data-collection="{{ form.vars.id }}" data-prototype-name="{{ prototype_name }}">{{ form.vars.add_button_text|trans({}, translation_domain)|parse_icons|raw }}</a>
+            {% endif %}
+        </div>
+        {# Make sure that first field is being displayed in collection and it has no delete button. #}
+        <script type="application/javascript">
+            if(!$("input[data-field='{{ form.vars.id }}_0']").length) {
+                $("a[data-collection='{{ form.vars.id }}']").trigger('click');
+            }
+            $("a[data-field='{{ form.vars.id }}_0']").hide();
+        </script>
+    {% endspaceless %}
+{% endblock bootstrap_collection_widget %}

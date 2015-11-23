@@ -230,6 +230,14 @@ class DateTimeUtil
         return $localeFormat->format($object);
     }
 
+    public function timestampToDatetime($timestamp)
+    {
+        $date = new \DateTime();
+        $date->setTimestamp($timestamp);
+
+        return $date->format($this->getUserDatetimeFormat('php_date'));
+    }
+
     private function convertToPHPDateFormat($format){
         $patterns[] = '/mm/';
         $patterns[] = '/dd/';
