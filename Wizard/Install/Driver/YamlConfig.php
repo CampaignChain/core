@@ -63,14 +63,14 @@ class YamlConfig
      *
      * @return int
      */
-    public function write($parameters)
+    public function write($parameters, $expanded = 2)
     {
         $this->parameters = $this->read();
         $this->mergeParameters($parameters);
 
         $filename = $this->isFileWritable() ? $this->filename : $this->getCacheFilename();
 
-        return file_put_contents($filename, $this->render());
+        return file_put_contents($filename, $this->render($expanded));
     }
 
     /**

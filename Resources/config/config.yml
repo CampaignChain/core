@@ -186,6 +186,13 @@ assetic:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/components/blockui/jquery.blockUI.js"
                 - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/blockui.js"
+        hideshowpassword_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/hideShowPassword/hideShowPassword.min.js"
+        hideshowpassword_css:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/hideShowPassword/css/example.minimal.css"
+                - "@CampaignChainCoreBundle/Resources/public/css/campaignchain/hideshowpassword.css"
     bundles:
         - "CampaignChainCoreBundle"
         - "FOSUserBundle"

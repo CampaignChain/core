@@ -25,8 +25,13 @@ class ScriptHandler extends SensioScriptHandler
     {
         $campaignchainBundlesKernel = 'app'.DIRECTORY_SEPARATOR.'campaignchain_bundles.php';
         $symfonyConfigDir = 'app'.DIRECTORY_SEPARATOR.'config';
-        $campaignchainBundlesConfig = $symfonyConfigDir.DIRECTORY_SEPARATOR.'campaignchain_bundles.yml';
+        $campaignchainBundlesConfig = $symfonyConfigDir.
+            DIRECTORY_SEPARATOR.'campaignchain'.
+            DIRECTORY_SEPARATOR.'config_bundles.yml';
         $routingFile = $symfonyConfigDir.DIRECTORY_SEPARATOR.'routing.yml';
+        $campaignchainBundlesSecurity = $symfonyConfigDir.
+            DIRECTORY_SEPARATOR.'campaignchain'.
+            DIRECTORY_SEPARATOR.'security.yml';
 
         $fs = new Filesystem();
 
@@ -38,6 +43,9 @@ class ScriptHandler extends SensioScriptHandler
         }
         if(!$fs->exists($routingFile)){
             $fs->copy($routingFile.'.dist', $routingFile, true);
+        }
+        if(!$fs->exists($campaignchainBundlesSecurity)){
+            $fs->copy($campaignchainBundlesSecurity.'.dist', $campaignchainBundlesSecurity, true);
         }
     }
 
