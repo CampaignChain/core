@@ -7,6 +7,28 @@ For the full copyright and license information, please view the LICENSE
 file that was distributed with this source code.
 */
 
+(function() {
+    var externalLinkPattern = new RegExp(
+        // Should have a protocol or is a protocol relative
+        "^(https?:)?//" +
+        // Should not be the current pages' host
+        "(?!"+ regexEscape(location.host) +")"
+    );
+
+    // Mark all external links inside the given element(s) as such. Should be called once
+    // in $(document).ready() and after content has been updated via AJAX.
+    $.fn.markExternalLinks = function() {
+        this.find('a').addClass(function() {
+            return ($(this).attr('href') || "").match(externalLinkPattern) ? "external" : "";
+        });
+        return this;
+    };
+}());
+
+function regexEscape(string){
+    return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 function popupwindow(url, title, w, h) {
     var left = (screen.width/2)-(w/2);
     //var top = (screen.height/2)-(h/2);
@@ -185,6 +207,18 @@ function campaignchainTplMedium(iconPath, contextIconPath, text){
 
 $(document).ready(function() {
 //    campaignchainDisplayUserDatetime();
+
+    $(document.body)
+        .markExternalLinks()
+        // Register on the external link handler on <body> so clicks on elements added
+        // later can be intercepted. Also, when one of the click handlers further down
+        // calls preventDefault(), we respect that and do nothing.
+        .on("click", ".external", function(e) {
+            if (!e.isDefaultPrevented()) {
+                e.preventDefault();
+                window.open(this.href, '_blank');
+            }
+        });
 
     var summaries = $('.campaignchain-sticky-heading');
     summaries.each(function(i) {
