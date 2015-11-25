@@ -16,6 +16,8 @@
         "blockui": "",
         "d3": "3.5.*",
         "d3-plugins": "",
-        "hideshowpassword": "2.*"
+        "hideshowpassword": "2.*",
+        "jquery-file-upload": "^9.11.2",
+        "cropper": "~1.0"
     }
 }

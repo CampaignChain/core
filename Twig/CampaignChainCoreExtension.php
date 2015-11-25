@@ -58,11 +58,6 @@ class CampaignChainCoreExtension extends \Twig_Extension
         );
     }
 
-    public function userAvatar(User $user, $size = 50)
-    {
-        return "http://www.gravatar.com/avatar/".md5($user->getEmail())."?s=".$size."&d=identicon";
-    }
-
     public function system(){
         return $this->container->get('campaignchain.core.system')->getActiveSystem();
     }
@@ -452,6 +447,15 @@ class CampaignChainCoreExtension extends \Twig_Extension
         } else {
             return 'UTC';
         }
+    }
+
+    public function userAvatar($val)
+    {
+        if ($val instanceof User) {
+            $val = $val->getAvatarImage();
+        }
+
+        return $this->container->get('campaignchain.core.service.file_upload')->getPublicUrl($val);
     }
 
     public function getName()

@@ -11,9 +11,12 @@
 namespace CampaignChain\CoreBundle\Controller;
 
 use CampaignChain\CoreBundle\Form\Type\UserType;
+use Liip\ImagineBundle\Exception\Binary\Loader\NotLoadableException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityRepository;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ProfileController extends Controller
 {
@@ -57,6 +60,62 @@ class ProfileController extends Controller
                 'form_submit_label' => 'Save',
                 'user' => $user,
             ));
+    }
+
+    public function previewGravatarAction(Request $request)
+    {
+        $email = $request->query->get('email');
+        return $this->redirect($this->get('campaignchain.core.user')->generateGravatarUrl($email));
+    }
+
+    public function grabGravatarAction(Request $request)
+    {
+        $email = $request->request->get('email');
+        $avatarPath = $this->get('campaignchain.core.user')->downloadGravatarImage($email);
+
+        return new JsonResponse([
+            'path' => $avatarPath,
+            'url' => $this->get('campaignchain.core.service.file_upload')->getPublicUrl($avatarPath),
+        ]);
+    }
+
+    public function cropAvatarAction(Request $request)
+    {
+        $lastUpload = $request->getSession()->get('campaignchain_last_uploaded_avatar');
+        $imageLoader = $this->get('liip_imagine.binary.loader.uploads');
+        $filterManager = $this->get('liip_imagine.filter.manager');
+        $userService = $this->get('campaignchain.core.user');
+        $fileUploadService = $this->get('campaignchain.core.service.file_upload');
+
+        try {
+            $image = $imageLoader->find($lastUpload);
+        } catch (NotLoadableException $e) {
+            throw new NotFoundHttpException("No pending avatar upload found", $e);
+        }
+
+        $requestVars = $request->request;
+
+        $croppedImage = $filterManager->applyFilter($image, "cropper", array(
+            'filters' => array(
+                'crop' => array(
+                    'start' => array($requestVars->get('x', 0), $requestVars->get('y', 0)),
+                    'size' => array($requestVars->get('width'), $requestVars->get('height')),
+                ),
+                'rotate' => array(
+                    'angle' => $requestVars->get('rotate')
+                )
+            )
+        ));
+
+        $newPath = $userService->storeImageAsAvatar($croppedImage);
+        $fileUploadService->deleteFile($lastUpload);
+
+        $imageUrl = $this->get('liip_imagine.cache.manager')->getBrowserPath($fileUploadService->getPublicUrl($newPath), 'avatar');
+
+        return new JsonResponse(array(
+            'path' => $newPath,
+            'url' => $imageUrl,
+        ));
     }
 
     public function changePasswordAction(Request $request, $id)

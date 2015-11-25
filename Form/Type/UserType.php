@@ -78,6 +78,9 @@ class UserType extends AbstractType
                 )
             ))
             ->add('timezone', 'timezone')
+            ->add('avatarImage', new AvatarUploadType(), array(
+                'label' => 'Profile image'
+            ))
         ;
 
         if ($options['new']) {
