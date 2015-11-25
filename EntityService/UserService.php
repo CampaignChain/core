@@ -68,7 +68,7 @@ class UserService
         // to generate a random identicon
         $emailHash = empty($email) ? bin2hex(openssl_random_pseudo_bytes(16)) : md5($email);
 
-        return "https://secure.gravatar.com/avatar/{$emailHash}?s=250&d=identicon";
+        return "http://www.gravatar.com/avatar/{$emailHash}?s=250&d=identicon";
     }
 
     /**
