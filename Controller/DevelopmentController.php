@@ -10,6 +10,7 @@
 
 namespace CampaignChain\CoreBundle\Controller;
 
+use CampaignChain\CoreBundle\Fixture\UserProcessor;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -63,12 +64,17 @@ class DevelopmentController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
+            $userProcessor = new UserProcessor(
+                $dataRoot, $this->get('campaignchain.core.user'),
+                $this->get('liip_imagine.mime_type_guesser'), $this->get('liip_imagine.extension_guesser')
+            );
             // Create Alice manager and fixture set
+            $dataFilePath = $form->get('dataFile')->getData();
             $manager = $this->get('h4cc_alice_fixtures.manager');
+            $manager->addProcessor($userProcessor);
             $set = $manager->createFixtureSet();
 
             // Add the fixture files
-            $dataFilePath = $form->get('dataFile')->getData();
             $set->addFile($dataFilePath, 'yaml');
 
             // Include the credentials file provided by the user

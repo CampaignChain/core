@@ -102,6 +102,7 @@ class UserService
     {
         $this->fileUploadService->deleteFile($avatarPath);
     }
+
     public function storeImageAsAvatar(BinaryInterface $image)
     {
         $path = $this->generateAvatarPath($image->getMimeType());
