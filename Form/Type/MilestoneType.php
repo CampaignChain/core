@@ -11,6 +11,7 @@
 namespace CampaignChain\CoreBundle\Form\Type;
 
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Doctrine\ORM\EntityRepository;
 
@@ -44,13 +45,12 @@ class MilestoneType extends HookListenerType
         $builder->addEventSubscriber($hookListener);
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
             'data_class' => 'CampaignChain\CoreBundle\Entity\Milestone',
         ));
     }
-
 
     public function getName()
     {

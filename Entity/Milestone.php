@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  * @ORM\Table(name="campaignchain_milestone")
  */
-class Milestone extends Action
+class Milestone extends Action implements AssignableInterface
 {
 
     /**
@@ -27,14 +27,22 @@ class Milestone extends Action
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Campaign", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="Campaign", cascade={"persist"}, inversedBy="milestones")
+     * @ORM\JoinColumn(referencedColumnName="id")
      */
     protected $campaign;
 
     /**
-     * @ORM\ManyToOne(targetEntity="MilestoneModule")
+     * @ORM\ManyToOne(targetEntity="MilestoneModule", inversedBy="milestones")
+     * @ORM\JoinColumn(referencedColumnName="id")
      */
     protected $milestoneModule;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="CampaignChain\CoreBundle\Entity\User", inversedBy="milestones")
+     * @ORM\JoinColumn(name="assignee", referencedColumnName="id")
+     */
+    protected $assignee;
 
     /**
      * Get id
@@ -119,5 +127,21 @@ class Milestone extends Action
         if ($this->id) {
             $this->id = null;
         }
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAssignee()
+    {
+        return $this->assignee;
+    }
+
+    /**
+     * @param mixed $assignee
+     */
+    public function setAssignee($assignee)
+    {
+        $this->assignee = $assignee;
     }
 }

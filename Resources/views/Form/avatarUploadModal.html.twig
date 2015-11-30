@@ -1,0 +1,49 @@
+{% extends 'CampaignChainCoreBundle:Base:base_modal.html.twig' %}
+
+{% block title %}Set Profile Image{% endblock %}
+{% block modalBodyClass %}avatar-modal{% endblock %}
+{% block modalBodyId %}{{ modalId|default('') }}{% endblock %}
+
+{% block body %}
+    <div class="row row-loading" style="display: none;">
+        <div class="col-sm-12 text-center">
+            {% image '@CampaignChainCoreBundle/Resources/public/images/spinner.gif' %}
+            <img src="{{ asset_url }}" alt="Loading…">
+            {% endimage %}
+        </div>
+    </div>
+    <div class="row row-avatar-upload">
+        <div class="col-sm-6 text-center">
+            <h4>Upload Image</h4>
+            <div class="btn btn-default upload-button-container">
+                <span><i class="fa fa-upload"></i></span>
+                <input type="file"
+                       accept=".jpg,.jpeg,.png,.gif,image/jpeg,image/png,image/gif"
+                       data-url="{{ oneup_uploader_endpoint('avatar') }}">
+            </div>
+        </div>
+        <div class="col-sm-6 text-center">
+            <h4>Use Gravatar Image</h4>
+            <button class="btn btn-default btn-download-gravatar">
+                <img src="" alt="" class="gravatar-preview">
+            </button>
+        </div>
+    </div>
+    <div class="row row-avatar-crop" style="display: none;">
+        <div class="col-sm-12">
+            <div class="avatar-cropper"></div>
+            <div class="avatar-rotation-controls">
+                <button class="btn btn-default btn-rotate btn-rotate-left">
+                    <span class="fa fa-rotate-left"></span>
+                </button>
+                <button class="btn btn-default btn-rotate btn-rotate-right pull-right">
+                    <span class="fa fa-rotate-right"></span>
+                </button>
+            </div>
+        </div>
+        <div class="col-sm-12">
+            <button class="btn btn-default btn-crop-cancel">Upload an other image</button>
+            <button class="btn btn-success btn-crop-confirm pull-right">Set profile image</button>
+        </div>
+    </div>
+{% endblock %}

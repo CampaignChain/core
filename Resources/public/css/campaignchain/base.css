@@ -36,6 +36,16 @@ body {
     margin: 0 auto -50px;
 }
 
+/* external links */
+a.external:after {
+    content: "\00a0\00a0\f08e";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+    font-size: 70%;
+}
+
 .footer {
     height: 50px;
     background-color: #f8f8f8;
@@ -260,6 +270,13 @@ body.campaignchain-svg-foreign-object {
     width: 16px;
     height: 16px;
 }
+.avatar {
+    width: 36px;
+    margin: -8px 0px;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
 
 #campaignchain-milestone-sidebar .campaignchain-sidebar-data,
 #campaignchain-activity-sidebar .campaignchain-sidebar-data {
@@ -281,3 +298,130 @@ body.campaignchain-svg-foreign-object {
     padding-top: 6px;
 }
 
+.modal-footer {
+    text-align: center;
+}
+
+div.scrollable {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: auto;
+}
+
+/*** Avatar image in navbar ***/
+.navbar-profile-dropdown .dropdown-toggle {
+    padding-left: 50px;
+}
+
+.navbar-profile-avatar {
+    width: 36px;
+    height: 36px;
+    position: absolute;
+    top: 7px;
+    left: 7px;
+}
+
+/*** Avatar upload ***/
+.avatar-upload-container {
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+    min-height: 200px;
+}
+
+.avatar-upload-container .avatar-image {
+    display: inline-block;
+    width: 200px;
+}
+
+.avatar-upload-container .avatar-image.no-avatar {
+    background-color: #e7e7e7;
+    height: 200px;
+}
+
+.avatar-upload-container .hover-text {
+    display: none;
+
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    line-height: 200px;
+    text-align: center;
+
+    background-color: rgba(0,0,0,0.75);
+    color: #fff;
+}
+
+.avatar-upload-container:hover .hover-text {
+    display: block;
+}
+
+.upload-button-container, .btn-download-gravatar {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+    width: 260px;
+    height: 260px;
+}
+
+.upload-button-container:hover, .upload-button-container.drag-drop,
+.btn-download-gravatar:hover {
+    background-color: #e6e6e6;
+    border-color: #adadad;
+}
+
+.upload-button-container span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    font-size: 18px;
+}
+
+.btn-download-gravatar {
+    padding: 0;
+}
+
+.upload-button-container .fa {
+    font-size: 30px;
+}
+
+/* Emulate button hover since the invisible upload file input will be above the actual button
+ * and the button's hover won't be triggered */
+.upload-button-container:hover .btn-default {
+    color: #333;
+    background-color: #E6E6E6;
+    border-color: #ADADAD;
+}
+
+/* Make the upload button huge to intercept all clicks inside the upload-button-container */
+.upload-button-container input[type=file] {
+    position: absolute;
+    font-size: 999px;
+    top: -200px;
+    left: -180px;
+    cursor: pointer;
+    opacity: 0;
+}
+
+.avatar-modal .avatar-cropper {
+    width: 100%;
+    height: 300px;
+}
+
+.avatar-modal .avatar-cropper > img {
+    max-width: 100%;
+}
+
+.avatar-modal .avatar-rotation-controls {
+    margin: 5px 0 15px;
+}

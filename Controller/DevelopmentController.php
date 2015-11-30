@@ -10,6 +10,7 @@
 
 namespace CampaignChain\CoreBundle\Controller;
 
+use CampaignChain\CoreBundle\Fixture\UserProcessor;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,6 +23,9 @@ use Symfony\Component\Finder\Finder;
 
 class DevelopmentController extends Controller
 {
+    const DATA_DIR  = 'Resources/data/campaignchain';
+    const DATA_FILE = 'data.yml';
+
     public function sampleDataAction(Request $request){
         // TODO: Test whether finding all data files also works if CampaignChain is in src/ as well as vendors/.
         $dataRoot = realpath(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR);
@@ -30,24 +34,26 @@ class DevelopmentController extends Controller
         $formData = array();
         $form = $this->createFormBuilder($formData)
             ->add('dataFile', 'choice', array(
-                'label' => 'Data File',
+                'label' => 'Sample Data Package',
                 'choices' => $dataFiles,
-                'multiple' => true,
+                'multiple' => false,
                 'required' => false,
+                'empty_value' => 'Choose the sample data package to be imported',
+                'attr' => array(
+                    'help_text' => "You can install data packages through Composer commands, e.g.'composer require amariki/data-test'",
+                )
             ))
             ->add('includeFile', 'file', array(
                 'label' => 'Include File',
                 'required' => false,
                 'attr' => array(
-//                    "multiple" => "multiple",
-//                    "name" => "files[]",
-                    'help_text' => 'Provide an additional sample data file, e.g. to load critical data such as passwords and access tokens.',
+                    'help_text' => 'Provide an additional credentials file, e.g. to load critical data such as passwords and access tokens.',
                 )
             ))
             ->add('drop', 'checkbox', array(
                 'label'     => 'Drop tables?',
                 'required'  => false,
-                'data'     => false,
+                'data'     => true,
                 'attr' => array(
                     'align_with_widget' => true,
                     'help_text' => 'Activating this checkbox will delete out all your data and replace it with the sample data!',
@@ -58,20 +64,20 @@ class DevelopmentController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
+            $userProcessor = new UserProcessor(
+                $dataRoot, $this->get('campaignchain.core.user'),
+                $this->get('liip_imagine.mime_type_guesser'), $this->get('liip_imagine.extension_guesser')
+            );
             // Create Alice manager and fixture set
+            $dataFilePath = $form->get('dataFile')->getData();
             $manager = $this->get('h4cc_alice_fixtures.manager');
+            $manager->addProcessor($userProcessor);
             $set = $manager->createFixtureSet();
 
             // Add the fixture files
-            $dataFilePaths = $form->get('dataFile')->getData();
-            if(is_array($dataFilePaths) && count($dataFilePaths)){
-                foreach($dataFilePaths as $dataFilePath){
-                    $set->addFile($dataFilePath, 'yaml');
-                }
-            }
-            //$set->addFile($defaultHooksFixtureFile, 'yaml');
+            $set->addFile($dataFilePath, 'yaml');
 
-            // Include the file provided by the user
+            // Include the credentials file provided by the user
             if($form['includeFile']->getData()){
                 $includeFileName = mt_rand().'.yml';
                 $form['includeFile']->getData()->move(sys_get_temp_dir(), $includeFileName);
@@ -79,7 +85,7 @@ class DevelopmentController extends Controller
                 $set->addFile($includeFile, 'yaml');
             }
 
-            $set->setDoDrop($form['drop']);
+            $set->setDoDrop($form->get('drop')->getData());
             // TODO Keep Module data intact
             $em = $this->getDoctrine()->getManager();
             $bundles =   $em->getRepository("CampaignChain\CoreBundle\Entity\Bundle")->findAll();
@@ -164,13 +170,15 @@ class DevelopmentController extends Controller
         } elseif ($form->isValid() && $form['confirm']->getData()) {
             $kernelFile = $this->get('kernel')->getRootDir().DIRECTORY_SEPARATOR.'campaignchain_bundles.php';
             $configDir = $this->get('kernel')->getRootDir().DIRECTORY_SEPARATOR.'config';
-            $configFile = $configDir.DIRECTORY_SEPARATOR.'campaignchain_bundles.yml';
+            $configFile = $configDir.DIRECTORY_SEPARATOR.'campaignchain'.DIRECTORY_SEPARATOR.'config_bundles.yml';
             $routingFile = $configDir.DIRECTORY_SEPARATOR.'routing.yml';
+            $securityFile = $configDir.DIRECTORY_SEPARATOR.'campaignchain'.DIRECTORY_SEPARATOR.'security.yml';
 
             // Reset files
             $fs = new Filesystem();
             $fs->copy($configFile.'.dist', $configFile, true);
             $fs->copy($routingFile.'.dist', $routingFile, true);
+            $fs->copy($securityFile.'.dist', $securityFile, true);
             $fs->remove($kernelFile);
             $fs->dumpFile($kernelFile, '<?php'."\xA");
 
@@ -212,12 +220,16 @@ class DevelopmentController extends Controller
     protected function getDataFiles($rootDir){
         $finder = new Finder();
         // Find all the data files.
-        $finder->files()->in($rootDir)->path('Resources/data/campaignchain')->name('/\.yml$/');
+        $finder->files()->in($rootDir)->path(self::DATA_DIR)->name(self::DATA_FILE);
 
         $dataFiles = array();
 
         foreach($finder as $file){
-            $dataFiles[$file->getRealpath()] = $file->getFilename();
+            $bundleRoot = str_replace(self::DATA_DIR.'/'.self::DATA_FILE, '', $file->getRealpath());
+            $composerFile = $bundleRoot.'composer.json';
+            $composerJSON = json_decode(file_get_contents($composerFile));
+
+            $dataFiles[$file->getRealpath()] = $composerJSON->name;
         }
 
         return $dataFiles;

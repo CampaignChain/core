@@ -7,7 +7,7 @@ For the full copyright and license information, please view the LICENSE
 file that was distributed with this source code.
 #}
 
-<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+<nav class="navbar navbar-default navbar-fixed-top campaignchain-navbar-main" role="navigation">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
@@ -54,17 +54,23 @@ file that was distributed with this source code.
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 
             <!-- User -->
-            <ul class="nav navbar-nav navbar-right">
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="You"><span class="fa fa-user"></span> <span class="visible-md-inline visible-lg-inline">{{ app.security.getToken().getUser().getUsername() }} </span><span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        {#<li><span id="campaignchain_user_datetime"></span></li>#}
-                        {#<li class="divider"></li>#}
-                        <li><a href="{{ path('campaignchain_core_profile_edit', {'id' : app.user.id}) }}"><span class="fa fa-user"></span> Profile</a></li>
-                        <li><a href="{{ path('fos_user_security_logout') }}"><span class="fa fa-sign-out"></span> Logout</a></li>
-                    </ul>
-                </li>
-            </ul>
+            {% if app.user is not empty %}
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown navbar-profile-dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="You">
+                            <img class="navbar-profile-avatar" src="{{ app.user|campaignchain_user_avatar|imagine_filter('navbar_avatar') }}" class="avatar" alt="{{ app.user.name }}">
+                            <span class="visible-md-inline visible-lg-inline">{{ app.user.name }} </span>
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            {#<li><span id="campaignchain_user_datetime"></span></li>#}
+                            {#<li class="divider"></li>#}
+                            <li><a href="{{ path('campaignchain_core_profile_edit', {'id' : app.user.id}) }}"><span class="fa fa-user"></span> Profile</a></li>
+                            <li><a href="{{ path('fos_user_security_logout') }}"><span class="fa fa-sign-out"></span> Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            {% endif %}
 
             <!-- Settings -->
             <ul class="nav navbar-nav navbar-right">

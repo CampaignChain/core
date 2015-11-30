@@ -34,8 +34,7 @@ class TrackingController extends Controller
         if(!$channel){
             $msg = 'No Channel Tracking ID provided.';
             $logger->error($msg);
-            $response = new Response($msg);
-            return $response->setStatusCode(Response::HTTP_BAD_REQUEST);
+            return $this->errorResponse($msg, $request);
         }
 
         $logger->info('Channel Tracking ID: '.$channel);
@@ -48,31 +47,31 @@ class TrackingController extends Controller
         if (!$channel) {
             $msg = 'Unknown Channel Tracking ID';
             $logger->error($msg);
-            $response = new Response($msg);
-            return $response->setStatusCode(Response::HTTP_BAD_REQUEST);
+            return $this->errorResponse($msg, $request);
         }
 
         // Check whether required parameters have been provided.
+        $target = $request->get('target');
         if(!$request->get('source')){
             $hasError = true;
             $msg = 'URL of source Location missing.';
-        } elseif(!$request->get('target')){
+        } elseif(!$target){
             $hasError = true;
             $msg = 'URL of target Location missing.';
         }
 
         if($hasError){
             $logger->error($msg);
-            $response = new Response($msg);
-            return $response->setStatusCode(Response::HTTP_BAD_REQUEST);
+            return $this->errorResponse($msg, $request);
         }
 
         // Check if URLs are valid.
         $constraint = new Url();
 
         $constraint->message = "Source Location '".$request->get('source')."' is not a valid URL.";
+        $source = $request->get('source');
         $errors = $this->get('validator')->validateValue(
-            $request->get('source'),
+            $source,
             $constraint
         );
         if(count($errors)){
@@ -80,36 +79,51 @@ class TrackingController extends Controller
             $msg = $errors[0]->getMessage();
         }
 
-        $constraint->message = "Target Location '".$request->get('target')."' is not a valid URL.";
-        $errors = $this->get('validator')->validateValue(
-            $request->get('target'),
-            $constraint
-        );
-        if(count($errors)){
+        if (strpos($target, 'mailto') === false) {
+            // Check if we get an absolute or a relative path, if relative, then we can assume it goes to the source host
+            if (!parse_url($target, PHP_URL_HOST) && parse_url($source, PHP_URL_HOST)) {
+                $parsedSource = parse_url($source);
+                $target = (array_key_exists('scheme', $parsedSource) ? $parsedSource['scheme'] : 'http' ).
+                    '://'.
+                    rtrim($parsedSource['host'], '/').
+                    '/'.
+                    $target;
+            }
+
+            $constraint->message = "Target Location '". $target ."' is not a valid URL.";
+            $errors = $this->get('validator')->validateValue(
+                $target,
+                $constraint
+            );
+
+            if(count($errors)){
+                $hasError = true;
+                $msg = $errors[0]->getMessage();
+            }
+        } else {
+            // mailto links are not tracked
             $hasError = true;
-            $msg = $errors[0]->getMessage();
+            $msg = 'Mailto links are not tracked';
         }
+
 
         if($hasError){
             $logger->error($msg);
-            $response = new Response($msg);
-            return $response->setStatusCode(Response::HTTP_BAD_REQUEST);
+            return $this->errorResponse($msg, $request);
         }
 
         // Check whether the Tracking ID name has been provided.
         if($request->get('id_name') == null){
             $msg = 'No Tracking ID name provided.';
             $logger->error($msg);
-            $response = new Response($msg);
-            return $response->setStatusCode(Response::HTTP_BAD_REQUEST);
+            return $this->errorResponse($msg, $request);
         }
 
         // Check whether the Tracking ID name is correct.
         if($request->get('id_name') != CTAService::TRACKING_ID_NAME){
             $msg = 'Provided Tracking ID name ("'.$request->get('id_name').'") does not match, should be "'.CTAService::TRACKING_ID_NAME.'".';
             $logger->error($msg);
-            $response = new Response($msg);
-            return $response->setStatusCode(Response::HTTP_BAD_REQUEST);
+            return $this->errorResponse($msg, $request);
         }
 
         if($request->get('id_value') != null){
@@ -123,8 +137,7 @@ class TrackingController extends Controller
             if (!$cta) {
                 $msg = 'Unknown CTA Tracking ID "'.$trackingId.'".';
                 $logger->error($msg);
-                $response = new Response($msg);
-                return $response->setStatusCode(Response::HTTP_BAD_REQUEST);
+                return $this->errorResponse($msg, $request);
             }
 
             // TODO: Set Referer info by going CTA -> Operation -> Location.
@@ -133,11 +146,10 @@ class TrackingController extends Controller
             if(!$referrerLocation){
                 $msg = Response::HTTP_INTERNAL_SERVER_ERROR.': No referrer Location.';
                 $logger->error($msg);
-                $response = new Response($msg);
-                return $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+                return $this->errorResponse($msg, $request);
             }
 
-            if($request->get('source') == $request->get('target')){
+            if($request->get('source') == $target){
                 /*
                  * If the source equals the target, then the source is actually
                  * an Activity's CTA.
@@ -145,13 +157,13 @@ class TrackingController extends Controller
                 $sourceUrl = $referrerLocation->getUrl();
                 $sourceLocation = $referrerLocation;
                 // Remove the Tracking ID from the URL.
-                $targetUrl = ParserUtil::removeUrlParam($request->get('target'), CTAService::TRACKING_ID_NAME);
+                $targetUrl = ParserUtil::removeUrlParam($target, CTAService::TRACKING_ID_NAME);
 
             } else {
                 // Remove the Tracking ID from the URL.
                 $sourceUrl = ParserUtil::removeUrlParam($request->get('source'), CTAService::TRACKING_ID_NAME);
                 $sourceLocation = $cta->getLocation();
-                $targetUrl = $request->get('target');
+                $targetUrl = $target;
             }
 
 //            /*
@@ -227,7 +239,7 @@ class TrackingController extends Controller
              *              Location which is _not_ connected with
              *              CampaignChain.
              */
-            if($request->get('source') == $request->get('target')){
+            if($request->get('source') == $target){
                 $targetAffiliation = 'connected';
             } elseif($reportCTA->getTargetLocation()){
                 if($reportCTA->getTargetLocation()->getChannel()->getTrackingId()
@@ -241,15 +253,25 @@ class TrackingController extends Controller
                 $targetAffiliation = 'unknown';
             }
 
-            $response = array('target_affiliation' => $targetAffiliation);
-            $response = new JsonResponse($response, 200, array());
+            $response = new JsonResponse([
+                'target_affiliation' => $targetAffiliation,
+                'success' => true,
+            ]);
             $response->setCallback($request->get('callback'));
             return $response;
         } else {
             $msg = 'Tracking ID missing as part of source Location.';
             $logger->error($msg);
-            $response = new Response($msg);
-            return $response->setStatusCode(Response::HTTP_BAD_REQUEST);
+            return $this->errorResponse($msg, $request);
         }
+    }
+
+    private function errorResponse($msg, Request $request)
+    {
+        $response = new JsonResponse([
+            'message' => $msg,
+            'success' => false,
+        ]);
+        return $response->setCallback($request->get('callback'));
     }
 }

@@ -18,6 +18,8 @@ class KernelConfig
 
     private $routings = array();
 
+    private $securities = array();
+
     public function addClasses($classes)
     {
         $this->classes = array_merge($this->classes, $classes);
@@ -30,19 +32,7 @@ class KernelConfig
 
     public function addConfig($config)
     {
-        /*
-         * Ensure that the config file path is relative to
-         * app/config/config.yml.
-         */
-        if(
-            strpos($config, '../../')
-            === false
-        ){
-            throw new \Exception(
-                'File path must be relative to app/config/config.yml and thus '.
-                'start with "../../".'
-            );
-        }
+        $this->isRelativeToAppConfig($config);
         $this->configs[] = $config;
     }
 
@@ -59,5 +49,38 @@ class KernelConfig
     public function getRoutings()
     {
         return $this->routings;
+    }
+
+    public function addSecurity($security)
+    {
+        $this->securities[] = $security;
+    }
+
+    public function getSecurities()
+    {
+        return $this->securities;
+    }
+
+    /**
+     * Ensure that the config file path is relative to
+     * app/config/config.yml.
+     *
+     * @param $filePath
+     * @return bool
+     * @throws \Exception
+     */
+    protected function isRelativeToAppConfig($filePath)
+    {
+        if(
+            strpos($filePath, '../../../')
+            === false
+        ){
+            throw new \Exception(
+                'File path must be relative to app/config/config.yml and thus '.
+                'start with "../../../".'
+            );
+        }
+
+        return true;
     }
 }

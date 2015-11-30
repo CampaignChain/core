@@ -147,14 +147,15 @@ CampaignChain.prototype.sendUrlReport = function(target)
             dataType: 'jsonp',
             cache: false,
             context: this,
-
+            timeout: 5000,
             success: function(data, status) {
-                console.log(data);
-                /*
-                 If an external target URL, then append the Tracking ID if it is not
-                 already appended.
-                 */
-                this.continueTracking(data.target_affiliation);
+                if (data.success) {
+                    /*
+                     If an external target URL, then append the Tracking ID if it is not
+                     already appended.
+                     */
+                    this.continueTracking(data.target_affiliation);
+                }
 
                 if(this.mode != 'dev-stay'){
                     window.location.href = this.target;
@@ -169,6 +170,8 @@ CampaignChain.prototype.sendUrlReport = function(target)
                         'AJAX error: URL: ' + ajaxUrl + ', status: ' + xhr.status +
                             ', message: ' +thrownError
                     );
+                } else {
+                    window.location.href = this.target;
                 }
             }
         });

@@ -57,6 +57,12 @@ EOT
                 null,
                 InputOption::VALUE_NONE,
                 'Register bundle classes of all modules in AppKernel.php.'
+            )
+            ->addOption(
+                'security-only',
+                null,
+                InputOption::VALUE_NONE,
+                'Register security.yml files of all modules.'
             );
     }
 
@@ -65,7 +71,8 @@ EOT
         if (
             $input->getOption('config-only') ||
             $input->getOption('routing-only') ||
-            $input->getOption('class-only')
+            $input->getOption('class-only') ||
+            $input->getOption('security-only')
         ) {
             $installer = $this->getContainer()->get('campaignchain.core.module.installer');
             $installer->setSkipVersion(true);
@@ -81,6 +88,9 @@ EOT
             } elseif($input->getOption('class-only')){
                 $types = array('classes' => true);
                 $output->writeln('Registering bundle classes of all CampaignChain modules in AppKernel.php.');
+            } elseif($input->getOption('security-only')) {
+                $types = array('security' => true);
+                $output->writeln('Registering security.yml files of all CampaignChain modules');
             }
             $kernel->register($installer->getKernelConfig(), $types);
             $output->writeln('Done');

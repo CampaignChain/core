@@ -18,6 +18,18 @@ assetic:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/components/moment/moment.js"
                 - "@CampaignChainCoreBundle/Resources/public/components/moment-timezone/builds/moment-timezone-with-data.js"
+        jquery_file_upload_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/jquery-file-upload/js/vendor/jquery.ui.widget.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/jquery-file-upload/js/jquery.fileupload.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/jquery-file-upload/js/jquery.fileupload-process.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/jquery-file-upload/js/jquery.fileupload-validate.js"
+        jquery_cropper_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/cropper/dist/cropper.js"
+        jquery_cropper_css:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/cropper/dist/cropper.css"
         bootstrap_js:
             inputs:
                 - "%kernel.root_dir%/../vendor/twbs/bootstrap/js/transition.js"
@@ -186,6 +198,13 @@ assetic:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/components/blockui/jquery.blockUI.js"
                 - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/blockui.js"
+        hideshowpassword_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/hideshowpassword/hideShowPassword.min.js"
+        hideshowpassword_css:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/hideshowpassword/css/example.minimal.css"
+                - "@CampaignChainCoreBundle/Resources/public/css/campaignchain/hideshowpassword.css"
     bundles:
         - "CampaignChainCoreBundle"
         - "FOSUserBundle"
@@ -231,3 +250,49 @@ sonata_block:
         campaignchain.block.milestone.upcoming.listgroup: null
         campaignchain.block.campaign.ongoing.listgroup: null
         campaignchain.block.rss: null
+oneup_uploader:
+    mappings:
+        avatar:
+            frontend: blueimp
+            storage:
+                directory: %campaignchain.core.upload_storage.path%/avatar
+            allowed_mimetypes:
+                - image/jpeg
+                - image/png
+                - image/gif
+liip_imagine:
+    loaders:
+        uploads:
+            filesystem: {data_root: %campaignchain.core.upload_storage.path%}
+    filter_sets:
+        auto_rotate:
+            filters:
+                auto_rotate: ~
+        cropper:
+            filters:
+                crop: ~
+                rotate: ~
+        navbar_avatar:
+            filters:
+                thumbnail: {size: [36, 36], mode: outbound}
+        avatar:
+            filters:
+                thumbnail: {size: [200, 200], mode: outbound}
+
+fos_rest:
+    versioning:
+        enabled: true
+        default_version: v1
+        resolvers:
+            query:
+                enabled: false
+            custom_header:
+                enabled: false
+            media_type:
+                enabled: false
+    routing_loader:
+        default_format: json
+    param_fetcher_listener: true
+
+nelmio_api_doc:
+    name: CampaignChain API v1 (beta)

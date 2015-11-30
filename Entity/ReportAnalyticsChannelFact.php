@@ -32,7 +32,8 @@ class ReportAnalyticsChannelFact
     protected $channel;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Campaign")
+     * @ORM\ManyToOne(targetEntity="Campaign", inversedBy="channelFacts")
+     * @ORM\JoinColumn(referencedColumnName="id")
      */
     protected $campaign;
 

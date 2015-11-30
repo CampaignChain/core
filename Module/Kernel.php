@@ -11,6 +11,7 @@
 namespace CampaignChain\CoreBundle\Module;
 
 use CampaignChain\CoreBundle\Util\CommandUtil;
+use CampaignChain\CoreBundle\Util\VariableUtil;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\Filesystem\Filesystem;
 use CampaignChain\CoreBundle\Wizard\Install\Driver\YamlConfig;
@@ -35,7 +36,8 @@ class Kernel
         array $types = array(
             'classes' => true,
             'configs' => true,
-            'routings' => true
+            'routings' => true,
+            'security' => true,
         )
     )
     {
@@ -49,6 +51,9 @@ class Kernel
         }
         if(isset($types['routings']) && $types['routings']){
             $this->registerRoutings();
+        }
+        if(isset($types['security']) && $types['security']){
+            $this->registerSecurity();
         }
     }
 
@@ -90,10 +95,11 @@ class Kernel
 
     protected function registerConfigs()
     {
-        $campaignchainConfigsFile = DIRECTORY_SEPARATOR.'config'.
-            DIRECTORY_SEPARATOR.'campaignchain_bundles.yml';
+        $configFile = DIRECTORY_SEPARATOR . 'config' .
+            DIRECTORY_SEPARATOR . 'campaignchain' .
+            DIRECTORY_SEPARATOR . 'config_bundles.yml';
 
-        $yamlConfig = new YamlConfig($this->appDir, $campaignchainConfigsFile);
+        $yamlConfig = new YamlConfig($this->appDir, $configFile);
         $parameters = $yamlConfig->read();
 
         $hasNewConfigs = false;
@@ -116,8 +122,45 @@ class Kernel
         }
 
         if($hasNewConfigs){
-            $yamlConfig = new YamlConfig($this->appDir, $campaignchainConfigsFile);
+            $yamlConfig = new YamlConfig($this->appDir, $configFile);
             $yamlConfig->write($parameters);
+            $yamlConfig->clean();
+        }
+    }
+
+    protected function registerSecurity()
+    {
+        $appSecurityFile = DIRECTORY_SEPARATOR.'config'.
+            DIRECTORY_SEPARATOR.'campaignchain'.
+            DIRECTORY_SEPARATOR.'security.yml';
+
+        /*
+         * Re-create the security.yml file to avoid duplicates in merged array
+         * that occur upon multiple parsing.
+         */
+        $fs = new Filesystem();
+        if(!$fs->exists($appSecurityFile)){
+            $fs->copy(
+                $this->appDir.$appSecurityFile.'.dist',
+                $this->appDir.$appSecurityFile,
+                true
+            );
+        }
+
+        $yamlConfig = new YamlConfig($this->appDir, $appSecurityFile);
+        $appParameters = $yamlConfig->read();
+
+        // Read content of all security.yml files and merge the arrays.
+        $securityFiles = $this->kernelConfig->getSecurities();
+        if(count($securityFiles)) {
+            foreach ($securityFiles as $securityFile) {
+                $yamlConfig = new YamlConfig('', $securityFile);
+                $bundleParameters = $yamlConfig->read();
+                $appParameters = VariableUtil::arrayMerge($appParameters, $bundleParameters);
+            }
+            
+            $yamlConfig = new YamlConfig($this->appDir, $appSecurityFile);
+            $yamlConfig->write($appParameters, 5);
             $yamlConfig->clean();
         }
     }
@@ -159,10 +202,12 @@ class Kernel
     }
 
     public function recursiveArraySearch($needle, $haystack) {
-        foreach($haystack as $key => $value) {
-            $currentKey = $key;
-            if($needle === $value OR (is_array($value) && $this->recursiveArraySearch($needle,$value) !== false)) {
-                return $currentKey;
+        if(is_array($haystack) && count($haystack)) {
+            foreach ($haystack as $key => $value) {
+                $currentKey = $key;
+                if ($needle === $value OR (is_array($value) && $this->recursiveArraySearch($needle, $value) !== false)) {
+                    return $currentKey;
+                }
             }
         }
         return false;

@@ -10,6 +10,7 @@
 
 namespace CampaignChain\CoreBundle\Twig;
 
+use CampaignChain\CoreBundle\Entity\User;
 use CampaignChain\CoreBundle\Util\ParserUtil;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Doctrine\ORM\EntityManager;
@@ -27,6 +28,12 @@ class CampaignChainCoreExtension extends \Twig_Extension
         $this->datetime = $this->container->get('campaignchain.core.util.datetime');
     }
 
+    private function loggedIn()
+    {
+        return $this->container->get('security.token_storage')->getToken()
+            && $this->container->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED');
+    }
+
     public function getFilters()
     {
         return array(
@@ -35,6 +42,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
             new \Twig_SimpleFilter('campaignchain_channel_asset_path', array($this, 'channelAssetPath')),
             new \Twig_SimpleFilter('campaignchain_channel_icon_name', array($this, 'channelIconName')),
             new \Twig_SimpleFilter('campaignchain_datetime', array($this, 'datetime')),
+            new \Twig_SimpleFilter('campaignchain_timestamp_to_datetime', array($this, 'timestampToDatetime')),
             new \Twig_SimpleFilter('campaignchain_timezone', array($this, 'timezone')),
             new \Twig_SimpleFilter('campaignchain_data_trigger_hook', array($this, 'dataTriggerHook')),
             new \Twig_SimpleFilter('campaignchain_tpl_teaser', array($this, 'tplTeaser'), array('is_safe' => array('html'))),
@@ -46,6 +54,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
             new \Twig_SimpleFilter('campaignchain_ltrim', array($this, 'ltrim')),
             new \Twig_SimpleFilter('campaignchain_make_links', array($this, 'makeLinks')),
             new \Twig_SimpleFilter('campaignchain_btn_copy_campaign', array($this, 'btnCopyCampaign'), array('is_safe' => array('html'))),
+            new \Twig_SimpleFilter('campaignchain_user_avatar', array($this, 'userAvatar')),
         );
     }
 
@@ -302,6 +311,15 @@ class CampaignChainCoreExtension extends \Twig_Extension
         }
     }
 
+    public function timestampToDatetime($object){
+        if(is_int($object)){
+            $datetimeUtil = $this->container->get('campaignchain.core.util.datetime');
+            return $datetimeUtil->timestampToDatetime($object);
+        } else {
+            // TODO: Throw error.
+        }
+    }
+
     public function timezone($object){
         return $object->setTimezone(new \DateTimeZone($this->container->get('session')->get('campaignchain.timezone')));
     }
@@ -398,7 +416,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
 
     private function getGlobalTimezoneOffset(){
         // Execute only if the user is logged in.
-        if( $this->container->get('security.context')->isGranted('IS_AUTHENTICATED_REMEMBERED') ){
+        if( $this->loggedIn() ){
             $timezoneUser = new \DateTimeZone($this->container->get('session')->get('campaignchain.timezone'));
             $timezoneUTC = new \DateTimeZone("UTC");
     //
@@ -422,13 +440,22 @@ class CampaignChainCoreExtension extends \Twig_Extension
 
     private function getGlobalTimezoneAbbreviation(){
         // Execute only if the user is logged in.
-        if( $this->container->get('security.context')->isGranted('IS_AUTHENTICATED_REMEMBERED') ){
+        if( $this->loggedIn() ){
             $timezoneUser = new \DateTimeZone($this->container->get('session')->get('campaignchain.timezone'));
             $dateUser = new \DateTime("now", $timezoneUser);
             return $dateUser->format('T');
         } else {
             return 'UTC';
         }
+    }
+
+    public function userAvatar($val)
+    {
+        if ($val instanceof User) {
+            $val = $val->getAvatarImage();
+        }
+
+        return $this->container->get('campaignchain.core.service.file_upload')->getPublicUrl($val);
     }
 
     public function getName()

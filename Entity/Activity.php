@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  * @ORM\Table(name="campaignchain_activity")
  */
-class Activity extends Action
+class Activity extends Action implements AssignableInterface
 {
 
     /**
@@ -27,18 +27,19 @@ class Activity extends Action
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Campaign")
+     * @ORM\ManyToOne(targetEntity="Campaign", inversedBy="activities")
+     * @ORM\JoinColumn(referencedColumnName="id")
      */
     protected $campaign;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Channel")
+     * @ORM\ManyToOne(targetEntity="Channel", inversedBy="activities")
      * @ORM\JoinColumn(name="channel_id", referencedColumnName="id", nullable=false)
      */
     protected $channel;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Location")
+     * @ORM\ManyToOne(targetEntity="Location", inversedBy="activities")
      * @ORM\JoinColumn(name="location_id", referencedColumnName="id", nullable=false)
      */
     protected $location;
@@ -54,7 +55,8 @@ class Activity extends Action
     protected $fact;
 
     /**
-     * @ORM\ManyToOne(targetEntity="ActivityModule")
+     * @ORM\ManyToOne(targetEntity="ActivityModule", inversedBy="activities")
+     * @ORM\JoinColumn(referencedColumnName="id")
      */
     protected $activityModule;
 
@@ -62,6 +64,13 @@ class Activity extends Action
      * @ORM\Column(type="boolean")
      */
     protected $equalsOperation = true;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="CampaignChain\CoreBundle\Entity\User", inversedBy="activities")
+     * @ORM\JoinColumn(name="assignee", referencedColumnName="id")
+     */
+    protected $assignee;
+
 
     /**
      * Constructor
@@ -297,4 +306,22 @@ class Activity extends Action
             $this->id = null;
         }
     }
+
+    /**
+     * @return mixed
+     */
+    public function getAssignee()
+    {
+        return $this->assignee;
+    }
+
+    /**
+     * @param mixed $assignee
+     */
+    public function setAssignee($assignee)
+    {
+        $this->assignee = $assignee;
+    }
+
+
 }

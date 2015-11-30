@@ -199,6 +199,20 @@ campaignchain_core_profile_change_password:
     pattern:  /profile/change_password/{id}
     defaults: { _controller: CampaignChainCoreBundle:Profile:changePassword }
 
+campaignchain_core_profile_grab_gavatar:
+    pattern: /profile/grab_gravatar
+    defaults: { _controller: CampaignChainCoreBundle:Profile:grabGravatar }
+    methods: [POST]
+
+campaignchain_core_profile_preview_gravatar:
+    pattern: /profile/preview_gravatar
+    defaults: { _controller: CampaignChainCoreBundle:Profile:previewGravatar }
+
+campaignchain_core_profile_crop_avatar:
+    pattern: /profile/crop_avatar
+    defaults: { _controller: CampaignChainCoreBundle:Profile:cropAvatar }
+    methods: [POST]
+
 campaignchain_core_user_new:
     path: /users/new
     defaults: { _controller: CampaignChainCoreBundle:User:new }
@@ -228,3 +242,35 @@ fos_user_group:
 
 fos_js_routing:
     resource: "@FOSJsRoutingBundle/Resources/config/routing/routing.xml"
+
+oneup_uploader:
+    resource: .
+    type: uploader
+
+_liip_imagine:
+    resource: "@LiipImagineBundle/Resources/config/routing.xml"
+
+# REST routes are being created automatically via FOSRestBundle.
+campaignchain_core_rest_root:
+    type:     rest
+    prefix:   /api/{version}
+    resource: CampaignChain\CoreBundle\Controller\REST\RootController
+
+campaignchain_core_rest_package:
+    type:     rest
+    prefix:   /api/{version}/packages
+    resource: CampaignChain\CoreBundle\Controller\REST\PackageController
+
+campaignchain_core_rest_module:
+    type:     rest
+    prefix:   /api/{version}/modules
+    resource: CampaignChain\CoreBundle\Controller\REST\ModuleController
+
+campaignchain_core_rest_campaign:
+    type:     rest
+    prefix:   /api/{version}/campaigns
+    resource: CampaignChain\CoreBundle\Controller\REST\CampaignController
+
+NelmioApiDocBundle:
+    resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
+    prefix:   /api/doc
