@@ -249,3 +249,28 @@ oneup_uploader:
 
 _liip_imagine:
     resource: "@LiipImagineBundle/Resources/config/routing.xml"
+
+# REST routes are being created automatically via FOSRestBundle.
+campaignchain_core_rest_root:
+    type:     rest
+    prefix:   /api/{version}
+    resource: CampaignChain\CoreBundle\Controller\REST\RootController
+
+campaignchain_core_rest_package:
+    type:     rest
+    prefix:   /api/{version}/packages
+    resource: CampaignChain\CoreBundle\Controller\REST\PackageController
+
+campaignchain_core_rest_module:
+    type:     rest
+    prefix:   /api/{version}/modules
+    resource: CampaignChain\CoreBundle\Controller\REST\ModuleController
+
+campaignchain_core_rest_campaign:
+    type:     rest
+    prefix:   /api/{version}/campaigns
+    resource: CampaignChain\CoreBundle\Controller\REST\CampaignController
+
+NelmioApiDocBundle:
+    resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
+    prefix:   /api/doc

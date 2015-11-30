@@ -75,6 +75,8 @@
                     "Sp\\BowerBundle\\SpBowerBundle",
                     "Sonata\\CoreBundle\\SonataCoreBundle",
                     "Sonata\\BlockBundle\\SonataBlockBundle",
+                    "JMS\\SerializerBundle\\JMSSerializerBundle",
+                    "FOS\\RestBundle\\FOSRestBundle",
                     "Oneup\\UploaderBundle\\OneupUploaderBundle",
                     "Liip\\ImagineBundle\\LiipImagineBundle"
                 ]
