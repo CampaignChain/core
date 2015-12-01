@@ -150,14 +150,17 @@ class ActivityModuleController extends Controller
                     $form->get($this->contentModuleIdentifier)->getData()
                 );
 
-                // Process the Operation details.
+                // Process the Operation's content.
+                $content = null;
                 $content = $this->handler->processContent(
                     $operation,
                     $form->get($this->contentModuleIdentifier)->getData()
                 );
 
-                // Link the Operation details with the operation.
-                $content->setOperation($operation);
+                if($content) {
+                    // Link the Operation details with the operation.
+                    $content->setOperation($operation);
+                }
             } else {
                 throw new \Exception(
                     'Multiple Operations for one Activity not implemented yet.'
@@ -171,7 +174,9 @@ class ActivityModuleController extends Controller
                 $repository->getConnection()->beginTransaction();
 
                 $repository->persist($this->activity);
-                $repository->persist($content);
+                if($content) {
+                    $repository->persist($content);
+                }
 
                 // We need the activity ID for storing the hooks. Hence we must
                 // flush here.
@@ -223,9 +228,7 @@ class ActivityModuleController extends Controller
             )
         );
 
-        $handlerRenderOptions = $this->handler->getNewRenderOptions(
-            $operation
-        );
+        $handlerRenderOptions = $this->handler->getNewRenderOptions();
 
         return $this->renderWithHandlerOptions($defaultRenderOptions, $handlerRenderOptions);
     }

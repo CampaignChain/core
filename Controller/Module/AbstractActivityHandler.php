@@ -131,10 +131,9 @@ abstract class AbstractActivityHandler
      * Called in these views:
      * - new
      *
-     * @param Operation $operation
      * @return null
      */
-    public function getNewRenderOptions(Operation $operation = null)
+    public function getNewRenderOptions()
     {
         return null;
     }
