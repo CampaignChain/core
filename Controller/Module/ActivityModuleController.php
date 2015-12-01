@@ -78,6 +78,10 @@ class ActivityModuleController extends Controller
          * Get context from user's choice.
          */
         $wizard = $this->get('campaignchain.core.activity.wizard');
+        if (!$wizard->getCampaign()) {
+            return $this->redirectToRoute('campaignchain_core_activities_new');
+        }
+
         $campaignService = $this->get('campaignchain.core.campaign');
         $this->campaign = $campaignService->getCampaign($wizard->getCampaign());
         $this->activity = $wizard->getActivity();
