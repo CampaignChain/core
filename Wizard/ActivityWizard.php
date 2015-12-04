@@ -115,7 +115,7 @@ class ActivityWizard
         $activity->setChannel($location->getChannel());
         $activity->setActivityModule($activityModule);
 
-        //$this->session->destroy();
+        $this->session->destroy();
 
         return $activity;
     }
