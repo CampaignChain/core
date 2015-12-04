@@ -230,3 +230,249 @@ file that was distributed with this source code.
         {% endif %}
     {% endspaceless %}
 {% endblock textarea_widget %}
+
+{% block bootstrap_collection_widget %}
+    {% spaceless %}
+        {% if prototype is defined %}
+            {% set prototype_vars = {} %}
+            {% if style is defined %}
+                {% set prototype_vars = prototype_vars|merge({'style': style}) %}
+            {% endif %}
+            {% set prototype_html = '<div class="col-xs-' ~ form.vars.sub_widget_col ~ '">' ~ form_widget(prototype, prototype_vars) ~ '</div>' %}
+            {% if form.vars.allow_delete %}
+                {% set prototype_html = prototype_html ~ '<div class="col-xs-' ~ form.vars.button_col ~ '"><a href="#" class="btn btn-danger btn-sm" data-removefield="collection" data-field="__id__">' ~ form.vars.delete_button_text|trans({}, translation_domain)|parse_icons|raw ~ '</a></div>' %}
+            {% endif %}
+            {% set prototype_html = '<div class="row">' ~ prototype_html ~ '</div>' %}
+
+            {% set attr = attr|merge({'data-prototype': prototype_html }) %}
+            {% set attr = attr|merge({'data-prototype-name': prototype_name }) %}
+        {% endif %}
+        <div {{ block('widget_container_attributes') }}>
+            <ul class="bc-collection list-unstyled">
+                {% for field in form %}
+                    <li>
+                        <div class="row">
+                            <div class="col-xs-{{ form.vars.sub_widget_col }}">
+                                {{ form_widget(field) }}
+                                {{ form_errors(field) }}
+                            </div>
+                            {% if form.vars.allow_delete %}
+                                <div class="col-xs-{{ form.vars.button_col }}">
+                                    <a href="#" class="btn btn-danger btn-sm" data-removefield="collection" data-field="{{ field.vars.id }}">{{ form.vars.delete_button_text|trans({}, translation_domain)|parse_icons|raw }}</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+            {% if form.vars.allow_add %}
+                <a href="#" class="btn btn-primary btn-sm" data-addfield="collection" data-collection="{{ form.vars.id }}" data-prototype-name="{{ prototype_name }}">{{ form.vars.add_button_text|trans({}, translation_domain)|parse_icons|raw }}</a>
+            {% endif %}
+        </div>
+        {# Make sure that first field is being displayed in collection and it has no delete button. #}
+        <script type="application/javascript">
+            if(!$("input[data-field='{{ form.vars.id }}_0']").length) {
+                $("a[data-collection='{{ form.vars.id }}']").trigger('click');
+            }
+            $("a[data-field='{{ form.vars.id }}_0']").hide();
+        </script>
+    {% endspaceless %}
+{% endblock bootstrap_collection_widget %}
+
+{% block avatar_upload_widget %}
+    {% set modalId = "avatar_modal_"~id %}
+    {% set containerId = "avatar_upload_"~id %}
+    {% set modalContent %}
+        {% include 'CampaignChainCoreBundle:Form:avatarUploadModal.html.twig' with {modalId: modalId} %}
+    {% endset %}
+
+    <div class="avatar-upload-container" id="{{ containerId }}">
+        {% if data is not empty %}
+            <img class="avatar-image image-selected" src="{{ data|campaignchain_user_avatar|imagine_filter('avatar') }}" alt="">
+        {% else %}
+            <span class="avatar-image no-avatar"></span>
+        {% endif %}
+        <span class="hover-text">Set Image</span>
+        <input type="hidden" {{ block('widget_attributes') }} value="{{ value }}">
+        <script type="application/javascript">
+            $(document).ready(function() {
+                var settings = {{ {
+                    modalContent: modalContent,
+                    containerId: containerId,
+                    widgetId: id,
+                    modalId: modalId,
+                    gravatarDownloaderUrl: path("campaignchain_core_profile_grab_gavatar"),
+                    gravatarPreviewUrl: path("campaignchain_core_profile_preview_gravatar"),
+                    avatarCropUrl: path("campaignchain_core_profile_crop_avatar"),
+                }|json_encode|raw }};
+
+                var $modal = $("#campaignchain-default-modal");
+                var $container = $("#" + settings.containerId);
+                var $widget = $("#" + settings.widgetId);
+                var getEmailField = function() {
+                    return $widget.parents('form').find('input[name$="[email]"]');
+                };
+                var getEmail = function() {
+                    // Find email input by finding an input with name ending with '[email]' and
+                    // getting its value.
+                    return getEmailField().val();
+                };
+                var getGravatarUrl = function() {
+                    return settings.gravatarPreviewUrl + "?email=" + encodeURIComponent(getEmail());
+                };
+                var updateImage = function(value, previewUrl) {
+                    var cssClasses = 'avatar-image';
+
+                    if (value) {
+                        cssClasses += ' image-selected';
+                        $('#'+settings.widgetId).val(value);
+                    }
+
+                    $container.find('.avatar-image').replaceWith($("<img class='"+cssClasses+"' alt='' />").attr({src: previewUrl}));
+                };
+                var showContent = function(selector) {
+                    $modal.find('.row').hide().filter(selector).show();
+                };
+
+                $container.on("click", function() {
+                    // Modal is already initialized, just show it
+                    if ($modal.data('modal-initialized')) {
+                        $modal
+                            .find(".modal-content")
+                                .html(settings.modalContent)
+                            .end()
+                            .modal('show');
+                        return;
+                    }
+
+                    // Set up event handlers for modal
+                    $modal
+                        .find(".modal-content")
+                            .html(settings.modalContent)
+                        .end()
+                        .on("show.modal.bs", function() {
+                            // ignore event if it doesn't contain our modal content
+                            if ($modal.find('#'+settings.modalId).length < 1) {
+                                return;
+                            }
+
+                            $modal
+                                .find('.gravatar-preview')
+                                .attr('src', getGravatarUrl());
+
+                            showContent('.row-avatar-upload');
+                            var $fileInput = $modal.find("input[type=file]");
+                            if (!$fileInput.data('fileupload-initialized')) {
+                                $fileInput
+                                    .fileupload({
+                                        dataType: 'json',
+                                        start: function() {
+                                            showContent('.row-loading');
+                                        },
+                                        acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+                                        done: function(e, data) {
+                                            var response = data.response();
+                                            var result = response.result;
+
+                                            // Default to make it a bit smaller so it's easier to resize and move around
+                                            var autoCropArea = 0.9;
+
+                                            if (result.width && result.height) {
+                                                var aspectRatio = result.width / result.height;
+                                                // The image is square so it is already cropped. Default to not cropping
+                                                // in this case
+                                                if (aspectRatio >= 0.99 && aspectRatio <= 1.01) {
+                                                    autoCropArea = 1;
+                                                }
+                                            }
+
+                                            $modal.find('.avatar-cropper').html(
+                                                $("<img>").attr("src", result.url)
+                                            );
+                                            $modal.find('.avatar-cropper > img').cropper({
+                                                aspectRatio: 1,
+                                                autoCropArea: autoCropArea,
+                                                guides: false,
+                                                highlight: false
+                                            });
+                                            showContent('.row-avatar-crop');
+                                        }
+                                    })
+                                    .data('fileupload-initialized', true);
+                            }
+                        })
+                        .on("click", "#"+settings.modalId+" .btn-download-gravatar", function(e) {
+                            e.preventDefault();
+                            showContent('.row-loading');
+                            $
+                                .ajax({
+                                    url: settings.gravatarDownloaderUrl,
+                                    method: 'POST',
+                                    dataType: 'json',
+                                    data: {email: getEmail()}
+                                })
+                                .success(function(data, status, xhr) {
+                                    updateImage(data.path, data.url);
+                                    $modal.modal("hide");
+                                });
+                        })
+                        .on("click", "#"+settings.modalId+" .btn-rotate", function(e) {
+                            e.preventDefault();
+
+                            var $button = $(this);
+                            var $cropperImage = $modal.find('.avatar-cropper > img');
+                            var rotation = $button.hasClass('.btn-rotate-left') ? -90 : 90;
+
+                            $cropperImage.cropper("rotate", rotation);
+                        })
+                        .on("click", "#"+settings.modalId+" .btn-crop-cancel", function(e) {
+                            e.preventDefault();
+                            showContent('.row-avatar-upload');
+                        })
+                        .on("click", "#"+settings.modalId+" .btn-crop-confirm", function(e) {
+                            e.preventDefault();
+                            showContent('.row-loading');
+
+                            var $cropperImage = $modal.find('.avatar-cropper > img')
+                            $
+                                .ajax({
+                                    url: settings.avatarCropUrl,
+                                    method: 'POST',
+                                    dataType: 'json',
+                                    data: $cropperImage.cropper('getData')
+                                })
+                                .success(function(data, status, xhr) {
+                                    updateImage(data.path, data.url);
+                                    $modal.modal('hide');
+                                });
+                        })
+                        .modal("show")
+                        .data('modal-initialized', true);
+                });
+
+                var updateGravatarIfNotSet = function() {
+                    // Preview gravatar from email address if avatar hasn't been set yet
+                    if (getEmail() === '' || $container.find('.avatar-image').is('.image-selected')) {
+                        return;
+                    }
+                    updateImage(null, getGravatarUrl());
+                };
+                updateGravatarIfNotSet();
+                getEmailField().on("blur", updateGravatarIfNotSet);
+
+                var dragenterDepth = 0;
+                $(document)
+                    .on("dragenter dragleave", ".modal-content", function(e) {
+                        // dragenter and dragleave are also triggered for child elements. We track depth
+                        // here so we can detect when the drag left the element
+                        dragenterDepth += (e.type === "dragenter") ? 1 : -1;
+                        $modal.find(".upload-button-container").toggleClass("drag-drop", dragenterDepth > 0);
+                    })
+                    .on("drop", function() {
+                        // Remove highlighting when a drop happened
+                        $modal.find(".upload-button-container").removeClass("drag-drop");
+                    });
+            });
+        </script>
+    </div>
+{% endblock %}

@@ -12,6 +12,7 @@ namespace CampaignChain\CoreBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use CampaignChain\CoreBundle\Util\ParserUtil;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity
@@ -70,6 +71,14 @@ class System extends Meta
      * @ORM\Column(type="array", nullable=true)
      */
     protected $modules;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     * @Assert\Url(
+     *    checkDNS = true
+     * )
+     */
+    protected $termsUrl;
 
     /**
      * Get id
@@ -296,5 +305,28 @@ class System extends Meta
             $docVersion = $this->version;
         }
         return 'http://campaignchain-docs.readthedocs.org/en/'.$docVersion;
+    }
+
+    /**
+     * Set URL of legal terms.
+     *
+     * @param string $termsUrl
+     * @return System
+     */
+    public function setTermsUrl($termsUrl)
+    {
+        $this->termsUrl = $termsUrl;
+
+        return $this;
+    }
+
+    /**
+     * Get termsUrl
+     *
+     * @return string
+     */
+    public function getTermsUrl()
+    {
+        return $this->termsUrl;
     }
 }

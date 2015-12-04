@@ -42,6 +42,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
             new \Twig_SimpleFilter('campaignchain_channel_asset_path', array($this, 'channelAssetPath')),
             new \Twig_SimpleFilter('campaignchain_channel_icon_name', array($this, 'channelIconName')),
             new \Twig_SimpleFilter('campaignchain_datetime', array($this, 'datetime')),
+            new \Twig_SimpleFilter('campaignchain_timestamp_to_datetime', array($this, 'timestampToDatetime')),
             new \Twig_SimpleFilter('campaignchain_timezone', array($this, 'timezone')),
             new \Twig_SimpleFilter('campaignchain_data_trigger_hook', array($this, 'dataTriggerHook')),
             new \Twig_SimpleFilter('campaignchain_tpl_teaser', array($this, 'tplTeaser'), array('is_safe' => array('html'))),
@@ -55,11 +56,6 @@ class CampaignChainCoreExtension extends \Twig_Extension
             new \Twig_SimpleFilter('campaignchain_btn_copy_campaign', array($this, 'btnCopyCampaign'), array('is_safe' => array('html'))),
             new \Twig_SimpleFilter('campaignchain_user_avatar', array($this, 'userAvatar')),
         );
-    }
-
-    public function userAvatar(User $user, $size = 50)
-    {
-        return "http://www.gravatar.com/avatar/".md5($user->getEmail())."?s=".$size."&d=identicon";
     }
 
     public function system(){
@@ -315,6 +311,15 @@ class CampaignChainCoreExtension extends \Twig_Extension
         }
     }
 
+    public function timestampToDatetime($object){
+        if(is_int($object)){
+            $datetimeUtil = $this->container->get('campaignchain.core.util.datetime');
+            return $datetimeUtil->timestampToDatetime($object);
+        } else {
+            // TODO: Throw error.
+        }
+    }
+
     public function timezone($object){
         return $object->setTimezone(new \DateTimeZone($this->container->get('session')->get('campaignchain.timezone')));
     }
@@ -442,6 +447,15 @@ class CampaignChainCoreExtension extends \Twig_Extension
         } else {
             return 'UTC';
         }
+    }
+
+    public function userAvatar($val)
+    {
+        if ($val instanceof User) {
+            $val = $val->getAvatarImage();
+        }
+
+        return $this->container->get('campaignchain.core.service.file_upload')->getPublicUrl($val);
     }
 
     public function getName()

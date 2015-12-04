@@ -18,6 +18,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  * @ORM\Table(name="campaignchain_user")
  * @ORM\HasLifecycleCallbacks
+ *
+ * @ORM\EntityListeners({"CampaignChain\CoreBundle\EventListener\UserAvatarListener"})
  */
 class User extends BaseUser
 {
@@ -92,6 +94,11 @@ class User extends BaseUser
      * @ORM\Column(type="string", nullable=false)
      */
     protected $lastName;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    protected $avatarImage;
 
     /**
      * @ORM\OneToMany(targetEntity="CampaignChain\CoreBundle\Entity\Campaign", mappedBy="user")
@@ -348,6 +355,25 @@ class User extends BaseUser
     public function getName()
     {
         return $this->firstName.' '.$this->lastName;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAvatarImage()
+    {
+        return $this->avatarImage;
+    }
+
+    /**
+     * @param string|null $avatarImage
+     *
+     * @return self
+     */
+    public function setAvatarImage($avatarImage)
+    {
+        $this->avatarImage = $avatarImage;
+        return $this;
     }
 
     public function getHumanRole()

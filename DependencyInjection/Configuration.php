@@ -26,11 +26,27 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('campaignchain');
+        $rootNode = $treeBuilder->root('campaign_chain_core');
 
-        // Here you should define the parameters that are allowed to
-        // configure your bundle. See the documentation linked above for
-        // more information on that topic.
+        $rootNode
+            ->children()
+                ->arrayNode('upload_storage')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->scalarNode('path')
+                            ->isRequired()
+                            ->cannotBeEmpty()
+                            ->defaultValue('%kernel.root_dir%/../web/storage')
+                        ->end()
+                        ->scalarNode('url_prefix')
+                            ->isRequired()
+                            ->cannotBeEmpty()
+                            ->defaultValue("/storage")
+                        ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
 
         return $treeBuilder;
     }

@@ -49,7 +49,11 @@
         "hpatoio/bitly-bundle": "dev-master",
         "sp/bower-bundle": "dev-master",
         "sonata-project/admin-bundle": "~2.2",
-        "sonata-project/block-bundle": "~2.2"
+        "sonata-project/block-bundle": "~2.2",
+        "guzzle/guzzle": "~3.9",
+        "guzzlehttp/guzzle": "^5.3",
+        "liip/imagine-bundle": "^1.3.1",
+        "oneup/uploader-bundle": "^1.3.1"
     },
     "autoload": {
         "psr-4": { "CampaignChain\\CoreBundle\\": "" }
@@ -70,7 +74,9 @@
                     "Hpatoio\\BitlyBundle\\HpatoioBitlyBundle",
                     "Sp\\BowerBundle\\SpBowerBundle",
                     "Sonata\\CoreBundle\\SonataCoreBundle",
-                    "Sonata\\BlockBundle\\SonataBlockBundle"
+                    "Sonata\\BlockBundle\\SonataBlockBundle",
+                    "Oneup\\UploaderBundle\\OneupUploaderBundle",
+                    "Liip\\ImagineBundle\\LiipImagineBundle"
                 ]
             }
         }

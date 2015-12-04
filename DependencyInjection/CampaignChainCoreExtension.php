@@ -32,5 +32,8 @@ class CampaignChainCoreExtension extends Extension
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
+
+        $container->setParameter('campaignchain.core.upload_storage.path', $config['upload_storage']['path']);
+        $container->setParameter('campaignchain.core.upload_storage.url_prefix', $config['upload_storage']['url_prefix']);
     }
 }
