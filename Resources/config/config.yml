@@ -279,6 +279,9 @@ liip_imagine:
             filters:
                 thumbnail: {size: [200, 200], mode: outbound}
 
+sensio_framework_extra:
+    request: { converters: true }
+
 fos_rest:
     versioning:
         enabled: true
@@ -292,7 +295,22 @@ fos_rest:
                 enabled: false
     routing_loader:
         default_format: json
+        include_format: false
     param_fetcher_listener: true
+    body_converter:
+        enabled: false
+    view:
+        formats:
+            json: true
+            xml: false
+        templating_formats:
+            html: false
+    format_listener:
+        rules:
+            - { path: '^/api/{version}', priorities: [ 'json'], fallback_format: json, exception_fallback_format: json, prefer_extension: true }
+            - { path: '^/', stop: true } # Turn off format listener
 
 nelmio_api_doc:
     name: CampaignChain API v1 (beta)
+    motd:
+        template: 'CampaignChainCoreBundle:REST:motd.html.twig'

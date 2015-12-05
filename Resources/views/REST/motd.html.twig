@@ -1,0 +1,189 @@
+<style type="text/css">
+    body, h1 {
+        font-family: "Lato";
+    }
+
+    .motd, #resources_container, #colophon {
+        max-width: 1140px;
+        margin: 0 auto;
+    }
+
+    .motd {
+        padding-bottom: 0;
+    }
+
+    #header {
+        background-color: #2c3e50;
+        color: #edf0f2;
+    }
+
+    #header h1 {
+        background-color: #2c3e50;
+        color: #edf0f2;
+    }
+
+    pre code {
+        border: none;
+    }
+    code, pre {
+        font-size: 13px;
+        margin-left: 2px;
+        margin-right: 2px;
+    }
+
+    code {
+        border: 1px solid #e5e0c6;
+        padding: 1px 4px;
+    }
+
+    .motd ul, .motd ol {
+        padding-bottom: 1em;
+    }
+
+    .motd li {
+        margin-left: 40px;
+        list-style: circle;
+        padding-bottom: 0.5em;
+    }
+
+    #resources_container h1, h2 {
+        font-weight: 400;
+        font-size: 1.3em;
+        padding: 10px 0;
+    }
+
+    #resources {
+        padding: 0;
+    }
+</style>
+<div class="motd">
+    <h1>WARNING</h1>
+    <p>
+        <strong>
+            This API is under development and can change any time. Do not
+            use for production environments.
+        </strong>
+    </p>
+
+    <p>
+        Any <a href="https://github.com/CampaignChain/campaignchain-ce/issues">
+            feedback, bug reports or ideas</a> are welcome.
+    </p>
+</div>
+{% if app.request.get('_doc') is not defined or app.request.get('_doc') != 1 %}
+<div class="motd">
+    <h1>Current Version</h1>
+    <p>
+        By default, all requests receive the <strong>v1</strong> version of the
+        API.
+    </p>
+
+    <h1>Authentication</h1>
+    <p>
+        OAuth2 is a protocol that lets external apps request authorization to
+        access the CampaignChain REST API.
+    </p>
+    <p>
+        Administrators need to create an OAuth server app inside
+        CampaignChain. This can be done under <strong>Settings</strong> and <strong>OAuth Server App</strong>.
+        Once an OAuth app was created, the app key and secret can be provided
+        to developers to configure an OAuth client. The user name and password
+        for authentication correspond with a user in CampaignChain.
+    </p>
+
+    <h1>Endpoints</h1>
+    <p>
+        The <strong>root endpoint</strong> of the REST API depends on the domain
+        and path to your CampaignChain installation. Throughout this document,
+        we use <code>http://www.example.com</code> as the sample domain indicating
+        where CampaignChain was installed. The full root endpoint is being
+        composed of the domain (plus a path if installed in a sub-directory) and
+        <code>/api/v1</code> appended to it. Hence, the full sample root endpoint
+        is <code>http://www.example.com/api/v1</code>.
+    </p>
+    <p>
+        All <strong>core endpoints</strong> of REST APIs that belong to the core functionality of
+        CampaignChain can be accessed directly under <code>/api/v1</code>.
+    </p>
+    <p>
+        The <strong>endpoints for packages or modules</strong> that extend the
+        core, reside under <code>/api/v1/p</code> plus the Composer package name
+        appended as a path. For example:
+    </p>
+    <pre>$curl -i "http://www.example.com/api/v1/p/campaignchain/location-ezplatform/objects"</pre>
+    <p>
+        This request provides a list of content objects managed from within
+        CampaignChain which are available in a remote eZ Platform isntance
+        (an open-source CMS). The REST API has been implemented in the Composer
+        package <code>campaignchain/location-ezplatform</code>.
+    </p>
+
+    <h1>Parameters</h1>
+    <p>
+        Many API methods take optional parameters. For GET requests, any
+        parameters not specified as a segment in the path can be passed as an
+        HTTP query string parameter. Some of them can have multiple values (i.e.
+        they are arrays) and must use <code>[]</code>:
+    </p>
+    <pre>$ curl -i "http://www.example.com/api/v1/campaigns.json?fromNow[]=ongoing&fromNow[]=upcoming"</pre>
+    <p>
+        In this example, the <code>ongoing</code> and <code>upcoming</code>
+        values are provided for the <code>fromNow</code> parameter in the query
+        string to retrieve all campaigns that run right now and in the future.
+    </p>
+    <p>
+        For POST, PATCH, PUT, and DELETE requests, parameters not included in
+        the URL should be encoded as JSON with a Content-Type of
+        <code>application/json</code>.
+    </p>
+    <h2>Module URI Parameter</h2>
+    <p>
+        Many API endpoints take the optional moduleURI parameter. The syntax for
+        its value is a URI composed of <code>(Composer package name)/(module identifier)</code>.
+        For example:
+    </p>
+    <ul>
+        <li>Composer package name: <code>campaignchain/location-facebook</code></li>
+        <li>Module identifier: <code>campaignchain-facebook-user</code></li>
+        <li>Module URI: <code>campaignchain/location-facebook/campaignchain-facebook-user</code></li>
+    </ul>
+    <p>
+        The <a href="http://doc.campaignchain.com/en/master/developer/book/modules.html#types-of-modules">module type</a>
+        of the provided module URI must fit the endpoint. For example, a request
+        such as
+    </p>
+    <pre>$ curl -i "http://www.example.com/api/v1/campaigns/?moduleURI[]=campaignchain/location-facebook/campaignchain-facebook-user"</pre>
+    <p>
+        would not return a successful response, because the provided module URI
+        defines a module of type <code>location</code>. Instead, it is supposed
+        to be of type <code>campaign</code>, such as <code>campaignchain/campaign-scheduled/campaignchain-scheduled</code>.
+    </p>
+    <p>Learn more about the <a href="https://getcomposer.org/doc/01-basic-usage.md#package-names">Composer pacakge name</a>.</p>
+
+    <h1>Format</h1>
+    <p>
+        Request bodies must be sent and responses will be retrieved in JSON.
+    </p>
+
+    <h1>Date</h1>
+    <p>
+        All timestamps are returned and must be provided in ISO 8601 format:
+    </p>
+    <pre>YYYY-MM-DDTHH:MM:SSZ</pre>
+    <p>For example:</p>
+    <pre>2015-12-20T12:00:00+0000</pre>
+    <p>The timezone for all timestamps is UTC.</p>
+
+    <h1>Documentation</h1>
+
+    <h2>Per Resource</h2>
+    <p>
+        For each resource, the respective REST API documentation can be viewed
+        in a browser by appending <code>?_doc=1</code> to the endpoint of a
+        CampaignChain installation. For example:
+    </p>
+    <pre>http://www.example.com/api/v1/campaigns?_doc=1</pre>
+
+    <h1>Resources</h1>
+</div>
+{% endif %}

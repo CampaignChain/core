@@ -10,90 +10,133 @@
 
 namespace CampaignChain\CoreBundle\Controller\REST;
 
+use CampaignChain\CoreBundle\Util\VariableUtil;
 use FOS\RestBundle\Controller\Annotations as REST;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use FOS\RestBundle\Request\ParamFetcher;
-use FOS\RestBundle\Controller\Annotations\Get;
 
+/**
+ * Class ModuleController
+ *
+ * @REST\NamePrefix("campaignchain_core_rest_module_")
+ *
+ * @package CampaignChain\CoreBundle\Controller\REST
+ */
 class ModuleController extends BaseController
 {
+    const SELECT_STATEMENT = 'b.name AS composerPackage, m.identifier AS moduleIdentifier, m.displayName, m.description, m.routes, m.services, m.hooks, m.params, m.createdDate';
+
     /**
-     * Get all modules of same type.
+     * List all available types for modules
      *
-     * Sample Request
-     * ==============
-     *
-     *      GET /api/{version}/modules/types/location
-     *
-     * Sample Response
+     * Example Request
      * ===============
      *
+     *      GET /api/{version}/modules/types
+     *
+     * Example Response
+     * ================
     {
-    "response": [
-        {
-            "id": 11,
-            "identifier": "campaignchain-facebook-page",
-            "displayName": "Facebook page stream",
-            "hooks": {
-            "default": {
-                "campaignchain-assignee": true
-            }
-            },
-            "createdDate": "2015-11-26T11:08:29+0000",
-            "type": "location"
-        },
-        {
-            "id": 12,
-            "identifier": "campaignchain-facebook-status",
-            "displayName": "Facebook status",
-            "createdDate": "2015-11-26T11:08:29+0000",
-            "type": "location"
-        },
-        {
-            "id": 10,
-            "identifier": "campaignchain-facebook-user",
-            "displayName": "Facebook user stream",
-            "hooks": {
-            "default": {
-                "campaignchain-assignee": true
-            }
-        },
-            "createdDate": "2015-11-26T11:08:29+0000",
-            "type": "location"
-        },
-        {
-            "id": 13,
-            "identifier": "campaignchain-linkedin-user",
-            "displayName": "LinkedIn user stream",
-            "createdDate": "2015-11-26T11:08:29+0000",
-            "type": "location"
-        },
-        {
-            "id": 9,
-            "identifier": "campaignchain-twitter-status",
-            "displayName": "Twitter post (aka Tweet)",
-            "createdDate": "2015-11-26T11:08:29+0000",
-            "type": "location"
-        },
-        {
-            "id": 8,
-            "identifier": "campaignchain-twitter-user",
-            "displayName": "Twitter user stream",
-            "hooks": {
-            "default": {
-                "campaignchain-assignee": true
-        }
-        },
-            "createdDate": "2015-11-26T11:08:29+0000",
-            "type": "location"
-        }
-    ]
+        "response": [
+            "activity",
+            "campaign",
+            "channel",
+            "location",
+            "milestone",
+            "operation",
+            "report",
+            "security"
+        ]
     }
      *
      * @ApiDoc(
-     *  section="Modules",
-     * requirements={
+     *  section="Core"
+     * )
+     *
+     * @REST\GET("/types")
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function getTypesMetaAction()
+    {
+        $typeClasses = $this->getDoctrine()->getEntityManager()->getClassMetadata('CampaignChain\CoreBundle\Entity\Module')->discriminatorMap;
+
+        return $this->response(
+            VariableUtil::arrayFlatten(array_keys($typeClasses))
+        );
+    }
+
+    /**
+     * Get all modules of same type.
+     *
+     * Example Request
+     * ===============
+     *
+     *      GET /api/{version}/modules/types/location
+     *
+     * Example Response
+     * ================
+     *
+    {
+        "response": [
+            {
+                "composerPackage": "campaignchain/location-facebook",
+                "moduleIdentifier": "campaignchain-facebook-page",
+                "displayName": "Facebook page stream",
+                "hooks": {
+                    "default": {
+                        "campaignchain-assignee": true
+                    }
+                },
+                "createdDate": "2015-11-26T11:08:29+0000"
+            },
+            {
+                "composerPackage": "campaignchain/location-facebook",
+                "moduleIdentifier": "campaignchain-facebook-status",
+                "displayName": "Facebook status",
+                "createdDate": "2015-11-26T11:08:29+0000"
+            },
+            {
+                "composerPackage": "campaignchain/location-facebook",
+                "moduleIdentifier": "campaignchain-facebook-user",
+                "displayName": "Facebook user stream",
+                "hooks": {
+                    "default": {
+                        "campaignchain-assignee": true
+                    }
+                },
+                "createdDate": "2015-11-26T11:08:29+0000"
+            },
+            {
+                "composerPackage": "campaignchain/location-linkedin",
+                "moduleIdentifier": "campaignchain-linkedin-user",
+                "displayName": "LinkedIn user stream",
+                "createdDate": "2015-11-26T11:08:29+0000"
+            },
+            {
+                "composerPackage": "campaignchain/location-twitter",
+                "moduleIdentifier": "campaignchain-twitter-status",
+                "displayName": "Twitter post (aka Tweet)",
+                "createdDate": "2015-11-26T11:08:29+0000"
+            },
+            {
+                "composerPackage": "campaignchain/location-twitter",
+                "moduleIdentifier": "campaignchain-twitter-user",
+                "displayName": "Twitter user stream",
+                "hooks": {
+                    "default": {
+                        "campaignchain-assignee": true
+                    }
+                },
+                "createdDate": "2015-11-26T11:08:29+0000"
+            }
+        ]
+    }
+     *
+     * @ApiDoc(
+     *  section="Core",
+     *  requirements={
      *      {
      *          "name"="type",
      *          "requirement"="(campaign|channel|location|activity|operation|report|security)"
@@ -101,16 +144,18 @@ class ModuleController extends BaseController
      *  }
      * )
      *
-     * @param   string     $type    A Composer package's name, e.g. 'location'.
+     * @param   string     $type    The type of a module, e.g. 'location'.
      *
-     * @return Response
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function getTypesAction($type)
     {
         $qb = $this->getQueryBuilder();
-        $qb->select('m');
+        $qb->select(self::SELECT_STATEMENT);
         $typeClasses = $this->getDoctrine()->getEntityManager()->getClassMetadata('CampaignChain\CoreBundle\Entity\Module')->discriminatorMap;
         $qb->from($typeClasses[$type], 'm');
+        $qb->join('m.bundle', 'b');
+        $qb->where('b.id = m.bundle');
         $qb->orderBy('m.identifier');
         $query = $qb->getQuery();
 
@@ -120,15 +165,103 @@ class ModuleController extends BaseController
     }
 
     /**
+     * List all installed Composer packages which include CampaignChain Modules.
+     *
+     * Example Request
+     * ===============
+     *
+     *      GET /api/v1/modules/packages
+     *
+     * Example Response
+     * ================
+     *
+    {
+        "response": [
+            "campaignchain/report-analytics-cta-tracking",
+            "campaignchain/location-citrix",
+            "campaignchain/channel-facebook",
+            "campaignchain/location-facebook",
+            "campaignchain/activity-facebook",
+            "campaignchain/operation-facebook",
+            "campaignchain/location-facebook",
+            "campaignchain/location-facebook",
+            "campaignchain/channel-google",
+            "campaignchain/report-google",
+            "campaignchain/report-google-analytics",
+            "campaignchain/channel-google-analytics",
+            "campaignchain/location-google-analytics",
+            "campaignchain/activity-gotowebinar",
+            "campaignchain/channel-citrix",
+            "campaignchain/location-citrix",
+            "campaignchain/operation-gotowebinar",
+            "campaignchain/channel-linkedin",
+            "campaignchain/activity-linkedin",
+            "campaignchain/operation-linkedin",
+            "campaignchain/location-linkedin",
+            "campaignchain/activity-mailchimp",
+            "campaignchain/channel-mailchimp",
+            "campaignchain/operation-mailchimp",
+            "campaignchain/location-mailchimp",
+            "campaignchain/location-mailchimp",
+            "campaignchain/report-analytics-metrics-per-activity",
+            "campaignchain/campaign-repeating",
+            "campaignchain/campaign-scheduled",
+            "campaignchain/milestone-scheduled",
+            "campaignchain/security-authentication-client-oauth",
+            "campaignchain/security-authentication-server-oauth",
+            "campaignchain/operation-slideshare",
+            "campaignchain/activity-slideshare",
+            "campaignchain/channel-slideshare",
+            "campaignchain/location-slideshare",
+            "campaignchain/campaign-template",
+            "campaignchain/channel-twitter",
+            "campaignchain/location-twitter",
+            "campaignchain/operation-twitter",
+            "campaignchain/activity-twitter",
+            "campaignchain/location-twitter",
+            "campaignchain/channel-website",
+            "campaignchain/location-citrix",
+            "campaignchain/location-website",
+            "campaignchain/location-citrix",
+            "campaignchain/location-website"
+        ]
+    }
+     *
+     * @ApiDoc(
+     *  section="Core"
+     * )
+     *
+     * @REST\GET("/packages")
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function getPackagesMetaAction()
+    {
+        $qb = $this->getQueryBuilder();
+        $qb->select("b.name");
+        $qb->from('CampaignChain\CoreBundle\Entity\Module', 'm');
+        $qb->from('CampaignChain\CoreBundle\Entity\Bundle', 'b');
+        $qb->where('b.id = m.bundle');
+        $qb->orderBy('m.identifier');
+        $query = $qb->getQuery();
+
+        return $this->response(
+            VariableUtil::arrayFlatten(
+                $query->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY)
+            )
+        );
+    }
+
+    /**
      * Get all modules contained in a Composer package.
      *
-     * Sample Request
-     * ==============
-     *
-     *      GET /api/v1/modules/vendors/campaignchain/projects/location-facebook
-     *
-     * Sample Response
+     * Example Request
      * ===============
+     *
+     *      GET /api/v1/modules/packages/campaignchain%2Flocation-facebook
+     *
+     * Example Response
+     * ================
      *
     {
         "response": [
@@ -167,30 +300,29 @@ class ModuleController extends BaseController
     }
      *
      * @ApiDoc(
-     *  section="Modules",
+     *  section="Core",
      *  requirements={
      *      {
-     *          "name"="vendor",
-     *          "requirement"="[A-Za-z0-9][A-Za-z0-9_.-]*"
-     *      },
-     *      {
-     *          "name"="project",
-     *          "requirement"="[A-Za-z0-9][A-Za-z0-9_.-]*"
+     *          "name"="package",
+     *          "requirement"="[A-Za-z0-9][A-Za-z0-9_.-]*\/[A-Za-z0-9][A-Za-z0-9_.-]*"
      *      }
      *  }
      * )
      *
-     * @Get("/vendors/{vendor}/projects/{project}")
+     * @REST\NoRoute() // We have specified a route manually.
      *
-     * @param   string     $vendor     A Composer package's vendor name, e.g. 'campaignchain'.
-     * @param   string     $project    A Composer package's project name, e.g. 'location-facebook'.
+     * @param   string     $package     A Composer package's name, e.g. 'campaignchain/location-facebook'. The value should be URL encoded.
      *
-     * @return Response
+     * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function getModulesVendorsProjectsAction($vendor, $project)
+    public function getPackagesAction($package)
     {
+        $uriParts = explode('/', $package);
+        $vendor = $uriParts[0];
+        $project = $uriParts[1];
+
         $qb = $this->getQueryBuilder();
-        $qb->select('m');
+        $qb->select(self::SELECT_STATEMENT);
         $qb->from('CampaignChain\CoreBundle\Entity\Module', 'm');
         $qb->from('CampaignChain\CoreBundle\Entity\Bundle', 'b');
         $qb->where('b.id = m.bundle');
@@ -205,15 +337,103 @@ class ModuleController extends BaseController
     }
 
     /**
-     * Get one specific module.
+     * List all available Module URIs.
      *
-     * Sample Request
-     * ==============
-     *
-     *      GET /api/v1/modules/identifiers/campaignchain-facebook-user/vendors/campaignchain/projects/location-facebook
-     *
-     * Sample Response
+     * Example Request
      * ===============
+     *
+     *      GET /api/v1/modules/uris
+     *
+     * Example Response
+     * ================
+     *
+    {
+        "response": [
+            "campaignchain/report-analytics-cta-tracking/campaignchain-analytics-cta-tracking-per-location",
+            "campaignchain/location-citrix/campaignchain-citrix-user",
+            "campaignchain/channel-facebook/campaignchain-facebook",
+            "campaignchain/location-facebook/campaignchain-facebook-page",
+            "campaignchain/activity-facebook/campaignchain-facebook-publish-status",
+            "campaignchain/operation-facebook/campaignchain-facebook-publish-status",
+            "campaignchain/location-facebook/campaignchain-facebook-status",
+            "campaignchain/location-facebook/campaignchain-facebook-user",
+            "campaignchain/channel-google/campaignchain-google",
+            "campaignchain/location-google-analytics/campaignchain-google-analytics",
+            "campaignchain/channel-google-analytics/campaignchain-google-analytics",
+            "campaignchain/report-google/campaignchain-google-analytics",
+            "campaignchain/report-google-analytics/campaignchain-google-analytics",
+            "campaignchain/activity-gotowebinar/campaignchain-gotowebinar",
+            "campaignchain/channel-citrix/campaignchain-gotowebinar",
+            "campaignchain/operation-gotowebinar/campaignchain-gotowebinar",
+            "campaignchain/location-citrix/campaignchain-gotowebinar",
+            "campaignchain/channel-linkedin/campaignchain-linkedin",
+            "campaignchain/activity-linkedin/campaignchain-linkedin-share-news-item",
+            "campaignchain/operation-linkedin/campaignchain-linkedin-share-news-item",
+            "campaignchain/location-linkedin/campaignchain-linkedin-user",
+            "campaignchain/activity-mailchimp/campaignchain-mailchimp",
+            "campaignchain/channel-mailchimp/campaignchain-mailchimp",
+            "campaignchain/location-mailchimp/campaignchain-mailchimp-newsletter",
+            "campaignchain/operation-mailchimp/campaignchain-mailchimp-newsletter",
+            "campaignchain/location-mailchimp/campaignchain-mailchimp-user",
+            "campaignchain/report-analytics-metrics-per-activity/campaignchain-metrics-per-activity",
+            "campaignchain/campaign-repeating/campaignchain-repeating",
+            "campaignchain/campaign-scheduled/campaignchain-scheduled",
+            "campaignchain/milestone-scheduled/campaignchain-scheduled",
+            "campaignchain/security-authentication-client-oauth/campaignchain-security-authentication-client-oauth",
+            "campaignchain/security-authentication-server-oauth/campaignchain-security-authentication-server-oauth",
+            "campaignchain/activity-slideshare/campaignchain-slideshare",
+            "campaignchain/operation-slideshare/campaignchain-slideshare",
+            "campaignchain/channel-slideshare/campaignchain-slideshare",
+            "campaignchain/location-slideshare/campaignchain-slideshare-user",
+            "campaignchain/campaign-template/campaignchain-template",
+            "campaignchain/channel-twitter/campaignchain-twitter",
+            "campaignchain/location-twitter/campaignchain-twitter-status",
+            "campaignchain/activity-twitter/campaignchain-twitter-update-status",
+            "campaignchain/operation-twitter/campaignchain-twitter-update-status",
+            "campaignchain/location-twitter/campaignchain-twitter-user",
+            "campaignchain/location-website/campaignchain-website",
+            "campaignchain/channel-website/campaignchain-website",
+            "campaignchain/location-citrix/campaignchain-website",
+            "campaignchain/location-website/campaignchain-website-page",
+            "campaignchain/location-citrix/campaignchain-website-page"
+        ]
+    }
+     *
+     * @ApiDoc(
+     *  section="Core"
+     * )
+     *
+     * @REST\GET("/uris")
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function getUrisMetaAction()
+    {
+        $qb = $this->getQueryBuilder();
+        $qb->select("CONCAT(b.name, '/', m.identifier)");
+        $qb->from('CampaignChain\CoreBundle\Entity\Module', 'm');
+        $qb->from('CampaignChain\CoreBundle\Entity\Bundle', 'b');
+        $qb->where('b.id = m.bundle');
+        $qb->orderBy('m.identifier');
+        $query = $qb->getQuery();
+
+        return $this->response(
+            VariableUtil::arrayFlatten(
+                $query->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY)
+            )
+        );
+    }
+
+    /**
+     * Get one specific module by Module URI.
+     *
+     * Example Request
+     * ===============
+     *
+     *      GET /api/v1/modules/uris/campaignchain%2Flocation-facebook%2Fcampaignchain-facebook-user
+     *
+     * Example Response
+     * ================
      *
     {
         "response": [
@@ -235,33 +455,30 @@ class ModuleController extends BaseController
     }
      *
      * @ApiDoc(
-     *  section="Modules",
+     *  section="Core",
      *  requirements={
      *      {
-     *          "name"="vendor",
-     *          "requirement"="[A-Za-z0-9][A-Za-z0-9_.-]*"
-     *      },
-     *      {
-     *          "name"="project",
-     *          "requirement"="[A-Za-z0-9][A-Za-z0-9_.-]*"
-     *      },
-     *      {
-     *          "name"="identifier",
-     *          "requirement"="[A-Za-z0-9][A-Za-z0-9_.-]*"
+     *          "name"="uri",
+     *          "requirement"="[A-Za-z0-9][A-Za-z0-9_.-]*\/[A-Za-z0-9][A-Za-z0-9_.-]*\/[A-Za-z0-9][A-Za-z0-9_.-]*"
      *      }
      *  }
      * )
      *
-     * @param   string     $vendor     A Composer package's vendor name, e.g. 'campaignchain'.
-     * @param   string     $project    A Composer package's project name, e.g. 'location-facebook'.
-     * @param   string     $identifier     A CampaignChain module identifier, e.g. 'campaignchain-facebook-user'.
+     * @REST\NoRoute() // We have specified a route manually.
      *
-     * @return \CampaignChain\CoreBundle\Entity\Module
+     * @param   string     $uri     A Module URI, e.g. 'campaignchain/location-facebook/campaignchain-facebook-user'. The value should be URL encoded.
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function getIdentifiersVendorsProjectsAction($identifier, $vendor, $project)
+    public function getUrisAction($uri)
     {
+        $uriParts = explode('/', $uri);
+        $vendor = $uriParts[0];
+        $project = $uriParts[1];
+        $identifier = $uriParts[2];
+
         $qb = $this->getQueryBuilder();
-        $qb->select('m');
+        $qb->select(self::SELECT_STATEMENT);
         $qb->from('CampaignChain\CoreBundle\Entity\Module', 'm');
         $qb->from('CampaignChain\CoreBundle\Entity\Bundle', 'b');
         $qb->where('b.id = m.bundle');

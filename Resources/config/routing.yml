@@ -16,18 +16,38 @@ campaignchain_core_install_step:
 campaignchain_core_homepage:
     pattern:  /
     defaults: { _controller: CampaignChainCoreBundle:About:index }
+    options:
+        campaignchain:
+            description: The start page
+            rest:
+                expose: true
 
 campaignchain_core_about:
     pattern:  /about/
     defaults: { _controller: CampaignChainCoreBundle:About:index }
+    options:
+        campaignchain:
+            description: Read about CampaignChain
+            rest:
+                expose: true
 
 campaignchain_core_plan:
     pattern:  /plan/{id}
     defaults: { _controller: CampaignChainCoreBundle:Plan:index, id: 0 }
+    options:
+        campaignchain:
+            description: Plan campaigns
+            rest:
+                expose: true
 
 campaignchain_core_execute:
     pattern:  /execute/
     defaults: { _controller: CampaignChainCoreBundle:Execute:index }
+    options:
+        campaignchain:
+            description: View upcoming actions
+            rest:
+                expose: true
 
 campaignchain_core_campaign:
     pattern:  /campaigns/
@@ -36,6 +56,11 @@ campaignchain_core_campaign:
 campaignchain_core_campaign_new:
     pattern:  /campaign/new/
     defaults: { _controller: CampaignChainCoreBundle:Campaign:new }
+    options:
+        campaignchain:
+            description: Create a new campaign
+            rest:
+                expose: true
 
 campaignchain_core_campaign_edit:
     pattern:  /campaign/{id}/edit
@@ -63,10 +88,20 @@ campaignchain_core_campaign_move_api:
 campaignchain_core_activities:
     pattern:  /activities/
     defaults: { _controller: CampaignChainCoreBundle:Activity:index }
+    options:
+        campaignchain:
+            description: View all activities
+            rest:
+                expose: true
 
 campaignchain_core_activities_new:
     pattern:  /activity/new/
     defaults: { _controller: CampaignChainCoreBundle:Activity:new }
+    options:
+        campaignchain:
+            description: Create a new activity
+            rest:
+                expose: true
 
 campaignchain_core_activity_edit:
     pattern:  /activity/{id}/edit
@@ -98,10 +133,20 @@ campaignchain_core_activity_read:
 campaignchain_core_milestone:
     pattern:  /milestones/
     defaults: { _controller: CampaignChainCoreBundle:Milestone:index }
+    options:
+        campaignchain:
+            description: View all milestones
+            rest:
+                expose: true
 
 campaignchain_core_milestone_new:
     pattern:  /milestone/new/
     defaults: { _controller: CampaignChainCoreBundle:Milestone:new }
+    options:
+        campaignchain:
+            description: Create a new milestone
+            rest:
+                expose: true
 
 campaignchain_core_milestone_edit:
     pattern:  /milestone/{id}/edit
@@ -129,22 +174,47 @@ campaignchain_core_milestone_move_api:
 campaignchain_core_report:
     pattern:  /reports/{id}
     defaults: { _controller: CampaignChainCoreBundle:Report:index, id: 0 }
+    options:
+        campaignchain:
+            description: View all reports
+            rest:
+                expose: true
 
 campaignchain_core_module:
     pattern:  /modules/
     defaults: { _controller: CampaignChainCoreBundle:Module:index }
+    options:
+        campaignchain:
+            description: Manage modules
+            rest:
+                expose: true
 
 campaignchain_core_module_new:
     pattern:  /modules/new/
     defaults: { _controller: CampaignChainCoreBundle:Module:new }
+    options:
+        campaignchain:
+            description: Add new modules
+            rest:
+                expose: true
 
 campaignchain_core_channel:
     pattern:  /channels/
     defaults: { _controller: CampaignChainCoreBundle:Channel:index }
+    options:
+        campaignchain:
+            description: View all channels
+            rest:
+                expose: true
 
 campaignchain_core_channel_new:
     pattern:  /channel/new/
     defaults: { _controller: CampaignChainCoreBundle:Channel:new }
+    options:
+        campaignchain:
+            description: Connect a new channel location
+            rest:
+                expose: true
 
 campaignchain_core_channel_cta_test:
     pattern: channel/{id}/cta-tracking/
@@ -163,6 +233,11 @@ campaignchain_core_report_list_cta_locations_per_campaign_api:
 campaignchain_core_location:
     pattern:  /locations/
     defaults: { _controller: CampaignChainCoreBundle:Location:index }
+    options:
+        campaignchain:
+            description: View all locations
+            rest:
+                expose: true
 
 campaignchain_core_location_list_activities_api:
     pattern:  /api/private/location/{id}/activities
@@ -190,6 +265,11 @@ campaignchain_development_reset_system:
 campaignchain_core_user:
     pattern:  /users/
     defaults: { _controller: CampaignChainCoreBundle:User:index }
+    options:
+        campaignchain:
+            description: Manage users
+            rest:
+                expose: true
 
 campaignchain_core_profile_edit:
     pattern:  /profile/edit/{id}
@@ -216,6 +296,11 @@ campaignchain_core_profile_crop_avatar:
 campaignchain_core_user_new:
     path: /users/new
     defaults: { _controller: CampaignChainCoreBundle:User:new }
+    options:
+        campaignchain:
+            description: Create a new user
+            rest:
+                expose: true
 
 # FOS User
 
@@ -261,15 +346,51 @@ campaignchain_core_rest_package:
     prefix:   /api/{version}/packages
     resource: CampaignChain\CoreBundle\Controller\REST\PackageController
 
+# This route accepts a Composer package name, which requires that we surpase
+# Symfony's default exlusion of / in route parameters.
+campaignchain_core_rest_package_get_packages_package:
+    path: /api/{version}/packages/{package}
+    defaults: { _controller: CampaignChainCoreBundle:REST/Package:getPackages }
+    methods: [GET]
+    requirements:
+        package: ".+"
+
 campaignchain_core_rest_module:
     type:     rest
     prefix:   /api/{version}/modules
     resource: CampaignChain\CoreBundle\Controller\REST\ModuleController
 
-campaignchain_core_rest_campaign:
+# This route accepts a Module URI, which requires that we surpase Symfony's
+# default exlusion of / in route parameters.
+campaignchain_core_rest_module_get_modules_uris_uri:
+    path: /api/{version}/modules/uris/{uri}
+    defaults: { _controller: CampaignChainCoreBundle:REST/Module:getUris }
+    methods: [GET]
+    requirements:
+        uri: ".+"
+
+# This route accepts a Composer package name, which requires that we surpase
+# Symfony's default exlusion of / in route parameters.
+campaignchain_core_rest_module_get_modules_packages_package:
+    path: /api/{version}/modules/packages/{package}
+    defaults: { _controller: CampaignChainCoreBundle:REST/Module:getPackages }
+    methods: [GET]
+    requirements:
+        package: ".+"
+
+campaignchain_core_rest_channel:
     type:     rest
-    prefix:   /api/{version}/campaigns
-    resource: CampaignChain\CoreBundle\Controller\REST\CampaignController
+    prefix:   /api/{version}/channels
+    resource: CampaignChain\CoreBundle\Controller\REST\ChannelController
+
+# This route accept a URL, which requires that we surpase Symfony's default
+# exlusion of / in route parameters.
+campaignchain_core_rest_channel_get_channels_locations_urls_url:
+    path: /api/{version}/channels/locations/urls/{url}
+    defaults: { _controller: CampaignChainCoreBundle:REST/Channel:getLocationsUrls }
+    methods: [GET]
+    requirements:
+        url: ".+"
 
 NelmioApiDocBundle:
     resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
