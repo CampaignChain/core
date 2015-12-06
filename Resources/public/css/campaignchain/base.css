@@ -45,6 +45,9 @@ a.external:after {
     text-decoration: inherit;
     font-size: 70%;
 }
+a.external-noicon:after {
+    display: none;
+}
 
 .footer {
     height: 50px;
