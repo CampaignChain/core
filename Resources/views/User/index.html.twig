@@ -6,11 +6,10 @@
 
 {% block body %}
     {% include 'CampaignChainCoreBundle:Base:datatable.html.twig' %}
-
-    <div>
-        <a class="btn btn-primary" href="{{ url('campaignchain_core_user_new') }}">
-            New user</span>
-        </a>
+    <div class="btn-toolbar" role="toolbar">
+        <div class="btn-group" role="group">
+            <a href="{{ url('campaignchain_core_user_new') }}" class="btn btn-primary" role="button"><span class="fa fa-plus"></span> New user</a>
+        </div>
     </div>
 
     <!--<div class="table-responsive">-->
@@ -29,14 +28,19 @@
                     <tr class="
                             {% if user.expired == true %}text-muted {% endif %}
                             ">
-                        <td>{{ user.name }}</td>
+                        <td>
+                            <img class="campaignchain-profile-image" src="{{ user|campaignchain_user_avatar|imagine_filter('navbar_avatar') }}" class="avatar" alt="{{ app.user.name }}">
+                            {{ user.name }}
+                        </td>
                         <td>{{ user.username }}</td>
                         <td>{{ user.email }}</td>
                         <td>{{ user.humanRole }}</td>
                         <td>
-                            <a role="button" class="btn btn-default btn-xs"
+                            <a role="button" class="btn btn-primary"
+                               data-toggle="tooltip" data-placement="top" data-original-title="Edit"
                                href="{{ path('campaignchain_core_profile_edit',{'id':user.id}) }}">
-                                <span class="fa fa-pencil"></span></a>
+                                <span class="fa fa-pencil"></span>
+                            </a>
                         </td>
                     </tr>
                 {% endfor %}
