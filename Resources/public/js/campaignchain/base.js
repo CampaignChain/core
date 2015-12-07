@@ -19,7 +19,18 @@ file that was distributed with this source code.
     // in $(document).ready() and after content has been updated via AJAX.
     $.fn.markExternalLinks = function() {
         this.find('a').addClass(function() {
-            return ($(this).attr('href') || "").match(externalLinkPattern) ? "external" : "";
+            var classes = [];
+            var $link = $(this);
+            var isExternal = ($link.attr('href') || "").match(externalLinkPattern);
+            if (isExternal) {
+                classes.push("external");
+                // Link contains image, so don't add the external link indicator
+                if ($link.find('img').length > 0) {
+                    classes.push("external-noicon");
+                }
+            }
+
+            return classes.join(" ");
         });
         return this;
     };

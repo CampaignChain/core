@@ -11,6 +11,7 @@
 namespace CampaignChain\CoreBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use CampaignChain\CoreBundle\Util\ParserUtil;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -235,7 +236,7 @@ class System extends Meta
      */
     public function setHomepage($homepage)
     {
-        $this->homepage = $homepage;
+        $this->homepage = ParserUtil::sanitizeUrl($homepage);
 
         return $this;
     }

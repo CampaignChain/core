@@ -173,6 +173,7 @@ assetic:
         flot_tooltip_js:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/components/flot.tooltip/js/jquery.flot.tooltip.js"
+                - "@CampaignChainCoreBundle/Resources/public/js/flot.crosshair.js"
         campaignchain_flot_css:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/css/campaignchain/flot.css"

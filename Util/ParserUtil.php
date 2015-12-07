@@ -183,14 +183,52 @@ class ParserUtil
             $text);
     }
 
+    /**
+     * Remove trailing slash if no path included in URL.
+     *
+     * For example:
+     * - http://www.example.com/ <- remove
+     * - http://www.example.com/news/ <- do not remove
+     * - http://www.exmaple.com/?id=2/ <- remove
+     * - http://www.example.com/?id=2 <- do not remove
+     *
+     * @param $url
+     * @return string
+     * @throws \Exception
+     */
     static function sanitizeUrl($url)
     {
-        // Append trailing slash if missing.
-        if (substr($url, -1) !== '/') {
-            return $url.'/';
+        if(
+            self::validateUrl($url) &&
+            substr($url, -1) === '/'
+        ) {
+            $urlParts = parse_url($url);
+            if(
+                !isset($urlParts['path']) ||
+                ($urlParts['path'] == '/' && !isset($urlParts['query'])) ||
+                (isset($urlParts['query']) && substr($urlParts['query'], -1) === '/')
+            ){
+                $url = rtrim($url, '/');
+            }
         }
 
         return $url;
+    }
+
+    /**
+     * Validates the syntax of a URL.
+     *
+     * @param $url
+     * @return bool
+     * @throws \Exception
+     */
+    static function validateUrl($url)
+    {
+        if(!filter_var($url, FILTER_VALIDATE_URL)) {
+            throw new \Exception('Invalid URL');
+        }
+
+        return true;
     }
 
     static function truncateMiddle($text, $maxChars)
