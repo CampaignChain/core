@@ -1,0 +1,24 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) CampaignChain Inc. <info@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+{% extends 'CampaignChainCoreBundle:Operation:new.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    {% javascripts '@select2_dependent_js' %}
+    <!-- dependent select --><script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+    <script>
+        $(document).ready(function(){
+            campaignchainDependentSelect2('{{ dependent_select_parent }}', '{{ dependent_select_child }}', '{{ dependent_select_route }}')
+        });
+    </script>
+{% endblock %}

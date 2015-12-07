@@ -1,7 +1,16 @@
+/**
+ * Shows one select2 drop-down list in relation to another one and populates
+ * the child drop-down with data from an AJAX call.
+ *
+ * @param parent The id of the parent select element.
+ * @param child  The id of the child select element.
+ * @param route  The Symfony route of the API returning a JSON object to populate
+ *               the child select.
+ */
 function campaignchainDependentSelect2(parent, child, route){
-    $parentSelect = $("select#form_" + parent);
-    $childSelect = $("#form_" + child);
-    $childLabel = $('label[for="form_' + child + '"]');
+    $parentSelect = $("select#" + parent);
+    $childSelect = $("#" + child);
+    $childLabel = $('label[for="' + child + '"]');
 
     $childSelect.hide();
     $childLabel.hide();
@@ -11,7 +20,6 @@ function campaignchainDependentSelect2(parent, child, route){
     $parentSelect.select2("val", "");
 
     $parentSelect.change(function(){
-        console.log($(this).val());
         if ($(this).val() != '') {
             var $route = Routing.generate(route, { id: $parentSelect.val() });
             $.getJSON( $route )

@@ -11,9 +11,12 @@
 namespace CampaignChain\CoreBundle\Controller\Module;
 
 use CampaignChain\CoreBundle\Entity\Activity;
+use CampaignChain\CoreBundle\Entity\Campaign;
 use CampaignChain\CoreBundle\Entity\Location;
 use CampaignChain\CoreBundle\Entity\Medium;
+use CampaignChain\CoreBundle\Entity\Module;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Session\Session;
 use CampaignChain\CoreBundle\Entity\Operation;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,8 +37,12 @@ class ActivityModuleController extends Controller
 
     protected $location;
 
+    protected $channel;
+
     protected $operations = array();
 
+    private $activityBundleName;
+    private $activityModuleIdentifier;
     private $locationBundleName;
     private $locationModuleIdentifier;
     private $contentBundleName;
@@ -49,6 +56,9 @@ class ActivityModuleController extends Controller
             throw new \Exception('No Activity handler defined in services.yml.');
         }
         $this->handler = $this->get($this->parameters['handler']);
+
+        $this->activityBundleName = $this->parameters['bundle_name'];
+        $this->activityModuleIdentifier = $this->parameters['module_identifier'];
 
         if(!isset($this->parameters['equals_operation'])){
             $this->parameters['equals_operation'] = false;
@@ -65,6 +75,15 @@ class ActivityModuleController extends Controller
         }
     }
 
+    public function setActivityContext(Campaign $campaign, Location $location){
+        $this->campaign = $campaign;
+        $this->location = $location;
+
+        $this->location = $this->handler->processActivityLocation($this->location);
+
+        $this->channel = $this->location->getChannel();
+    }
+
     /**
      * Symfony controller action for creating a new CampaignChain Activity.
      *
@@ -74,8 +93,10 @@ class ActivityModuleController extends Controller
      */
     public function newAction(Request $request)
     {
+        $operation = null;
+
         /*
-         * Get context from user's choice.
+         * Set Activity's context from user's choice.
          */
         $wizard = $this->get('campaignchain.core.activity.wizard');
         if (!$wizard->getCampaign()) {
@@ -83,133 +104,42 @@ class ActivityModuleController extends Controller
         }
 
         $campaignService = $this->get('campaignchain.core.campaign');
-        $this->campaign = $campaignService->getCampaign($wizard->getCampaign());
-        $this->activity = $wizard->getActivity();
-        $this->activity->setEqualsOperation($this->parameters['equals_operation']);
+        $campaign = $campaignService->getCampaign($wizard->getCampaign());
         $locationService = $this->get('campaignchain.core.location');
-        $this->location = $locationService->getLocation($wizard->getLocation());
+        $location = $locationService->getLocation($wizard->getLocation());
+        $this->setActivityContext($campaign, $location);
 
-        $this->location = $this->handler->processActivityLocation($this->location);
+        $activity = $wizard->getActivity();
+        $activity->setEqualsOperation($this->parameters['equals_operation']);
 
         $form = $this->createForm(
-            $this->getActivityFormType('new'), $this->activity
+            $this->getActivityFormType('new'), $activity
         );
 
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $this->activity = $wizard->end();
+            $activity = $wizard->end();
 
-            $this->handler->postFormSubmitNewEvent(
-                $this->activity,
-                $form->get($this->contentModuleIdentifier)->getData()
-            );
-
-            // Allow a module's handler to modify the Activity data.
-            $this->activity = $this->handler->processActivity(
-                $this->activity,
-                $form->get($this->contentModuleIdentifier)->getData()
-            );
-
-            // Get the operation module.
-            $operationService = $this->get('campaignchain.core.operation');
-            $operationModule = $operationService->getOperationModule(
-                $this->contentBundleName,
-                $this->contentModuleIdentifier
-            );
-
-            if($this->parameters['equals_operation']) {
-                // The activity equals the operation. Thus, we create a new operation with the same data.
-                $operation = new Operation();
-                $operation->setName($this->activity->getName());
-                $operation->setStartDate($this->activity->getStartDate());
-                $operation->setEndDate($this->activity->getEndDate());
-                $operation->setTriggerHook($this->activity->getTriggerHook());
-                $operation->setActivity($this->activity);
-                $this->activity->addOperation($operation);
-                $operationModule->addOperation($operation);
-                $operation->setOperationModule($operationModule);
-
-                // The Operation creates a Location, i.e. the Operation
-                // will be accessible through a URL after publishing.
-
-                // Get the location module.
-                $locationModule = $locationService->getLocationModule(
-                    $this->locationBundleName,
-                    $this->locationModuleIdentifier
-                );
-
-                $contentLocation = new Location();
-                $contentLocation->setLocationModule($locationModule);
-                $contentLocation->setParent($this->activity->getLocation());
-                $contentLocation->setName($this->activity->getName());
-                $contentLocation->setStatus(Medium::STATUS_UNPUBLISHED);
-                $contentLocation->setOperation($operation);
-                $operation->addLocation($contentLocation);
-                // Allow a module's handler to modify the Operation's Location.
-                $contentLocation = $this->handler->processContentLocation(
-                    $contentLocation,
-                    $form->get($this->contentModuleIdentifier)->getData()
-                );
-
-                // Process the Operation details.
-                $content = $this->handler->processContent(
-                    $operation,
-                    $form->get($this->contentModuleIdentifier)->getData()
-                );
-
-                // Link the Operation details with the operation.
-                $content->setOperation($operation);
-            } else {
-                throw new \Exception(
-                    'Multiple Operations for one Activity not implemented yet.'
-                );
-            }
-
-            $repository = $this->getDoctrine()->getManager();
-
-            // Make sure that data stays intact by using transactions.
-            try {
-                $repository->getConnection()->beginTransaction();
-
-                $repository->persist($this->activity);
-                $repository->persist($content);
-
-                // We need the activity ID for storing the hooks. Hence we must
-                // flush here.
-                $repository->flush();
-
-                $hookService = $this->get('campaignchain.core.hook');
-                $this->activity = $hookService->processHooks(
-                    $this->parameters['bundle_name'],
-                    $this->parameters['module_identifier'],
-                    $this->activity,
-                    $form,
-                    true
-                );
-                $repository->flush();
-
-                $repository->getConnection()->commit();
-            } catch (\Exception $e) {
-                $repository->getConnection()->rollback();
-                throw $e;
-            }
+            $activity = $this->createActivity($activity, $form);
 
             $this->get('session')->getFlashBag()->add(
                 'success',
-                'Your new activity <a href="'.$this->generateUrl('campaignchain_core_activity_edit', array('id' => $this->activity->getId())).'">'.$this->activity->getName().'</a> was created successfully.'
+                'Your new activity <a href="'.$this->generateUrl('campaignchain_core_activity_edit', array('id' => $activity->getId())).'">'.$activity->getName().'</a> was created successfully.'
             );
-
-            $this->handler->postPersistNewEvent($operation, $form, $content);
 
             return $this->redirect($this->generateUrl('campaignchain_core_activities'));
         }
 
-        return $this->render(
-            'CampaignChainCoreBundle:Operation:new.html.twig',
-            array(
+        /*
+         * Define default rendering options and then apply those defined by the
+         * module's handler if applicable.
+         */
+        $defaultRenderOptions = array(
+            'template' => 'CampaignChainCoreBundle:Operation:new.html.twig',
+            'vars' => array(
                 'page_title' => 'New Activity',
-                'activity' => $this->activity,
+                'activity' => $activity,
                 'campaign' => $this->campaign,
                 'campaign_module' => $this->campaign->getCampaignModule(),
                 'channel_module' => $wizard->getChannelModule(),
@@ -218,8 +148,151 @@ class ActivityModuleController extends Controller
                 'form' => $form->createView(),
                 'form_submit_label' => 'Save',
                 'form_cancel_route' => 'campaignchain_core_activities_new'
-            ));
+            )
+        );
 
+        $handlerRenderOptions = $this->handler->getNewRenderOptions();
+
+        return $this->renderWithHandlerOptions($defaultRenderOptions, $handlerRenderOptions);
+    }
+
+    public function createActivity(Activity $activity, Form $form)
+    {
+        // Apply context of Activity.
+        if(!$activity->getCampaign()) {
+            $activity->setCampaign($this->campaign);
+        }
+        if(!$activity->getChannel()) {
+            $activity->setChannel($this->channel);
+        }
+        if(!$activity->getLocation()) {
+            $activity->setLocation($this->location);
+        }
+
+        // The Module's content.
+        $content = null;
+
+        // If Activity module is not set, then do it.
+        if(!$activity->getActivityModule()){
+            $moduleService = $this->get('campaignchain.core.module');
+            $activity->setActivityModule(
+                $moduleService->getModule(
+                    Module::REPOSITORY_ACTIVITY,
+                    $this->activityBundleName,
+                    $this->activityModuleIdentifier
+                )
+            );
+        }
+
+        // Allow the module to change some data based on its custom input.
+        if($form->has($this->contentModuleIdentifier)) {
+            $this->handler->postFormSubmitNewEvent(
+                $activity,
+                $form->get($this->contentModuleIdentifier)->getData()
+            );
+
+            // Allow a module's handler to modify the Activity data.
+            $activity = $this->handler->processActivity(
+                $activity,
+                $form->get($this->contentModuleIdentifier)->getData()
+            );
+        }
+
+        // Get the operation module.
+        $operationService = $this->get('campaignchain.core.operation');
+        $operationModule = $operationService->getOperationModule(
+            $this->contentBundleName,
+            $this->contentModuleIdentifier
+        );
+
+        if($this->parameters['equals_operation']) {
+            // The activity equals the operation. Thus, we create a new operation with the same data.
+            $operation = new Operation();
+            $operation->setName($activity->getName());
+            $operation->setStartDate($activity->getStartDate());
+            $operation->setEndDate($activity->getEndDate());
+            $operation->setTriggerHook($activity->getTriggerHook());
+            $operation->setActivity($activity);
+            $activity->addOperation($operation);
+            $operationModule->addOperation($operation);
+            $operation->setOperationModule($operationModule);
+
+            // The Operation creates a Location, i.e. the Operation
+            // will be accessible through a URL after publishing.
+
+            // Get the location module.
+            $locationService = $this->get('campaignchain.core.location');
+            $locationModule = $locationService->getLocationModule(
+                $this->locationBundleName,
+                $this->locationModuleIdentifier
+            );
+
+            $contentLocation = new Location();
+            $contentLocation->setLocationModule($locationModule);
+            $contentLocation->setParent($activity->getLocation());
+            $contentLocation->setName($activity->getName());
+            $contentLocation->setStatus(Medium::STATUS_UNPUBLISHED);
+            $contentLocation->setOperation($operation);
+            $operation->addLocation($contentLocation);
+
+            if($form->has($this->contentModuleIdentifier)) {
+                // Allow a module's handler to modify the Operation's Location.
+                $contentLocation = $this->handler->processContentLocation(
+                    $contentLocation,
+                    $form->get($this->contentModuleIdentifier)->getData()
+                );
+
+                // Process the Operation's content.
+                $content = $this->handler->processContent(
+                    $operation,
+                    $form->get($this->contentModuleIdentifier)->getData()
+                );
+            }
+
+            if($content) {
+                // Link the Operation details with the operation.
+                $content->setOperation($operation);
+            }
+        } else {
+            throw new \Exception(
+                'Multiple Operations for one Activity not implemented yet.'
+            );
+        }
+
+        $repository = $this->getDoctrine()->getManager();
+
+        // Make sure that data stays intact by using transactions.
+        try {
+            $repository->getConnection()->beginTransaction();
+
+            $repository->persist($activity);
+            if($content) {
+                $repository->persist($content);
+            }
+
+            // We need the activity ID for storing the hooks. Hence we must
+            // flush here.
+            $repository->flush();
+
+            $hookService = $this->get('campaignchain.core.hook');
+            $activity = $hookService->processHooks(
+                $this->parameters['bundle_name'],
+                $this->parameters['module_identifier'],
+                $activity,
+                $form,
+                true
+            );
+            $repository->flush();
+
+            $repository->getConnection()->commit();
+        } catch (\Exception $e) {
+            $repository->getConnection()->rollback();
+            throw $e;
+        }
+
+        $this->handler->postPersistNewEvent($operation, $form, $content);
+
+        return $activity;
     }
 
     /**
@@ -484,7 +557,7 @@ class ActivityModuleController extends Controller
      *
      * @return object
      */
-    private function getActivityFormType($view)
+    public function getActivityFormType($view)
     {
         $activityFormType = $this->get('campaignchain.core.form.type.activity');
         $activityFormType->setBundleName($this->parameters['bundle_name']);
@@ -553,7 +626,10 @@ class ActivityModuleController extends Controller
      */
     private function renderWithHandlerOptions($default, $handler)
     {
-        if($handler){
+        if(
+            $handler && is_array($handler) && count($handler) &&
+            $default && is_array($default) && count($default)
+        ){
             if(isset($handler['template'])){
                 $default['template'] = $handler['template'];
             }

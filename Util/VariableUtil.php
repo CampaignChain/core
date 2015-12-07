@@ -42,4 +42,11 @@ class VariableUtil
 
         return $arrayUnique;
     }
+
+    static function arrayFlatten(array $array, $numeric = false) {
+        $flattened_array = array();
+        array_walk_recursive($array, function($a) use (&$flattened_array) { $flattened_array[] = $a; });
+
+        return $flattened_array;
+    }
 }
