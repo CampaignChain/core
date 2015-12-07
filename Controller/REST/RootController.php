@@ -10,7 +10,10 @@
 
 namespace CampaignChain\CoreBundle\Controller\REST;
 
+use CampaignChain\CoreBundle\Entity\Activity;
+use CampaignChain\CoreBundle\Entity\Module;
 use FOS\RestBundle\Controller\Annotations as REST;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use FOS\RestBundle\Request\ParamFetcher;
@@ -177,7 +180,7 @@ class RootController extends BaseController
      * Example Request
      * ===============
      *
-     *      GET /api/v1/campaigns.json?fromNow[]=ongoing&moduleURI[]=campaignchain/campaign-scheduled/campaignchain-scheduled&status[]=open
+     *      GET /api/v1/campaigns.json?fromNow[]=ongoing&moduleUri[]=campaignchain/campaign-scheduled/campaignchain-scheduled&status[]=open
      *
      * Example Response
      * ================
@@ -224,7 +227,7 @@ class RootController extends BaseController
      *      description="Workflow status of a campaign."
      * )
      * @REST\QueryParam(
-     *      name="moduleURI",
+     *      name="moduleUri",
      *      map=true,
      *      requirements="[A-Za-z0-9][A-Za-z0-9_.-]*\/[A-Za-z0-9][A-Za-z0-9_.-]*\/[A-Za-z0-9][A-Za-z0-9_.-]*",
      *      description="The module URI of a campaign module, e.g. campaignchain/campaign-scheduled/campaignchain-scheduled."
@@ -238,17 +241,17 @@ class RootController extends BaseController
         $qb->select('c');
         $qb->from('CampaignChain\CoreBundle\Entity\Campaign', 'c');
 
-        if($params['moduleURI']){
+        if($params['moduleUri']){
             $qb->from('CampaignChain\CoreBundle\Entity\Bundle', 'b');
             $qb->from('CampaignChain\CoreBundle\Entity\Module', 'm');
             $qb->andWhere('b.id = m.bundle');
             $qb->andWhere('c.campaignModule = m.id');
 
-            foreach($params['moduleURI'] as $key => $moduleURI) {
-                $moduleURIParts = explode('/', $moduleURI);
-                $vendor = $moduleURIParts[0];
-                $project = $moduleURIParts[1];
-                $identifier = $moduleURIParts[2];
+            foreach($params['moduleUri'] as $key => $moduleUri) {
+                $moduleUriParts = explode('/', $moduleUri);
+                $vendor = $moduleUriParts[0];
+                $project = $moduleUriParts[1];
+                $identifier = $moduleUriParts[2];
                 $moduleUriQuery[] = '(b.name = :package'.$key.' AND '.'m.identifier = :identifier'.$key.')';
                 $qb->setParameter('package'.$key, $vendor . '/' . $project);
                 $qb->setParameter('identifier'.$key, $identifier);
@@ -486,13 +489,14 @@ class RootController extends BaseController
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function postActivitiesAction()
+    public function postActivitiesAction(Request $request)
     {
-        $body = array(
+        $requestContent = array(
+            'campaign' => array(
+                'id' => 1,
+            ),
             'activity' => array(
                 'name'              => 'About eZ',
-                'moduleURI'         => 'campaignchain/activity-ezplatform/campaignchain-ezplatform-schedule',
-                'equals_operation'  => true,
                 'hooks' => array(
                     'campaignchain-due' => array(
                         'due' => '2015-12-20T12:00:00+0000', // Throw error if not within campaign duration.
@@ -509,12 +513,121 @@ class RootController extends BaseController
             ),
             'operation' => array(
                 'location' => array(
-                    'moduleURI' => 'campaignchain/location-ezplatform/campaignchain-ezplatform-object',
                     'name' => 'About eZ',
-                    'status' => 'unpublished', // Error if it does not match pre-defined status.
                 )
             )
         );
+
+        try {
+            $repository = $this->getDoctrine()->getManager();
+
+            // Get the Campaign data.
+            $campaignService = $this->get('campaignchain.core.campaign');
+            $campaign = $campaignService->getCampaign();
+
+            // Create a new Activity.
+            $activityRequest = $requestContent['activity'];
+            $uriParts = explode('/', $activityRequest['moduleUri']);
+            $package = $uriParts[0].'/'.$uriParts[1];
+            $identifier = $uriParts[2];
+
+            $activity = new Activity();
+            $activity->setName($activityRequest['name']);
+            $moduleService = $this->get('campaignchain.core.module');
+            $activityModule = $moduleService->getModule(Module::REPOSITORY_ACTIVITY, $package, $identifier);
+            $activity->setActivityModule($activityModule);
+
+
+            // Get the operation module.
+            $operationService = $this->get('campaignchain.core.operation');
+            $operationModule = $operationService->getOperationModule(
+                $this->contentBundleName,
+                $this->contentModuleIdentifier
+            );
+
+            if($activityRequest['equals_operation']) {
+                // The activity equals the operation. Thus, we create a new operation with the same data.
+                $operation = new Operation();
+                $operation->setName($this->activity->getName());
+                $operation->setStartDate($this->activity->getStartDate());
+                $operation->setEndDate($this->activity->getEndDate());
+                $operation->setTriggerHook($this->activity->getTriggerHook());
+                $operation->setActivity($this->activity);
+                $this->activity->addOperation($operation);
+                $operationModule->addOperation($operation);
+                $operation->setOperationModule($operationModule);
+
+                // The Operation creates a Location, i.e. the Operation
+                // will be accessible through a URL after publishing.
+
+                // Get the location module.
+                $locationModule = $locationService->getLocationModule(
+                    $this->locationBundleName,
+                    $this->locationModuleIdentifier
+                );
+
+                $contentLocation = new Location();
+                $contentLocation->setLocationModule($locationModule);
+                $contentLocation->setParent($this->activity->getLocation());
+                $contentLocation->setName($this->activity->getName());
+                $contentLocation->setStatus(Medium::STATUS_UNPUBLISHED);
+                $contentLocation->setOperation($operation);
+                $operation->addLocation($contentLocation);
+                // Allow a module's handler to modify the Operation's Location.
+                $contentLocation = $this->handler->processContentLocation(
+                    $contentLocation,
+                    $form->get($this->contentModuleIdentifier)->getData()
+                );
+
+                // Process the Operation's content.
+                $content = null;
+                $content = $this->handler->processContent(
+                    $operation,
+                    $form->get($this->contentModuleIdentifier)->getData()
+                );
+
+                if($content) {
+                    // Link the Operation details with the operation.
+                    $content->setOperation($operation);
+                }
+            } else {
+                throw new \Exception(
+                    'Multiple Operations for one Activity not implemented yet.'
+                );
+            }
+
+            $repository->getConnection()->beginTransaction();
+
+            $repository->persist($this->activity);
+            if($content) {
+                $repository->persist($content);
+            }
+
+            // We need the activity ID for storing the hooks. Hence we must
+            // flush here.
+            $repository->flush();
+
+            $hookService = $this->get('campaignchain.core.hook');
+            $this->activity = $hookService->processHooks(
+                $this->parameters['bundle_name'],
+                $this->parameters['module_identifier'],
+                $this->activity,
+                $form,
+                true
+            );
+            $repository->flush();
+
+            $repository->getConnection()->commit();
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
+
+        $this->get('session')->getFlashBag()->add(
+            'success',
+            'Your new activity <a href="'.$this->generateUrl('campaignchain_core_activity_edit', array('id' => $this->activity->getId())).'">'.$this->activity->getName().'</a> was created successfully.'
+        );
+
+        $this->handler->postPersistNewEvent($operation, $form, $content);
 
         return $this->response(
             $body

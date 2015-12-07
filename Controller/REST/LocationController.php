@@ -25,5 +25,5 @@ use FOS\RestBundle\Request\ParamFetcher;
  */
 class LocationController extends BaseController
 {
-    const SELECT_STATEMENT = 'l.id, l.identifier AS remoteId, l.name, l.url, l.image, l.status, l.createdDate, l.modifiedDate, IDENTITY(l.operation) AS operationId';
+    const SELECT_STATEMENT = 'l.id, l.identifier, l.name, l.url, l.image, l.status, l.createdDate, l.modifiedDate, IDENTITY(l.operation) AS operationId';
 }

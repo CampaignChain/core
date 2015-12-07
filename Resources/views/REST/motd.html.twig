@@ -136,9 +136,12 @@
         the URL should be encoded as JSON with a Content-Type of
         <code>application/json</code>.
     </p>
+    <p>
+        Parameters are case sensitive.
+    </p>
     <h2>Module URI Parameter</h2>
     <p>
-        Many API endpoints take the optional moduleURI parameter. The syntax for
+        Many API endpoints take the optional moduleUri parameter. The syntax for
         its value is a URI composed of <code>(Composer package name)/(module identifier)</code>.
         For example:
     </p>
@@ -152,7 +155,7 @@
         of the provided module URI must fit the endpoint. For example, a request
         such as
     </p>
-    <pre>$ curl -i "http://www.example.com/api/v1/campaigns/?moduleURI[]=campaignchain/location-facebook/campaignchain-facebook-user"</pre>
+    <pre>$ curl -i "http://www.example.com/api/v1/campaigns/?moduleUri[]=campaignchain/location-facebook/campaignchain-facebook-user"</pre>
     <p>
         would not return a successful response, because the provided module URI
         defines a module of type <code>location</code>. Instead, it is supposed

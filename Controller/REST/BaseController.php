@@ -22,6 +22,8 @@ use \Doctrine\ORM\QueryBuilder;
  */
 class BaseController extends FOSRestController
 {
+    const VERSION = '1.0.0-beta';
+
     protected $qb;
 
     protected function getQueryBuilder()
@@ -43,9 +45,25 @@ class BaseController extends FOSRestController
         }
 
         $response['response'] = $responseData;
+        $response['version'] = self::VERSION;
+
         $view = $this->view($response, 200);
         return $this->handleView($view);
     }
+
+    protected function errorResponse($message, $code = 400)
+    {
+        $response['error'] = array(
+            'message'   => $message,
+            'code'      => $code,
+        );
+
+        $response['version'] = self::VERSION;
+
+        $view = $this->view($response, $code);
+        return $this->handleView($view);
+    }
+
     protected function getModulePackage(QueryBuilder $qb, $entityModuleAttribute)
     {
         $qb->select($this->getDQLSelects($qb).', b.name AS composerPackage, m.identifier AS moduleIdentifier');
