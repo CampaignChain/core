@@ -319,11 +319,11 @@ div.scrollable {
 }
 
 .navbar-profile-avatar {
-    width: 36px;
-    height: 36px;
+    width: 24px;
+    height: 24px;
     position: absolute;
-    top: 7px;
-    left: 7px;
+    top: 13px;
+    left: 23px;
 }
 
 /*** Avatar upload ***/
