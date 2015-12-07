@@ -378,7 +378,7 @@ class User extends BaseUser
 
     public function getHumanRole()
     {
-        return join(',', array_map(function($role) {
+        return join(', ', array_map(function($role) {
             if (isset(self::$ROLE_NAMES[$role])) {
                 return self::$ROLE_NAMES[$role];
             }

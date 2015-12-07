@@ -47,6 +47,11 @@ class Builder extends ContainerAware
 
         $menu = $factory->createItem('root');
 
+        $securityContext = $this->container->get('security.context');
+        if ($securityContext->isGranted('ROLE_SUPER_ADMIN')) {
+            $menu->addChild('List', array('route' => 'campaignchain_core_user'));
+        }
+
         $menu->addChild('Settings', array('route' => 'campaignchain_core_profile_edit', 'routeParameters' => array('id' => $request->attributes->getInt('id') )));
         $menu->addChild('Password', array('route' => 'campaignchain_core_profile_change_password', 'routeParameters' => array('id' => $request->attributes->getInt('id') )));
 
