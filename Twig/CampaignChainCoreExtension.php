@@ -142,6 +142,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
     {
         $teaserOptions = array(
             'only_icon' => false,
+            'only_context_icon' => false,
             'activity_name' => 'activity',
             'show_trigger' => false,
             'truncate_middle' => 0,
@@ -239,6 +240,15 @@ class CampaignChainCoreExtension extends \Twig_Extension
 
         if(!isset($tplVars['icon_size'])){
             $tplVars['icon_size'] = 32;
+        }
+
+        if(
+            $teaserOptions['only_context_icon'] &&
+            isset($tplVars['icon_path']) &&
+            isset($tplVars['context_icon_path'])
+        ){
+            $tplVars['icon_path'] = str_replace('16x16', '32x32', $tplVars['context_icon_path']);
+            $tplVars['context_icon_path'] = null;
         }
 
         return $this->container->get('templating')->render(
