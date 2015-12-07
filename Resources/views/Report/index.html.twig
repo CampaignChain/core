@@ -17,7 +17,6 @@ file that was distributed with this source code.
         <thead>
         <tr>
             <th>Name</th>
-            <th>Type</th>
             <th>Description</th>
             <th></th>
         </tr>
@@ -26,7 +25,6 @@ file that was distributed with this source code.
         {% for report in reports%}
             <tr>
                 <td>{{ report.displayName }}</td>
-                <td>{{ report.getBundle().getType() }}</td>
                 <td>{{ report.description }}</td>
                 <td>
                     <a class="btn btn-primary"
