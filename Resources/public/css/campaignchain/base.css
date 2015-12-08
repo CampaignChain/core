@@ -28,6 +28,11 @@ body {
     margin-bottom: 80px;
 }
 
+/* Don't display JQuery's autocomplete helper */
+.ui-helper-hidden-accessible {
+    position: absolute; left:-999em;
+}
+
 /* Sticky Footer */
 #wrap {
     min-height: 100%;
