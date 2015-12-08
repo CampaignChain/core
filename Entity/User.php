@@ -357,6 +357,11 @@ class User extends BaseUser
         return $this->firstName.' '.$this->lastName;
     }
 
+    public function getNameAndUsername()
+    {
+        return $this->getName().' ('.$this->username.')';
+    }
+
     /**
      * @return string|null
      */
