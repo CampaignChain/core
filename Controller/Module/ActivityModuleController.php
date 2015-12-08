@@ -335,10 +335,11 @@ class ActivityModuleController extends Controller
                 $repository->getConnection()->beginTransaction();
 
                 if($this->handler->hasContent('edit')) {
-                    // Get the status data from request.
-                    $content =
-                        $form->get($this->contentModuleIdentifier)
-                            ->getData();
+                    // Get the content data from request.
+                    $content = $this->handler->processContent(
+                        $this->operations[0],
+                        $form->get($this->contentModuleIdentifier)->getData()
+                    );
 
                     if ($this->parameters['equals_operation']) {
                         // The activity equals the operation. Thus, we update the operation with the same data.

@@ -111,7 +111,7 @@ abstract class AbstractActivityHandler
      * - editApi
      *
      * @param Operation $operation
-     * @param $data Form submit data of the Content.
+     * @param $data Form submit data of the Content. Either an array if a new Activity, or the respective Content object as defined by the Module.
      * @return mixed
      */
     abstract public function processContent(Operation $operation, $data);
