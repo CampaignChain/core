@@ -88,11 +88,13 @@ class HookService
         if(
             strpos(get_class($entity), 'CoreBundle\Entity\Campaign') === false &&
             $entity->getCampaign()->getCampaignModule()->getServices() &&
-            is_array($entity->getCampaign()->getCampaignModule()->getServices()) &&
-            null !== $entity->getCampaign()->getCampaignModule()->getServices()['hook']
+            is_array($entity->getCampaign()->getCampaignModule()->getServices())
         ){
-            $campaignModuleService = $this->container->get($entity->getCampaign()->getCampaignModule()->getServices()['hook']);
-            $entity = $campaignModuleService->processAction($entity);
+            $campaignModuleServices = $entity->getCampaign()->getCampaignModule()->getServices();
+            if(isset($campaignModuleServices['hook'])) {
+                $campaignModuleService = $this->container->get($campaignModuleServices['hook']);
+                $entity = $campaignModuleService->processAction($entity);
+            }
         }
 
         return $entity;
