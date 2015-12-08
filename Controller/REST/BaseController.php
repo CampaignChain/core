@@ -53,6 +53,9 @@ class BaseController extends FOSRestController
 
     protected function errorResponse($message, $code = 400)
     {
+        if($code == 0){
+            $code = 400;
+        }
         $response['error'] = array(
             'message'   => $message,
             'code'      => $code,

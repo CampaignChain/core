@@ -25,4 +25,63 @@ use FOS\RestBundle\Request\ParamFetcher;
  */
 class ActivityController extends BaseController
 {
+    /**
+     * Get one specific Activity.
+     *
+     * Example Request
+     * ===============
+     *
+     *      GET /api/v1/packages/vendors/campaignchain/projects/location-facebook
+     *
+     * Example Response
+     * ================
+     *
+    {
+    "response": [
+    {
+    "id": 13,
+    "packageType": "campaignchain-location",
+    "composerPackage": "campaignchain/location-facebook",
+    "description": "Facebook user and page stream.",
+    "license": "Apache-2.0",
+    "authors": {
+    "name": "CampaignChain, Inc.",
+    "email": "info@campaignchain.com\""
+    },
+    "homepage": "http://www.campaignchain.com",
+    "version": "dev-master",
+    "createdDate": "2015-11-26T11:08:29+0000"
+    }
+    ]
+    }
+     *
+     * @ApiDoc(
+     *  section="Core",
+     *  requirements={
+     *      {
+     *          "name"="id",
+     *          "requirement"="\d+"
+     *      }
+     *  }
+     * )
+     *
+     * @REST\NoRoute() // We have specified a route manually.
+     *
+     * @param string $id The ID of an Activity, e.g. '42'.
+     *
+     * @return CampaignChain\CoreBundle\Entity\Bundle
+     */
+    public function getActivitiesAction($id)
+    {
+        $qb = $this->getQueryBuilder();
+        $qb->select('a');
+        $qb->from('CampaignChain\CoreBundle\Entity\Activity', 'a');
+        $qb->where('a.id = :activity');
+        $qb->setParameter('activity', $id);
+        $query = $qb->getQuery();
+
+        return $this->response(
+            $query->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY)
+        );
+    }
 }
