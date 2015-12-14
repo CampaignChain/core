@@ -113,12 +113,26 @@ class HookListener implements EventSubscriberInterface
             }
         }
 
+        $hasHooks = false;
+
         if(
             isset($this->hooks[$this->view]) &&
             is_array($this->hooks[$this->view]) &&
             count($this->hooks[$this->view])
-        ){
-            foreach($this->hooks[$this->view] as $identifier => $active){
+        ) {
+            $hasHooks = true;
+            $hookView = $this->view;
+        } elseif(
+            isset($this->hooks['default']) &&
+            is_array($this->hooks['default']) &&
+            count($this->hooks['default'])
+        ) {
+            $hasHooks = true;
+            $hookView = 'default';
+        }
+
+        if($hasHooks){
+            foreach($this->hooks[$hookView] as $identifier => $active){
                 if($active){
                     $hookConfig = $this->em->getRepository('CampaignChainCoreBundle:Hook')->findOneByIdentifier($identifier);
                     $hookForm = $this->container->get($hookConfig->getServices()['form']);

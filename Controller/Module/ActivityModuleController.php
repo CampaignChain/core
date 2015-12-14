@@ -41,6 +41,8 @@ class ActivityModuleController extends Controller
 
     protected $operations = array();
 
+    protected $view = 'default';
+
     private $activityBundleName;
     private $activityModuleIdentifier;
     private $locationBundleName;
@@ -558,14 +560,17 @@ class ActivityModuleController extends Controller
      *
      * @return object
      */
-    public function getActivityFormType($view)
+    public function getActivityFormType($view = 'default')
     {
+        $this->view = $view;
+
         $activityFormType = $this->get('campaignchain.core.form.type.activity');
+        $activityFormType->setView($this->view);
         $activityFormType->setBundleName($this->parameters['bundle_name']);
         $activityFormType->setModuleIdentifier(
             $this->parameters['module_identifier']
         );
-        if($this->handler->hasContent($view)) {
+        if($this->handler->hasContent($this->view)) {
             $activityFormType->setContentForms(
                 $this->getContentFormTypes()
             );

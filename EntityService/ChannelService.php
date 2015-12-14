@@ -41,6 +41,20 @@ class ChannelService
         return $channel;
     }
 
+    public function getChannelByLocation($locationId){
+        $location = $this->em
+            ->getRepository('CampaignChainCoreBundle:Location')
+            ->find($locationId);
+
+        if (!$location) {
+            throw new \Exception(
+                'No Location found for id '.$locationId
+            );
+        }
+
+        return $location->getChannel();
+    }
+
     /*
      * Generates a Tracking ID
      *

@@ -33,7 +33,7 @@ abstract class AbstractActivityHandler
      * @param Campaign $campaign
      * @return null
      */
-    public function createContent(Location $location, Campaign $campaign)
+    public function createContent(Location $location = null, Campaign $campaign = null)
     {
         return null;
     }

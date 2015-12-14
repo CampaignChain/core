@@ -11,6 +11,8 @@
 namespace CampaignChain\CoreBundle\Form\Type;
 
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
@@ -59,6 +61,38 @@ class ActivityType extends HookListenerType
                 ->add('name', 'hidden');
         }
 
+        if($this->view == 'rest'){
+            $builder
+                ->add('location', 'entity', array(
+                'class' => 'CampaignChain\CoreBundle\Entity\Location',
+                'property' => 'id'
+                ))
+                ->add('campaign', 'entity', array(
+                    'class' => 'CampaignChain\CoreBundle\Entity\Campaign',
+                    'property' => 'id'
+                ))
+                ->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
+                    $activity = $event->getData();
+                    $form = $event->getForm();
+
+                    if (!$activity) {
+                        return;
+                    }
+
+                    // Assign Channel based on given Location ID.
+                    $channelService = $this->container->get('campaignchain.core.channel');
+                    $channel = $channelService->getChannelByLocation($activity['location']);
+                    $activity['channel'] = $channel->getId();
+
+                    $form->add('channel', 'entity', array(
+                        'class' => 'CampaignChain\CoreBundle\Entity\Channel',
+                        'property' => 'id'
+                    ));
+
+                    $event->setData($activity);
+                });
+        }
+
         $hookListener = $this->getHookListener($builder);
         $hookListener->setCampaign($this->campaign);
 
@@ -75,6 +109,10 @@ class ActivityType extends HookListenerType
 
     public function getName()
     {
+        if($this->view == 'rest'){
+            return 'activity';
+        }
+
         return 'campaignchain_core_activity';
     }
 }

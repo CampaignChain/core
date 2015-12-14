@@ -301,8 +301,9 @@ fos_rest:
         default_format: json
         include_format: false
     param_fetcher_listener: true
+    body_listener: true
     body_converter:
-        enabled: false
+        enabled: true
     view:
         formats:
             json: true
