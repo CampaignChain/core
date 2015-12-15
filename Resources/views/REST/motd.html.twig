@@ -60,8 +60,8 @@
     <h1>WARNING</h1>
     <p>
         <strong>
-            This API is under development and can change any time. Do not
-            use for production environments.
+            This API is currently under development and can change any time. Do
+            not use for production environments.
         </strong>
     </p>
 
@@ -74,8 +74,14 @@
 <div class="motd">
     <h1>Current Version</h1>
     <p>
-        By default, all requests receive the <strong>v1</strong> version of the
+        By default, all requests receive the <code>v1</code> version of the
         API.
+    </p>
+    <p>
+        In all API versions, we return an HTTP response header called
+        <code>campaignchain-api-version</code> which indicates which API version
+        your app is actually experiencing (e.g. <code>1.0.9</code>) - this may be
+        different to the API version you specify in your request due to upgrades.
     </p>
 
     <h1>Authentication</h1>

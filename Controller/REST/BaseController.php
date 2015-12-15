@@ -12,6 +12,7 @@ namespace CampaignChain\CoreBundle\Controller\REST;
 
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as REST;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use FOS\RestBundle\Request\ParamFetcher;
@@ -22,8 +23,6 @@ use \Doctrine\ORM\QueryBuilder;
  */
 class BaseController extends FOSRestController
 {
-    const VERSION = '1.0.0-beta';
-
     protected $qb;
 
     protected function getQueryBuilder()
@@ -45,10 +44,10 @@ class BaseController extends FOSRestController
         }
 
         $response['response'] = $responseData;
-        $response['version'] = self::VERSION;
 
         $view = $this->view($response, 200);
-        return $this->handleView($view);
+
+        return $this->responseHeaders($this->handleView($view));
     }
 
     protected function errorResponse($message, $code = 400)
@@ -61,10 +60,15 @@ class BaseController extends FOSRestController
             'code'      => $code,
         );
 
-        $response['version'] = self::VERSION;
-
         $view = $this->view($response, $code);
-        return $this->handleView($view);
+        return $this->responseHeaders($this->handleView($view));
+    }
+
+    protected function responseHeaders(Response $response)
+    {
+        $system = $this->get('campaignchain.core.system')->getActiveSystem();
+        $response->headers->set('campaignchain-api-version', $system->getVersion());
+        return $response;
     }
 
     protected function getModulePackage(QueryBuilder $qb, $entityModuleAttribute)
