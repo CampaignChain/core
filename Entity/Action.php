@@ -407,6 +407,18 @@ class Action extends Meta
         return $this->triggerHook;
     }
 
+    static function getStatuses()
+    {
+        return array(
+            self::STATUS_BACKGROUND_PROCESS,
+            self::STATUS_CLOSED,
+            self::STATUS_INTERACTION_REQUIRED,
+            self::STATUS_OPEN,
+            self::STATUS_PAUSED,
+            self::STATUS_PAUSED,
+        );
+    }
+
     /**
      * Identifies the type of action.
      *

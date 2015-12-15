@@ -10,6 +10,7 @@
 
 namespace CampaignChain\CoreBundle\Controller\REST;
 
+use CampaignChain\CoreBundle\Entity\Action;
 use CampaignChain\CoreBundle\Entity\Activity;
 use CampaignChain\CoreBundle\Entity\Module;
 use FOS\RestBundle\Controller\Annotations as REST;
@@ -185,30 +186,28 @@ class RootController extends BaseController
      * Example Response
      * ================
      *
-    {
-        "response": [
-            {
-                "id": 2,
-                "timezone": "America/Paramaribo",
-                "hasRelativeDates": false,
-                "name": "Company Anniversary",
-                "startDate": "2015-06-10T22:01:32+0000",
-                "endDate": "2015-12-21T05:04:27+0000",
-                "status": "open",
-                "createdDate": "2015-11-26T11:08:29+0000"
-            },
-            {
-                "id": 3,
-                "timezone": "Asia/Tashkent",
-                "hasRelativeDates": false,
-                "name": "Customer Win Story",
-                "startDate": "2015-09-28T07:02:39+0000",
-                "endDate": "2016-04-18T01:44:23+0000",
-                "status": "open",
-                "createdDate": "2015-11-26T11:08:29+0000"
-            }
-        ]
-    }
+    [
+        {
+            "id": 2,
+            "timezone": "America/Paramaribo",
+            "hasRelativeDates": false,
+            "name": "Company Anniversary",
+            "startDate": "2015-06-10T22:01:32+0000",
+            "endDate": "2015-12-21T05:04:27+0000",
+            "status": "open",
+            "createdDate": "2015-11-26T11:08:29+0000"
+        },
+        {
+            "id": 3,
+            "timezone": "Asia/Tashkent",
+            "hasRelativeDates": false,
+            "name": "Customer Win Story",
+            "startDate": "2015-09-28T07:02:39+0000",
+            "endDate": "2016-04-18T01:44:23+0000",
+            "status": "open",
+            "createdDate": "2015-11-26T11:08:29+0000"
+        }
+    ]
      *
      * @ApiDoc(
      *  section="Core"
@@ -235,65 +234,69 @@ class RootController extends BaseController
      */
     public function getCampaignsAction(ParamFetcher $paramFetcher)
     {
-        $params = $paramFetcher->all();
+        try {
+            $params = $paramFetcher->all();
 
-        $qb = $this->getQueryBuilder();
-        $qb->select('c');
-        $qb->from('CampaignChain\CoreBundle\Entity\Campaign', 'c');
+            $qb = $this->getQueryBuilder();
+            $qb->select('c');
+            $qb->from('CampaignChain\CoreBundle\Entity\Campaign', 'c');
 
-        if($params['moduleUri']){
-            $qb->from('CampaignChain\CoreBundle\Entity\Bundle', 'b');
-            $qb->from('CampaignChain\CoreBundle\Entity\Module', 'm');
-            $qb->andWhere('b.id = m.bundle');
-            $qb->andWhere('c.campaignModule = m.id');
+            if($params['moduleUri']){
+                $qb->from('CampaignChain\CoreBundle\Entity\Bundle', 'b');
+                $qb->from('CampaignChain\CoreBundle\Entity\Module', 'm');
+                $qb->andWhere('b.id = m.bundle');
+                $qb->andWhere('c.campaignModule = m.id');
 
-            foreach($params['moduleUri'] as $key => $moduleUri) {
-                $moduleUriParts = explode('/', $moduleUri);
-                $vendor = $moduleUriParts[0];
-                $project = $moduleUriParts[1];
-                $identifier = $moduleUriParts[2];
-                $moduleUriQuery[] = '(b.name = :package'.$key.' AND '.'m.identifier = :identifier'.$key.')';
-                $qb->setParameter('package'.$key, $vendor . '/' . $project);
-                $qb->setParameter('identifier'.$key, $identifier);
-            }
-
-            $qb->andWhere(implode(' OR ', $moduleUriQuery));
-        }
-
-        if($params['fromNow']){
-            foreach($params['fromNow'] as $fromNow) {
-                switch($fromNow){
-                    case 'done':
-                        $fromNowQuery[] = '(c.startDate < CURRENT_TIMESTAMP() AND c.endDate < CURRENT_TIMESTAMP())';
-                        break;
-                    case 'ongoing':
-                        $fromNowQuery[] = '(c.startDate < CURRENT_TIMESTAMP() AND c.endDate > CURRENT_TIMESTAMP())';
-                        break;
-                    case 'upcoming':
-                        $fromNowQuery[] = '(c.startDate > CURRENT_TIMESTAMP() AND c.endDate > CURRENT_TIMESTAMP())';
-                        break;
+                foreach($params['moduleUri'] as $key => $moduleUri) {
+                    $moduleUriParts = explode('/', $moduleUri);
+                    $vendor = $moduleUriParts[0];
+                    $project = $moduleUriParts[1];
+                    $identifier = $moduleUriParts[2];
+                    $moduleUriQuery[] = '(b.name = :package'.$key.' AND '.'m.identifier = :identifier'.$key.')';
+                    $qb->setParameter('package'.$key, $vendor . '/' . $project);
+                    $qb->setParameter('identifier'.$key, $identifier);
                 }
+
+                $qb->andWhere(implode(' OR ', $moduleUriQuery));
             }
 
-            $qb->andWhere(implode(' OR ', $fromNowQuery));
-        }
+            if($params['fromNow']){
+                foreach($params['fromNow'] as $fromNow) {
+                    switch($fromNow){
+                        case 'done':
+                            $fromNowQuery[] = '(c.startDate < CURRENT_TIMESTAMP() AND c.endDate < CURRENT_TIMESTAMP())';
+                            break;
+                        case 'ongoing':
+                            $fromNowQuery[] = '(c.startDate < CURRENT_TIMESTAMP() AND c.endDate > CURRENT_TIMESTAMP())';
+                            break;
+                        case 'upcoming':
+                            $fromNowQuery[] = '(c.startDate > CURRENT_TIMESTAMP() AND c.endDate > CURRENT_TIMESTAMP())';
+                            break;
+                    }
+                }
 
-        if($params['status']){
-            foreach($params['status'] as $key => $status) {
-                $statusQuery[] = 'c.status = :status'.$key;
-                $qb->setParameter('status'.$key, $status);
+                $qb->andWhere(implode(' OR ', $fromNowQuery));
             }
 
-            $qb->andWhere(implode(' OR ', $statusQuery));
+            if($params['status']){
+                foreach($params['status'] as $key => $status) {
+                    $statusQuery[] = 'c.status = :status' . $key;
+                    $qb->setParameter('status' . $key, $status);
+                }
+
+                $qb->andWhere(implode(' OR ', $statusQuery));
+            }
+
+            $qb->orderBy('c.name');
+            $query = $qb->getQuery();
+
+
+            return $this->response(
+                $query->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY)
+            );
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
         }
-
-        $qb->orderBy('c.name');
-        $query = $qb->getQuery();
-
-
-        return $this->response(
-            $query->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY)
-        );
     }
 
     /**

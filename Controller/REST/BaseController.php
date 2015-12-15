@@ -30,22 +30,14 @@ class BaseController extends FOSRestController
         return $this->getDoctrine()->getEntityManager()->createQueryBuilder();
     }
 
-    protected function response($responseData, $requestData = null)
+    protected function response($responseData)
     {
-        $response = array();
-
-        if($requestData){
-            $response['request'] = $requestData;
-        }
-
         if(!$responseData || !is_array($responseData) || !count($responseData)){
-            $view = $this->view($response, 400);
+            $view = $this->view(null, 400);
             return $this->handleView($view);
         }
 
-        $response['response'] = $responseData;
-
-        $view = $this->view($response, 200);
+        $view = $this->view($responseData, 200);
 
         return $this->responseHeaders($this->handleView($view));
     }
