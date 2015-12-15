@@ -55,6 +55,17 @@
     #resources {
         padding: 0;
     }
+
+    table.inline,
+    table.inline th,
+    table.inline td {
+        border: 1px solid #333333;
+        padding: 12px;
+    }
+
+    table.inline th {
+        font-weight: bold;
+    }
 </style>
 <div class="motd">
     <h1>WARNING</h1>
@@ -125,6 +136,26 @@
         (an open-source CMS). The REST API has been implemented in the Composer
         package <code>campaignchain/location-ezplatform</code>.
     </p>
+
+    <h1>HTTP Verbs</h1>
+    <table class="inline">
+        <tr>
+            <th>Verb</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td>GET</td>
+            <td>
+                Used for retrieving resources.
+            </td>
+        </tr>
+        <tr>
+            <td>POST</td>
+            <td>
+                Used for creating resources.
+            </td>
+        </tr>
+    </table>
 
     <h1>Parameters</h1>
     <p>

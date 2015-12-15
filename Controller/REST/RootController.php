@@ -19,6 +19,12 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use FOS\RestBundle\Request\ParamFetcher;
 
+/**
+ * @REST\NamePrefix("campaignchain_core_rest_")
+ *
+ * Class RootController
+ * @package CampaignChain\CoreBundle\Controller\REST
+ */
 class RootController extends BaseController
 {
     /**

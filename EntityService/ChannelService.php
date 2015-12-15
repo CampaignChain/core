@@ -52,7 +52,15 @@ class ChannelService
             );
         }
 
-        return $location->getChannel();
+        $channel = $location->getChannel();
+
+        if(!$channel){
+            throw new \Exception(
+                'This is not a Channel Location'
+            );
+        }
+
+        return $channel;
     }
 
     /*

@@ -10,8 +10,10 @@
 
 namespace CampaignChain\CoreBundle\Controller\REST;
 
+use CampaignChain\CoreBundle\Entity\Activity;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as REST;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;

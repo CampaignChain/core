@@ -12,7 +12,7 @@ campaignchain_core_rest_root:
 
 campaignchain_core_rest_package:
     type:     rest
-    prefix:   /api/{version}/packages
+    prefix:   /api/v1/packages
     resource: CampaignChain\CoreBundle\Controller\REST\PackageController
 
 # This route accepts a Composer package name, which requires that we surpase

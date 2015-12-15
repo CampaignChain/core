@@ -38,18 +38,46 @@ class ActivityController extends BaseController
      *
     [
         {
-            "id": 13,
-            "packageType": "campaignchain-location",
-            "composerPackage": "campaignchain/location-facebook",
-            "description": "Facebook user and page stream.",
-            "license": "Apache-2.0",
-            "authors": {
-                "name": "CampaignChain, Inc.",
-                "email": "info@campaignchain.com\""
-            },
-            "homepage": "http://www.campaignchain.com",
-            "version": "dev-master",
-            "createdDate": "2015-11-26T11:08:29+0000"
+            "activity": {
+                "id": 42,
+                "equalsOperation": true,
+                "name": "Announcement 11 on LinkedIn",
+                "startDate": "2015-12-18T14:44:54+0000",
+                "status": "open",
+                "createdDate": "2015-12-14T11:02:23+0000"
+            }
+        },
+        {
+            "campaign": {
+                "id": 3,
+                "timezone": "Africa/Sao_Tome",
+                "hasRelativeDates": false,
+                "name": "Campaign 3",
+                "startDate": "2015-10-30T23:09:57+0000",
+                "endDate": "2016-04-23T14:18:03+0000",
+                "status": "open",
+                "createdDate": "2015-12-14T11:02:23+0000"
+            }
+        },
+        {
+            "location": {
+                "id": 101,
+                "identifier": "idW8ynCjb7",
+                "image": "/bundles/campaignchainchannellinkedin/ghost_person.png",
+                "url": "https://www.linkedin.com/pub/amariki-software/a1/455/616",
+                "name": "Amariki Software",
+                "status": "active",
+                "createdDate": "2015-12-14T11:02:23+0000"
+            }
+        },
+        {
+            "operations": {
+                "id": 72,
+                "name": "Announcement 11 on LinkedIn",
+                "startDate": "2015-12-18T14:44:54+0000",
+                "status": "open",
+                "createdDate": "2015-12-14T11:02:23+0000"
+            }
         }
     ]
      *
@@ -72,9 +100,15 @@ class ActivityController extends BaseController
     public function getActivitiesAction($id)
     {
         $qb = $this->getQueryBuilder();
-        $qb->select('a');
+        $qb->select('a AS activity, c AS campaign, o AS operations, l AS location');
         $qb->from('CampaignChain\CoreBundle\Entity\Activity', 'a');
+        $qb->from('CampaignChain\CoreBundle\Entity\Campaign', 'c');
+        $qb->from('CampaignChain\CoreBundle\Entity\Location', 'l');
+        $qb->from('CampaignChain\CoreBundle\Entity\Operation', 'o');
         $qb->where('a.id = :activity');
+        $qb->andWhere('a.id = o.activity');
+        $qb->andWhere('a.location = l.id');
+        $qb->andWhere('a.campaign = c.id');
         $qb->setParameter('activity', $id);
         $query = $qb->getQuery();
 

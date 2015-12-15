@@ -646,4 +646,43 @@ class ActivityModuleController extends Controller
 
         return $this->render($default['template'], $default['vars']);
     }
+
+    /**
+     * This method checks whether the given Location is within a Channel
+     * that the module's Activity is related to.
+     *
+     * @param $id The Location ID.
+     * @return bool
+     */
+    public function isValidLocation($id)
+    {
+        $qb = $this->getDoctrine()->getEntityManager()->createQueryBuilder();
+        $qb->select('b.name, am.identifier');
+        $qb->from('CampaignChain\CoreBundle\Entity\Activity', 'a');
+        $qb->from('CampaignChain\CoreBundle\Entity\ActivityModule', 'am');
+        $qb->from('CampaignChain\CoreBundle\Entity\Bundle', 'b');
+        $qb->from('CampaignChain\CoreBundle\Entity\Module', 'm');
+        $qb->from('CampaignChain\CoreBundle\Entity\Location', 'l');
+        $qb->from('CampaignChain\CoreBundle\Entity\Channel', 'c');
+        $qb->innerJoin('am.channelModules', 'cm');
+        $qb->where('cm.id = c.id');
+        $qb->andWhere('l.id = :location');
+        $qb->andWhere('l.channel = c.id');
+        $qb->andWhere('a.activityModule = am.id');
+        $qb->andWhere('am.bundle = b.id');
+        $qb->setParameter('location', $id);
+        $qb->groupBy('b.name');
+        $query = $qb->getQuery();
+        $result = $query->getResult();
+
+        if(
+            !is_array($result) || !count($result) ||
+            $result[0]['name'] != $this->activityBundleName ||
+            $result[0]['identifier'] != $this->activityModuleIdentifier
+        ){
+            return false;
+        } else {
+            return true;
+        }
+    }
 }
