@@ -107,19 +107,21 @@
         <code>/api/v1</code> appended to it. Hence, the full sample root endpoint
         is <code>http://www.example.com/api/v1</code>.
     </p>
+    <h2>Core</h2>
     <p>
-        All <strong>core endpoints</strong> of REST APIs that belong to the core functionality of
+        All endpoints of REST APIs that belong to the core functionality of
         CampaignChain can be accessed directly under <code>/api/v1</code>.
     </p>
+    <h2>Packages</h2>
     <p>
-        The <strong>endpoints for packages or modules</strong> that extend the
+        The endpoints for packages or modules that extend the
         core, reside under <code>/api/v1/p</code> plus the Composer package name
         appended as a path. For example:
     </p>
     <pre>$curl -i "http://www.example.com/api/v1/p/campaignchain/location-ezplatform/objects"</pre>
     <p>
         This request provides a list of content objects managed from within
-        CampaignChain which are available in a remote eZ Platform isntance
+        CampaignChain which are available in a remote eZ Platform instance
         (an open-source CMS). The REST API has been implemented in the Composer
         package <code>campaignchain/location-ezplatform</code>.
     </p>

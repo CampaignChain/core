@@ -32,54 +32,52 @@ class RootController extends BaseController
      * Example Response
      * ================
      *
-    {
-        "response": [
-            {
-                "composerPackage": "campaignchain/location-facebook",
-                "moduleIdentifier": "campaignchain-facebook-page",
-                "displayName": "Facebook page stream",
-                "hooks": {
-                    "default": {
-                        "campaignchain-assignee": true
+    [
+        {
+            "composerPackage": "campaignchain/location-facebook",
+            "moduleIdentifier": "campaignchain-facebook-page",
+            "displayName": "Facebook page stream",
+            "hooks": {
+                "default": {
+                    "campaignchain-assignee": true
+                }
+            },
+            "createdDate": "2015-11-26T11:08:29+0000"
+        },
+        {
+            "composerPackage": "campaignchain/activity-facebook",
+            "moduleIdentifier": "campaignchain-facebook-publish-status",
+            "displayName": "Publish Status",
+            "routes": {
+                "new": "campaignchain_activity_facebook_publish_status_new",
+                "edit": "campaignchain_activity_facebook_publish_status_edit",
+                "edit_modal": "campaignchain_activity_facebook_publish_status_edit_modal",
+                "edit_api": "campaignchain_activity_facebook_publish_status_edit_api",
+                "read": "campaignchain_activity_facebook_publish_status_read"
+            },
+            "hooks": {
+                "default": {
+                    "campaignchain-due": true,
+                    "campaignchain-assignee": true
                     }
                 },
-                "createdDate": "2015-11-26T11:08:29+0000"
+            "createdDate": "2015-11-26T11:08:29+0000"
+        },
+        {
+            "composerPackage": "campaignchain/operation-facebook",
+            "moduleIdentifier": "campaignchain-facebook-publish-status",
+            "displayName": "Publish Status",
+            "services": {
+                "operation": "campaignchain.operation.facebook.status",
+                "job": "campaignchain.job.operation.facebook.publish_status",
+                "report": "campaignchain.job.report.facebook.publish_status"
             },
-            {
-                "composerPackage": "campaignchain/activity-facebook",
-                "moduleIdentifier": "campaignchain-facebook-publish-status",
-                "displayName": "Publish Status",
-                "routes": {
-                    "new": "campaignchain_activity_facebook_publish_status_new",
-                    "edit": "campaignchain_activity_facebook_publish_status_edit",
-                    "edit_modal": "campaignchain_activity_facebook_publish_status_edit_modal",
-                    "edit_api": "campaignchain_activity_facebook_publish_status_edit_api",
-                    "read": "campaignchain_activity_facebook_publish_status_read"
-                },
-                "hooks": {
-                    "default": {
-                        "campaignchain-due": true,
-                        "campaignchain-assignee": true
-                        }
-                    },
-                "createdDate": "2015-11-26T11:08:29+0000"
+            "params": {
+                "owns_location": true
             },
-            {
-                "composerPackage": "campaignchain/operation-facebook",
-                "moduleIdentifier": "campaignchain-facebook-publish-status",
-                "displayName": "Publish Status",
-                "services": {
-                    "operation": "campaignchain.operation.facebook.status",
-                    "job": "campaignchain.job.operation.facebook.publish_status",
-                    "report": "campaignchain.job.report.facebook.publish_status"
-                },
-                "params": {
-                    "owns_location": true
-                },
-                "createdDate": "2015-11-26T11:08:29+0000"
-            }
-        ]
-    }
+            "createdDate": "2015-11-26T11:08:29+0000"
+        }
+    ]
      *
      * @ApiDoc(
      *  section="Core"
@@ -111,52 +109,50 @@ class RootController extends BaseController
      * Example Response
      * ================
      *
-    {
-        "response": [
-            {
-                "id": 22,
-                "packageType": "campaignchain-activity",
-                "composerPackage": "campaignchain/activity-facebook",
-                "description": "Collection of various Facebook activities, such as post or share a message.",
-                "license": "Apache-2.0",
-                "authors": {
-                    "name": "CampaignChain, Inc.",
-                    "email": "info@campaignchain.com\""
-                },
-                "homepage": "http://www.campaignchain.com",
-                "version": "dev-master",
-                "createdDate": "2015-11-26T11:08:29+0000"
+    [
+        {
+            "id": 22,
+            "packageType": "campaignchain-activity",
+            "composerPackage": "campaignchain/activity-facebook",
+            "description": "Collection of various Facebook activities, such as post or share a message.",
+            "license": "Apache-2.0",
+            "authors": {
+                "name": "CampaignChain, Inc.",
+                "email": "info@campaignchain.com\""
             },
-            {
-                "id": 25,
-                "packageType": "campaignchain-activity",
-                "composerPackage": "campaignchain/activity-gotowebinar",
-                "description": "Include a Webinar into a campaign.",
-                "license": "Apache-2.0",
-                "authors": {
-                    "name": "CampaignChain, Inc.",
-                    "email": "info@campaignchain.com\""
-                },
-                "homepage": "http://www.campaignchain.com",
-                "version": "dev-master",
-                "createdDate": "2015-11-26T11:08:29+0000"
+            "homepage": "http://www.campaignchain.com",
+            "version": "dev-master",
+            "createdDate": "2015-11-26T11:08:29+0000"
+        },
+        {
+            "id": 25,
+            "packageType": "campaignchain-activity",
+            "composerPackage": "campaignchain/activity-gotowebinar",
+            "description": "Include a Webinar into a campaign.",
+            "license": "Apache-2.0",
+            "authors": {
+                "name": "CampaignChain, Inc.",
+                "email": "info@campaignchain.com\""
             },
-            {
-                "id": 24,
-                "packageType": "campaignchain-activity",
-                "composerPackage": "campaignchain/activity-linkedin",
-                "description": "Collection of various LinkedIn activities, such as tweeting and re-tweeting.",
-                "license": "Apache-2.0",
-                "authors": {
-                    "name": "CampaignChain, Inc.",
-                    "email": "info@campaignchain.com\""
-                },
-                "homepage": "http://www.campaignchain.com",
-                "version": "dev-master",
-                "createdDate": "2015-11-26T11:08:29+0000"
-            }
-        ]
-    }
+            "homepage": "http://www.campaignchain.com",
+            "version": "dev-master",
+            "createdDate": "2015-11-26T11:08:29+0000"
+        },
+        {
+            "id": 24,
+            "packageType": "campaignchain-activity",
+            "composerPackage": "campaignchain/activity-linkedin",
+            "description": "Collection of various LinkedIn activities, such as tweeting and re-tweeting.",
+            "license": "Apache-2.0",
+            "authors": {
+                "name": "CampaignChain, Inc.",
+                "email": "info@campaignchain.com\""
+            },
+            "homepage": "http://www.campaignchain.com",
+            "version": "dev-master",
+            "createdDate": "2015-11-26T11:08:29+0000"
+        }
+    ]
      *
      * @ApiDoc(
      *  section="Core"
@@ -310,52 +306,50 @@ class RootController extends BaseController
      * Example Response
      * ================
      *
-    {
-        "response": [
-            {
-                "composerPackage": "campaignchain/channel-facebook",
-                "moduleIdentifier": "campaignchain-facebook",
-                "displayName": "Facebook",
-                "routes": {
-                    "new": "campaignchain_channel_facebook_create"
-                },
-                "hooks": {
-                    "default": {
-                        "campaignchain-assignee": true
-                    }
-                },
-                "createdDate": "2015-11-26T11:08:29+0000"
+    [
+        {
+            "composerPackage": "campaignchain/channel-facebook",
+            "moduleIdentifier": "campaignchain-facebook",
+            "displayName": "Facebook",
+            "routes": {
+                "new": "campaignchain_channel_facebook_create"
             },
-            {
-                "composerPackage": "campaignchain/channel-linkedin",
-                "moduleIdentifier": "campaignchain-linkedin",
-                "displayName": "LinkedIn",
-                "routes": {
-                    "new": "campaignchain_channel_linkedin_create"
-                },
-                "hooks": {
-                    "default": {
-                        "campaignchain-assignee": true
-                    }
-                },
-                "createdDate": "2015-11-26T11:08:29+0000"
+            "hooks": {
+                "default": {
+                    "campaignchain-assignee": true
+                }
             },
-            {
-                "composerPackage": "campaignchain/channel-twitter",
-                "moduleIdentifier": "campaignchain-twitter",
-                "displayName": "Twitter",
-                "routes": {
-                    "new": "campaignchain_channel_twitter_create"
-                },
-                "hooks": {
-                    "default": {
-                        "campaignchain-assignee": true
-                    }
-                },
-                "createdDate": "2015-11-26T11:08:29+0000"
-            }
-        ]
-    }
+            "createdDate": "2015-11-26T11:08:29+0000"
+        },
+        {
+            "composerPackage": "campaignchain/channel-linkedin",
+            "moduleIdentifier": "campaignchain-linkedin",
+            "displayName": "LinkedIn",
+            "routes": {
+                "new": "campaignchain_channel_linkedin_create"
+            },
+            "hooks": {
+                "default": {
+                    "campaignchain-assignee": true
+                }
+            },
+            "createdDate": "2015-11-26T11:08:29+0000"
+        },
+        {
+            "composerPackage": "campaignchain/channel-twitter",
+            "moduleIdentifier": "campaignchain-twitter",
+            "displayName": "Twitter",
+            "routes": {
+                "new": "campaignchain_channel_twitter_create"
+            },
+            "hooks": {
+                "default": {
+                    "campaignchain-assignee": true
+                }
+            },
+            "createdDate": "2015-11-26T11:08:29+0000"
+        }
+    ]
      *
      * @ApiDoc(
      *  section="Core"
@@ -387,35 +381,33 @@ class RootController extends BaseController
      * Example Response
      * ================
      *
-    {
-        "response": [
-            {
-                "url": "https://www.example.com/",
-                "name": "campaignchain_core_homepage",
-                "description": "The start page"
-            },
-            {
-                "url": "https://www.example.com/about/",
-                "name": "campaignchain_core_about",
-                "description": "Read about CampaignChain"
-            },
-            {
-                "url": "https://www.example.com/plan",
-                "name": "campaignchain_core_plan",
-                "description": "Plan campaigns"
-            },
-            {
-                "url": "https://www.example.com/execute/",
-                "name": "campaignchain_core_execute",
-                "description": "View upcoming actions"
-            },
-            {
-                "url": "https://www.example.com/campaign/new/",
-                "name": "campaignchain_core_campaign_new",
-                "description": "Create a new campaign"
-            }
-        ]
-    }
+    [
+        {
+            "url": "https://www.example.com/",
+            "name": "campaignchain_core_homepage",
+            "description": "The start page"
+        },
+        {
+            "url": "https://www.example.com/about/",
+            "name": "campaignchain_core_about",
+            "description": "Read about CampaignChain"
+        },
+        {
+            "url": "https://www.example.com/plan",
+            "name": "campaignchain_core_plan",
+            "description": "Plan campaigns"
+        },
+        {
+            "url": "https://www.example.com/execute/",
+            "name": "campaignchain_core_execute",
+            "description": "View upcoming actions"
+        },
+        {
+            "url": "https://www.example.com/campaign/new/",
+            "name": "campaignchain_core_campaign_new",
+            "description": "Create a new campaign"
+        }
+    ]
      *
      * @ApiDoc(
      *  section="Core"
@@ -473,42 +465,40 @@ class RootController extends BaseController
      * Example Response
      * ================
      *
-    {
-        "response": [
-            {
-                "username": "admin",
-                "firstName": "Sandro",
-                "lastName": "Groganz",
-                "email": "admin@example.com",
-                "roles": [
-                    "ROLE_SUPER_ADMIN"
-                ],
-                "language": "en_US",
-                "locale": "en_US",
-                "timezone": "UTC",
-                "currency": "USD",
-                "dateFormat": "yyyy-MM-dd",
-                "timeFormat": "HH:mm",
-                "profileImage": "avatar/4d6e7d832be2ab4c.jpg"
-            },
-            {
-                "username": "hipolito_marks",
-                "firstName": "Danial",
-                "lastName": "Smith",
-                "email": "user1@example.com",
-                "roles": [
-                    "ROLE_ADMIN"
-                ],
-                "language": "en_US",
-                "locale": "en_US",
-                "timezone": "Antarctica/Mawson",
-                "currency": "USD",
-                "dateFormat": "yyyy-MM-dd",
-                "timeFormat": "HH:mm",
-                "profileImage": "avatar/c44d95581d3b5df4.jpg"
-            }
-        ]
-    }
+    [
+        {
+            "username": "admin",
+            "firstName": "Sandro",
+            "lastName": "Groganz",
+            "email": "admin@example.com",
+            "roles": [
+                "ROLE_SUPER_ADMIN"
+            ],
+            "language": "en_US",
+            "locale": "en_US",
+            "timezone": "UTC",
+            "currency": "USD",
+            "dateFormat": "yyyy-MM-dd",
+            "timeFormat": "HH:mm",
+            "profileImage": "avatar/4d6e7d832be2ab4c.jpg"
+        },
+        {
+            "username": "hipolito_marks",
+            "firstName": "Danial",
+            "lastName": "Smith",
+            "email": "user1@example.com",
+            "roles": [
+                "ROLE_ADMIN"
+            ],
+            "language": "en_US",
+            "locale": "en_US",
+            "timezone": "Antarctica/Mawson",
+            "currency": "USD",
+            "dateFormat": "yyyy-MM-dd",
+            "timeFormat": "HH:mm",
+            "profileImage": "avatar/c44d95581d3b5df4.jpg"
+        }
+    ]
      *
      * @ApiDoc(
      *  section="Core"

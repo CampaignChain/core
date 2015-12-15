@@ -37,11 +37,9 @@ class PackageController extends BaseController
      *
      * Example Response
      * ================
-    {
-        "response": [
-            "campaignchain"
-        ]
-    }
+    [
+        "campaignchain"
+    ]
      *
      * @ApiDoc(
      *  section="Core"
@@ -89,66 +87,64 @@ class PackageController extends BaseController
      * Example Response
      * ================
      *
-    {
-        "response": [
-            {
-                "id": 22,
-                "packageType": "campaignchain-activity",
-                "composerPackage": "campaignchain/activity-facebook",
-                "description": "Collection of various Facebook activities, such as post or share a message.",
-                "license": "Apache-2.0",
-                "authors": {
-                    "name": "CampaignChain, Inc.",
-                    "email": "info@campaignchain.com\""
-                },
-                "homepage": "http://www.campaignchain.com",
-                "version": "dev-master",
-                "createdDate": "2015-11-26T11:08:29+0000"
+    [
+        {
+            "id": 22,
+            "packageType": "campaignchain-activity",
+            "composerPackage": "campaignchain/activity-facebook",
+            "description": "Collection of various Facebook activities, such as post or share a message.",
+            "license": "Apache-2.0",
+            "authors": {
+                "name": "CampaignChain, Inc.",
+                "email": "info@campaignchain.com\""
             },
-            {
-                "id": 25,
-                "packageType": "campaignchain-activity",
-                "composerPackage": "campaignchain/activity-gotowebinar",
-                "description": "Include a Webinar into a campaign.",
-                "license": "Apache-2.0",
-                "authors": {
-                    "name": "CampaignChain, Inc.",
-                    "email": "info@campaignchain.com\""
-                },
-                "homepage": "http://www.campaignchain.com",
-                "version": "dev-master",
-                "createdDate": "2015-11-26T11:08:29+0000"
+            "homepage": "http://www.campaignchain.com",
+            "version": "dev-master",
+            "createdDate": "2015-11-26T11:08:29+0000"
+        },
+        {
+            "id": 25,
+            "packageType": "campaignchain-activity",
+            "composerPackage": "campaignchain/activity-gotowebinar",
+            "description": "Include a Webinar into a campaign.",
+            "license": "Apache-2.0",
+            "authors": {
+                "name": "CampaignChain, Inc.",
+                "email": "info@campaignchain.com\""
             },
-            {
-                "id": 24,
-                "packageType": "campaignchain-activity",
-                "composerPackage": "campaignchain/activity-linkedin",
-                "description": "Collection of various LinkedIn activities, such as tweeting and re-tweeting.",
-                "license": "Apache-2.0",
-                "authors": {
-                    "name": "CampaignChain, Inc.",
-                    "email": "info@campaignchain.com\""
-                },
-                "homepage": "http://www.campaignchain.com",
-                "version": "dev-master",
-                "createdDate": "2015-11-26T11:08:29+0000"
+            "homepage": "http://www.campaignchain.com",
+            "version": "dev-master",
+            "createdDate": "2015-11-26T11:08:29+0000"
+        },
+        {
+            "id": 24,
+            "packageType": "campaignchain-activity",
+            "composerPackage": "campaignchain/activity-linkedin",
+            "description": "Collection of various LinkedIn activities, such as tweeting and re-tweeting.",
+            "license": "Apache-2.0",
+            "authors": {
+                "name": "CampaignChain, Inc.",
+                "email": "info@campaignchain.com\""
             },
-            {
-                "id": 26,
-                "packageType": "campaignchain-activity",
-                "composerPackage": "campaignchain/activity-mailchimp",
-                "description": "Add upcoming newsletter campaign",
-                "license": "Apache-2.0",
-                "authors": {
-                    "name": "CampaignChain, Inc.",
-                    "email": "info@campaignchain.com\""
-                },
-                "homepage": "http://www.campaignchain.com",
-                "version": "dev-master",
-                "createdDate": "2015-11-26T11:08:29+0000"
-            }
-        ]
-    }
+            "homepage": "http://www.campaignchain.com",
+            "version": "dev-master",
+            "createdDate": "2015-11-26T11:08:29+0000"
+        },
+        {
+            "id": 26,
+            "packageType": "campaignchain-activity",
+            "composerPackage": "campaignchain/activity-mailchimp",
+            "description": "Add upcoming newsletter campaign",
+            "license": "Apache-2.0",
+            "authors": {
+                "name": "CampaignChain, Inc.",
+                "email": "info@campaignchain.com\""
+            },
+            "homepage": "http://www.campaignchain.com",
+            "version": "dev-master",
+            "createdDate": "2015-11-26T11:08:29+0000"
+        }
+    ]
      *
      * @ApiDoc(
      *  section="Core",
@@ -190,24 +186,22 @@ class PackageController extends BaseController
      * Example Response
      * ================
      *
-    {
-        "response": [
-            {
-                "id": 13,
-                "packageType": "campaignchain-location",
-                "composerPackage": "campaignchain/location-facebook",
-                "description": "Facebook user and page stream.",
-                "license": "Apache-2.0",
-                "authors": {
-                    "name": "CampaignChain, Inc.",
-                    "email": "info@campaignchain.com\""
-                },
-                "homepage": "http://www.campaignchain.com",
-                "version": "dev-master",
-                "createdDate": "2015-11-26T11:08:29+0000"
-            }
-        ]
-    }
+    [
+        {
+            "id": 13,
+            "packageType": "campaignchain-location",
+            "composerPackage": "campaignchain/location-facebook",
+            "description": "Facebook user and page stream.",
+            "license": "Apache-2.0",
+            "authors": {
+                "name": "CampaignChain, Inc.",
+                "email": "info@campaignchain.com\""
+            },
+            "homepage": "http://www.campaignchain.com",
+            "version": "dev-master",
+            "createdDate": "2015-11-26T11:08:29+0000"
+        }
+    ]
      *
      * @ApiDoc(
      *  section="Core",

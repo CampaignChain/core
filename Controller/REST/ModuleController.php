@@ -37,18 +37,16 @@ class ModuleController extends BaseController
      *
      * Example Response
      * ================
-    {
-        "response": [
-            "activity",
-            "campaign",
-            "channel",
-            "location",
-            "milestone",
-            "operation",
-            "report",
-            "security"
-        ]
-    }
+    [
+        "activity",
+        "campaign",
+        "channel",
+        "location",
+        "milestone",
+        "operation",
+        "report",
+        "security"
+    ]
      *
      * @ApiDoc(
      *  section="Core"
@@ -78,61 +76,59 @@ class ModuleController extends BaseController
      * Example Response
      * ================
      *
-    {
-        "response": [
-            {
-                "composerPackage": "campaignchain/location-facebook",
-                "moduleIdentifier": "campaignchain-facebook-page",
-                "displayName": "Facebook page stream",
-                "hooks": {
-                    "default": {
-                        "campaignchain-assignee": true
-                    }
-                },
-                "createdDate": "2015-11-26T11:08:29+0000"
+    [
+        {
+            "composerPackage": "campaignchain/location-facebook",
+            "moduleIdentifier": "campaignchain-facebook-page",
+            "displayName": "Facebook page stream",
+            "hooks": {
+                "default": {
+                    "campaignchain-assignee": true
+                }
             },
-            {
-                "composerPackage": "campaignchain/location-facebook",
-                "moduleIdentifier": "campaignchain-facebook-status",
-                "displayName": "Facebook status",
-                "createdDate": "2015-11-26T11:08:29+0000"
+            "createdDate": "2015-11-26T11:08:29+0000"
+        },
+        {
+            "composerPackage": "campaignchain/location-facebook",
+            "moduleIdentifier": "campaignchain-facebook-status",
+            "displayName": "Facebook status",
+            "createdDate": "2015-11-26T11:08:29+0000"
+        },
+        {
+            "composerPackage": "campaignchain/location-facebook",
+            "moduleIdentifier": "campaignchain-facebook-user",
+            "displayName": "Facebook user stream",
+            "hooks": {
+                "default": {
+                    "campaignchain-assignee": true
+                }
             },
-            {
-                "composerPackage": "campaignchain/location-facebook",
-                "moduleIdentifier": "campaignchain-facebook-user",
-                "displayName": "Facebook user stream",
-                "hooks": {
-                    "default": {
-                        "campaignchain-assignee": true
-                    }
-                },
-                "createdDate": "2015-11-26T11:08:29+0000"
+            "createdDate": "2015-11-26T11:08:29+0000"
+        },
+        {
+            "composerPackage": "campaignchain/location-linkedin",
+            "moduleIdentifier": "campaignchain-linkedin-user",
+            "displayName": "LinkedIn user stream",
+            "createdDate": "2015-11-26T11:08:29+0000"
+        },
+        {
+            "composerPackage": "campaignchain/location-twitter",
+            "moduleIdentifier": "campaignchain-twitter-status",
+            "displayName": "Twitter post (aka Tweet)",
+            "createdDate": "2015-11-26T11:08:29+0000"
+        },
+        {
+            "composerPackage": "campaignchain/location-twitter",
+            "moduleIdentifier": "campaignchain-twitter-user",
+            "displayName": "Twitter user stream",
+            "hooks": {
+                "default": {
+                    "campaignchain-assignee": true
+                }
             },
-            {
-                "composerPackage": "campaignchain/location-linkedin",
-                "moduleIdentifier": "campaignchain-linkedin-user",
-                "displayName": "LinkedIn user stream",
-                "createdDate": "2015-11-26T11:08:29+0000"
-            },
-            {
-                "composerPackage": "campaignchain/location-twitter",
-                "moduleIdentifier": "campaignchain-twitter-status",
-                "displayName": "Twitter post (aka Tweet)",
-                "createdDate": "2015-11-26T11:08:29+0000"
-            },
-            {
-                "composerPackage": "campaignchain/location-twitter",
-                "moduleIdentifier": "campaignchain-twitter-user",
-                "displayName": "Twitter user stream",
-                "hooks": {
-                    "default": {
-                        "campaignchain-assignee": true
-                    }
-                },
-                "createdDate": "2015-11-26T11:08:29+0000"
-            }
-        ]
-    }
+            "createdDate": "2015-11-26T11:08:29+0000"
+        }
+    ]
      *
      * @ApiDoc(
      *  section="Core",
@@ -175,57 +171,55 @@ class ModuleController extends BaseController
      * Example Response
      * ================
      *
-    {
-        "response": [
-            "campaignchain/report-analytics-cta-tracking",
-            "campaignchain/location-citrix",
-            "campaignchain/channel-facebook",
-            "campaignchain/location-facebook",
-            "campaignchain/activity-facebook",
-            "campaignchain/operation-facebook",
-            "campaignchain/location-facebook",
-            "campaignchain/location-facebook",
-            "campaignchain/channel-google",
-            "campaignchain/report-google",
-            "campaignchain/report-google-analytics",
-            "campaignchain/channel-google-analytics",
-            "campaignchain/location-google-analytics",
-            "campaignchain/activity-gotowebinar",
-            "campaignchain/channel-citrix",
-            "campaignchain/location-citrix",
-            "campaignchain/operation-gotowebinar",
-            "campaignchain/channel-linkedin",
-            "campaignchain/activity-linkedin",
-            "campaignchain/operation-linkedin",
-            "campaignchain/location-linkedin",
-            "campaignchain/activity-mailchimp",
-            "campaignchain/channel-mailchimp",
-            "campaignchain/operation-mailchimp",
-            "campaignchain/location-mailchimp",
-            "campaignchain/location-mailchimp",
-            "campaignchain/report-analytics-metrics-per-activity",
-            "campaignchain/campaign-repeating",
-            "campaignchain/campaign-scheduled",
-            "campaignchain/milestone-scheduled",
-            "campaignchain/security-authentication-client-oauth",
-            "campaignchain/security-authentication-server-oauth",
-            "campaignchain/operation-slideshare",
-            "campaignchain/activity-slideshare",
-            "campaignchain/channel-slideshare",
-            "campaignchain/location-slideshare",
-            "campaignchain/campaign-template",
-            "campaignchain/channel-twitter",
-            "campaignchain/location-twitter",
-            "campaignchain/operation-twitter",
-            "campaignchain/activity-twitter",
-            "campaignchain/location-twitter",
-            "campaignchain/channel-website",
-            "campaignchain/location-citrix",
-            "campaignchain/location-website",
-            "campaignchain/location-citrix",
-            "campaignchain/location-website"
-        ]
-    }
+    [
+        "campaignchain/report-analytics-cta-tracking",
+        "campaignchain/location-citrix",
+        "campaignchain/channel-facebook",
+        "campaignchain/location-facebook",
+        "campaignchain/activity-facebook",
+        "campaignchain/operation-facebook",
+        "campaignchain/location-facebook",
+        "campaignchain/location-facebook",
+        "campaignchain/channel-google",
+        "campaignchain/report-google",
+        "campaignchain/report-google-analytics",
+        "campaignchain/channel-google-analytics",
+        "campaignchain/location-google-analytics",
+        "campaignchain/activity-gotowebinar",
+        "campaignchain/channel-citrix",
+        "campaignchain/location-citrix",
+        "campaignchain/operation-gotowebinar",
+        "campaignchain/channel-linkedin",
+        "campaignchain/activity-linkedin",
+        "campaignchain/operation-linkedin",
+        "campaignchain/location-linkedin",
+        "campaignchain/activity-mailchimp",
+        "campaignchain/channel-mailchimp",
+        "campaignchain/operation-mailchimp",
+        "campaignchain/location-mailchimp",
+        "campaignchain/location-mailchimp",
+        "campaignchain/report-analytics-metrics-per-activity",
+        "campaignchain/campaign-repeating",
+        "campaignchain/campaign-scheduled",
+        "campaignchain/milestone-scheduled",
+        "campaignchain/security-authentication-client-oauth",
+        "campaignchain/security-authentication-server-oauth",
+        "campaignchain/operation-slideshare",
+        "campaignchain/activity-slideshare",
+        "campaignchain/channel-slideshare",
+        "campaignchain/location-slideshare",
+        "campaignchain/campaign-template",
+        "campaignchain/channel-twitter",
+        "campaignchain/location-twitter",
+        "campaignchain/operation-twitter",
+        "campaignchain/activity-twitter",
+        "campaignchain/location-twitter",
+        "campaignchain/channel-website",
+        "campaignchain/location-citrix",
+        "campaignchain/location-website",
+        "campaignchain/location-citrix",
+        "campaignchain/location-website"
+    ]
      *
      * @ApiDoc(
      *  section="Core"
@@ -263,41 +257,39 @@ class ModuleController extends BaseController
      * Example Response
      * ================
      *
-    {
-        "response": [
-            {
-                "id": 11,
-                "identifier": "campaignchain-facebook-page",
-                "displayName": "Facebook page stream",
-                "hooks": {
-                "default": {
-                "campaignchain-assignee": true
-            }
-            },
-                "createdDate": "2015-11-26T11:08:29+0000",
-                "type": "location"
-            },
-            {
-                "id": 12,
-                "identifier": "campaignchain-facebook-status",
-                "displayName": "Facebook status",
-                "createdDate": "2015-11-26T11:08:29+0000",
-                "type": "location"
-            },
-            {
-                "id": 10,
-                "identifier": "campaignchain-facebook-user",
-                "displayName": "Facebook user stream",
-                "hooks": {
-                "default": {
-                "campaignchain-assignee": true
-            }
-            },
-                "createdDate": "2015-11-26T11:08:29+0000",
-                "type": "location"
-            }
-        ]
-    }
+    [
+        {
+            "id": 11,
+            "identifier": "campaignchain-facebook-page",
+            "displayName": "Facebook page stream",
+            "hooks": {
+            "default": {
+            "campaignchain-assignee": true
+        }
+        },
+            "createdDate": "2015-11-26T11:08:29+0000",
+            "type": "location"
+        },
+        {
+            "id": 12,
+            "identifier": "campaignchain-facebook-status",
+            "displayName": "Facebook status",
+            "createdDate": "2015-11-26T11:08:29+0000",
+            "type": "location"
+        },
+        {
+            "id": 10,
+            "identifier": "campaignchain-facebook-user",
+            "displayName": "Facebook user stream",
+            "hooks": {
+            "default": {
+            "campaignchain-assignee": true
+        }
+        },
+            "createdDate": "2015-11-26T11:08:29+0000",
+            "type": "location"
+        }
+    ]
      *
      * @ApiDoc(
      *  section="Core",
@@ -347,57 +339,55 @@ class ModuleController extends BaseController
      * Example Response
      * ================
      *
-    {
-        "response": [
-            "campaignchain/report-analytics-cta-tracking/campaignchain-analytics-cta-tracking-per-location",
-            "campaignchain/location-citrix/campaignchain-citrix-user",
-            "campaignchain/channel-facebook/campaignchain-facebook",
-            "campaignchain/location-facebook/campaignchain-facebook-page",
-            "campaignchain/activity-facebook/campaignchain-facebook-publish-status",
-            "campaignchain/operation-facebook/campaignchain-facebook-publish-status",
-            "campaignchain/location-facebook/campaignchain-facebook-status",
-            "campaignchain/location-facebook/campaignchain-facebook-user",
-            "campaignchain/channel-google/campaignchain-google",
-            "campaignchain/location-google-analytics/campaignchain-google-analytics",
-            "campaignchain/channel-google-analytics/campaignchain-google-analytics",
-            "campaignchain/report-google/campaignchain-google-analytics",
-            "campaignchain/report-google-analytics/campaignchain-google-analytics",
-            "campaignchain/activity-gotowebinar/campaignchain-gotowebinar",
-            "campaignchain/channel-citrix/campaignchain-gotowebinar",
-            "campaignchain/operation-gotowebinar/campaignchain-gotowebinar",
-            "campaignchain/location-citrix/campaignchain-gotowebinar",
-            "campaignchain/channel-linkedin/campaignchain-linkedin",
-            "campaignchain/activity-linkedin/campaignchain-linkedin-share-news-item",
-            "campaignchain/operation-linkedin/campaignchain-linkedin-share-news-item",
-            "campaignchain/location-linkedin/campaignchain-linkedin-user",
-            "campaignchain/activity-mailchimp/campaignchain-mailchimp",
-            "campaignchain/channel-mailchimp/campaignchain-mailchimp",
-            "campaignchain/location-mailchimp/campaignchain-mailchimp-newsletter",
-            "campaignchain/operation-mailchimp/campaignchain-mailchimp-newsletter",
-            "campaignchain/location-mailchimp/campaignchain-mailchimp-user",
-            "campaignchain/report-analytics-metrics-per-activity/campaignchain-metrics-per-activity",
-            "campaignchain/campaign-repeating/campaignchain-repeating",
-            "campaignchain/campaign-scheduled/campaignchain-scheduled",
-            "campaignchain/milestone-scheduled/campaignchain-scheduled",
-            "campaignchain/security-authentication-client-oauth/campaignchain-security-authentication-client-oauth",
-            "campaignchain/security-authentication-server-oauth/campaignchain-security-authentication-server-oauth",
-            "campaignchain/activity-slideshare/campaignchain-slideshare",
-            "campaignchain/operation-slideshare/campaignchain-slideshare",
-            "campaignchain/channel-slideshare/campaignchain-slideshare",
-            "campaignchain/location-slideshare/campaignchain-slideshare-user",
-            "campaignchain/campaign-template/campaignchain-template",
-            "campaignchain/channel-twitter/campaignchain-twitter",
-            "campaignchain/location-twitter/campaignchain-twitter-status",
-            "campaignchain/activity-twitter/campaignchain-twitter-update-status",
-            "campaignchain/operation-twitter/campaignchain-twitter-update-status",
-            "campaignchain/location-twitter/campaignchain-twitter-user",
-            "campaignchain/location-website/campaignchain-website",
-            "campaignchain/channel-website/campaignchain-website",
-            "campaignchain/location-citrix/campaignchain-website",
-            "campaignchain/location-website/campaignchain-website-page",
-            "campaignchain/location-citrix/campaignchain-website-page"
-        ]
-    }
+    [
+        "campaignchain/report-analytics-cta-tracking/campaignchain-analytics-cta-tracking-per-location",
+        "campaignchain/location-citrix/campaignchain-citrix-user",
+        "campaignchain/channel-facebook/campaignchain-facebook",
+        "campaignchain/location-facebook/campaignchain-facebook-page",
+        "campaignchain/activity-facebook/campaignchain-facebook-publish-status",
+        "campaignchain/operation-facebook/campaignchain-facebook-publish-status",
+        "campaignchain/location-facebook/campaignchain-facebook-status",
+        "campaignchain/location-facebook/campaignchain-facebook-user",
+        "campaignchain/channel-google/campaignchain-google",
+        "campaignchain/location-google-analytics/campaignchain-google-analytics",
+        "campaignchain/channel-google-analytics/campaignchain-google-analytics",
+        "campaignchain/report-google/campaignchain-google-analytics",
+        "campaignchain/report-google-analytics/campaignchain-google-analytics",
+        "campaignchain/activity-gotowebinar/campaignchain-gotowebinar",
+        "campaignchain/channel-citrix/campaignchain-gotowebinar",
+        "campaignchain/operation-gotowebinar/campaignchain-gotowebinar",
+        "campaignchain/location-citrix/campaignchain-gotowebinar",
+        "campaignchain/channel-linkedin/campaignchain-linkedin",
+        "campaignchain/activity-linkedin/campaignchain-linkedin-share-news-item",
+        "campaignchain/operation-linkedin/campaignchain-linkedin-share-news-item",
+        "campaignchain/location-linkedin/campaignchain-linkedin-user",
+        "campaignchain/activity-mailchimp/campaignchain-mailchimp",
+        "campaignchain/channel-mailchimp/campaignchain-mailchimp",
+        "campaignchain/location-mailchimp/campaignchain-mailchimp-newsletter",
+        "campaignchain/operation-mailchimp/campaignchain-mailchimp-newsletter",
+        "campaignchain/location-mailchimp/campaignchain-mailchimp-user",
+        "campaignchain/report-analytics-metrics-per-activity/campaignchain-metrics-per-activity",
+        "campaignchain/campaign-repeating/campaignchain-repeating",
+        "campaignchain/campaign-scheduled/campaignchain-scheduled",
+        "campaignchain/milestone-scheduled/campaignchain-scheduled",
+        "campaignchain/security-authentication-client-oauth/campaignchain-security-authentication-client-oauth",
+        "campaignchain/security-authentication-server-oauth/campaignchain-security-authentication-server-oauth",
+        "campaignchain/activity-slideshare/campaignchain-slideshare",
+        "campaignchain/operation-slideshare/campaignchain-slideshare",
+        "campaignchain/channel-slideshare/campaignchain-slideshare",
+        "campaignchain/location-slideshare/campaignchain-slideshare-user",
+        "campaignchain/campaign-template/campaignchain-template",
+        "campaignchain/channel-twitter/campaignchain-twitter",
+        "campaignchain/location-twitter/campaignchain-twitter-status",
+        "campaignchain/activity-twitter/campaignchain-twitter-update-status",
+        "campaignchain/operation-twitter/campaignchain-twitter-update-status",
+        "campaignchain/location-twitter/campaignchain-twitter-user",
+        "campaignchain/location-website/campaignchain-website",
+        "campaignchain/channel-website/campaignchain-website",
+        "campaignchain/location-citrix/campaignchain-website",
+        "campaignchain/location-website/campaignchain-website-page",
+        "campaignchain/location-citrix/campaignchain-website-page"
+    ]
      *
      * @ApiDoc(
      *  section="Core"
@@ -435,24 +425,22 @@ class ModuleController extends BaseController
      * Example Response
      * ================
      *
-    {
-        "response": [
-            {
-                "id": 10,
-                "identifier": "campaignchain-facebook-user",
-                "displayName": "Facebook user stream",
-                "hooks":
+    [
+        {
+            "id": 10,
+            "identifier": "campaignchain-facebook-user",
+            "displayName": "Facebook user stream",
+            "hooks":
+                {
+                "default":
                     {
-                    "default":
-                        {
-                        "campaignchain-assignee": true
-                        }
-                    },
-                "createdDate": "2015-11-26T11:08:29+0000",
-                "type": "location"
-            }
-        ]
-    }
+                    "campaignchain-assignee": true
+                    }
+                },
+            "createdDate": "2015-11-26T11:08:29+0000",
+            "type": "location"
+        }
+    ]
      *
      * @ApiDoc(
      *  section="Core",

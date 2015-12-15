@@ -36,24 +36,22 @@ class ActivityController extends BaseController
      * Example Response
      * ================
      *
-    {
-    "response": [
-    {
-    "id": 13,
-    "packageType": "campaignchain-location",
-    "composerPackage": "campaignchain/location-facebook",
-    "description": "Facebook user and page stream.",
-    "license": "Apache-2.0",
-    "authors": {
-    "name": "CampaignChain, Inc.",
-    "email": "info@campaignchain.com\""
-    },
-    "homepage": "http://www.campaignchain.com",
-    "version": "dev-master",
-    "createdDate": "2015-11-26T11:08:29+0000"
-    }
+    [
+        {
+            "id": 13,
+            "packageType": "campaignchain-location",
+            "composerPackage": "campaignchain/location-facebook",
+            "description": "Facebook user and page stream.",
+            "license": "Apache-2.0",
+            "authors": {
+                "name": "CampaignChain, Inc.",
+                "email": "info@campaignchain.com\""
+            },
+            "homepage": "http://www.campaignchain.com",
+            "version": "dev-master",
+            "createdDate": "2015-11-26T11:08:29+0000"
+        }
     ]
-    }
      *
      * @ApiDoc(
      *  section="Core",

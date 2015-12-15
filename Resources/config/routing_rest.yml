@@ -1,0 +1,74 @@
+# This file is part of the CampaignChain package.
+#
+# (c) CampaignChain Inc. <info@campaignchain.com>
+#
+# For the full copyright and license information, please view the LICENSE
+# file that was distributed with this source code.
+
+campaignchain_core_rest_root:
+    type:     rest
+    prefix:   /
+    resource: CampaignChain\CoreBundle\Controller\REST\RootController
+
+campaignchain_core_rest_package:
+    type:     rest
+    prefix:   /api/{version}/packages
+    resource: CampaignChain\CoreBundle\Controller\REST\PackageController
+
+# This route accepts a Composer package name, which requires that we surpase
+# Symfony's default exlusion of / in route parameters.
+campaignchain_core_rest_package_get_packages_package:
+    path: /packages/{package}
+    defaults: { _controller: CampaignChainCoreBundle:REST/Package:getPackages }
+    methods: [GET]
+    requirements:
+        package: ".+"
+
+campaignchain_core_rest_module:
+    type:     rest
+    prefix:   /modules
+    resource: CampaignChain\CoreBundle\Controller\REST\ModuleController
+
+# This route accepts a Module URI, which requires that we surpase Symfony's
+# default exlusion of / in route parameters.
+campaignchain_core_rest_module_get_modules_uris_uri:
+    path: /modules/uris/{uri}
+    defaults: { _controller: CampaignChainCoreBundle:REST/Module:getUris }
+    methods: [GET]
+    requirements:
+        uri: ".+"
+
+# This route accepts a Composer package name, which requires that we surpase
+# Symfony's default exlusion of / in route parameters.
+campaignchain_core_rest_module_get_modules_packages_package:
+    path: /modules/packages/{package}
+    defaults: { _controller: CampaignChainCoreBundle:REST/Module:getPackages }
+    methods: [GET]
+    requirements:
+        package: ".+"
+
+campaignchain_core_rest_channel:
+    type:     rest
+    prefix:   /channels
+    resource: CampaignChain\CoreBundle\Controller\REST\ChannelController
+
+# This route accept a URL, which requires that we surpase Symfony's default
+# exlusion of / in route parameters.
+campaignchain_core_rest_channel_get_channels_locations_urls_url:
+    path: /channels/locations/urls/{url}
+    defaults: { _controller: CampaignChainCoreBundle:REST/Channel:getLocationsUrls }
+    methods: [GET]
+    requirements:
+        url: ".+"
+
+campaignchain_core_rest_activity:
+    type:     rest
+    prefix:   /activities
+    resource: CampaignChain\CoreBundle\Controller\REST\ActivityController
+
+# This route accepts a Composer package name, which requires that we surpase
+# Symfony's default exlusion of / in route parameters.
+campaignchain_core_rest_activity_get_activities_activity:
+    path: /activities/{id}
+    defaults: { _controller: CampaignChainCoreBundle:REST/Activity:getActivities }
+    methods: [GET]

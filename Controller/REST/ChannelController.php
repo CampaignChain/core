@@ -37,16 +37,14 @@ class ChannelController extends BaseController
      * ================
      *
     {
-        "response": {
-            "1": "http://wordpress.amariki.com",
-            "2": "http://www.slideshare.net/amariki_test",
-            "3": "https://global.gotowebinar.com/webinars.tmpl",
-            "4": "https://twitter.com/AmarikiTest1",
-            "5": "https://www.facebook.com/pages/Amariki/1384145015223372",
-            "6": "https://www.facebook.com/profile.php?id=100008874400259",
-            "7": "https://www.facebook.com/profile.php?id=100008922632416",
-            "8": "https://www.linkedin.com/pub/amariki-software/a1/455/616"
-        }
+        "1": "http://wordpress.amariki.com",
+        "2": "http://www.slideshare.net/amariki_test",
+        "3": "https://global.gotowebinar.com/webinars.tmpl",
+        "4": "https://twitter.com/AmarikiTest1",
+        "5": "https://www.facebook.com/pages/Amariki/1384145015223372",
+        "6": "https://www.facebook.com/profile.php?id=100008874400259",
+        "7": "https://www.facebook.com/profile.php?id=100008922632416",
+        "8": "https://www.linkedin.com/pub/amariki-software/a1/455/616"
     }
      *
      * @ApiDoc(
@@ -86,20 +84,18 @@ class ChannelController extends BaseController
      * Example Response
      * ================
      *
-    {
-        "response": [
-            {
-                "id": 2,
-                "displayName": "Corporate Twitter Account",
-                "url": "https://twitter.com/AmarikiTest1",
-                "trackingId": "2f6d485e7789e7b6d70b546d221739cf",
-                "status": "active",
-                "createdDate": "2015-11-26T11:08:29+0000",
-                "composerPackage": "campaignchain/channel-twitter",
-                "moduleIdentifier": "campaignchain-twitter"
-            }
-        ]
-    }
+    [
+        {
+            "id": 2,
+            "displayName": "Corporate Twitter Account",
+            "url": "https://twitter.com/AmarikiTest1",
+            "trackingId": "2f6d485e7789e7b6d70b546d221739cf",
+            "status": "active",
+            "createdDate": "2015-11-26T11:08:29+0000",
+            "composerPackage": "campaignchain/channel-twitter",
+            "moduleIdentifier": "campaignchain-twitter"
+        }
+    ]
      *
      * @ApiDoc(
      *  section="Core",
