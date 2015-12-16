@@ -29,6 +29,7 @@
         font-size: 13px;
         margin-left: 2px;
         margin-right: 2px;
+        line-height: 1.3em;
     }
 
     code {
@@ -204,8 +205,54 @@
 
     <h1>Format</h1>
     <p>
-        Request bodies must be sent and responses will be retrieved in JSON.
+        Request bodies must be sent and responses will be retrieved in <a href="http://www.json.org/">JSON</a>.
     </p>
+    <h2>POST Activities</h2>
+    <p>
+        In <code>POST</code> requests, a package might require data in addition
+        to the one that must be provided for core resources. For example, if
+        a new Twitter post should be created, then the respective endpoint
+        expects to receive data to create the core Activity (e.g. its <code>name</code>)
+        along with the package-specific data (i.e. the Twitter message content).
+    </p>
+    <p>
+        Such package-specific data must be specified as a child of the related
+        Operation's module name. For example, the <code>campaignchain/activity-twitter</code>
+        package requires the <code>campaignchain/operation-twitter</code> package.
+        In the Operation module's <code>campaignchain.yml</code> configuration file,
+        the module's name is specified as <code>campaignchain-twitter-update-status</code>.
+    </p>
+    <p>
+        In the REST request, the module's name dashes must be replaced with
+        underscores, which would result in <code>campaignchain_twitter_update_status</code>.
+    </p>
+    <p>
+        Similarly, the Hooks defined for an Activity module must also be included
+        in the input (e.g. to set the due date). These are defined in the
+        <code>campaignchain.yml</code> configuration file of the respective
+        module. The dashes in their names must be replaced with underscores and
+        the whole name prefixed with <code>campaignchain_hook</code>.
+    </p>
+    <p>
+        See below an example input for creating a new Twitter status.
+    </p>
+    <pre>
+{
+    "activity":{
+        "name":"My Tweet",
+        "location":100,
+        "campaign":1,
+        "campaignchain_twitter_update_status":{
+            "message":"Some test status message"
+        },
+        "campaignchain_hook_campaignchain_due":{
+            "date":"2015-12-20T12:00:00+0000"
+        },
+        "campaignchain_hook_campaignchain_assignee":{
+            "user":1
+        }
+    }
+}</pre>
 
     <h1>Date</h1>
     <p>
@@ -226,6 +273,11 @@
     </p>
     <pre>http://www.example.com/api/v1/campaigns?_doc=1</pre>
 
+    <h1>Sample Data</h1>
+    <p>
+        All example requests or inputs provided in the documentation for each
+        endpoint should work with the <a href="http://docs.campaignchain.com/en/master/developer/book/sample_data.html">sample data provided by CampaignChain, Inc.</a>
+    </p>
     <h1>Resources</h1>
 </div>
 {% endif %}

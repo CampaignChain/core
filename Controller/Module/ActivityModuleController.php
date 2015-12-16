@@ -71,6 +71,7 @@ class ActivityModuleController extends Controller
         if($this->parameters['equals_operation']) {
             $this->contentBundleName = $this->parameters['operations'][0]['bundle_name'];
             $this->contentModuleIdentifier = $this->parameters['operations'][0]['module_identifier'];
+            $this->contentModuleFormName = str_replace('-', '_', $this->contentModuleIdentifier);
             $this->contentFormType = $this->parameters['operations'][0]['form_type'];
         } else {
             $this->contentFormType = $this->parameters['content_form_type'];
@@ -195,16 +196,16 @@ class ActivityModuleController extends Controller
         }
 
         // Allow the module to change some data based on its custom input.
-        if($form->has($this->contentModuleIdentifier)) {
+        if($form->has($this->contentModuleFormName)) {
             $this->handler->postFormSubmitNewEvent(
                 $activity,
-                $form->get($this->contentModuleIdentifier)->getData()
+                $form->get($this->contentModuleFormName)->getData()
             );
 
             // Allow a module's handler to modify the Activity data.
             $activity = $this->handler->processActivity(
                 $activity,
-                $form->get($this->contentModuleIdentifier)->getData()
+                $form->get($this->contentModuleFormName)->getData()
             );
         }
 
@@ -245,17 +246,17 @@ class ActivityModuleController extends Controller
             $contentLocation->setOperation($operation);
             $operation->addLocation($contentLocation);
 
-            if($form->has($this->contentModuleIdentifier)) {
+            if($form->has($this->contentModuleFormName)) {
                 // Allow a module's handler to modify the Operation's Location.
                 $contentLocation = $this->handler->processContentLocation(
                     $contentLocation,
-                    $form->get($this->contentModuleIdentifier)->getData()
+                    $form->get($this->contentModuleFormName)->getData()
                 );
 
                 // Process the Operation's content.
                 $content = $this->handler->processContent(
                     $operation,
-                    $form->get($this->contentModuleIdentifier)->getData()
+                    $form->get($this->contentModuleFormName)->getData()
                 );
             }
 
@@ -338,48 +339,7 @@ class ActivityModuleController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $repository = $this->getDoctrine()->getManager();
-
-            // Make sure that data stays intact by using transactions.
-            try {
-                $repository->getConnection()->beginTransaction();
-
-                if($this->handler->hasContent('edit')) {
-                    // Get the content data from request.
-                    $content = $this->handler->processContent(
-                        $this->operations[0],
-                        $form->get($this->contentModuleIdentifier)->getData()
-                    );
-
-                    if ($this->parameters['equals_operation']) {
-                        // The activity equals the operation. Thus, we update the operation with the same data.
-                        $this->operations[0]->setName($this->activity->getName());
-                        $repository->persist($this->operations[0]);
-                    } else {
-                        throw new \Exception(
-                            'Multiple Operations for one Activity not implemented yet.'
-                        );
-                    }
-
-                    $repository->persist($content);
-                }
-
-                $hookService = $this->get('campaignchain.core.hook');
-                $this->activity = $hookService->processHooks(
-                    $this->parameters['bundle_name'],
-                    $this->parameters['module_identifier'],
-                    $this->activity,
-                    $form
-                );
-                $repository->persist($this->activity);
-
-                $repository->flush();
-
-                $repository->getConnection()->commit();
-            } catch (\Exception $e) {
-                $repository->getConnection()->rollback();
-                throw $e;
-            }
+            $this->activity = $this->editActivity($this->activity, $form);
 
             $this->get('session')->getFlashBag()->add(
                 'success',
@@ -411,6 +371,57 @@ class ActivityModuleController extends Controller
         );
 
         return $this->renderWithHandlerOptions($defaultRenderOptions, $handlerRenderOptions);
+    }
+
+    public function editActivity(Activity $activity, Form $form)
+    {
+        $activityService = $this->get('campaignchain.core.activity');
+        $operation = $activityService->getOperation($activity->getId());
+
+        $repository = $this->getDoctrine()->getManager();
+
+        // Make sure that data stays intact by using transactions.
+        try {
+            $repository->getConnection()->beginTransaction();
+
+            if($this->handler->hasContent('edit')) {
+                // Get the content data from request.
+                $content = $this->handler->processContent(
+                    $operation,
+                    $form->get($this->contentModuleFormName)->getData()
+                );
+
+                if ($this->parameters['equals_operation']) {
+                    // The activity equals the operation. Thus, we update the operation with the same data.
+                    $operation->setName($activity->getName());
+                    $repository->persist($operation);
+                } else {
+                    throw new \Exception(
+                        'Multiple Operations for one Activity not implemented yet.'
+                    );
+                }
+
+                $repository->persist($content);
+            }
+
+            $hookService = $this->get('campaignchain.core.hook');
+            $activity = $hookService->processHooks(
+                $this->activityBundleName,
+                $this->activityModuleIdentifier,
+                $activity,
+                $form
+            );
+            $repository->persist($activity);
+
+            $repository->flush();
+
+            $repository->getConnection()->commit();
+
+            return $activity;
+        } catch (\Exception $e) {
+            $repository->getConnection()->rollback();
+            throw $e;
+        }
     }
 
     /**
@@ -496,7 +507,7 @@ class ActivityModuleController extends Controller
             if($this->handler->hasContent('editModal')){
                 $content = $this->handler->processContent(
                     $this->operations[0],
-                    $data[$this->contentModuleIdentifier]
+                    $data[$this->contentModuleFormName]
                 );
             }
         } else {
@@ -619,7 +630,7 @@ class ActivityModuleController extends Controller
             }
 
             $operationForms[] = array(
-                'identifier' => $this->contentModuleIdentifier,
+                'identifier' => $this->contentModuleFormName,
                 'form' => $contentFormType
             );
         } else {
