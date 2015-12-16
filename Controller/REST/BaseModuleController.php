@@ -40,7 +40,30 @@ class BaseModuleController extends BaseController
     )
     {
         try {
+            $activityBag = $request->request->get('activity');
+
             $moduleControllerService = $this->getModuleControllerService();
+
+            // Is this a Location that is part of the module?
+            if(
+            !$moduleControllerService->isValidLocation(
+                $activityBag['location']
+            )
+            ){
+                throw new \Exception(
+                    'The provided Location is not part of this module or does not exist',
+                    Response::HTTP_BAD_REQUEST
+                );
+            }
+
+            $campaign = $this->get('campaignchain.core.campaign')->getCampaign(
+                $activityBag['campaign']
+            );
+            $location = $this->get('campaignchain.core.location')->getLocation(
+                $activityBag['location']
+            );
+
+            $moduleControllerService->setActivityContext($campaign, $location);
 
             $form = $this->createForm(
                 $moduleControllerService->getActivityFormType('rest'),
@@ -50,18 +73,6 @@ class BaseModuleController extends BaseController
             $form->handleRequest($request);
 
             if ($form->isValid()) {
-                // Is this a Location that is part of the module?
-                if(
-                    !$moduleControllerService->isValidLocation(
-                        $activity->getLocation()->getId()
-                    )
-                ){
-                    throw new \Exception(
-                        'The provided Location is not part of this module or does not exist',
-                        Response::HTTP_BAD_REQUEST
-                    );
-                }
-
                 $activity = $moduleControllerService->createActivity(
                     $activity, $form
                 );
@@ -113,6 +124,7 @@ class BaseModuleController extends BaseController
         $qb->where('a.id = :activity');
         $qb->andWhere('o.activity = a.id');
         $qb->andWhere('l.operation = o.id');
+        $qb->andWhere('l.parent = a.location');
         if($hasEntities) {
             foreach ($entities as $name => $class) {
                 $qb->andWhere($name . '_tbl.operation = o.id');

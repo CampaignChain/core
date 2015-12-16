@@ -163,12 +163,20 @@ class ActivityModuleController extends Controller
         // Apply context of Activity.
         if(!$activity->getCampaign()) {
             $activity->setCampaign($this->campaign);
+        } elseif(!$this->campaign){
+            $this->campaign = $activity->getCampaign();
         }
+
         if(!$activity->getChannel()) {
             $activity->setChannel($this->channel);
+        } elseif(!$this->channel){
+            $this->channel = $activity->getChannel();
         }
+
         if(!$activity->getLocation()) {
             $activity->setLocation($this->location);
+        } elseif(!$this->location){
+            $this->location = $activity->getLocation();
         }
 
         // The Module's content.
