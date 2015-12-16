@@ -66,8 +66,10 @@ class CampaignChainCoreExtension extends \Twig_Extension
     {
         $class = get_class($object);
 
-        if(strpos($class, 'CoreBundle\Entity\Location') !== false){
+        if(strpos($class, 'CoreBundle\Entity\Location') !== false) {
             return $object->getImage();
+        } elseif(strpos($class, 'CoreBundle\Entity\User') !== false){
+            return $this->userAvatar($object);
         } else {
             return $this->channelAssetPath($object).'/images/icons/32x32/'.$this->channelIconName($object);
         }
