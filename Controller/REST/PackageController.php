@@ -181,7 +181,7 @@ class PackageController extends BaseController
      * Example Request
      * ===============
      *
-     *      GET /api/v1/packages/vendors/campaignchain/projects/location-facebook
+     *      GET /api/v1/packages/campaignchain%2Flocation-facebook
      *
      * Example Response
      * ================

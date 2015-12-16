@@ -91,9 +91,10 @@
     </p>
     <p>
         In all API versions, we return an HTTP response header called
-        <code>campaignchain-api-version</code> which indicates which API version
-        your app is actually experiencing (e.g. <code>1.0.9</code>) - this may be
-        different to the API version you specify in your request due to upgrades.
+        <code>campaignchain-api-version</code> which indicates the detailed API
+        version your app is actually experiencing (e.g. <code>1.0.9</code>) - this
+        may be different to the API version you specify in your request due to
+        upgrades.
     </p>
 
     <h1>Authentication</h1>
@@ -130,12 +131,11 @@
         core, reside under <code>/api/v1/p</code> plus the Composer package name
         appended as a path. For example:
     </p>
-    <pre>$curl -i "http://www.example.com/api/v1/p/campaignchain/location-ezplatform/objects"</pre>
+    <pre>$curl -i "http://www.example.com/api/v1/p/campaignchain/activity-twitter/statuses/82"</pre>
     <p>
-        This request provides a list of content objects managed from within
-        CampaignChain which are available in a remote eZ Platform instance
-        (an open-source CMS). The REST API has been implemented in the Composer
-        package <code>campaignchain/location-ezplatform</code>.
+        This request provides the data of a specific Tweet managed within
+        CampaignChain. The REST API has been implemented in the Composer
+        package <code>campaignchain/activity-twitter</code>.
     </p>
 
     <h1>HTTP Verbs</h1>
@@ -264,6 +264,15 @@
     <p>The timezone for all timestamps is UTC.</p>
 
     <h1>Documentation</h1>
+
+    <h2>In CampaignChain</h2>
+    <p>
+        If you have a CampaignChain instance running in <a href="http://docs.campaignchain.com/en/master/developer/book/dev_mode.html">development mode</a>,
+        you can access the instance's REST API documentation by clicking on the
+        developer icon in the header and selecting "REST API Doc". There, you
+        can also access a sandbox for each endpoint where you can try the API
+        live.
+    </p>
 
     <h2>Per Resource</h2>
     <p>

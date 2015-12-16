@@ -31,7 +31,7 @@ class ChannelController extends BaseController
      * Example Request
      * ===============
      *
-     *      GET /api/v1/channels/locations/urls
+     *      GET /api/v1/locations/urls
      *
      * Example Response
      * ================

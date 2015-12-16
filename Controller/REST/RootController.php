@@ -178,12 +178,12 @@ class RootController extends BaseController
     }
 
     /**
-     * Get a list of all Campaigns.
+     * Get a list of Campaigns.
      *
      * Example Request
      * ===============
      *
-     *      GET /api/v1/campaigns.json?fromNow[]=ongoing&moduleUri[]=campaignchain/campaign-scheduled/campaignchain-scheduled&status[]=open
+     *      GET /api/v1/campaigns?fromNow[]=ongoing&moduleUri[]=campaignchain/campaign-scheduled/campaignchain-scheduled&status[]=open
      *
      * Example Response
      * ================
@@ -473,6 +473,7 @@ class RootController extends BaseController
      *
     [
         {
+            "id": 1,
             "username": "admin",
             "firstName": "Sandro",
             "lastName": "Groganz",
@@ -489,6 +490,7 @@ class RootController extends BaseController
             "profileImage": "avatar/4d6e7d832be2ab4c.jpg"
         },
         {
+            "id": 2,
             "username": "hipolito_marks",
             "firstName": "Danial",
             "lastName": "Smith",
@@ -513,13 +515,7 @@ class RootController extends BaseController
     public function getUsersAction()
     {
         $qb = $this->getQueryBuilder();
-        $qb->select(
-            'u.usernameCanonical AS username, u.firstName, u.lastName, '.
-            'u.emailCanonical AS email, u.roles, '.
-            'u.language, u.locale, u.timezone, u.currency, '.
-            'u.dateFormat, u.timeFormat, '.
-            'u.avatarImage AS profileImage'
-        );
+        $qb->select(UserController::SELECT_STATEMENT);
         $qb->from('CampaignChain\CoreBundle\Entity\User', 'u');
         $qb->orderBy('u.username');
         $query = $qb->getQuery();

@@ -33,7 +33,7 @@ class ModuleController extends BaseController
      * Example Request
      * ===============
      *
-     *      GET /api/{version}/modules/types
+     *      GET /api/v1/modules/types
      *
      * Example Response
      * ================
@@ -71,7 +71,7 @@ class ModuleController extends BaseController
      * Example Request
      * ===============
      *
-     *      GET /api/{version}/modules/types/location
+     *      GET /api/v1/modules/types/location
      *
      * Example Response
      * ================

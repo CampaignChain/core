@@ -72,3 +72,15 @@ campaignchain_core_rest_activity_get_activities_activity:
     path: /activities/{id}
     defaults: { _controller: CampaignChainCoreBundle:REST/Activity:getActivities }
     methods: [GET]
+
+campaignchain_core_rest_user:
+    type:     rest
+    prefix:   /users
+    resource: CampaignChain\CoreBundle\Controller\REST\ActivityController
+
+# This route accepts a Composer package name, which requires that we surpase
+# Symfony's default exlusion of / in route parameters.
+campaignchain_core_rest_user_get_users_user:
+    path: /users/{id}
+    defaults: { _controller: CampaignChainCoreBundle:REST/User:getUsers }
+    methods: [GET]

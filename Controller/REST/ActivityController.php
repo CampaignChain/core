@@ -31,7 +31,7 @@ class ActivityController extends BaseController
      * Example Request
      * ===============
      *
-     *      GET /api/v1/packages/vendors/campaignchain/projects/location-facebook
+     *      GET /api/v1/activities/42
      *
      * Example Response
      * ================
