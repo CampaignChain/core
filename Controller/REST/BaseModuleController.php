@@ -104,6 +104,7 @@ class BaseModuleController extends BaseController
             $campaign = $this->get('campaignchain.core.campaign')->getCampaign(
                 $activityBag['campaign']
             );
+
             $location = $this->get('campaignchain.core.location')->getLocation(
                 $activityBag['location']
             );
