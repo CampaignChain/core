@@ -170,13 +170,13 @@ assetic:
                 - "@CampaignChainCoreBundle/Resources/public/components/flot/jquery.flot.js"
                 - "@CampaignChainCoreBundle/Resources/public/components/flot/jquery.flot.time.js"
                 - "@CampaignChainCoreBundle/Resources/public/components/flot/jquery.flot.symbol.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/flot/jquery.flot.crosshair.js"
         flot_comments_js:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/components/jquery.flot.comments/jquery.flot.comments.js"
         flot_tooltip_js:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/components/flot.tooltip/js/jquery.flot.tooltip.js"
-                - "@CampaignChainCoreBundle/Resources/public/js/flot.crosshair.js"
         campaignchain_flot_css:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/css/campaignchain/flot.css"
