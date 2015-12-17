@@ -300,11 +300,11 @@ class System extends Meta
     public function getDocsURL()
     {
         if($this->version == 'dev-master'){
-            $docVersion = 'latest';
+            $docVersion = 'master';
         } else {
             $docVersion = $this->version;
         }
-        return 'http://campaignchain-docs.readthedocs.org/en/'.$docVersion;
+        return 'http://docs.campaignchain.com/en/'.$docVersion;
     }
 
     /**
