@@ -13,5 +13,5 @@ body.modal-open {
     background-position: 50% 50%;
     /* ie8- graceful degradation */
     background-position: 50% 50% \9 !important;
-    background-image: url("/bundles/campaignchaincore/images/login_bg.jpg");
+    background-image: url("/bundles/campaignchaincore/images/banner.jpg");
 }
