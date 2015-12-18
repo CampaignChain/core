@@ -12,6 +12,7 @@ namespace CampaignChain\CoreBundle\Twig;
 
 use CampaignChain\CoreBundle\Entity\User;
 use CampaignChain\CoreBundle\Util\ParserUtil;
+use CampaignChain\CoreBundle\Util\SystemUtil;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Doctrine\ORM\EntityManager;
 
@@ -404,10 +405,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
 
     public function getGlobals()
     {
-        // Do not load globals during installation, which is when no
-        // tables exists yet in the database.
-        $schemaManager = $this->em->getConnection()->getSchemaManager();
-        if (!$schemaManager->listTables()) {
+        if(SystemUtil::isInstallMode()){
             return array();
         }
 

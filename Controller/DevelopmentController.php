@@ -11,6 +11,7 @@
 namespace CampaignChain\CoreBundle\Controller;
 
 use CampaignChain\CoreBundle\Fixture\UserProcessor;
+use CampaignChain\CoreBundle\Util\SystemUtil;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -190,6 +191,9 @@ class DevelopmentController extends Controller
             system($command, $output);
             ob_get_clean();
             chdir($currentDir);
+
+            // Set install mode.
+            SystemUtil::enableInstallMode();
 
             header('Location: ../../campaignchain/install.php');
             exit;

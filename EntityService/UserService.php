@@ -79,17 +79,23 @@ class UserService
      */
     public function downloadGravatarImage($email)
     {
-        $gravatarUrl = $this->generateGravatarUrl($email);
+        try {
+            $gravatarUrl = $this->generateGravatarUrl($email);
 
-        $response = $this->httpClient->get($gravatarUrl);
-        $avatarPath = $this->generateAvatarPath($response->getHeader('Content-Type'));
+            $response = $this->httpClient->get($gravatarUrl);
+            $avatarPath = $this->generateAvatarPath($response->getHeader('Content-Type'));
 
-        // Copy response body to file
-        $f = $this->fileUploadService->openFile($avatarPath, "w");
-        stream_copy_to_stream(GuzzleStreamWrapper::getResource($response->getBody()), $f);
-        fclose($f);
+            // Copy response body to file
+            $f = $this->fileUploadService->openFile($avatarPath, "w");
+            stream_copy_to_stream(GuzzleStreamWrapper::getResource($response->getBody()), $f);
+            fclose($f);
 
-        return $avatarPath;
+            return $avatarPath;
+        } catch (\Exception $e) {
+            // If Guzzle throws an error, then most likely because you're
+            // developing CampaignChain offline. Hence, don't worry about the
+            // error.
+        }
     }
 
     public function downloadAndSetGravatarImage(User $user)

@@ -10,12 +10,20 @@
 
 namespace CampaignChain\CoreBundle\Composer;
 
+use CampaignChain\CoreBundle\Util\SystemUtil;
 use Symfony\Component\Filesystem\Filesystem;
 use Composer\Script\CommandEvent;
 use Sensio\Bundle\DistributionBundle\Composer\ScriptHandler as SensioScriptHandler;
 
 class ScriptHandler extends SensioScriptHandler
 {
+    public static function enableInstallMode(CommandEvent $event)
+    {
+        SystemUtil::enableInstallMode();
+
+        $event->getIO()->write('Enabled CampaignChain install mode.');
+    }
+
     /**
      * Asks if the new directory structure should be used, installs the structure if needed.
      *

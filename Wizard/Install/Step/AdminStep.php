@@ -10,6 +10,7 @@
 
 namespace CampaignChain\CoreBundle\Wizard\Install\Step;
 
+use CampaignChain\CoreBundle\Util\SystemUtil;
 use Sensio\Bundle\DistributionBundle\Configurator\Step\StepInterface;
 use CampaignChain\CoreBundle\Util\CommandUtil;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -131,5 +132,7 @@ class AdminStep implements StepInterface
     public function execute($parameters)
     {
         $this->command->createAdminUser($parameters);
+
+        SystemUtil::disableInstallMode();
     }
 }
