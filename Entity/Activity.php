@@ -27,6 +27,17 @@ class Activity extends Action implements AssignableInterface
     protected $id;
 
     /**
+     * @ORM\OneToMany(targetEntity="Activity", mappedBy="parent")
+     */
+    protected $children;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Activity", inversedBy="children")
+     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id", nullable=true)
+     */
+    protected $parent;
+
+    /**
      * @ORM\ManyToOne(targetEntity="Campaign", inversedBy="activities")
      * @ORM\JoinColumn(referencedColumnName="id")
      */
@@ -323,5 +334,59 @@ class Activity extends Action implements AssignableInterface
         $this->assignee = $assignee;
     }
 
+    /**
+     * Add children
+     *
+     * @param \CampaignChain\CoreBundle\Entity\Activity $children
+     * @return Activity
+     */
+    public function addChild(\CampaignChain\CoreBundle\Entity\Activity $children)
+    {
+        $this->children[] = $children;
 
+        return $this;
+    }
+
+    /**
+     * Remove children
+     *
+     * @param \CampaignChain\CoreBundle\Entity\Activity $children
+     */
+    public function removeChild(\CampaignChain\CoreBundle\Entity\Activity $children)
+    {
+        $this->children->removeElement($children);
+    }
+
+    /**
+     * Get children
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getChildren()
+    {
+        return $this->children;
+    }
+
+    /**
+     * Set parent
+     *
+     * @param \CampaignChain\CoreBundle\Entity\Activity $parent
+     * @return Activity
+     */
+    public function setParent(\CampaignChain\CoreBundle\Entity\Activity $parent = null)
+    {
+        $this->parent = $parent;
+
+        return $this;
+    }
+
+    /**
+     * Get parent
+     *
+     * @return \CampaignChain\CoreBundle\Entity\Activity
+     */
+    public function getParent()
+    {
+        return $this->parent;
+    }
 }

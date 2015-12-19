@@ -63,4 +63,13 @@ class OperationModule extends Module
     {
         $this->operations = new \Doctrine\Common\Collections\ArrayCollection();
     }
+
+    public function ownsLocation()
+    {
+        if(isset($this->params['owns_location'])){
+            return $this->params['owns_location'];
+        } else {
+            return false;
+        }
+    }
 }

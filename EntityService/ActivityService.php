@@ -34,6 +34,7 @@ class ActivityService
         $qb = $this->em->createQueryBuilder();
         $qb->select('a')
             ->from('CampaignChain\CoreBundle\Entity\Activity', 'a')
+            ->where('a.parent IS NULL')
             ->orderBy('a.startDate');
         if(isset($options['limit'])){
             $qb->setMaxResults($options['limit']);
@@ -48,6 +49,7 @@ class ActivityService
             ->from('CampaignChain\CoreBundle\Entity\Activity', 'a')
             ->where('a.startDate > :now')
             ->andWhere('a.status != :paused')
+            ->andWhere('a.parent IS NULL')
             ->orderBy('a.startDate', 'ASC')
             ->setParameter('now', new \DateTime('now'))
             ->setParameter('paused', Action::STATUS_PAUSED);

@@ -693,7 +693,11 @@ class Installer
                 }
 
                 // If an activity module, remember the related channels.
-                if($this->newBundle->getType() == 'campaignchain-activity'){
+                if(
+                    $this->newBundle->getType() == 'campaignchain-activity' &&
+                    isset($moduleParams['channels']) &&
+                    is_array($moduleParams['channels'])
+                ){
                     $this->activityChannels[$this->newBundle->getName()][$module->getIdentifier()] = $moduleParams['channels'];
                 }
             }
