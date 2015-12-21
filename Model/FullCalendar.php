@@ -139,8 +139,8 @@ class FullCalendar
         }
 
         // Retrieve all activities
-        $repository = $this->em->getRepository('CampaignChainCoreBundle:Activity');
-        $activities = $repository->findAll();
+        $activityService = $this->container->get('campaignchain.core.activity');
+        $activities = $activityService->getAllActivities();
 
         if(count($activities)){
 

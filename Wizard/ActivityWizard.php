@@ -23,19 +23,22 @@ class ActivityWizard
         $this->session = new Session($this->container->get('request'));
     }
 
-    public function start($campaign, $location, $activity, $activityModule){
+    public function start($campaign, $activity, $activityModule, $location = null){
         // Store in session
         $this->session->start();
         $this->session->set('campaignchain_campaign', $campaign);
-        $this->session->set('campaignchain_location', $location);
-        $this->session->set('campaignchain_channel', $location->getChannel());
-        $this->session->set('campaignchain_channelModule', $location->getChannel()->getChannelModule());
-        // Fixes lazy loading issue
-        $bundle = clone $location->getChannel()->getChannelModule()->getBundle();
-        $this->session->set('campaignchain_channelModuleBundle', $bundle);
         $this->session->set('campaignchain_activity', $activity);
         $this->session->set('campaignchain_activityModule', $activityModule);
         $this->session->set('campaignchain_referrer', $_SERVER['HTTP_REFERER']);
+
+        if($location){
+            $this->session->set('campaignchain_location', $location);
+            $this->session->set('campaignchain_channel', $location->getChannel());
+            $this->session->set('campaignchain_channelModule', $location->getChannel()->getChannelModule());
+            // Fixes lazy loading issue
+            $bundle = clone $location->getChannel()->getChannelModule()->getBundle();
+            $this->session->set('campaignchain_channelModuleBundle', $bundle);
+        }
     }
 
     public function getCampaign(){
@@ -101,19 +104,22 @@ class ActivityWizard
 
         $campaign = $this->session->get('campaignchain_campaign');
         $campaign = $repository->merge($campaign);
-        $location = $this->session->get('campaignchain_location');
-        $location = $repository
-            ->getRepository('CampaignChainCoreBundle:Location')
-            ->find($location);
-//        $location = $repository->merge($location);
+
         $activityModule = $this->session->get('campaignchain_activityModule');
         $activityModule = $repository->merge($activityModule);
-
         $activity = $this->session->get('campaignchain_activity');
-        $activity->setCampaign($campaign);
-        $activity->setLocation($location);
-        $activity->setChannel($location->getChannel());
         $activity->setActivityModule($activityModule);
+        $activity->setCampaign($campaign);
+
+        if($this->session->has('campaignchain_location')) {
+            $location = $this->session->get('campaignchain_location');
+            $location = $repository
+                ->getRepository('CampaignChainCoreBundle:Location')
+                ->find($location);
+            //$location = $repository->merge($location);
+            $activity->setLocation($location);
+            $activity->setChannel($location->getChannel());
+        }
 
         $this->session->destroy();
 

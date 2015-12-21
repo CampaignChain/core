@@ -228,31 +228,34 @@ class ActivityModuleController extends Controller
             $operationModule->addOperation($operation);
             $operation->setOperationModule($operationModule);
 
-            // The Operation creates a Location, i.e. the Operation
-            // will be accessible through a URL after publishing.
-
-            // Get the location module.
-            $locationService = $this->get('campaignchain.core.location');
-            $locationModule = $locationService->getLocationModule(
-                $this->locationBundleName,
-                $this->locationModuleIdentifier
-            );
-
-            $contentLocation = new Location();
-            $contentLocation->setLocationModule($locationModule);
-            $contentLocation->setParent($activity->getLocation());
-            $contentLocation->setName($activity->getName());
-            $contentLocation->setStatus(Medium::STATUS_UNPUBLISHED);
-            $contentLocation->setOperation($operation);
-            $operation->addLocation($contentLocation);
-
-            if($form->has($this->contentModuleFormName)) {
-                // Allow a module's handler to modify the Operation's Location.
-                $contentLocation = $this->handler->processContentLocation(
-                    $contentLocation,
-                    $form->get($this->contentModuleFormName)->getData()
+            // Will the Operation create a Location, i.e. the Operation
+            // will be accessible through a URL after publishing?
+            if($operationModule->ownsLocation()) {
+                // Get the location module.
+                $locationService = $this->get('campaignchain.core.location');
+                $locationModule = $locationService->getLocationModule(
+                    $this->locationBundleName,
+                    $this->locationModuleIdentifier
                 );
 
+                $contentLocation = new Location();
+                $contentLocation->setLocationModule($locationModule);
+                $contentLocation->setParent($activity->getLocation());
+                $contentLocation->setName($activity->getName());
+                $contentLocation->setStatus(Medium::STATUS_UNPUBLISHED);
+                $contentLocation->setOperation($operation);
+                $operation->addLocation($contentLocation);
+
+                if ($form->has($this->contentModuleFormName)) {
+                    // Allow a module's handler to modify the Operation's Location.
+                    $contentLocation = $this->handler->processContentLocation(
+                        $contentLocation,
+                        $form->get($this->contentModuleFormName)->getData()
+                    );
+                }
+            }
+
+            if($form->has($this->contentModuleFormName)) {
                 // Process the Operation's content.
                 $content = $this->handler->processContent(
                     $operation,

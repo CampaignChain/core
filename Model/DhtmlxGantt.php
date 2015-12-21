@@ -109,6 +109,7 @@ class DhtmlxGantt
             $qb->select('a')
                 ->from('CampaignChain\CoreBundle\Entity\Activity', 'a')
                 ->where('a.campaign = :campaignId')
+                ->andWhere('a.parent IS NULL')
                 ->setParameter('campaignId', $campaignId)
                 ->orderBy('a.startDate', 'ASC');
             $query = $qb->getQuery();

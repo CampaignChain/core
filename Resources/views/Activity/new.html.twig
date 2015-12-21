@@ -1,0 +1,59 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) CampaignChain Inc. <info@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+{% extends 'CampaignChainCoreBundle:Base:new_dependent_select.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ form_javascript(form_single) }}
+    {{ form_javascript(form_multiple) }}
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ form_stylesheet(form_single) }}
+    {{ form_stylesheet(form_multiple) }}
+{% endblock %}
+
+{% block form %}
+<div class="row">
+    <div class="col-md-6">
+        <h2>Single Location</h2>
+        <form method="POST" class="form-horizontal" role="form" enctype="multipart/form-data">
+            {{ bootstrap_set_style('horizontal') }}
+            {{ bootstrap_set_widget_col(8) }}
+            {{ bootstrap_set_label_col(3) }}
+            {{ form_widget(form_single) }}
+            <div class="form-group">
+                <div class="col-lg-offset-3 col-lg-8">
+                    <div class="btn-group pull-right" role="group" aria-label="...">
+                        {% include 'CampaignChainCoreBundle:Base:form_footer_buttons.html.twig' %}
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-6">
+        <h2>Multiple Locations</h2>
+        <form method="POST" class="form-horizontal" role="form" enctype="multipart/form-data">
+            {{ bootstrap_set_style('horizontal') }}
+            {{ bootstrap_set_widget_col(8) }}
+            {{ bootstrap_set_label_col(3) }}
+            {{ form_widget(form_multiple) }}
+            <div class="form-group">
+                <div class="col-lg-offset-3 col-lg-8">
+                    <div class="btn-group pull-right" role="group" aria-label="...">
+                        {% include 'CampaignChainCoreBundle:Base:form_footer_buttons.html.twig' %}
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
