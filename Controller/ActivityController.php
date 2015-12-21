@@ -40,7 +40,7 @@ class ActivityController extends Controller
 
     public function newAction(Request $request)
     {
-        $form = $this->createFormBuilder()
+        $formSingle = $this->createFormBuilder()
             ->add('campaign', 'entity', array(
                 'label' => 'Campaign',
                 'class' => 'CampaignChainCoreBundle:Campaign',
@@ -58,7 +58,29 @@ class ActivityController extends Controller
                 'attr' => array(
                     'selected' => $this->get('session')->get('campaignchain.campaign'),
                 )
-            ))
+            ));
+
+        $formMultiple = $this->createFormBuilder()
+            ->add('campaign_multi', 'entity', array(
+                'label' => 'Campaign',
+                'class' => 'CampaignChainCoreBundle:Campaign',
+                'query_builder' => function(EntityRepository $er) {
+                    return $er->createQueryBuilder('campaign')
+                        ->where('campaign.status != :statusClosed')
+                        ->andWhere('campaign.status != :statusBackgroundProcess')
+                        ->setParameter('statusClosed', Action::STATUS_CLOSED)
+                        ->setParameter('statusBackgroundProcess', Action::STATUS_BACKGROUND_PROCESS)
+                        ->orderBy('campaign.startDate', 'ASC');
+                },
+                'property' => 'name',
+                'empty_value' => 'Select a Campaign',
+                'empty_data' => null,
+                'attr' => array(
+                    'selected' => $this->get('session')->get('campaignchain.campaign'),
+                )
+            ));
+
+        $formSingle
         // TODO: Only show channels that actually have min. 1 related activity module.
             ->add('location', 'entity', array(
                 'label' => 'Location',
@@ -95,27 +117,57 @@ class ActivityController extends Controller
                 'label' => 'Activity',
                 'mapped' => false,
                 'attr' => array('placeholder' => 'Select an activity')
-            ))
-            ->getForm();
+            ));
 
-        $form->handleRequest($request);
+        $formSingle = $formSingle->getForm();
 
-        if ($form->isValid()) {
-            $campaign = $form->getData()['campaign'];
+        $formMultiple
+            ->add('activity_multi', 'entity', array(
+                'label' => 'Activity',
+                'class' => 'CampaignChainCoreBundle:ActivityModule',
+                'query_builder' => function(EntityRepository $er) {
+                    return $er->createQueryBuilder('am')
+                        ->leftJoin('am.channelModules', 'cm')
+                        ->where('cm IS NULL')
+                        ->orderBy('am.displayName', 'ASC');
+                },
+                'property' => 'displayName',
+                'empty_value' => 'Select an Activity',
+                'empty_data' => null,
+                'attr' => array(
+                    'selected' => $this->get('session')->get('campaignchain.campaign'),
+                )
+            ));
 
+        $formMultiple = $formMultiple->getForm();
+
+        $formSingle->handleRequest($request);
+        $formMultiple->handleRequest($request);
+
+        if ($formSingle->isValid()) {
+            $campaign = $formSingle->getData()['campaign'];
+            $location = $formSingle->get('location')->getData();
+            $activityModuleId = $formSingle->get('activity')->getData();
+        } elseif($formMultiple->isValid()) {
+            $campaign = $formMultiple->getData()['campaign_multi'];
+            $location = null;
+            $activityModuleId = $formMultiple->get('activity_multi')->getData();
+        }
+
+        if($formSingle->isValid() || $formMultiple->isValid()) {
             $activity = new Activity();
 
             // Get the activity module's activity.
             $activityService = $this->get('campaignchain.core.activity');
-            $activityModule = $activityService->getActivityModule($form->get('activity')->getData());
+            $activityModule = $activityService->getActivityModule($activityModuleId);
 
             // Start wizard
             $wizard = $this->get('campaignchain.core.activity.wizard');
             $wizard->start(
                 $campaign,
-                $form->get('location')->getData(),
                 $activity,
-                $activityModule
+                $activityModule,
+                $location
             );
 
             $routes = $activityModule->getRoutes();
@@ -128,10 +180,11 @@ class ActivityController extends Controller
         }
 
         return $this->render(
-            'CampaignChainCoreBundle:Base:new_dependent_select.html.twig',
+            'CampaignChainCoreBundle:Activity:new.html.twig',
             array(
                 'page_title' => 'Create New Activity',
-                'form' => $form->createView(),
+                'form_single' => $formSingle->createView(),
+                'form_multiple' => $formMultiple->createView(),
                 'form_submit_label' => 'Next',
                 'dependent_select_parent' => 'form_location',
                 'dependent_select_child' => 'form_activity',

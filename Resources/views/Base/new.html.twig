@@ -11,7 +11,9 @@ file that was distributed with this source code.
 
 {% block javascripts %}
     {{ parent() }}
+    {% if form is defined %}
     {{ form_javascript(form) }}
+    {% endif %}
     <script>
         $(":required")
                 .closest(".control-group")
@@ -25,7 +27,9 @@ file that was distributed with this source code.
 
 {% block stylesheets %}
     {{ parent() }}
+    {% if form is defined %}
     {{ form_stylesheet(form) }}
+    {% endif %}
     {% stylesheets '@select2_css' combine=true %}
         <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
     {% endstylesheets %}
