@@ -307,6 +307,10 @@ campaignchain_core_user_new:
 fos_user_security:
     resource: "@FOSUserBundle/Resources/config/routing/security.xml"
 
+fos_user_security_login:
+    path: /login
+    defaults: { _controller: CampaignChainCoreBundle:Campaign:login }
+
 #fos_user_profile:
 #    resource: "@FOSUserBundle/Resources/config/routing/profile.xml"
 #    prefix: /user/profile
