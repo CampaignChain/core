@@ -36,6 +36,11 @@ class System extends Meta
     /**
      * @ORM\Column(type="string", length=100, nullable=true)
      */
+    protected $package;
+
+    /**
+     * @ORM\Column(type="string", length=100, nullable=true)
+     */
     protected $name;
 
     /**
@@ -43,20 +48,6 @@ class System extends Meta
      */
     protected $version;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
-    protected $logo;
-
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
-    protected $icon;
-
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
-    protected $style;
     /**
      * @ORM\Column(type="string", nullable=true)
      */
@@ -114,6 +105,29 @@ class System extends Meta
     }
 
     /**
+     * Set package
+     *
+     * @param string $package
+     * @return System
+     */
+    public function setPackage($package)
+    {
+        $this->package = $package;
+
+        return $this;
+    }
+
+    /**
+     * Get package
+     *
+     * @return string
+     */
+    public function getPackage()
+    {
+        return $this->package;
+    }
+
+    /**
      * Set name
      *
      * @param string $name
@@ -157,75 +171,6 @@ class System extends Meta
     public function getVersion()
     {
         return $this->version;
-    }
-
-    /**
-     * Set logo
-     *
-     * @param string $logo
-     * @return System
-     */
-    public function setLogo($logo)
-    {
-        $this->logo = $logo;
-
-        return $this;
-    }
-
-    /**
-     * Get logo
-     *
-     * @return string
-     */
-    public function getLogo()
-    {
-        return $this->logo;
-    }
-
-    /**
-     * Set icon
-     *
-     * @param string $icon
-     * @return System
-     */
-    public function setIcon($icon)
-    {
-        $this->icon = $icon;
-
-        return $this;
-    }
-
-    /**
-     * Get icon
-     *
-     * @return string
-     */
-    public function getIcon()
-    {
-        return $this->icon;
-    }
-
-    /**
-     * Set style
-     *
-     * @param string $style
-     * @return System
-     */
-    public function setStyle($style)
-    {
-        $this->style = $style;
-
-        return $this;
-    }
-
-    /**
-     * Get style
-     *
-     * @return string
-     */
-    public function getStyle()
-    {
-        return $this->style;
     }
 
     /**

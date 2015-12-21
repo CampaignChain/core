@@ -24,15 +24,9 @@ file that was distributed with this source code.
                 {% set brand_url = path('campaignchain_core_homepage') %}
             {% endif %}
 
-            {% if (campaignchain_system is not null) and (campaignchain_system.logo is not null) %}
-                <a class="navbar-brand" href="{{ app.request.getSchemeAndHttpHost() }}"><img src="{{ campaignchain_system.logo }}" height="24" class="visible-md-block visible-lg-block visible-sm-block">
-                {% if campaignchain_system.icon is not null %}
-                    <a class="navbar-brand" href="{{ app.request.getSchemeAndHttpHost() }}"><img src="{{ campaignchain_system.icon }}" height="24" class="visible-xs-block"></a>
-                {% endif %}
-                </a>
-            {% else %}
-                <a class="navbar-brand" href="{{ app.request.getSchemeAndHttpHost() }}">CampaignChain</a>
-            {% endif %}
+            <a class="navbar-brand" href="{{ app.request.getSchemeAndHttpHost() }}"><img src="/logo.png" height="24" class="visible-md-block visible-lg-block visible-sm-block">
+                <a class="navbar-brand" href="{{ app.request.getSchemeAndHttpHost() }}"><img src="/icon.png" height="24" class="visible-xs-block"></a>
+            </a>
 
             <ul class="navbar-nav nav campaignchain-navbar">
                 <li class="first"><a href="{{ path('campaignchain_core_plan') }}"><i class="fa fa-calendar"></i> <span class="visible-md-inline visible-lg-inline visible-sm-inline">Plan</span></a></li>

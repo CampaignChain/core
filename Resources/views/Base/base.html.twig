@@ -38,13 +38,11 @@ file that was distributed with this source code.
             {% stylesheets '@bootstrap_less' '@jquery_cropper_css' combine=true %}
                 <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
             {% endstylesheets %}
+            <link href="/style.css" type="text/css" rel="stylesheet" />
             {% stylesheets '@campaignchain_base_css' filter="cssrewrite"
             'bundles/campaignchaincore/css/*'%}
                 <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
             {% endstylesheets %}
-            {% if (campaignchain_system is not null) and (campaignchain_system.style is not null) %}
-                <link href="{{ campaignchain_system.style }}" type="text/css" rel="stylesheet" />
-            {% endif %}
         {% endblock %}
 
         <!-- Add Fonta Awesome Glyphicons -->

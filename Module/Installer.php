@@ -127,6 +127,8 @@ class Installer
         {
             $this->em->getConnection()->beginTransaction();
 
+            $this->registerDistribution();
+
             foreach($this->newBundles as $this->newBundle){
                 $params = $this->getModule(
                     $this->root.DIRECTORY_SEPARATOR.$this->newBundle->getPath().DIRECTORY_SEPARATOR.'campaignchain.yml'
@@ -134,10 +136,6 @@ class Installer
 
                 switch($this->newBundle->getType()){
                     case 'campaignchain-core':
-                        break;
-                    case 'campaignchain-distribution':
-                        // TODO: new vs. update
-                        $this->registerDistribution($params);
                         break;
                     case 'campaignchain-hook':
                         // TODO: new vs. update
@@ -448,7 +446,7 @@ class Installer
         }
     }
 
-    private function registerDistribution($params)
+    private function registerDistribution()
     {
         /*
          * If a system entry already exists (e.g. from sample
@@ -459,31 +457,22 @@ class Installer
         if(!$system){
             $system = new System();
         }
-        $system->setName($params['name']);
-        if(isset($params['version']) && !empty($params['version'])){
-            $system->setVersion($params['version']);
-        }
-        $system->setHomepage($this->newBundle->getHomepage());
-        if(isset($params['logo']) && !empty($params['logo'])){
-            $logoPath = $this->container->get('templating.helper.assets')
-                ->getUrl($params['assets_path'].$params['logo'],null);
-            $system->setLogo($logoPath);
-        }
-        if(isset($params['icon']) && !empty($params['icon'])){
-            $iconPath = $this->container->get('templating.helper.assets')
-                ->getUrl($params['assets_path'].$params['icon'],null);
-            $system->setIcon($iconPath);
-        }
-        if(isset($params['style']) && !empty($params['style'])){
-            $cssPath = $this->container->get('templating.helper.assets')
-                ->getUrl($params['assets_path'].$params['style'],null);
-            $system->setStyle($cssPath);
-        }
 
-        $system->setModules($params['modules']);
+        $config = $this->container->get('kernel')->getRootDir().'/../composer.json';
+        $configContent = file_get_contents($config);
+        $params = json_decode($configContent, true);
 
-        if(isset($params['terms_url']) && !empty($params['terms_url'])){
-            $system->setTermsUrl($params['terms_url']);
+        $system->setPackage($params['name']);
+        $system->setName($params['description']);
+        $system->setVersion($params['version']);
+        $system->setHomepage($params['homepage']);
+        $system->setModules($params['extra']['campaignchain']['distribution']['modules']);
+
+        if(
+            isset($params['extra']['campaignchain']['distribution']['terms-url']) &&
+            !empty($params['extra']['campaignchain']['distribution']['terms-url'])
+        ){
+            $system->setTermsUrl($params['extra']['campaignchain']['distribution']['terms-url']);
         }
 
         $this->em->persist($system);

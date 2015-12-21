@@ -30,11 +30,7 @@ file that was distributed with this source code.
     <div class="modal-dialog">
     <div class="modal-content">
         <div class="modal-header">
-            {% if (campaignchain_system is not null) and (campaignchain_system.logo is not null) %}
-                <img src="{{ campaignchain_system.logo }}" height="24">
-            {% else %}
-                <h3 class="modal-title">CampaignChain</h3>
-            {% endif %}
+            <img src="/logo.png" height="24">
         </div>
         <div class="modal-body">
             {% block fos_user_content %}

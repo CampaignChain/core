@@ -31,7 +31,7 @@
         "symfony/process": "~2.5",
         "sensio/distribution-bundle": "3.0.13",
         "sensio/framework-extra-bundle": "~3.0",
-        "sensio/generator-bundle": ">=2.3",
+        "sensio/generator-bundle": "~2.5",
         "components/jquery": "1.11.*",
         "oyejorge/less.php": "~1.5",
         "braincrafted/bootstrap-bundle": "dev-master",
