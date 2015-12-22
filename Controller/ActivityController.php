@@ -239,6 +239,12 @@ class ActivityController extends Controller
         );
     }
 
+    public function  removeAction(Request $request, $id)
+    {
+        $activityService = $this->get('campaignchain.core.activity');
+        $activityService->removeActivity($id);
+    }
+
     public function moveApiAction(Request $request)
     {
         $encoders = array(new JsonEncoder());
