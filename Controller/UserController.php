@@ -16,7 +16,18 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
 class UserController extends Controller
+
 {
+    public function loginAction()
+    {
+        if ($this->container->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+
+            return $this->redirectToRoute('campaignchain_core_homepage');
+        }
+
+        return $this->forward('FOSUserBundle:Security:login');
+    }
+
     /**
      * List every user from the DB
      *

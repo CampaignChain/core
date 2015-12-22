@@ -26,16 +26,6 @@ class CampaignController extends Controller
 {
     const FORMAT_DATEINTERVAL = 'Years: %Y, months: %m, days: %d, hours: %h, minutes: %i, seconds: %s';
 
-    public function loginAction()
-    {
-        if ($this->container->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
-
-            return $this->redirectToRoute('campaignchain_core_homepage');
-        }
-
-        return $this->forward('FOSUserBundle:Security:login');
-    }
-
     public function indexAction(){
         $repository = $this->getDoctrine()
             ->getRepository('CampaignChainCoreBundle:Campaign');
