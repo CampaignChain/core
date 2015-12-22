@@ -309,7 +309,7 @@ fos_user_security:
 
 fos_user_security_login:
     path: /login
-    defaults: { _controller: CampaignChainCoreBundle:Campaign:login }
+    defaults: { _controller: CampaignChainCoreBundle:User:login }
 
 #fos_user_profile:
 #    resource: "@FOSUserBundle/Resources/config/routing/profile.xml"
