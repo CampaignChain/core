@@ -32,7 +32,8 @@ file that was distributed with this source code.
                             {% if milestone.status == "paused" %}text-muted {% endif %}
                             ">
                         <td>{{ milestone.name }}</td>
-                        <td>{{ milestone.getCampaign().getName() }}</td>
+                        <td>   <a href="{{ path(milestone.campaign.campaignModule.routes.plan_detail,{'id': milestone.campaign.id}) }}">{{ milestone.campaign.name }}</a></td>
+                        <td>{{ milestone.campaign.name }}</td>
                         <td>{{ milestone|campaignchain_tpl_trigger_hook_inline }}</td>
                         <td align="center">
                             <a  class="btn btn-primary"
