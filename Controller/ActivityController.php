@@ -60,26 +60,6 @@ class ActivityController extends Controller
                 )
             ));
 
-        $formMultiple = $this->createFormBuilder()
-            ->add('campaign_multi', 'entity', array(
-                'label' => 'Campaign',
-                'class' => 'CampaignChainCoreBundle:Campaign',
-                'query_builder' => function(EntityRepository $er) {
-                    return $er->createQueryBuilder('campaign')
-                        ->where('campaign.status != :statusClosed')
-                        ->andWhere('campaign.status != :statusBackgroundProcess')
-                        ->setParameter('statusClosed', Action::STATUS_CLOSED)
-                        ->setParameter('statusBackgroundProcess', Action::STATUS_BACKGROUND_PROCESS)
-                        ->orderBy('campaign.startDate', 'ASC');
-                },
-                'property' => 'name',
-                'empty_value' => 'Select a Campaign',
-                'empty_data' => null,
-                'attr' => array(
-                    'selected' => $this->get('session')->get('campaignchain.campaign'),
-                )
-            ));
-
         $formSingle
         // TODO: Only show channels that actually have min. 1 related activity module.
             ->add('location', 'entity', array(
@@ -120,41 +100,69 @@ class ActivityController extends Controller
             ));
 
         $formSingle = $formSingle->getForm();
-
-        $formMultiple
-            ->add('activity_multi', 'entity', array(
-                'label' => 'Activity',
-                'class' => 'CampaignChainCoreBundle:ActivityModule',
-                'query_builder' => function(EntityRepository $er) {
-                    return $er->createQueryBuilder('am')
-                        ->leftJoin('am.channelModules', 'cm')
-                        ->where('cm IS NULL')
-                        ->orderBy('am.displayName', 'ASC');
-                },
-                'property' => 'displayName',
-                'empty_value' => 'Select an Activity',
-                'empty_data' => null,
-                'attr' => array(
-                    'selected' => $this->get('session')->get('campaignchain.campaign'),
-                )
-            ));
-
-        $formMultiple = $formMultiple->getForm();
-
         $formSingle->handleRequest($request);
-        $formMultiple->handleRequest($request);
+
+        // See if we also have multi-location Activities.
+        $repository = $this->getDoctrine()->getRepository('CampaignChainCoreBundle:ActivityModule');
+        $qb = $repository->createQueryBuilder('am')
+            ->leftJoin('am.channelModules', 'cm')
+            ->where('cm IS NULL')
+            ->orderBy('am.displayName', 'ASC')
+            ->getQuery();
+        $multiLocationActivities = $qb->getResult();
+
+        if($multiLocationActivities) {
+
+            $formMultiple = $this->createFormBuilder();
+
+            $formMultiple
+                ->add('campaign_multi', 'entity', array(
+                    'label' => 'Campaign',
+                    'class' => 'CampaignChainCoreBundle:Campaign',
+                    'query_builder' => function (EntityRepository $er) {
+                        return $er->createQueryBuilder('campaign')
+                            ->where('campaign.status != :statusClosed')
+                            ->andWhere('campaign.status != :statusBackgroundProcess')
+                            ->setParameter('statusClosed', Action::STATUS_CLOSED)
+                            ->setParameter('statusBackgroundProcess', Action::STATUS_BACKGROUND_PROCESS)
+                            ->orderBy('campaign.startDate', 'ASC');
+                    },
+                    'property' => 'name',
+                    'empty_value' => 'Select a Campaign',
+                    'empty_data' => null,
+                    'attr' => array(
+                        'selected' => $this->get('session')->get('campaignchain.campaign'),
+                    )
+                ));
+
+            $formMultiple
+                ->add('activity_multi', 'entity', array(
+                    'label' => 'Activity',
+                    'class' => 'CampaignChainCoreBundle:ActivityModule',
+                    'choices' => $multiLocationActivities,
+                    'property' => 'displayName',
+                    'empty_value' => 'Select an Activity',
+                    'empty_data' => null,
+                    'attr' => array(
+                        'selected' => $this->get('session')->get('campaignchain.campaign'),
+                    )
+                ));
+
+            $formMultiple = $formMultiple->getForm();
+            $formMultiple->handleRequest($request);
+        }
 
         if ($formSingle->isValid()) {
             $campaign = $formSingle->getData()['campaign'];
             $location = $formSingle->get('location')->getData();
             $activityModuleId = $formSingle->get('activity')->getData();
-        } elseif($formMultiple->isValid()) {
+        } elseif($multiLocationActivities && $formMultiple->isValid()) {
             $campaign = $formMultiple->getData()['campaign_multi'];
             $location = null;
             $activityModuleId = $formMultiple->get('activity_multi')->getData();
         }
 
-        if($formSingle->isValid() || $formMultiple->isValid()) {
+        if($formSingle->isValid() || ($multiLocationActivities && $formMultiple->isValid())) {
             $activity = new Activity();
 
             // Get the activity module's activity.
@@ -179,12 +187,17 @@ class ActivityController extends Controller
             );
         }
 
+        $formMultipleView = null;
+        if($multiLocationActivities){
+            $formMultipleView = $formMultiple->createView();
+        }
+
         return $this->render(
             'CampaignChainCoreBundle:Activity:new.html.twig',
             array(
                 'page_title' => 'Create New Activity',
                 'form_single' => $formSingle->createView(),
-                'form_multiple' => $formMultiple->createView(),
+                'form_multiple' => $formMultipleView,
                 'form_submit_label' => 'Next',
                 'dependent_select_parent' => 'form_location',
                 'dependent_select_child' => 'form_activity',
