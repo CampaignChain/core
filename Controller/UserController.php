@@ -88,17 +88,22 @@ class UserController extends Controller
             );
         }
 
-        $activation = ($user->isEnabled()) ? $user->setEnabled(false) : $user->setEnabled(true);
-        $userManager->updateUser($user);
+        if (!$user->isSuperAdmin()) {
 
-        if($user->isEnabled()){
-            $this->addFlash('info', 'User account enabled!');
+            $activation = ($user->isEnabled()) ? $user->setEnabled(false) : $user->setEnabled(true);
+            $userManager->updateUser($user);
+
+            if ($user->isEnabled()) {
+                $this->addFlash('info', 'User account enabled!');
+            } else {
+                $this->addFlash('info', 'User account disabled!');
+            }
+
+            return $this->redirectToRoute('campaignchain_core_user');
         }
-        else {
-            $this->addFlash('info', 'User account disabled!');
+        else{
+            $this->addFlash('warning', 'This user can not be disabled');
+            return $this->redirectToRoute('campaignchain_core_user');
         }
-
-
-        return $this->redirectToRoute('campaignchain_core_user');
     }
 }
