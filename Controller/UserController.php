@@ -77,4 +77,33 @@ class UserController extends Controller
                 'page_title' => 'New User',
             ));
     }
+
+    public function toggleEnablingAction($id){
+        $userManager = $this->get('fos_user.user_manager');
+        $user = $userManager->findUserBy(array('id'=>$id));
+
+        if (!$user) {
+            throw $this->createNotFoundException(
+                'No User found for id '.$id
+            );
+        }
+
+        if (!$user->isSuperAdmin()) {
+
+            $activation = ($user->isEnabled()) ? $user->setEnabled(false) : $user->setEnabled(true);
+            $userManager->updateUser($user);
+
+            if ($user->isEnabled()) {
+                $this->addFlash('info', 'User account enabled!');
+            } else {
+                $this->addFlash('info', 'User account disabled!');
+            }
+
+            return $this->redirectToRoute('campaignchain_core_user');
+        }
+        else{
+            $this->addFlash('warning', 'Users with super admin privileges can not be disabled');
+            return $this->redirectToRoute('campaignchain_core_user');
+        }
+    }
 }
