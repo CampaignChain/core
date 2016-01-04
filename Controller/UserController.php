@@ -102,7 +102,7 @@ class UserController extends Controller
             return $this->redirectToRoute('campaignchain_core_user');
         }
         else{
-            $this->addFlash('warning', 'This user can not be disabled');
+            $this->addFlash('warning', 'Users with super admin privileges can not be disabled');
             return $this->redirectToRoute('campaignchain_core_user');
         }
     }
