@@ -45,7 +45,7 @@ class PackageController extends BaseController
      *  section="Core"
      * )
      *
-     * @REST\GET("/vendors")
+     * @REST\Get("/vendors")
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
