@@ -173,6 +173,8 @@ services:
     campaignchain.core.install.wizard.step.bitly:
         class: CampaignChain\CoreBundle\Wizard\Install\Step\BitlyStep
         public: false
+        calls:
+            - [ setServices, [ @campaignchain.core.util.command ] ]
         tags:
             - {name: "campaignchain.install.step", priority: '200'}
     campaignchain.core.install.wizard.step.admin:
@@ -233,3 +235,9 @@ services:
 
     campaignchain.core.http_client:
         class: GuzzleHttp\Client
+
+# This service definition will override the one provided by the hpatoio_bitly bundle, so make sure the hpatoio_bitly bundle is loaded
+# before the core bundle in the AppKernel
+    hpatoio_bitly.client:
+        class: "Hpatoio\\Bitly\\Client"
+        arguments: ["@=service('campaignchain.core.system').getBitlyAccessToken()"]

@@ -235,7 +235,7 @@ fos_user:
     group:
         group_class: "CampaignChain\\CoreBundle\\Entity\\Group"
 hpatoio_bitly:
-    access_token: "%bitly_access_token%"
+    access_token: "please_ignore"
     profiler: null
     file_log_format: "default"
 sp_bower:

@@ -12,37 +12,38 @@ namespace CampaignChain\CoreBundle\Wizard\Install\Step;
 
 use Sensio\Bundle\DistributionBundle\Configurator\Step\StepInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use CampaignChain\CoreBundle\Wizard\Install\Validator\Constraints as InstallAssert;
 use CampaignChain\CoreBundle\Wizard\Install\Form\BitlyStepType;
 use CampaignChain\CoreBundle\Wizard\Install\Driver\YamlConfig;
 use Symfony\Component\Filesystem\Filesystem;
+use CampaignChain\CoreBundle\Util\CommandUtil;
 
 class BitlyStep implements StepInterface
 {
     /**
      * @Assert\NotBlank
+     * @InstallAssert\IsValidBitlyToken
      */
     public $access_token;
 
     private $context;
 
+    private $command;
+
     public function setContext(array $context){
         $this->context = $context;
     }
 
-    protected function getConfigFilePath()
-    {
-        return 'config'.DIRECTORY_SEPARATOR.'parameters.yml';
+    public function setServices(CommandUtil $command){
+        $this->command = $command;
     }
 
     public function setParameters(array $parameters)
     {
-        $yamlConfig = new YamlConfig($this->context['kernel_dir'], $this->getConfigFilePath());
-        $parameters = $yamlConfig->read();
-
-        $this->access_token = $parameters['parameters']['bitly_access_token'];
-
-        if ('insert_here_your_bitly_access_token' == $this->access_token) {
-            $this->access_token = '';
+        if(!isset($parameters['access_token'])){
+            $this->access_token = null;
+        } else {
+            $this->access_token = $parameters['access_token'];
         }
     }
 
@@ -75,7 +76,7 @@ class BitlyStep implements StepInterface
      */
     public function update(StepInterface $data)
     {
-        return array('parameters' => array('bitly_access_token' => $data->access_token));
+        return array('bitly_access_token' => $data->access_token);
     }
 
     /**
@@ -87,8 +88,6 @@ class BitlyStep implements StepInterface
     }
 
     public function execute($parameters){
-        $yamlConfig = new YamlConfig($this->context['kernel_dir'], $this->getConfigFilePath());
-        $yamlConfig->write($parameters);
-        $yamlConfig->clean();
+        $this->command->createBitlyAccessToken($parameters);
     }
 }
