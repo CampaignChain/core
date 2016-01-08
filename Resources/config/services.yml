@@ -236,8 +236,6 @@ services:
     campaignchain.core.http_client:
         class: GuzzleHttp\Client
 
-# This service definition will override the one provided by the hpatoio_bitly bundle, so make sure the hpatoio_bitly bundle is loaded
-# before the core bundle in the AppKernel
     hpatoio_bitly.client:
         class: "Hpatoio\\Bitly\\Client"
         arguments: ["@=service('campaignchain.core.system').getBitlyAccessToken()"]

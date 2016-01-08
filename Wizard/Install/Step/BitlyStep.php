@@ -11,18 +11,21 @@
 namespace CampaignChain\CoreBundle\Wizard\Install\Step;
 
 use Sensio\Bundle\DistributionBundle\Configurator\Step\StepInterface;
-use Symfony\Component\Validator\Constraints as Assert;
 use CampaignChain\CoreBundle\Wizard\Install\Validator\Constraints as InstallAssert;
+use Symfony\Component\Validator\Constraints as Assert;
 use CampaignChain\CoreBundle\Wizard\Install\Form\BitlyStepType;
 use CampaignChain\CoreBundle\Wizard\Install\Driver\YamlConfig;
 use Symfony\Component\Filesystem\Filesystem;
 use CampaignChain\CoreBundle\Util\CommandUtil;
 
+/**
+ * @Assert\GroupSequence({"BitlyStep", "CheckToken"})
+ */
 class BitlyStep implements StepInterface
 {
     /**
      * @Assert\NotBlank
-     * @InstallAssert\IsValidBitlyToken
+     * @InstallAssert\IsValidBitlyToken(groups={"CheckToken"})
      */
     public $access_token;
 

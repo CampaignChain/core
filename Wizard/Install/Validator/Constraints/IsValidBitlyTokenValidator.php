@@ -21,11 +21,11 @@ class IsValidBitlyTokenValidator extends ConstraintValidator
 {
 
     /**
-     * Test if the provided token is working with bitly
+     * Test if the provided token is not empty and working with bitly
      *
      * @param mixed $value
      * @param Constraint $constraint
-     * @throws Exception
+     * @throws \Exception
      */
     public function validate($value, Constraint $constraint)
     {
@@ -38,7 +38,7 @@ class IsValidBitlyTokenValidator extends ConstraintValidator
             $this->context->buildViolation($constraint->message)
                 ->setParameter('%string%', $value)
                 ->addViolation();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // rethrow it
             throw $e;
         }
