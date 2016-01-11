@@ -11,6 +11,7 @@
 namespace CampaignChain\CoreBundle\Util;
 
 use CampaignChain\CoreBundle\Entity\User;
+use CampaignChain\CoreBundle\EntityService\SystemService;
 use Composer\Command\RequireCommand;
 use FOS\UserBundle\Doctrine\UserManager;
 use Symfony\Bundle\FrameworkBundle\Command\CacheClearCommand;
@@ -140,6 +141,18 @@ class CommandUtil
         $user->setLastName($parameters['lastName']);
 
         $userManager->updateUser($user);
+    }
+
+    /*
+     * Write bitly access token to database
+     *
+     * @param array $parameters
+     */
+    public function createBitlyAccessToken(array $parameters)
+    {
+        /** @var SystemService $systemService */
+        $systemService = $this->kernel->getContainer()->get('campaignchain.core.system');
+        $systemService->updateBitlyAccessToken($parameters['bitly_access_token']);
     }
 
     public function composerRequire($name, $version)

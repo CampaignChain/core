@@ -234,10 +234,6 @@ fos_user:
     user_class: "CampaignChain\\CoreBundle\\Entity\\User"
     group:
         group_class: "CampaignChain\\CoreBundle\\Entity\\Group"
-hpatoio_bitly:
-    access_token: "%bitly_access_token%"
-    profiler: null
-    file_log_format: "default"
 sp_bower:
     allow_root: true
     assetic:

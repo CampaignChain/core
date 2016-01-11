@@ -30,4 +30,29 @@ class SystemService
     {
         return $this->em->getRepository('CampaignChainCoreBundle:System')->findOneBy([], ['id' => 'ASC']);
     }
+
+    /*
+     * Get bitly access token from database
+     *
+     * @return string access token
+     */
+    public function getBitlyAccessToken()
+    {
+        $activeSystem = $this->getActiveSystem();
+
+        return $activeSystem->getBitlyAccessToken();
+    }
+
+    /*
+     * Update Bitly access token
+     *
+     * @param string $access_token
+     */
+    public function updateBitlyAccessToken($access_token)
+    {
+        $activeSystem = $this->getActiveSystem();
+        $activeSystem->setBitlyAccessToken($access_token);
+        $this->em->persist($activeSystem);
+        $this->em->flush();
+    }
 }
