@@ -167,8 +167,6 @@ iframe {
     background-image: url("/bundles/campaignchaincore/images/spinner.gif");
     background-repeat: no-repeat;
     background-position: 50% 50%;
-    background-size: cover;
-    background-attachment: fixed;
 }
 
 .scroll-to-fixed-fixed {
