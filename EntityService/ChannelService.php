@@ -14,17 +14,25 @@ use Doctrine\ORM\EntityManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use CampaignChain\CoreBundle\Util\ParserUtil;
 use CampaignChain\CoreBundle\Entity\CTA;
+use Doctrine\Common\Collections\ArrayCollection;
+use CampaignChain\CoreBundle\Entity\Activity;
+use CampaignChain\CoreBundle\Entity\Location;
+use CampaignChain\CoreBundle\Entity\Channel;
 
 class ChannelService
 {
     protected $em;
     protected $container;
+    protected $activityService;
+    protected $locationService;
 
 
-    public function __construct(EntityManager $em, ContainerInterface $container)
+    public function __construct(EntityManager $em, ContainerInterface $container, ActivityService $activityService, LocationService $locationService)
     {
         $this->em = $em;
         $this->container = $container;
+        $this->activityService = $activityService;
+        $this->locationService = $locationService;
     }
 
     public function getChannel($id){
@@ -98,4 +106,104 @@ class ChannelService
 
         return $query->getResult();
     }
+    /**
+     * This method deletes a channel if there are no closed activities.
+     * If there are open activities the location is deactivated
+     *
+     * @param $id
+     * @throws \Exception
+     */
+    public function removeChannel($id)
+    {
+        $channel = $this->em
+            ->getRepository('CampaignChainCoreBundle:Channel')
+            ->find($id);
+
+        if (!$channel) {
+            throw new \Exception(
+                'No channel found for id ' . $id
+            );
+        }
+        //
+        $locations = $channel->getLocations();
+
+        $openActivities = new ArrayCollection();
+        $closedActivities = new ArrayCollection();
+        foreach ($locations as $location){
+        foreach ($location->getActivities() as $activity) {
+            if ($activity->getStatus() == 'closed') {
+                $closedActivities->add($activity);
+            } else {
+                $openActivities->add($activity);
+            }
+        }
+        }
+
+        if (!$closedActivities->isEmpty()) {
+            //deaktivieren
+        } else {
+            foreach ($openActivities as $activity) {
+                $this->activityService->removeActivity($activity);
+            }
+            foreach($locations as $location){
+                $this->locationService->removeLocation($location);
+            }
+            $this->em->remove($channel);
+            $this->em->flush();
+
+
+        }
+    }
+    public function isRemovable($id){
+        $channel = $this->em
+            ->getRepository('CampaignChainCoreBundle:Channel')
+            ->find($id);
+
+        if (!$channel) {
+            throw new \Exception(
+                'No channel found for id ' . $id
+            );
+        }
+
+        $schedulerReportsChannels = $this->em
+            ->getRepository('CampaignChainCoreBundle:ReportAnalyticsChannelFact')
+            ->findBy(array('channel' => $channel));
+        if (!empty($schedulerReportsChannels)) {
+            return false;
+        }
+
+        $notRemovableLocations = 0;
+        foreach ($channel->getLocations() as $location) {
+            if (!$this->locationService->isRemovable($location)) {
+                $notRemovableLocations++;
+                break;
+            }
+        }
+        if ($notRemovableLocations>0){
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
+
+    public function toggleStatusChannel($id){
+        $channel = $this->em
+            ->getRepository('CampaignChainCoreBundle:Channel')
+            ->find($id);
+
+        if (!$channel) {
+            throw new \Exception(
+                'No channel found for id ' . $id
+            );
+        }
+
+        $toggle = (($channel->getStatus()==Location::STATUS_ACTIVE) ? $channel->setStatus(Location::STATUS_INACTIVE) : $channel->setStatus(Location::STATUS_ACTIVE));
+        foreach ($channel->getLocations() as $location) {
+            $location->setStatus($channel->getStatus());
+        }
+        $this->em->persist($channel);
+        $this->em->flush();
+    }
+
 }

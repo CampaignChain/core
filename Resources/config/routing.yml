@@ -103,6 +103,12 @@ campaignchain_core_activities_new:
             rest:
                 expose: true
 
+
+campaignchain_core_activity_remove:
+    pattern:  /activity/{id}/remove
+    defaults: { _controller: CampaignChainCoreBundle:Activity:remove }
+
+
 campaignchain_core_activity_edit:
     pattern:  /activity/{id}/edit
     defaults: { _controller: CampaignChainCoreBundle:Activity:edit }
@@ -171,6 +177,10 @@ campaignchain_core_milestone_move_api:
     options:
         expose: true
 
+campaignchain_core_milestone_remove:
+    pattern:  /milestone/{id}/remove
+    defaults: { _controller: CampaignChainCoreBundle:Milestone:remove }
+
 campaignchain_core_report:
     pattern:  /reports/{id}
     defaults: { _controller: CampaignChainCoreBundle:Report:index, id: 0 }
@@ -224,6 +234,14 @@ campaignchain_core_channel_cta_tracking_test:
     pattern:  /api/private/channel/{id}/cta-tracking/test
     defaults: { _controller: CampaignChainCoreBundle:Channel:apiTestCtaTracking, id: 0 }
 
+campaignchain_core_channel_remove:
+    pattern:  /channel/{id}/remove
+    defaults: { _controller: CampaignChainCoreBundle:Channel:remove }
+
+campaignchain_core_channel_toggle_status:
+    pattern:  /channel/{id}/toggleStatus
+    defaults: { _controller: CampaignChainCoreBundle:Channel:toggleStatus }
+
 campaignchain_core_report_list_cta_locations_per_campaign_api:
     pattern:  /api/private/report/cta/campaign/{id}/locations
     defaults: { _controller: CampaignChainCoreBundle:Report:apiListCtaLocationsPerCampaign }
@@ -244,6 +262,14 @@ campaignchain_core_location_list_activities_api:
     defaults: { _controller: CampaignChainCoreBundle:Location:apiListActivities }
     options:
         expose: true
+
+campaignchain_core_location_remove:
+    pattern:  /location/{id}/remove
+    defaults: { _controller: CampaignChainCoreBundle:Location:remove }
+
+campaignchain_core_location_toggle_status:
+    pattern:  /location/{id}/toggleDisabling
+    defaults: { _controller: CampaignChainCoreBundle:Location:toggleStatus }
 
 campaignchain_core_tracking_new_api:
     pattern:  /api/v1/report/cta/new/{channel}

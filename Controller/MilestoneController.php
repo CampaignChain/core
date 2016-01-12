@@ -115,6 +115,7 @@ class MilestoneController extends Controller
         );
     }
 
+
     public function editModalAction(Request $request, $id){
         // TODO: If a milestone is over/done, it cannot be edited.
         $milestoneService = $this->get('campaignchain.core.milestone');
@@ -164,5 +165,11 @@ class MilestoneController extends Controller
 
         $response = new Response($serializer->serialize($responseData, 'json'));
         return $response->setStatusCode(Response::HTTP_OK);
+    }
+    public function  removeAction(Request $request, $id)
+    {
+        $milestoneService = $this->get('campaignchain.core.milestone');
+        $milestoneService->removeMilestone($id);
+        return $this->redirectToRoute('campaignchain_core_milestone');
     }
 }

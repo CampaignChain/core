@@ -56,7 +56,7 @@ class Activity extends Action implements AssignableInterface
     protected $location;
 
     /**
-     * @ORM\OneToMany(targetEntity="Operation", mappedBy="activity",cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="Operation", mappedBy="activity",cascade={"persist", "remove"})
      */
     protected $operations;
 

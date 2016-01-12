@@ -84,7 +84,7 @@ services:
             - {name: form.type, alias: "campaignchain_core_user" }
     campaignchain.core.location:
         class: CampaignChain\CoreBundle\EntityService\LocationService
-        arguments: [ @doctrine.orm.entity_manager, @service_container ]
+        arguments: [ @doctrine.orm.entity_manager, @service_container, @campaignchain.core.activity]
     campaignchain.core.fact:
         class: CampaignChain\CoreBundle\EntityService\FactService
         arguments: [ @doctrine.orm.entity_manager ]
@@ -95,7 +95,7 @@ services:
         arguments: [ @doctrine.orm.entity_manager, @service_container ]
     campaignchain.core.channel:
         class: CampaignChain\CoreBundle\EntityService\ChannelService
-        arguments: [ @doctrine.orm.entity_manager, @service_container ]
+        arguments: [ @doctrine.orm.entity_manager, @service_container, @campaignchain.core.activity, @campaignchain.core.location]
     campaignchain.core.operation:
         class: CampaignChain\CoreBundle\EntityService\OperationService
         arguments: [ @doctrine.orm.entity_manager, @service_container ]

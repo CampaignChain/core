@@ -10,6 +10,7 @@
 
 namespace CampaignChain\CoreBundle\Controller;
 
+use CampaignChain\CoreBundle\Entity\Location;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use CampaignChain\CoreBundle\Entity\Channel;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,10 +26,19 @@ class LocationController extends Controller
         $repository = $this->getDoctrine()
             ->getRepository('CampaignChainCoreBundle:Location');
 
+        //$query = $repository->createQueryBuilder('location')
+          //  ->where('location.operation IS NULL')
+            //->orderBy('location.name', 'ASC')
+            //->getQuery();
+
         $query = $repository->createQueryBuilder('location')
+            ->select('location', 'channel')
+            ->join('location.channel','channel')
             ->where('location.operation IS NULL')
+            ->andWhere('channel.status = ?1')
             ->orderBy('location.name', 'ASC')
             ->getQuery();
+        $query->setParameters(array(1 => Channel::STATUS_ACTIVE));
 
         $locations = $query->getResult();
 
@@ -73,5 +83,17 @@ class LocationController extends Controller
         $serializer = new Serializer($normalizers, $encoders);
 
         return new Response($serializer->serialize($response, 'json'));
+    }
+    public function  removeAction(Request $request, $id)
+    {
+        $locationService = $this->get('campaignchain.core.location');
+        $locationService->removeLocation($id);
+        return $this->redirectToRoute('campaignchain_core_location');
+    }
+    public function toggleStatusAction(Request $request, $id)
+    {
+        $locationService = $this->get('campaignchain.core.location');
+        $locationService->toggleStatus($id);
+        return $this->redirectToRoute('campaignchain_core_location');
     }
 }

@@ -183,4 +183,18 @@ class ChannelController extends Controller
 
         return new Response($serializer->serialize($response, 'json'));
     }
+
+    public function removeAction(Request $request, $id)
+    {
+        $channelService = $this->get('campaignchain.core.channel');
+        $channelService->removeChannel($id);
+        return $this->redirectToRoute('campaignchain_core_channel');
+    }
+
+    public function toggleStatusAction(Request $request, $id)
+    {
+        $channelService = $this->get('campaignchain.core.channel');
+        $channelService->toggleStatusChannel($id);
+        return $this->redirectToRoute('campaignchain_core_channel');
+    }
 }

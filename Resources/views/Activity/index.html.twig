@@ -47,21 +47,35 @@ file that was distributed with this source code.
                             {{ activity|campaignchain_tpl_trigger_hook_inline }}
                         </td>
                         <td align="center">
-                            {% if activity.status == "open" or activity.status == "paused" %}
-                                <a  class="btn btn-primary"
-                                    role="button"
-                                    data-toggle="tooltip" data-placement="top" data-original-title="Edit"
-                                    href="{{ path('campaignchain_core_activity_edit',{'id':activity.id}) }}">
-                                    <i class="fa fa-pencil"></i>
-                                </a>
-                            {% elseif activity.status == "closed" %}
-                                <a  class="btn btn-primary"
-                                    role="button"
-                                    data-toggle="tooltip" data-placement="top" data-original-title="View"
-                                    href="{{ path('campaignchain_core_activity_read',{'id':activity.id}) }}">
-                                    <span class="fa fa-file-text"></span>
-                                </a>
+                            {% if activity.status == 'open' or activity.status == 'paused' %}
+                            <a  class="btn btn-primary"
+                                role="button"
+                                data-toggle="tooltip" data-placement="top" data-original-title="Edit"
+                                href="{{ path('campaignchain_core_activity_edit',{'id':activity.id}) }}">
+                                <i class="fa fa-pencil"></i>
+                            </a>
+                            {% else %}
+                            <a  class="btn btn-primary"
+                                role="button"
+                                data-toggle="tooltip" data-placement="top" data-original-title="View"
+                                href="{{ path('campaignchain_core_activity_read',{'id':activity.id}) }}">
+                                <span class="fa fa-file-text"></span>
+                            </a>
                             {% endif %}
+                            {% if activity|campaignchain_is_removable %}
+                                <a  class="btn btn-danger"
+                                    role="button"
+                                    data-toggle="tooltip" data-placement="top" data-original-title="Remove this activity"
+                                    href="{{ path('campaignchain_core_activity_remove',{'id':activity.id}) }}">
+                                    <i class="fa fa-trash"></i>
+                                </a>
+                            {% else %}
+                                <a  class="btn btn-danger" disabled="disabled"
+                                    role="button"
+                                    data-toggle="tooltip" data-placement="top" data-original-title="It's not possible to remove activities which have already started or used in reports">
+                                    <i class="fa fa-trash"></i>
+                                </a>
+                                {% endif %}
                             {#{% if activity.status == "paused" %}#}
                                 {#<button type="button" class="btn btn-default btn-xs">#}
                                     {#<a href="#"><span class="fa fa-play"></span></a>#}

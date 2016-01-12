@@ -13,6 +13,7 @@ namespace CampaignChain\CoreBundle\Twig;
 use CampaignChain\CoreBundle\Entity\User;
 use CampaignChain\CoreBundle\Util\ParserUtil;
 use CampaignChain\CoreBundle\Util\SystemUtil;
+use Proxies\__CG__\CampaignChain\CoreBundle\Entity\Milestone;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Doctrine\ORM\EntityManager;
 
@@ -56,6 +57,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
             new \Twig_SimpleFilter('campaignchain_make_links', array($this, 'makeLinks')),
             new \Twig_SimpleFilter('campaignchain_btn_copy_campaign', array($this, 'btnCopyCampaign'), array('is_safe' => array('html'))),
             new \Twig_SimpleFilter('campaignchain_user_avatar', array($this, 'userAvatar')),
+            new \Twig_SimpleFilter('campaignchain_is_removable', array($this, 'isRemovable')),
         );
     }
 
@@ -471,5 +473,24 @@ class CampaignChainCoreExtension extends \Twig_Extension
     public function getName()
     {
         return 'campaignchain_core_extension';
+    }
+
+    public function isRemovable($object){
+        $class = get_class($object);
+        switch($class){
+            case 'CampaignChain\CoreBundle\Entity\Location':
+                $locationService = $this->container->get('campaignchain.core.location');
+                return $locationService->isRemovable($object);
+            case 'CampaignChain\CoreBundle\Entity\Activity':
+                $activityService = $this->container->get('campaignchain.core.activity');
+                return $activityService->isRemovable($object);
+            case 'CampaignChain\CoreBundle\Entity\Channel':
+                $channelService = $this->container->get('campaignchain.core.channel');
+                return $channelService->isRemovable($object);
+            case 'CampaignChain\CoreBundle\Entity\Milestone':
+                $milestoneService = $this->container->get('campaignchain.core.milestone');
+                return $milestoneService->isRemovable($object);
+
+        }
     }
 }

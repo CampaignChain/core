@@ -28,7 +28,7 @@ class ActivityController extends Controller
 
     public function indexAction(){
         $activityService = $this->get('campaignchain.core.activity');
-        $activities = $activityService->getAllActivities();
+        $activities = $activityService->getAllActiveActivities();
 
         return $this->render(
             'CampaignChainCoreBundle:Activity:index.html.twig',
@@ -239,10 +239,11 @@ class ActivityController extends Controller
         );
     }
 
-    public function  removeAction(Request $request, $id)
+    public function removeAction(Request $request, $id)
     {
         $activityService = $this->get('campaignchain.core.activity');
         $activityService->removeActivity($id);
+        return $this->redirectToRoute('campaignchain_core_activities');
     }
 
     public function moveApiAction(Request $request)

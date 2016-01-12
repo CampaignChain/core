@@ -15,4 +15,5 @@ use CampaignChain\CoreBundle\Entity\Operation;
 interface OperationServiceInterface
 {
     public function cloneOperation(Operation $oldOperation, Operation $newOperation);
+    public function removeOperation($OperationId);
 }
