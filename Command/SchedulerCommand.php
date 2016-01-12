@@ -350,11 +350,6 @@ class SchedulerCommand extends ContainerAwareCommand
 
         $this->em = $this->getContainer()->get('doctrine.orm.entity_manager');
 
-        // Test whether we have a database connection.
-//        $this->testDatabase();
-        // Test whether we have Internet access.
-//        $this->testInternet();
-
         $this->scheduler = $this->startScheduler($this->interval);
 
         $this->logger->info('Scheduler with ID {id} started', ['id' => $this->scheduler->getId()]);
