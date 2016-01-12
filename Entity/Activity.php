@@ -13,7 +13,7 @@ namespace CampaignChain\CoreBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="CampaignChain\CoreBundle\Repository\ActivityRepository")
  * @ORM\Table(name="campaignchain_activity")
  */
 class Activity extends Action implements AssignableInterface

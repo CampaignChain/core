@@ -239,3 +239,16 @@ services:
     hpatoio_bitly.client:
         class: "Hpatoio\\Bitly\\Client"
         arguments: ["@=service('campaignchain.core.system').getBitlyAccessToken()"]
+
+    campaignchain.core.listener.console_exception:
+        class: CampaignChain\CoreBundle\EventListener\ConsoleExceptionListener
+        arguments:
+            logger: '@monolog.logger.scheduler'
+            entityManager: '@doctrine.orm.default_entity_manager'
+        tags:
+            - { name: kernel.event_listener, event: console.exception }
+
+    campaignchain.core.monolog_psr_processor:
+        class: Monolog\Processor\PsrLogMessageProcessor
+        tags:
+          - { name: monolog.processor }
