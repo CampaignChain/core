@@ -12,6 +12,7 @@ namespace CampaignChain\CoreBundle\EntityService;
 
 use CampaignChain\CoreBundle\Entity\Hook;
 use CampaignChain\CoreBundle\Entity\Location;
+use CampaignChain\CoreBundle\Entity\Operation;
 use CampaignChain\CoreBundle\Entity\ReportAnalyticsActivityFact;
 use CampaignChain\CoreBundle\Twig\CampaignChainCoreExtension;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -98,42 +99,42 @@ class ActivityService
     }
 
     /**
-     * @param $id
+     * @param Activity $activity
      * @return bool
      */
-    public function isRemovable($id)
+    public function isRemovable(Activity $activity)
     {
-        $activity = $this->em
-            ->getRepository('CampaignChainCoreBundle:Activity')
-            ->find($id);
-
-        /*$activity = $this->em->getRepository('CampaignChainCoreBundle:Activity')
-            ->createQueryBuilder('a')
-            ->select('a, o, sr')
-            ->leftJoin('a.operations', 'o')
-            ->leftJoin('o.scheduledReports', 'sr')
-            ->where('a.id = :id')
-            ->setParameter('id', $id)
-            ->getQuery()
-            ->getOneOrNullResult();*/
         //Deletion should only be possible if the activity is not closed
         if ($activity->getStatus() == "closed") {
             return false;
         }
 
+        /** @var Activity $activity */
+        $activity = $this->em
+            ->getRepository('CampaignChainCoreBundle:Activity')
+            ->createQueryBuilder('a')
+            ->select('a, f, o, sr, cta')
+            ->leftJoin('a.fact', 'f')
+            ->leftJoin('a.operations', 'o')
+            ->leftJoin('o.scheduledReports', 'sr')
+            ->leftJoin('o.outboundCTAs', 'cta')
+            ->where('a.id = :id')
+            ->setParameter('id', $activity)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        if (!$activity->getFact()->isEmpty()) {
+            return false;
+        }
+
+        /** @var Operation[] $operations */
         $operations = new ArrayCollection();
         foreach ($activity->getOperations() as $op) {
             $operations->add($op);
         }
         //Check if there are scheduled reports or cta data for the operation
         foreach ($operations as $op) {
-            $schedulerReportsOperations = $this->em
-                ->getRepository('CampaignChainCoreBundle:SchedulerReportOperation')
-                ->findBy(array('operation' => $op));
-            $ctaOperations = $this->em
-                ->getRepository('CampaignChainCoreBundle:ReportCTA')
-                ->findBy(array('operation' => $op));
-            if (!empty($schedulerReportsOperations) or !empty($ctaOperations)) {
+            if (!$op->getScheduledReports()->isEmpty() or !$op->getOutboundCTAs()->isEmpty()) {
                 return false;
             }
         }
@@ -144,13 +145,11 @@ class ActivityService
         $ctaActivities =$this->em
                 ->getRepository('CampaignChainCoreBundle:ReportCTA')
                 ->findBy(array('activity' => $activity));
-        $reportsFactActivities = $this->em
-                ->getRepository('CampaignChainCoreBundle:ReportAnalyticsActivityFact')
-                ->findBy(array('activity' => $activity));
-            if (!empty($schedulerReportsActivities) or !empty($ctaActivities) or !empty($reportsFactActivities)) {
-                return false;
 
+        if (!empty($schedulerReportsActivities) or !empty($ctaActivities)) {
+            return false;
         }
+
         return true;
     }
 
@@ -174,7 +173,7 @@ class ActivityService
             );
         }
 
-        if ( !$this->isRemovable($id)) {
+        if ( !$this->isRemovable($activity)) {
             throw new \LogicException(
                 'Deletion of activities is not possible when status is set to closed or there are scheduled reports'
             );

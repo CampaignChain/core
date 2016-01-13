@@ -26,6 +26,10 @@ class ChannelController extends Controller
             ->getRepository('CampaignChainCoreBundle:Channel');
 
         $query = $repository->createQueryBuilder('c')
+            ->select('c, cm, b, l')
+            ->join('c.channelModule', 'cm')
+            ->join('c.locations', 'l')
+            ->join('cm.bundle', 'b')
             ->orderBy('c.name', 'ASC')
             ->getQuery();
 

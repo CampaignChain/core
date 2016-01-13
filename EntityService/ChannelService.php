@@ -154,37 +154,28 @@ class ChannelService
 
         }
     }
-    public function isRemovable($id){
-        $channel = $this->em
-            ->getRepository('CampaignChainCoreBundle:Channel')
-            ->find($id);
 
-        if (!$channel) {
-            throw new \Exception(
-                'No channel found for id ' . $id
-            );
-        }
+    /**
+     * @param Channel $channel
+     * @return bool
+     */
+    public function isRemovable(Channel $channel){
 
         $schedulerReportsChannels = $this->em
             ->getRepository('CampaignChainCoreBundle:ReportAnalyticsChannelFact')
             ->findBy(array('channel' => $channel));
+
         if (!empty($schedulerReportsChannels)) {
             return false;
         }
 
-        $notRemovableLocations = 0;
         foreach ($channel->getLocations() as $location) {
             if (!$this->locationService->isRemovable($location)) {
-                $notRemovableLocations++;
-                break;
+                return false;
             }
         }
-        if ($notRemovableLocations>0){
-            return false;
-        }
-        else{
-            return true;
-        }
+        
+        return true;
     }
 
     public function toggleStatusChannel($id){

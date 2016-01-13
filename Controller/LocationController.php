@@ -32,13 +32,14 @@ class LocationController extends Controller
             //->getQuery();
 
         $query = $repository->createQueryBuilder('location')
-            ->select('location', 'channel')
+            ->select('location', 'channel', 'locationModule')
             ->join('location.channel','channel')
+            ->join('location.locationModule', 'locationModule')
             ->where('location.operation IS NULL')
             ->andWhere('channel.status = ?1')
             ->orderBy('location.name', 'ASC')
+            ->setParameters(array(1 => Channel::STATUS_ACTIVE))
             ->getQuery();
-        $query->setParameters(array(1 => Channel::STATUS_ACTIVE));
 
         $locations = $query->getResult();
 
