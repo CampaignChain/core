@@ -14,4 +14,6 @@ body.modal-open {
     /* ie8- graceful degradation */
     background-position: 50% 50% \9 !important;
     background-image: url("/bundles/campaignchaincore/images/banner.jpg");
+    background-size: cover;
+    background-attachment: fixed;
 }

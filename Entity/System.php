@@ -72,6 +72,11 @@ class System extends Meta
     protected $termsUrl;
 
     /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    protected $bitlyAccessToken;
+
+    /**
      * Get id
      *
      * @return integer
@@ -274,4 +279,28 @@ class System extends Meta
     {
         return $this->termsUrl;
     }
+
+    /**
+     * Set bitly access token
+     *
+     * @param string $bitlyAccessToken
+     * @return System
+     */
+    public function setBitlyAccessToken($bitlyAccessToken)
+    {
+        $this->bitlyAccessToken = $bitlyAccessToken;
+
+        return $this;
+    }
+
+    /**
+     * Get bitly access token
+     *
+     * @return string
+     */
+    public function getBitlyAccessToken()
+    {
+        return $this->bitlyAccessToken;
+    }
+
 }

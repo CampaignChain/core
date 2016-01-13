@@ -328,6 +328,15 @@ campaignchain_core_user_new:
             rest:
                 expose: true
 
+campaignchain_core_user_toggle_enabling:
+    pattern:  /user/toggle_enable/{id}
+    defaults: { _controller: CampaignChainCoreBundle:User:toggleEnabling }
+    options:
+        campaignchain:
+            description: Deactivate a user
+            rest:
+                expose: true
+
 # FOS User
 
 fos_user_security:
