@@ -20,11 +20,14 @@ file that was distributed with this source code.
                     <th>Channel</th>
                     <th>Locations</th>
                     <th>CTA Tracking</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 {% for channel in repository_channels %}
-                    <tr>
+                    <tr class="
+                            {% if channel.status == "inactive" %}text-muted {% endif %}
+                            ">
                         <td>{{ channel.name }}</td>
                         <td><img src="{{ asset( channel.getChannelModule()|campaignchain_channel_asset_path~'/images/icons/16x16/'~channel.getChannelModule()|campaignchain_channel_icon_name ) }}" /> {{ channel.getChannelModule().getDisplayName() }}</td>
                         <td>
@@ -37,12 +40,53 @@ file that was distributed with this source code.
                         </td>
                         <td>
                             {% set module_params = channel.getChannelModule().getParams() %}
-                            {% if module_params is iterable and
-                                  module_params['cta_tracking'] is defined and
-                                  module_params['cta_tracking'] %}
-                                <a href="{{ path('campaignchain_core_channel_cta_test',{'id':channel.id}) }}" class="btn btn-primary" role="button">Enable & Test</a>
+                                {% if channel.status == "active" %}
+                                    {% if module_params is iterable and
+                                    module_params['cta_tracking'] is defined and
+                                    module_params['cta_tracking'] %}
+                                        <a href="{{ path('campaignchain_core_channel_cta_test',{'id':channel.id}) }}" class="btn btn-primary" role="button">Enable & Test</a>
+                                    {% else %}
+                                        <i class="fa fa-ban"></i>
+                                    {% endif %}
+                                {% else %}
+                                    {% if module_params is iterable and
+                                    module_params['cta_tracking'] is defined and
+                                    module_params['cta_tracking'] %}
+                                    <a class="btn btn-primary" disabled="disabled" role="button">Enable & Test</a>
+                                    {% else %}
+                                        <i class="fa fa-ban" disabled="disabled"></i>
+                                    {% endif %}
+                                    {% endif %}
+
+                        </td>
+                        <td align="center">
+                            {% if channel|campaignchain_is_removable %}
+                            <a  class="btn btn-danger"
+                                role="button"
+                                data-toggle="tooltip" data-placement="top" data-original-title="Remove this channel"
+                                href="{{ path('campaignchain_core_channel_remove',{'id':channel.id}) }}">
+                                <i class="fa fa-trash"></i>
+                            </a>
+                                {% else %}
+                                    <a  class="btn btn-danger" disabled="disabled"
+                                        role="button"
+                                        data-toggle="tooltip" data-placement="top" data-original-title="It's not possible to remove channels which have ongoing activities or used in reports">
+                                        <i class="fa fa-trash"></i>
+                                    </a>
+                                    {% endif %}
+                            {% if  channel.status == 'inactive' %}
+                                <a role="button" class="btn btn-primary"
+                                   data-toggle="tooltip" data-placement="top" data-original-title="Set active"
+                                   href="{{ path('campaignchain_core_channel_toggle_status',{'id':channel.id}) }}">
+                                    <span class="fa fa-square-o"></span>
+                                </a>
+
                             {% else %}
-                                <i class="fa fa-ban"></i>
+                                <a role="button" class="btn btn-primary"
+                                   data-toggle="tooltip" data-placement="top" data-original-title="Set inactive"
+                                   href="{{ path('campaignchain_core_channel_toggle_status',{'id':channel.id}) }}">
+                                    <span class="fa fa-check-square-o"></span>
+                                </a>
                             {% endif %}
                         </td>
                     </tr>

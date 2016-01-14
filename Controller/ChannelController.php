@@ -26,6 +26,10 @@ class ChannelController extends Controller
             ->getRepository('CampaignChainCoreBundle:Channel');
 
         $query = $repository->createQueryBuilder('c')
+            ->select('c, cm, b, l')
+            ->join('c.channelModule', 'cm')
+            ->join('c.locations', 'l')
+            ->join('cm.bundle', 'b')
             ->orderBy('c.name', 'ASC')
             ->getQuery();
 
@@ -182,5 +186,19 @@ class ChannelController extends Controller
         $serializer = new Serializer($normalizers, $encoders);
 
         return new Response($serializer->serialize($response, 'json'));
+    }
+
+    public function removeAction(Request $request, $id)
+    {
+        $channelService = $this->get('campaignchain.core.channel');
+        $channelService->removeChannel($id);
+        return $this->redirectToRoute('campaignchain_core_channel');
+    }
+
+    public function toggleStatusAction(Request $request, $id)
+    {
+        $channelService = $this->get('campaignchain.core.channel');
+        $channelService->toggleStatusChannel($id);
+        return $this->redirectToRoute('campaignchain_core_channel');
     }
 }

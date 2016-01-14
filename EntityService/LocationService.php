@@ -14,19 +14,25 @@ use Doctrine\ORM\EntityManager;
 use CampaignChain\CoreBundle\Entity\Channel;
 use CampaignChain\CoreBundle\Entity\Location;
 use CampaignChain\CoreBundle\Entity\Operation;
+use CampaignChain\CoreBundle\Entity\Activity;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use CampaignChain\CoreBundle\Util\ParserUtil;
 use CampaignChain\CoreBundle\Twig\CampaignChainCoreExtension;
+use Doctrine\Common\Collections\ArrayCollection;
+use CampaignChain\CoreBundle\EntityService\ActivityService;
+use CampaignChain\CoreBundle\EntityService\ChannelService;
 
 class LocationService
 {
     protected $em;
     protected $container;
+    protected $activityService;
 
-    public function __construct(EntityManager $em, ContainerInterface $container)
+    public function __construct(EntityManager $em, ContainerInterface $container, ActivityService $activityService)
     {
         $this->em = $em;
         $this->container = $container;
+        $this->activityService = $activityService;
     }
 
     public function getLocation($id){
@@ -232,4 +238,123 @@ class LocationService
 
         return $icon;
     }
+    /**
+     * This method deletes a location if there are no closed activities.
+     * If there are open activities the location is deactivated
+     *
+     * @param $id
+     * @throws \Exception
+     */
+    public function removeLocation($id)
+    {
+        /** @var Location $location */
+        $location = $this->em
+            ->getRepository('CampaignChainCoreBundle:Location')
+            ->find($id);
+
+        if (!$location) {
+            throw new \Exception(
+                'No location found for id ' . $id
+            );
+        }
+        $removableActivities = new ArrayCollection();
+        $notRemovableActivities = new ArrayCollection();
+
+        $accessToken = $this->em
+            ->getRepository('CampaignChainSecurityAuthenticationClientOAuthBundle:Token')
+            ->findOneBy(['location' => $location]);
+
+        if ($accessToken) {
+            $this->em->remove($accessToken);
+            $this->em->flush();
+        }
+
+
+        foreach ($location->getActivities() as $activity) {
+            if ($this->isRemovable($location)) {
+                $removableActivities->add($activity);
+            } else {
+                $notRemovableActivities->add($activity);
+            }
+        }
+
+        foreach ($removableActivities as $activity) {
+            $this->activityService->removeActivity($activity);
+        }
+
+        //Hack to find the beloning entities which hae to be delted first
+        $bundleName = explode('/', $location->getLocationModule()->getBundle()->getName());
+        $classPrefix = 'CampaignChain\\'.implode('\\',array_map(function($e) {return ucfirst($e);},explode('-',$bundleName[1]))).'Bundle';
+
+        $entitiesToDelete = [];
+        foreach ($this->em->getMetadataFactory()->getAllMetadata() as $metadataClass) {
+            if (strpos(strtolower($metadataClass->getName()), strtolower($classPrefix)) === 0) {
+                $entitiesToDelete[] = $metadataClass;
+            }
+        };
+
+        foreach ($entitiesToDelete as $repo) {
+            $entities = $this->em->getRepository($repo->getName())->findBy(['location' => $location->getId()]);
+            foreach ($entities as $entityToDelete) {
+                $this->em->remove($entityToDelete);
+            }
+        }
+        $this->em->flush();
+
+        $this->em->remove($location);
+        $this->em->flush();
+
+        $channel = $location->getChannel();
+
+        if($channel->getLocations()->isEmpty()){
+            $this->em->remove($channel);
+            $this->em->flush();
+        }
+    }
+
+    /**
+     * @param Location $location
+     * @return bool
+     */
+    public function isRemovable(Location $location){
+
+        $ctas= $this->em
+            ->getRepository('CampaignChainCoreBundle:CTA')
+            ->createQueryBuilder('cta')
+            ->select('cta', 'reports')
+            ->join('cta.reports', 'reports')
+            ->where('cta.location = :location')
+            ->setParameter('location', $location)
+            ->getQuery()
+            ->getResult();
+
+        if (!empty($ctas)) {
+            return false;
+        }
+
+        foreach ($location->getActivities() as $activity) {
+            if (!$this->activityService->isRemovable($activity)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function toggleStatus($id){
+        $location = $this->em
+            ->getRepository('CampaignChainCoreBundle:Location')
+            ->find($id);
+
+        if (!$location) {
+            throw new \Exception(
+                'No location found for id ' . $id
+            );
+        }
+
+        $toggle = (($location->getStatus()==Location::STATUS_ACTIVE) ? $location->setStatus(Location::STATUS_INACTIVE) : $location->setStatus(Location::STATUS_INACTIVE));
+        $this->em->persist($location);
+        $this->em->flush();
+    }
+
 }

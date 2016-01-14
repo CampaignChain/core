@@ -140,4 +140,44 @@ class MilestoneService
 
         return $clonedMilestone;
     }
+    /**
+     *
+     *
+     * @param $id
+     * @throws \Exception
+     */
+    public function removeMilestone($id){
+        $milestone = $this->em
+            ->getRepository('CampaignChainCoreBundle:Milestone')
+            ->find($id);
+
+        if (!$milestone) {
+            throw new \Exception(
+                'No milestone found for id '.$id
+            );
+        }
+        //Deletion should only be possible if the milestone is not closed
+        if ( $milestone->getStatus() == "closed") {
+            throw new \LogicException(
+                'Deletion of milestones is not possible when status is set to closed'
+            );
+        }
+            $this->em->remove($milestone);
+            $this->em->flush();
+        }
+
+    public function isRemovable($id){
+        $milestone = $this->em
+            ->getRepository('CampaignChainCoreBundle:Milestone')
+            ->find($id);
+
+        if (!$milestone) {
+            throw new \Exception(
+                'No channel found for id ' . $id
+            );
+        }
+
+        return true;
+    }
+
 }

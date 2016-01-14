@@ -29,18 +29,38 @@ file that was distributed with this source code.
             <tbody>
                 {% for milestone in milestones %}
                     <tr class="
-                            {% if milestone.status == "paused" %}text-muted {% endif %}
+                            {% if milestone.status == "paused"  or milestone|campaignchain_is_removable %}text-muted {% endif %}
                             ">
                         <td>{{ milestone.name }}</td>
                         <td>  <a href="{{ path(milestone.campaign.campaignModule.routes.plan_detail,{'id': milestone.campaign.id}) }}">{{ milestone.campaign.name }}</a></td>
                         <td>{{ milestone|campaignchain_tpl_trigger_hook_inline }}</td>
                         <td align="center">
+                            {% if milestone.status == "open" or milestone.status == "paused" %}
                             <a  class="btn btn-primary"
                                 role="button"
                                 data-toggle="tooltip" data-placement="top" data-original-title="Edit"
                                 href="{{ path('campaignchain_core_milestone_edit',{'id':milestone.id}) }}">
                                 <span class="fa fa-pencil"></span>
                             </a>
+                            <a  class="btn btn-danger"
+                                role="button"
+                                data-toggle="tooltip" data-placement="top" data-original-title="Remove this milestone"
+                                href="{{ path('campaignchain_core_milestone_remove',{'id':milestone.id}) }}">
+                                <i class="fa fa-trash"></i>
+                            </a>
+                            {% elseif milestone.status == "closed" %}
+                           {# <a  class="btn btn-primary" disabled="disabled"
+                                role="button"
+                                data-toggle="tooltip" data-placement="top" data-original-title="View"
+                                href="">
+                                <span class="fa fa-file-text"></span>
+                            </a>#}
+                            <a  class="btn btn-danger" disabled="disabled"
+                                role="button"
+                                data-toggle="tooltip" data-placement="top" data-original-title="It's not possible to remove milestones which are lying in the past">
+                                <i class="fa fa-trash"></i>
+                            </a>
+                           {% endif %}
                             {#{% if milestone.status == "paused" %}#}
                                 {#<button type="button" class="btn btn-default btn-xs">#}
                                     {#<a href="#"><span class="fa fa-play"></span></a>#}
