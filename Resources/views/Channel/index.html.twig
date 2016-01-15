@@ -61,12 +61,36 @@ file that was distributed with this source code.
                         </td>
                         <td align="center">
                             {% if channel|campaignchain_is_removable %}
-                            <a  class="btn btn-danger"
-                                role="button"
-                                data-toggle="tooltip" data-placement="top" data-original-title="Remove this channel"
-                                href="{{ path('campaignchain_core_channel_remove',{'id':channel.id}) }}">
-                                <i class="fa fa-trash"></i>
-                            </a>
+                                <a  class="btn btn-danger"
+                                    role="button"
+                                    data-toggle="modal" data-target="#modal-{{ channel.id }}">
+                                    <i class="fa fa-trash"></i>
+                                </a>
+                                <div id="modal-{{ channel.id }}" class="modal fade" role="dialog">
+                                    <div class="modal-dialog">
+
+                                        <!-- Modal content-->
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                <h4 class="modal-title">Do you really want to remove this Channel?</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>All locations and activities which are belonging to this channel will also be removed.</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <a class="btn btn-default" role="button"# data-dismiss="modal">Abort</a>
+                                                <a  class="btn btn-danger"
+                                                    role="button"
+                                                    data-toggle="tooltip" data-placement="top" data-original-title="Remove this channel"
+                                                    href="{{ path('campaignchain_core_location_remove',{'id':channel.id}) }}">
+                                                    <i class="fa fa-trash"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
                                 {% else %}
                                     <a  class="btn btn-danger" disabled="disabled"
                                         role="button"

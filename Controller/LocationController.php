@@ -88,7 +88,13 @@ class LocationController extends Controller
     public function  removeAction(Request $request, $id)
     {
         $locationService = $this->get('campaignchain.core.location');
-        $locationService->removeLocation($id);
+        try{
+            $locationService->removeLocation($id);
+            $this->addFlash('success', 'Location deleted successfully');
+        } catch (\Exception $e) {
+            $this->addFlash('warning', 'Location could not be deleted');
+        }
+
         return $this->redirectToRoute('campaignchain_core_location');
     }
     public function toggleStatusAction(Request $request, $id)
