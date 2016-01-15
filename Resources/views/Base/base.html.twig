@@ -59,14 +59,18 @@ file that was distributed with this source code.
     </head>
     <body>
         <div id="sidemenu">
-            {% include 'CampaignChainCoreBundle:Base:side_menu.html.twig' %}
+            {% if is_granted('ROLE_USER') -%}
+                {% include 'CampaignChainCoreBundle:Base:side_menu.html.twig' %}
+            {% endif %}
         </div>
         {% include 'CampaignChainCoreBundle:Base:navbar.html.twig' %}
         <div id="main-content">
             <div class="container">
-                <div class="page-header">
-                    <h1>{{ page_title }}{% if page_secondary_title is defined and page_secondary_title is not empty %} <small>{{ page_secondary_title }}</small>{% endif %}</h1>
-                </div>
+                {% block page_header %}
+                    <div class="page-header">
+                        <h1>{{ page_title }}{% if page_secondary_title is defined and page_secondary_title is not empty %} <small>{{ page_secondary_title }}</small>{% endif %}</h1>
+                    </div>
+                {% endblock %}
 
                 {% block bodytabs %}{% endblock %}
 

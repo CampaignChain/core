@@ -12,6 +12,10 @@ parameters:
             # Date and time formats as per http://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table
             date: ['yyyy-MM-dd', 'd. MMMM, yyyy', 'EEEE, d. MMMM, yyyy', 'EEE, d. MMMM, yyyy']
             time: ['hh:mm a', 'HH:mm', 'HH:mm:ss']
+
+    # tell twig to use our own exception controller
+    twig.exception_listener.controller: campaignchain.core.controller.exception:showAction
+
     # Defaults for these are set by CampaignChainCoreExtension
     campaignchain.core.upload_storage.path: ~
     campaignchain.core.upload_storage.url_prefix: ~
@@ -252,3 +256,7 @@ services:
         class: Monolog\Processor\PsrLogMessageProcessor
         tags:
           - { name: monolog.processor }
+
+    campaignchain.core.controller.exception:
+        class: CampaignChain\CoreBundle\Controller\ExceptionController
+        arguments: ['@twig', '%kernel.debug%']
