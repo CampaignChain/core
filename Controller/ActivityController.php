@@ -13,6 +13,7 @@ namespace CampaignChain\CoreBundle\Controller;
 use CampaignChain\CoreBundle\Entity\Medium;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use CampaignChain\CoreBundle\Entity\Activity;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\HttpFoundation\Response;
@@ -242,7 +243,13 @@ class ActivityController extends Controller
     public function removeAction(Request $request, $id)
     {
         $activityService = $this->get('campaignchain.core.activity');
-        $activityService->removeActivity($id);
+
+        try{
+            $activityService->removeActivity($id);
+            $this->addFlash('success', 'Activity deleted successfully');
+        } catch (\Exception $e) {
+            $this->addFlash('warning', 'Activity could not be deleted');
+        }
         return $this->redirectToRoute('campaignchain_core_activities');
     }
 
