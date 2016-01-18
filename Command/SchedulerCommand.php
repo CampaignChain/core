@@ -414,9 +414,9 @@ class SchedulerCommand extends ContainerAwareCommand
                 );
 
                 $this->logger->info(
-                    'New job if {type} with the action ID {id} queued', [
+                    'New job of {type} with the action ID {id} queued', [
                     'type' => $action->getType(),
-                    'id' => $action->getId,
+                    'id' => $action->getId(),
                 ]);
 
                 // Highlight the date that is within the execution period.
@@ -679,7 +679,7 @@ class SchedulerCommand extends ContainerAwareCommand
     {
         $job->setStartDate($this->now);
 
-        $command = 'php app/console campaignchain:job '.$job->getId();
+        $command = 'php app/console campaignchain:job '.$job->getId() . ' --env='. $this->getContainer()->get('kernel')->getEnvironment();
         $process = new Process($command);
 
         $this->logger->info('Executing Job with command: '.$command);
