@@ -18,6 +18,7 @@
         "d3-plugins": "",
         "hideshowpassword": "2.*",
         "jquery-file-upload": "^9.11.2",
-        "cropper": "~1.0"
+        "cropper": "~1.0",
+        "intro.js": "https://github.com/usablica/intro.js.git#2.0"
     }
 }
