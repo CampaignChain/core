@@ -209,6 +209,12 @@ assetic:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/components/hideshowpassword/css/example.minimal.css"
                 - "@CampaignChainCoreBundle/Resources/public/css/campaignchain/hideshowpassword.css"
+        intro_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/intro.js/minified/intro.min.js"
+        intro_css:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/intro.js/minified/introjs.min.css"
     bundles:
         - "CampaignChainCoreBundle"
         - "FOSUserBundle"

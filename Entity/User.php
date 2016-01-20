@@ -499,4 +499,13 @@ class User extends BaseUser
     {
         $this->milestones->removeElement($milestone);
     }
+
+    /*
+     * Check if the user has ever logged in
+     * @return boolean
+     */
+    public function isFirstLogin()
+    {
+        return (null === $this->getLastLogin());
+    }
 }
