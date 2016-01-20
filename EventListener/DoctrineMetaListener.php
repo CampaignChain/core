@@ -39,6 +39,7 @@ class DoctrineMetaListener
             $uow->recomputeSingleEntityChangeSet($classMetadata, $entity);
 
         }
+        
         foreach ($uow->getScheduledEntityUpdates() as $entity) {
             if (!is_subclass_of($entity, 'CampaignChain\CoreBundle\Entity\Meta')) {
                 continue;
@@ -46,6 +47,5 @@ class DoctrineMetaListener
             $logMetadata = $em->getClassMetadata(get_class($entity));
             $entity->setModifiedDate(new \DateTime('now', new \DateTimeZone('UTC')));
         }
-
     }
 }
