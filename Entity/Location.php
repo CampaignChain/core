@@ -10,6 +10,7 @@
 
 namespace CampaignChain\CoreBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use CampaignChain\CoreBundle\Util\ParserUtil;
 
@@ -112,7 +113,7 @@ class Location extends Medium
      * @param \CampaignChain\CoreBundle\Entity\LocationModule $locationModule
      * @return Location
      */
-    public function setLocationModule(\CampaignChain\CoreBundle\Entity\LocationModule $locationModule = null)
+    public function setLocationModule(LocationModule $locationModule = null)
     {
         $this->locationModule = $locationModule;
 
@@ -145,7 +146,7 @@ class Location extends Medium
      * @param \CampaignChain\CoreBundle\Entity\Channel $channel
      * @return Location
      */
-    public function setChannel(\CampaignChain\CoreBundle\Entity\Channel $channel = null)
+    public function setChannel(Channel $channel = null)
     {
         $this->channel = $channel;
 
@@ -168,7 +169,7 @@ class Location extends Medium
      * @param \CampaignChain\CoreBundle\Entity\Activity $activities
      * @return Location
      */
-    public function addActivity(\CampaignChain\CoreBundle\Entity\Activity $activities)
+    public function addActivity(Activity $activities)
     {
         $this->activities[] = $activities;
 
@@ -180,7 +181,7 @@ class Location extends Medium
      *
      * @param \CampaignChain\CoreBundle\Entity\Activity $activities
      */
-    public function removeActivity(\CampaignChain\CoreBundle\Entity\Activity $activities)
+    public function removeActivity(Activity $activities)
     {
         $this->activities->removeElement($activities);
     }
@@ -270,7 +271,7 @@ class Location extends Medium
      * @param \CampaignChain\CoreBundle\Entity\Operation $operation
      * @return Location
      */
-    public function setOperation(\CampaignChain\CoreBundle\Entity\Operation $operation = null)
+    public function setOperation(Operation $operation = null)
     {
         $this->operation = $operation;
 
@@ -293,7 +294,7 @@ class Location extends Medium
      * @param \CampaignChain\CoreBundle\Entity\CTA $ctas
      * @return Location
      */
-    public function addCta(\CampaignChain\CoreBundle\Entity\CTA $ctas)
+    public function addCta(CTA $ctas)
     {
         $this->ctas[] = $ctas;
 
@@ -305,7 +306,7 @@ class Location extends Medium
      *
      * @param \CampaignChain\CoreBundle\Entity\CTA $ctas
      */
-    public function removeCta(\CampaignChain\CoreBundle\Entity\CTA $ctas)
+    public function removeCta(CTA $ctas)
     {
         $this->ctas->removeElement($ctas);
     }
@@ -325,12 +326,12 @@ class Location extends Medium
      */
     public function __construct()
     {
-        $this->activities = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->ctas = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->referrerCtas = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->sourceCtas = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->targetCtas = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->children = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->activities = new ArrayCollection();
+        $this->ctas = new ArrayCollection();
+        $this->referrerCtas = new ArrayCollection();
+        $this->sourceCtas = new ArrayCollection();
+        $this->targetCtas = new ArrayCollection();
+        $this->children = new ArrayCollection();
     }
 
     /**
@@ -339,7 +340,7 @@ class Location extends Medium
      * @param \CampaignChain\CoreBundle\Entity\ReportCTA $referrerCtas
      * @return Location
      */
-    public function addReferrerCta(\CampaignChain\CoreBundle\Entity\ReportCTA $referrerCtas)
+    public function addReferrerCta(ReportCTA $referrerCtas)
     {
         $this->referrerCtas[] = $referrerCtas;
 
@@ -351,7 +352,7 @@ class Location extends Medium
      *
      * @param \CampaignChain\CoreBundle\Entity\ReportCTA $referrerCtas
      */
-    public function removeReferrerCta(\CampaignChain\CoreBundle\Entity\ReportCTA $referrerCtas)
+    public function removeReferrerCta(ReportCTA $referrerCtas)
     {
         $this->referrerCtas->removeElement($referrerCtas);
     }
@@ -372,7 +373,7 @@ class Location extends Medium
      * @param \CampaignChain\CoreBundle\Entity\ReportCTA $sourceCtas
      * @return Location
      */
-    public function addSourceCta(\CampaignChain\CoreBundle\Entity\ReportCTA $sourceCtas)
+    public function addSourceCta(ReportCTA $sourceCtas)
     {
         $this->sourceCtas[] = $sourceCtas;
 
@@ -384,7 +385,7 @@ class Location extends Medium
      *
      * @param \CampaignChain\CoreBundle\Entity\ReportCTA $sourceCtas
      */
-    public function removeSourceCta(\CampaignChain\CoreBundle\Entity\ReportCTA $sourceCtas)
+    public function removeSourceCta(ReportCTA $sourceCtas)
     {
         $this->sourceCtas->removeElement($sourceCtas);
     }
@@ -405,7 +406,7 @@ class Location extends Medium
      * @param \CampaignChain\CoreBundle\Entity\ReportCTA $targetCtas
      * @return Location
      */
-    public function addTargetCta(\CampaignChain\CoreBundle\Entity\ReportCTA $targetCtas)
+    public function addTargetCta(ReportCTA $targetCtas)
     {
         $this->targetCtas[] = $targetCtas;
 
@@ -417,7 +418,7 @@ class Location extends Medium
      *
      * @param \CampaignChain\CoreBundle\Entity\ReportCTA $targetCtas
      */
-    public function removeTargetCta(\CampaignChain\CoreBundle\Entity\ReportCTA $targetCtas)
+    public function removeTargetCta(ReportCTA $targetCtas)
     {
         $this->targetCtas->removeElement($targetCtas);
     }
@@ -438,7 +439,7 @@ class Location extends Medium
      * @param \CampaignChain\CoreBundle\Entity\Location $children
      * @return Location
      */
-    public function addChild(\CampaignChain\CoreBundle\Entity\Location $children)
+    public function addChild(Location $children)
     {
         $this->children[] = $children;
 
@@ -450,7 +451,7 @@ class Location extends Medium
      *
      * @param \CampaignChain\CoreBundle\Entity\Location $children
      */
-    public function removeChild(\CampaignChain\CoreBundle\Entity\Location $children)
+    public function removeChild(Location $children)
     {
         $this->children->removeElement($children);
     }
@@ -471,7 +472,7 @@ class Location extends Medium
      * @param \CampaignChain\CoreBundle\Entity\Location $parent
      * @return Location
      */
-    public function setParent(\CampaignChain\CoreBundle\Entity\Location $parent = null)
+    public function setParent(Location $parent = null)
     {
         $this->parent = $parent;
 

@@ -10,10 +10,13 @@
 
 namespace CampaignChain\CoreBundle\EntityService;
 
+use CampaignChain\CoreBundle\Entity\Link;
 use Doctrine\ORM\EntityManager;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use CampaignChain\CoreBundle\Util\ParserUtil;
+use CampaignChain\CoreBundle\Entity\CTAParserData;
 use CampaignChain\CoreBundle\Entity\CTA;
+use CampaignChain\CoreBundle\Service\UrlShortener\UrlShortenerServiceInterface;
+use CampaignChain\CoreBundle\Util\ParserUtil;
+
 
 class CTAService
 {
@@ -22,124 +25,174 @@ class CTAService
     const TRACKING_ID_NAME = 'campaignchain-id';
 
     protected $em;
-    protected $container;
+    protected $urlShortener;
+    protected $locationService;
+
 
     /**
+     * CTAService constructor.
      * @param EntityManager $em
-     * @param ContainerInterface $container
+     * @param UrlShortenerServiceInterface $urlShortener
+     * @param LocationService $locationService
      */
-    public function __construct(EntityManager $em, ContainerInterface $container)
-    {
+    public function __construct(
+        EntityManager $em,
+        UrlShortenerServiceInterface $urlShortener,
+        LocationService $locationService
+    ) {
         $this->em = $em;
-        $this->container = $container;
+        $this->urlShortener = $urlShortener;
+        $this->locationService = $locationService;
     }
 
+    /**
+     * Replace the URLs with the tracking URLs in the message.
+     *
+     * TODO: Manage links to Locations that will be created by CampaignChain once an Operation gets executed
+     *
+     * @param $content
+     * @param $operation
+     * @param string $format
+     * @return CTAParserData
+     */
     public function processCTAs($content, $operation, $format = self::FORMAT_TXT)
     {
-        // TODO:
-        // - Manage links to Locations that will be created by CampaignChain once
-        //   an Operation gets executed
 
         $ctaParserData = new CTAParserData();
+        $ctaParserData->setContent($content);
 
-        // Replace the URLs with the tracking URLs in the message.
-        $originalUrls = array();
-        // Find all URLs
-        $originalUrls = ParserUtil::extractURLsFromText($content);
+        // extract urls from content
+        $contentUrls = $this->extractUrls($content);
 
-        if(count($originalUrls)){
-            $trackingUrls = array();
-            foreach($originalUrls as $originalUrl){
-                // If a shortened URL, then expand it.
-                if(ParserUtil::isShortUrl($originalUrl)){
-                    $headers = get_headers($originalUrl, 1);
-                    $expandedUrl = $headers['Location'];
-                    $shortUrl = $originalUrl;
-                } else {
-                    $expandedUrl = $originalUrl;
-                    $shortUrl = null;
-                }
-
-                // Check if the URL is a Location.
-                $locationService = $this->container->get('campaignchain.core.location');
-                $location = $locationService->findLocationByUrl($expandedUrl, $operation);
-
-                // If at this point we have a valid Location mapped to the URL,
-                // then proceed with turning it into a trackable URL.
-                if($location){
-                    // Append the CampaignChain Tracking ID to the URL.
-                    $trackingId = $this->generateTrackingId();
-                    $trackingUrl = ParserUtil::addUrlParam(
-                        $expandedUrl,
-                        self::TRACKING_ID_NAME,
-                        $trackingId);
-
-                    // Shorten Tracking URL, but only if not on localhost.
-                    $trackingUrlParts = parse_url($trackingUrl);
-
-                    if( $trackingUrlParts['host'] != 'localhost' &&
-                        $trackingUrlParts['host'] != '127.0.0.1'
-                    ){
-                        $bitlyService = $this->container->get('hpatoio_bitly.client');
-                        $response = $bitlyService->Shorten(array("longUrl" => $trackingUrl));
-
-                        $shortenedUrl = $response['url'];
-                    } else {
-                        $shortenedUrl = $trackingUrl;
-                    }
-
-                    // Save the URL as a CTA
-                    $cta = new CTA();
-                    $cta->setTrackingId($trackingId);
-                    $cta->setOperation($operation);
-                    $cta->setUrl($expandedUrl);
-                    $cta->setShortUrl($shortUrl);
-                    $cta->setLocation($location);
-                    $location->addCta($cta);
-                    $this->em->persist($cta);
-
-                    $ctaParserData->addUrlTracked($shortenedUrl);
-                    $replaceUrls[$originalUrl][] = $shortenedUrl;
-                } else {
-                    // It was not possible to map the URL to a Location, hence
-                    // keep it as is in the text.
-                    $ctaParserData->addUrlNotTracked($originalUrl);
-                    $replaceUrls[$originalUrl][] = $originalUrl;
-                }
-            }
-            $this->em->flush();
-
-            $newText = ParserUtil::replaceURLsInText($content, $replaceUrls);
-
-            $ctaParserData->setContent($newText);
-
+        // no urls? nothing to do!
+        if (empty($contentUrls)) {
             return $ctaParserData;
         }
 
-        $ctaParserData->setContent($content);
+        // process each url
+        foreach ($contentUrls as $url) {
+
+            // expand if necessary
+            $expandedUrl = $this->expandUrl($url);
+
+            // Mapped to location? Generate tracking url and create CTA
+            if ($location = $this->locationService->findLocationByUrl($expandedUrl, $operation)) {
+
+                // create cta
+                $cta = new CTA();
+                $cta->setTrackingId($this->generateTrackingId());
+                $cta->setOperation($operation);
+
+                $cta->setOriginalUrl($url);
+                $cta->setExpandedUrl($expandedUrl);
+
+                // generate tracking and short url
+                $cta->setTrackingUrl(
+                    $this->generateTrackingUrl($expandedUrl, $cta->getTrackingId())
+                );
+
+                $cta->setShortenedTrackingUrl(
+                    $this->getShortenedUrl($cta->getTrackingUrl())
+                );
+
+                $cta->setLocation($location);
+
+                // add to location and persist
+                $location->addCta($cta);
+                $this->em->persist($cta);
+
+                $ctaParserData->addTrackedUrl($url, $cta->getShortenedTrackingUrl());
+
+                // otherwise keep the original url
+            } else {
+                $ctaParserData->addUntrackedUrl($url);
+            }
+        }
+
+        $this->em->flush();
+
+        $newContent = ParserUtil::replaceURLsInText($content, $ctaParserData->getReplacementUrls());
+        $ctaParserData->setContent($newContent);
 
         return $ctaParserData;
     }
 
     /*
-     * Generates a Tracking ID
-     *
-     * This method also makes sure that the ID is unique, i.e. that it does
-     * not yet exist for another CTA.
+     * Generates a unique, unused CTA tracking id
      *
      * @return string
      */
-    public function generateTrackingId()
+    protected function generateTrackingId()
     {
-        $trackingId = md5(uniqid(mt_rand(), true));
+        $ctaRepository = $this->em->getRepository('CampaignChainCoreBundle:CTA');
 
-        // Check with DB, whether already exists. If yes, then generate new one and check again.
-        $cta = $this->em->getRepository('CampaignChainCoreBundle:CTA')->findOneByTrackingId($trackingId);
+        // loop until there is a unused id
+        while (true) {
+            $trackingId = md5(uniqid(mt_rand(), true));
 
-        if($cta){
-            return $this->generateTrackingId();
-        } else {
-            return $trackingId;
+            if (!$ctaRepository->findOneByTrackingId($trackingId)) {
+                return $trackingId;
+            }
         }
+    }
+
+    /**
+     * Expand if url is already a short url
+     *
+     * @param $url
+     * @return mixed
+     */
+    protected function expandUrl($url)
+    {
+        // skip if no short url
+        if (!ParserUtil::isShortUrl($url)) {
+            return $url;
+        }
+
+        $header_location = get_headers($url, 1)['Location'];
+
+        return $header_location ?: $url;
+    }
+
+    /**
+     * Append the CampaignChain Tracking ID to the URL.
+     *
+     * @param $url
+     * @param $trackingId
+     * @return mixed|string
+     */
+    protected function generateTrackingUrl($url, $trackingId)
+    {
+        return ParserUtil::addUrlParam($url, self::TRACKING_ID_NAME, $trackingId);
+    }
+
+    /**
+     * Use shortener service to shorten url
+     *
+     * @param $url
+     * @return mixed
+     */
+    protected function getShortenedUrl($url)
+    {
+        // skip if localhost
+        if (in_array(parse_url($url, PHP_URL_HOST), array('localhost', '127.0.0.1'))) {
+            return $url;
+        }
+
+        $link = new Link();
+        $link->setLongUrl($url);
+
+        $this->urlShortener->shorten($link);
+
+        return $link->getShortUrl();
+    }
+
+    /**
+     * @param $content
+     * @return mixed
+     */
+    protected function extractUrls($content)
+    {
+        return ParserUtil::extractURLsFromText($content);
     }
 }
