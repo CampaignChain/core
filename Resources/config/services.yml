@@ -248,6 +248,12 @@ services:
         tags:
             - { name: kernel.event_listener, event: console.exception }
 
+    campaign_chain_core.listener.external_exception:
+        class: CampaignChain\CoreBundle\EventListener\ExternalExceptionListener
+        arguments: [ '@monolog.logger.external' ]
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception }
+
     campaignchain.core.monolog_psr_processor:
         class: Monolog\Processor\PsrLogMessageProcessor
         tags:
