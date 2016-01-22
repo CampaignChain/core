@@ -11,8 +11,11 @@
 
 namespace CampaignChain\CoreBundle\Wizard\Install\Validator\Constraints;
 
-use Guzzle\Http\Exception\ServerErrorResponseException;
-use Hpatoio\Bitly\Client;
+use CampaignChain\CoreBundle\Entity\Link;
+use CampaignChain\CoreBundle\Service\UrlShortener\UrlShortenerService;
+use Mremi\UrlShortener\Exception\InvalidApiResponseException;
+use Mremi\UrlShortener\Provider\Bitly\BitlyProvider;
+use Mremi\UrlShortener\Provider\Bitly\GenericAccessTokenAuthenticator;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
@@ -30,11 +33,14 @@ class IsValidBitlyTokenValidator extends ConstraintValidator
     public function validate($value, Constraint $constraint)
     {
 
-        $bitlyClient = new Client($value);
+        $bitlyProvider = new BitlyProvider(new GenericAccessTokenAuthenticator($value));
+        $urlShortener = new UrlShortenerService($bitlyProvider);
+        $link = new Link();
+        $link->setLongUrl('http://www.campaignchain.com');
 
         try {
-            $bitlyClient->Shorten(array("longUrl" => 'http://www.campaignchain.com'));
-        } catch (ServerErrorResponseException $e) {
+            $urlShortener->shorten($link);
+        } catch (InvalidApiResponseException $e) {
             $this->context->buildViolation($constraint->message)
                 ->setParameter('%string%', $value)
                 ->addViolation();
