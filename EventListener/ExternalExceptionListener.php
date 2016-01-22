@@ -15,6 +15,7 @@ namespace CampaignChain\CoreBundle\EventListener;
 
 use CampaignChain\CoreBundle\Exception\ExternalApiException;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 
 /**
  * This will log all external exception events (e.g. API calls) to a separate channel
