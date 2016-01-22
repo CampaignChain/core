@@ -10,6 +10,7 @@
 
 namespace CampaignChain\CoreBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use CampaignChain\CoreBundle\Util\ParserUtil;
 
@@ -41,14 +42,32 @@ class CTA extends Meta
     protected $location;
 
     /**
+     * Original url entered by customer
+     *
      * @ORM\Column(type="string", length=255, nullable=false)
      */
-    protected $url;
+    protected $originalUrl;
 
     /**
+     * Expanded url (will be identical with original url, if no shortener service was used)
+     *
+     * @ORM\Column(type="string", length=255, nullable=false)
+     */
+    protected $expandedUrl;
+
+    /**
+     * Tracking url
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    protected $trackingUrl;
+
+    /**
+     * Tracking url shortened
+     *
      * @ORM\Column(type="string", length=30, nullable=true)
      */
-    protected $shortUrl;
+    protected $shortenedTrackingUrl;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=false)
@@ -99,9 +118,9 @@ class CTA extends Meta
      * @param string $url
      * @return CTA
      */
-    public function setUrl($url)
+    public function setOriginalUrl($url)
     {
-        $this->url = ParserUtil::sanitizeUrl($url);
+        $this->originalUrl = ParserUtil::sanitizeUrl($url);
 
         return $this;
     }
@@ -111,9 +130,64 @@ class CTA extends Meta
      *
      * @return string 
      */
-    public function getUrl()
+    public function getOriginalUrl()
     {
-        return $this->url;
+        return $this->originalUrl;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getExpandedUrl()
+    {
+        return $this->expandedUrl;
+    }
+
+    /**
+     * @param mixed $expandedUrl
+     * @return CTA
+     */
+    public function setExpandedUrl($expandedUrl)
+    {
+        $this->expandedUrl = $expandedUrl;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTrackingUrl()
+    {
+        return $this->trackingUrl;
+    }
+
+    /**
+     * @param mixed $trackingUrl
+     * @return CTA
+     */
+    public function setTrackingUrl($trackingUrl)
+    {
+        $this->trackingUrl = $trackingUrl;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getShortenedTrackingUrl()
+    {
+        return $this->shortenedTrackingUrl;
+    }
+
+    /**
+     * @param mixed $shortenedTrackingUrl
+     * @return CTA
+     */
+    public function setShortenedTrackingUrl($shortenedTrackingUrl)
+    {
+        $this->shortenedTrackingUrl = $shortenedTrackingUrl;
+        return $this;
     }
 
     /**
@@ -122,7 +196,7 @@ class CTA extends Meta
      * @param \CampaignChain\CoreBundle\Entity\Operation $operation
      * @return CTA
      */
-    public function setOperation(\CampaignChain\CoreBundle\Entity\Operation $operation)
+    public function setOperation(Operation $operation)
     {
         $this->operation = $operation;
 
@@ -140,33 +214,11 @@ class CTA extends Meta
     }
 
     /**
-     * Set shortUrl
-     *
-     * @param string $shortUrl
-     * @return CTA
-     */
-    public function setShortUrl($shortUrl)
-    {
-        $this->shortUrl = $shortUrl;
-
-        return $this;
-    }
-
-    /**
-     * Get shortUrl
-     *
-     * @return string 
-     */
-    public function getShortUrl()
-    {
-        return $this->shortUrl;
-    }
-    /**
      * Constructor
      */
     public function __construct()
     {
-        $this->reports = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->reports = new ArrayCollection();
     }
 
     /**
@@ -175,7 +227,7 @@ class CTA extends Meta
      * @param \CampaignChain\CoreBundle\Entity\ReportCTA $reports
      * @return CTA
      */
-    public function addReport(\CampaignChain\CoreBundle\Entity\ReportCTA $reports)
+    public function addReport(ReportCTA $reports)
     {
         $this->reports[] = $reports;
 
@@ -187,7 +239,7 @@ class CTA extends Meta
      *
      * @param \CampaignChain\CoreBundle\Entity\ReportCTA $reports
      */
-    public function removeReport(\CampaignChain\CoreBundle\Entity\ReportCTA $reports)
+    public function removeReport(ReportCTA $reports)
     {
         $this->reports->removeElement($reports);
     }
@@ -208,7 +260,7 @@ class CTA extends Meta
      * @param \CampaignChain\CoreBundle\Entity\Location $location
      * @return CTA
      */
-    public function setLocation(\CampaignChain\CoreBundle\Entity\Location $location)
+    public function setLocation(Location $location)
     {
         $this->location = $location;
 

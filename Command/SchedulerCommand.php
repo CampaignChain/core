@@ -20,8 +20,6 @@ use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Helper\Table;
-use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\LockHandler;
 use Symfony\Component\Stopwatch\Stopwatch;
@@ -645,7 +643,11 @@ class SchedulerCommand extends ContainerAwareCommand
 
         // Display the results of the execution.
 
+        $tableHeader = [
+            'Job ID', 'Operation ID', 'Process ID', 'Job Name', 'Job Start Date', 'Job End Date', 'Duration', 'Status', 'Message'
+        ];
         $outputTableRows = [];
+
         foreach($jobsProcessed as $jobProcessed){
             $startDate = null;
             $endDate = null;
@@ -657,14 +659,17 @@ class SchedulerCommand extends ContainerAwareCommand
                 $endDate = $jobProcessed->getEndDate()->format('Y-m-d H:i:s');
             }
 
-            $outputTableRows[] = [
+            $jobData = [
                 $jobProcessed->getId(), $jobProcessed->getActionId(), $jobProcessed->getPid(), $jobProcessed->getName(), $startDate, $endDate, $jobProcessed->getDuration().' ms', $jobProcessed->getStatus(), $jobProcessed->getMessage(),
             ];
-        }
 
-        $tableHeader = [
-            'Job ID', 'Operation ID', 'Process ID', 'Job Name', 'Job Start Date', 'Job End Date', 'Duration', 'Status', 'Message'
-        ];
+            $outputTableRows[] = $jobData;
+
+            if (JOB::STATUS_ERROR === $jobProcessed->getStatus()) {
+                $context = array_combine($tableHeader, $jobData);
+                $this->logger->error($jobProcessed->getMessage(), $context);
+            }
+        }
 
         $this->io->text('Results of executed actions:');
         $this->io->table($tableHeader, $outputTableRows);
