@@ -278,3 +278,6 @@ services:
     mremi.url_shortener.provider.bitly.bitly_provider:
         class: Mremi\UrlShortener\Provider\Bitly\BitlyProvider
         arguments: [ "@mremi.url_shortener.provider.bitly.generic_access_token_authenticator" ]
+
+    fos_user.doctrine_registry:
+        alias: doctrine
