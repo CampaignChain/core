@@ -25,7 +25,12 @@ class TrackingController extends Controller
     public function newApiAction(Request $request, $channel)
     {
         $hasError = false;
-        $logger = $this->get('logger');
+
+        if ($this->has('monolog.logger.tracking')) {
+            $logger = $this->get('monolog.logger.tracking');
+        } else {
+            $logger = $this->get('logger');
+        }
         $logger->info('Start tracking');
 
         // Check whether the channel has access to tracking.

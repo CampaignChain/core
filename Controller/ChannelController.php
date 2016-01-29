@@ -191,7 +191,12 @@ class ChannelController extends Controller
     public function removeAction(Request $request, $id)
     {
         $channelService = $this->get('campaignchain.core.channel');
-        $channelService->removeChannel($id);
+        try{
+            $channelService->removeChannel($id);
+            $this->addFlash('success', 'Channel deleted successfully');
+        } catch (\Exception $e) {
+            $this->addFlash('warning', 'Channel could not be deleted');
+        }
         return $this->redirectToRoute('campaignchain_core_channel');
     }
 

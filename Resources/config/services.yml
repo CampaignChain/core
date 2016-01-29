@@ -121,7 +121,7 @@ services:
         arguments: [ @doctrine.orm.entity_manager, @service_container ]
     campaignchain.core.cta:
         class: CampaignChain\CoreBundle\EntityService\CTAService
-        arguments: [ @doctrine.orm.entity_manager, @service_container ]
+        arguments: [ "@doctrine.orm.entity_manager", "@campaign_chain_core.service.url_shortener", "@campaignchain.core.location" ]
     campaignchain.core.user:
         class: CampaignChain\CoreBundle\EntityService\UserService
         arguments: [ @campaignchain.core.service.file_upload, @campaignchain.core.http_client]
@@ -244,10 +244,6 @@ services:
     campaignchain.core.http_client:
         class: GuzzleHttp\Client
 
-    hpatoio_bitly.client:
-        class: "Hpatoio\\Bitly\\Client"
-        arguments: ["@=service('campaignchain.core.system').getBitlyAccessToken()"]
-
     campaignchain.core.listener.console_exception:
         class: CampaignChain\CoreBundle\EventListener\ConsoleExceptionListener
         arguments:
@@ -255,6 +251,12 @@ services:
             entityManager: '@doctrine.orm.default_entity_manager'
         tags:
             - { name: kernel.event_listener, event: console.exception }
+
+    campaign_chain_core.listener.external_exception:
+        class: CampaignChain\CoreBundle\EventListener\ExternalExceptionListener
+        arguments: [ '@monolog.logger.external' ]
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception }
 
     campaignchain.core.monolog_psr_processor:
         class: Monolog\Processor\PsrLogMessageProcessor
@@ -264,3 +266,18 @@ services:
     campaignchain.core.controller.exception:
         class: CampaignChain\CoreBundle\Controller\ExceptionController
         arguments: ['@twig', '%kernel.debug%']
+
+    campaign_chain_core.service.url_shortener:
+        class: CampaignChain\CoreBundle\Service\UrlShortener\UrlShortenerService
+        arguments: [ "@mremi.url_shortener.provider.bitly.bitly_provider" ]
+
+    mremi.url_shortener.provider.bitly.generic_access_token_authenticator:
+        class: Mremi\UrlShortener\Provider\Bitly\GenericAccessTokenAuthenticator
+        arguments: [ "@=service('campaignchain.core.system').getBitlyAccessToken()" ]
+
+    mremi.url_shortener.provider.bitly.bitly_provider:
+        class: Mremi\UrlShortener\Provider\Bitly\BitlyProvider
+        arguments: [ "@mremi.url_shortener.provider.bitly.generic_access_token_authenticator" ]
+
+    fos_user.doctrine_registry:
+        alias: doctrine

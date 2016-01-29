@@ -20,7 +20,7 @@ file that was distributed with this source code.
     <div class="symfony-form-errors">
         {{ form_errors(form) }}
     </div>
-    <form action="{{ path('campaignchain_core_install_step', { 'index': index }) }}" method="POST" novalidate>
+    <form method="POST" novalidate>
         <div id="form">
 
             {% block form %}{% endblock %}
