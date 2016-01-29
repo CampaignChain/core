@@ -13,56 +13,39 @@
 
 namespace CampaignChain\CoreBundle\Entity;
 
+use CampaignChain\CoreBundle\Util\ParserUtil;
+
 /**
  * Class CTAParserData
  * @package CampaignChain\CoreBundle\Entity
  */
 class CTAParserData
 {
+    const URL_TYPE_ORIGINAL = 'originalUrl';
+    const URL_TYPE_EXPANDED = 'expandedUrl';
+    const URL_TYPE_TRACKED = 'trackingUrl';
+    const URL_TYPE_SHORTENED_TRACKED = 'shortenedTrackingUrl';
 
     /**
-     * @var array list of tracked urls
-     */
-    protected $trackedUrls = array();
-
-    /**
-     * @var array list of untracked urls
-     */
-    protected $untrackedUrls = array();
-
-    /**
-     * @var array list of urls and their replacements
-     */
-    protected $replacementUrls = array();
-
-    /**
-     * @var string original content
+     * @var string content
      */
     protected $content;
 
     /**
-     * @param $originalUrl unchanged url from content
-     * @param $trackedUrl (shortened) url with tracking id
+     * @var array list of tracked CTAs
      */
-    public function addTrackedUrl($originalUrl, $trackedUrl)
-    {
-        $this->trackedUrls[] = $trackedUrl;
-
-        // queue for replacement
-        $this->addReplacementUrl($originalUrl, $trackedUrl);
-    }
-
+    protected $trackedCTAs = array();
+    /**
+     * @var array list of untracked urls
+     */
+    protected $untrackedUrls = array();
+    /**
+     * @var array map of urls and how to replace them
+     */
+    protected $replacementUrls = array();
 
     /**
-     * @return array
-     */
-    public function getTrackedUrls()
-    {
-        return $this->trackedUrls;
-    }
-
-    /**
-     * @param $content
+     * @param string $content
      */
     public function setContent($content)
     {
@@ -70,47 +53,100 @@ class CTAParserData
     }
 
     /**
-     * @return mixed
+     * Return the content with urls replaced. Various formats are available.
+     *
+     * @param mixed $type
+     * @return string
      */
-    public function getContent()
+    public function getContent($type = self::URL_TYPE_SHORTENED_TRACKED)
     {
-        return $this->content;
+        if (self::URL_TYPE_ORIGINAL === $type) {
+            return $this->content;
+        } else {
+            return ParserUtil::replaceURLsInText($this->content, $this->getReplacementUrls($type));
+        }
     }
 
     /**
-     * @param $url original url
+     * Keep a record of a tracked CTA and queue it for replacement
+     *
+     * @param CTA $cta
+     */
+    public function addTrackedCTA(CTA $cta)
+    {
+        $this->trackedCTAs[] = $cta;
+
+        $this->queueForReplacement(
+            $cta->getOriginalUrl(),
+            $cta->getExpandedUrl(),
+            $cta->getTrackingUrl(),
+            $cta->getShortenedTrackingUrl()
+        );
+    }
+
+    /**
+     * Keep a record of a untracked url and queue it for replacement
+     * @param string $url
      */
     public function addUntrackedUrl($url)
     {
         $this->untrackedUrls[] = $url;
 
-        // queue for replacement
-        // even if the url was not changed it must be queued to keep the order
-        $this->addReplacementUrl($url, $url);
+        $this->queueForReplacement(
+            $url,
+            $url,
+            $url,
+            $url
+        );
     }
 
     /**
-     * @return array
+     * Queue urls for replacement
+     *
+     * @param string $originalUrl
+     * @param string $expandedUrl
+     * @param string $trackingUrl
+     * @param string $shortenedTrackingUrl
+     */
+    public function queueForReplacement($originalUrl, $expandedUrl, $trackingUrl, $shortenedTrackingUrl)
+    {
+        $this->replacementUrls[$originalUrl][] = array(
+            self::URL_TYPE_EXPANDED => $expandedUrl,
+            self::URL_TYPE_TRACKED => $trackingUrl,
+            self::URL_TYPE_SHORTENED_TRACKED => $shortenedTrackingUrl
+        );
+    }
+
+    /**
+     * Filter replacement urls so only one format is left.
+     *
+     * @param mixed $type
+     * @return array map of filtered replacement urls
+     */
+    public function getReplacementUrls($type)
+    {
+        $replacementUrls = array_map(function ($a1) use ($type) {
+            return array_map(function ($a2) use ($type) {
+                return $a2[$type];
+            }, $a1);
+        }, $this->replacementUrls);
+
+        return $replacementUrls;
+    }
+
+    /**
+     * @return array list of tracked CTA objects
+     */
+    public function getTrackedCTAs()
+    {
+        return $this->trackedCTAs;
+    }
+
+    /**
+     * @return array list of untracked urls
      */
     public function getUntrackedUrls()
     {
         return $this->untrackedUrls;
-    }
-
-    /**
-     * @param $originalUrl original url from the content
-     * @param $replacementUrl url to replace with (usually the tracked url)
-     */
-    public function addReplacementUrl($originalUrl, $replacementUrl)
-    {
-        $this->replacementUrls[$originalUrl][] = $replacementUrl;
-    }
-
-    /**
-     * @return array
-     */
-    public function getReplacementUrls()
-    {
-        return $this->replacementUrls;
     }
 }
