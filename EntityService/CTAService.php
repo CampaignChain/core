@@ -101,18 +101,15 @@ class CTAService
                 $location->addCta($cta);
                 $this->em->persist($cta);
 
-                $ctaParserData->addTrackedUrl($url, $cta->getShortenedTrackingUrl());
+                $ctaParserData->addTrackedCTA($cta);
 
-                // otherwise keep the original url
+            // otherwise keep the original url
             } else {
                 $ctaParserData->addUntrackedUrl($url);
             }
         }
 
         $this->em->flush();
-
-        $newContent = ParserUtil::replaceURLsInText($content, $ctaParserData->getReplacementUrls());
-        $ctaParserData->setContent($newContent);
 
         return $ctaParserData;
     }
