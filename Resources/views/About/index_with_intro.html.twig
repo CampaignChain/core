@@ -17,11 +17,38 @@ file that was distributed with this source code.
 {% block stylesheets %}
     {{ parent() }}
     {% stylesheets "@intro_css" %}<link rel="stylesheet" href="{{ asset_url }}" />{% endstylesheets %}
+    <style>
+        .intro_step_sm {
+            min-width: 330px;
+            max-width: 330px;
+            padding: 15px 25px;
+        }
+        .intro_step_md {
+            min-width: 500px;
+            max-width: 500px;
+            padding: 15px 25px;
+        }
+        .intro_step_md h4 {
+            margin-bottom: 10px;
+        }
+        .intro_step_picture {
+            min-width: 600px;
+            max-width: 600px;
+            padding: 15px 25px;
+        }
+        .intro_step_picture h4 {
+            margin-bottom: 10px;
+        }
+        .intro_step_picture img {
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+    </style>
 {% endblock %}
 
-
 {% block body %}
-    {{ parent() }}
+
+    {#{{ parent() }}#}
 
     <script type="text/javascript">
         function startIntro(){
@@ -31,35 +58,43 @@ file that was distributed with this source code.
                 steps: [
                     {
                         element: document.querySelector('[data-step="1"]'),
-                        intro: "<h4>Start here...</h4>",
-                        position: "right"
+                        intro: "<h4>Start here</h4><p>This is where you create new Locations, Campaigns and everything else.</p>",
+                        position: "bottom",
+                        tooltipClass: "intro_step_sm"
                     },
                     {
                         element: document.querySelector('[data-step="2"]'),
-                        intro: "<h4>Create your first campaign</h4><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad aliquid culpa molestias nihil provident quis saepe similique suscipit tempora ut.</p>",
-                        position: "right"
+                        intro: "<h4>Create New Location</h4><p>Start using CampaignChain by creating a Location first. Locations are Web properties where Activities are being executed. For example, a Facebook page is a Location within the Facebook Channel. One Channel can have various Locations (e.g. a Facebook user stream and a page).</p>",
+                        position: "right",
+                        tooltipClass: "intro_step_md"
                     },
                     {
                         element: document.querySelector('[data-step="3"]'),
-                        intro: "<h4>Create an activity</h4><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad aliquid culpa molestias nihil provident quis saepe similique suscipit tempora ut.</p>",
-                        position: "right"
+                        intro: "<h4>Create New Campaign</h4><p>Now you can create a Campaign. A Campaign is the basis for all related marketing Activities. To create a new Campaign, provide its name and specify its duration.</p>",
+                        position: "right",
+                        tooltipClass: "intro_step_md"
                     },
                     {
                         element: document.querySelector('[data-step="4"]'),
-                        intro: "<h4>Create a location</h4><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad aliquid culpa molestias nihil provident quis saepe similique suscipit tempora ut.</p>",
-                        position: "right"
+                        intro: "<h4>Create New Activity</h4><p>Activities are marketing tasks that happen within a campaign. For example, 'Update Status on Facebook' is an Activity. Prior to creating an Activity, a related Campaign must already exist.</p>",
+                        position: "right",
+                        tooltipClass: "intro_step_md"
                     },
                     {
                         element: document.querySelector('[data-step="5"]'),
-                        intro: "<h4>Plan your campaign</h4><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad aliquid culpa molestias nihil provident quis saepe similique suscipit tempora ut.</p>"
+                        intro: '<h4>Plan</h4>{% image '@CampaignChainCoreBundle/Resources/public/images/intro_index/intro_step_plan.png' %}<img src="{{ asset_url }}"  height="303" width="524" />{% endimage %}<p>In the planning section, you have a full overview of which Activities will be executed when in which Campaign. All items in a planning view can be edited with a double click.</p>',
+                        tooltipClass: "intro_step_picture"
                     },
                     {
                         element: document.querySelector('[data-step="6"]'),
-                        intro: "<h4>Monitor your campaign</h4><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad aliquid culpa molestias nihil provident quis saepe similique suscipit tempora ut.</p>"
+                        intro: '<h4>Monitor</h4>{% image '@CampaignChainCoreBundle/Resources/public/images/intro_index/intro_step_monitor.png' %}<img src="{{ asset_url }}" height="177" width="530" />{% endimage %}<p>Monitor your marketing Return on Investment: CampaignChain analyzes channel-specific data, such as the number of likes or comments of a Facebook post or the number of Twitter re-tweets and more.</p>',
+                        tooltipClass: "intro_step_picture"
                     },
                     {
                         element: document.querySelector('[data-step="7"]'),
-                        intro: "<h4>Thanks for completing the tour!</h4><p>You can always restart the tour or read the manual here.</p>"
+                        intro: "<h4>Thanks for completing the tour!</h4><p>You can always restart the tour or read the manual here.</p>",
+                        position: "bottom-right-aligned",
+                        tooltipClass: "intro_step_sm"
                     }
                 ],
                 showStepNumbers: false
@@ -95,7 +130,7 @@ file that was distributed with this source code.
 
     <!-- Modal -->
     <div class="modal fade" id="introModal" tabindex="-1" role="dialog" aria-labelledby="intro">
-        <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-dialog modal-md" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <img src="/logo.png" height="24" class="visible-md-block visible-lg-block visible-sm-block pull-left">
@@ -103,7 +138,7 @@ file that was distributed with this source code.
                 </div>
                 <div class="modal-body text-center">
                     <h4>Welcome to CampaignChain - let's get started!</h4>
-                    <p>We would like to invite you to a short tour on the main features of CampaignChain. Please click below to start.</p>
+                    <p>We would like to invite you to a short tour on the main features of CampaignChain.<br/>Please click below to start.</p>
                 </div>
                 <div class="modal-footer">
                     <a href="#" class="btn btn-link" data-dismiss="modal">&laquo; No, thanks</a>
