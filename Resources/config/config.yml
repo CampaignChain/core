@@ -72,7 +72,7 @@ assetic:
                 - %kernel.root_dir%/../vendor/twbs/bootstrap/dist/fonts/glyphicons-halflings-regular.woff
             output: "fonts/glyphicons-halflings-regular.woff"
         braincrafted_bootstrap:
-            css_preprocessor: "lessphp"
+            less_filter: "lessphp"
         select2_js:
             inputs:
                 - "%kernel.root_dir%/../vendor/ivaynberg/select2/select2.js"
@@ -222,7 +222,7 @@ braincrafted_bootstrap:
     output_dir: null
     assets_dir: "%kernel.root_dir%/../vendor/twbs/bootstrap"
     jquery_path: "%kernel.root_dir%/../components/jquery/jquery.js"
-    css_preprocessor: "lessphp"
+    less_filter: "lessphp"
     auto_configure:
         assetic: true
         twig: true
