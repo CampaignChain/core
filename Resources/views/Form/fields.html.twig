@@ -80,7 +80,7 @@ file that was distributed with this source code.
                     {{ block('choice_widget_options') }}
                 </optgroup>
             {% else %}
-                <option data-x="" value="{{ choice.value }}"{% if choice is selectedchoice(value) or
+                <option value="{{ choice.value }}"{% if choice is selectedchoice(value) or
                     (attr.selected is defined and attr.selected == choice.value) %} selected="selected"{% endif %}
                     {% if attr.show_image is defined and attr.show_image == true %}
                         data-icon="{{ asset( choice.data|campaignchain_medium_icon ) }}"
