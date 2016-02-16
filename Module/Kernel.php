@@ -156,7 +156,7 @@ class Kernel
             foreach ($securityFiles as $securityFile) {
                 $yamlConfig = new YamlConfig('', $securityFile);
                 $bundleParameters = $yamlConfig->read();
-                $appParameters = VariableUtil::arrayMerge($appParameters, $bundleParameters);
+                $appParameters = VariableUtil::arrayMerge($bundleParameters, $appParameters);
             }
             
             $yamlConfig = new YamlConfig($this->appDir, $appSecurityFile);
