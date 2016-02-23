@@ -12,6 +12,7 @@ namespace CampaignChain\CoreBundle\Controller;
 
 use CampaignChain\CoreBundle\Entity\User;
 use CampaignChain\CoreBundle\Form\Type\UserType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -49,6 +50,8 @@ class UserController extends Controller
      *
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @Security("has_role('ROLE_SUPER_ADMIN')")
      */
     public function newAction(Request $request)
     {

@@ -10,23 +10,25 @@
 
 namespace CampaignChain\CoreBundle\Controller;
 
-use CampaignChain\CoreBundle\Form\Type\UserType;
+use CampaignChain\CoreBundle\Entity\User;
 use Liip\ImagineBundle\Exception\Binary\Loader\NotLoadableException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Doctrine\ORM\EntityRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ProfileController extends Controller
 {
-    public function editAction(Request $request, $id){
-        $user = $this->getDoctrine()
-            ->getRepository('CampaignChainCoreBundle:User')
-            ->find($id);
 
-        if (!$user) {
-            return $this->createNotFoundException('No user found');
+    /**
+     * @param Request $request
+     * @param User $user
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     */
+    public function editAction(Request $request, User $user)
+    {
+        if (!$this->isGranted('ROLE_SUPER_ADMIN') && $this->getUser() != $user) {
+            throw $this->createAccessDeniedException('Can\'t edit a user page');
         }
 
         $form = $this->createForm('campaignchain_core_user', $user);
@@ -49,7 +51,7 @@ class ProfileController extends Controller
                 'Your profile was edited successfully.'
             );
 
-            return $this->redirect($this->generateUrl('campaignchain_core_profile_edit', ['id' => $id]));
+            return $this->redirect($this->generateUrl('campaignchain_core_profile_edit', ['id' => $user->getId()]));
         }
 
         return $this->render(
@@ -133,6 +135,10 @@ class ProfileController extends Controller
 
         $form = $formFactory->createForm();
         $form->setData($user);
+
+        if ($this->isGranted('ROLE_SUPER_ADMIN')) {
+            $form->remove('current_password');
+        }
 
         $form->handleRequest($request);
 
