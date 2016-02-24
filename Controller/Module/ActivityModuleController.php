@@ -707,7 +707,7 @@ class ActivityModuleController extends Controller
         $qb->from('CampaignChain\CoreBundle\Entity\Location', 'l');
         $qb->from('CampaignChain\CoreBundle\Entity\Channel', 'c');
         $qb->innerJoin('am.channelModules', 'cm');
-        $qb->where('cm.id = c.id');
+        $qb->where('cm.id = c.channelModule');
         $qb->andWhere('l.id = :location');
         $qb->andWhere('l.channel = c.id');
         $qb->andWhere('a.activityModule = am.id');
