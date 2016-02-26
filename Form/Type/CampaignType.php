@@ -41,6 +41,10 @@ class CampaignType extends HookListenerType
 
     public function getName()
     {
-        return 'campaignchain_core_campaign';
+        if ($this->view == 'rest') {
+            return 'campaign';
+        } else {
+            return 'campaignchain_core_campaign';
+        }
     }
 }
