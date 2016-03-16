@@ -8,7 +8,7 @@ file that was distributed with this source code.
 #}
 {% if form is defined and form.vars is defined and form.vars.location is defined %}
     {% set location = form.vars.location %}
-{% else %}
+{% elseif location is defined %}
     {% set location = activity.getLocation() %}
 {% endif %}
 
@@ -16,7 +16,11 @@ file that was distributed with this source code.
     <div id="campaignchain-operation-field">
         <div class="panel panel-default">
             <div class="panel-heading">
+                {% if location is defined and location is not null %}
                 {{ location|campaignchain_tpl_teaser }}
+                {% else  %}
+                {{ form.vars.activity_module.getDisplayName() }}
+                {% endif %}
             </div>
             <div class="panel-body">
 {% endspaceless %}

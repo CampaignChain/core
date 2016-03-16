@@ -121,4 +121,24 @@ class OperationService
 
         return $clonedOperation;
     }
+
+    public function newOperationByActivity(Activity $activity, $bundleName, $moduleIdentifier)
+    {
+        $operationModule = $this->getOperationModule(
+            $bundleName,
+            $moduleIdentifier
+        );
+
+        $operation = new Operation();
+        $operation->setName($activity->getName());
+        $operation->setStartDate($activity->getStartDate());
+        $operation->setEndDate($activity->getEndDate());
+        $operation->setTriggerHook($activity->getTriggerHook());
+        $operation->setActivity($activity);
+        $activity->addOperation($operation);
+        $operationModule->addOperation($operation);
+        $operation->setOperationModule($operationModule);
+
+        return $operation;
+    }
 }

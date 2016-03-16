@@ -11,17 +11,13 @@ file that was distributed with this source code.
     When a new activity gets created, these variables must be provided by the
     controller:
 
-    - channel_module_bundle
-    - channel_module
     - location
     - campaign
 
     If the activity exists, then it suffices to provide the activity object as
     a variable.
 #}
-{% if channel_module_bundle is not defined %}
-    {% set channel_module_bundle = activity.getChannel().getChannelModule().getBundle() %}
-    {% set channel_module = activity.getChannel().getChannelModule() %}
+{% if campaign is not defined %}
     {% set campaign = activity.getCampaign() %}
     {% set location = activity.getLocation() %}
 {% endif %}
@@ -45,11 +41,13 @@ file that was distributed with this source code.
             <div class="campaignchain-sidebar-data">{{ activity|campaignchain_tpl_trigger_hook_inline }}</div>
         </div>
     {% endif %}
-    {% if location.getUrl() != '' %}
-        <div class="campaignchain-sidebar-item">
-            <h5>Location</h5>
-            <div class="campaignchain-sidebar-icon"><i class="fa fa-globe"></i></div>
-            <div class="campaignchain-sidebar-data"><a href="{{ location.getUrl() }}">{{ location.getUrl() }}</a></div>
-        </div>
+    {% if location is defined and location is not null %}
+        {% if location.getUrl() != '' %}
+            <div class="campaignchain-sidebar-item">
+                <h5>Location</h5>
+                <div class="campaignchain-sidebar-icon"><i class="fa fa-globe"></i></div>
+                <div class="campaignchain-sidebar-data"><a href="{{ location.getUrl() }}">{{ location.getUrl() }}</a></div>
+            </div>
+        {% endif %}
     {% endif %}
 </div>

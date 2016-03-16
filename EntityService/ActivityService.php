@@ -37,11 +37,11 @@ class ActivityService
 
     public function getAllActiveActivities($options = array()){
         $qb = $this->em->createQueryBuilder();
-        $qb->select('a', 'l')
+        $qb->select('a')
             ->from('CampaignChain\CoreBundle\Entity\Activity', 'a')
-            ->join('a.location','l')
-            ->where('a.parent IS NULL')
-            ->andWhere('l.status = ?1')
+            ->from('CampaignChain\CoreBundle\Entity\Location', 'l')
+            ->where('((a.location IS NOT NULL AND a.location = l.id AND l.status = ?1) OR a.location IS NULL)')
+            ->andWhere('a.parent IS NULL')
             ->orderBy('a.startDate')
             ->setParameters(array(1 => Location::STATUS_ACTIVE));
         if(isset($options['limit'])){

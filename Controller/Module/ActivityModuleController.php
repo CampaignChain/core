@@ -66,25 +66,28 @@ class ActivityModuleController extends Controller
             $this->parameters['equals_operation'] = false;
         }
 
-        $this->locationBundleName = $this->parameters['location']['bundle_name'];
-        $this->locationModuleIdentifier = $this->parameters['location']['module_identifier'];
+        if(isset($this->parameters['location'])) {
+            $this->locationBundleName = $this->parameters['location']['bundle_name'];
+            $this->locationModuleIdentifier = $this->parameters['location']['module_identifier'];
+        }
+
         if($this->parameters['equals_operation']) {
             $this->contentBundleName = $this->parameters['operations'][0]['bundle_name'];
             $this->contentModuleIdentifier = $this->parameters['operations'][0]['module_identifier'];
             $this->contentModuleFormName = str_replace('-', '_', $this->contentModuleIdentifier);
             $this->contentFormType = $this->parameters['operations'][0]['form_type'];
-        } else {
-            $this->contentFormType = $this->parameters['content_form_type'];
         }
     }
 
-    public function setActivityContext(Campaign $campaign, Location $location){
+    public function setActivityContext(Campaign $campaign, Location $location = null){
         $this->campaign = $campaign;
         $this->location = $location;
 
         $this->location = $this->handler->processActivityLocation($this->location);
 
-        $this->channel = $this->location->getChannel();
+        if($this->location) {
+            $this->channel = $this->location->getChannel();
+        }
     }
 
     /**
@@ -109,10 +112,15 @@ class ActivityModuleController extends Controller
         $campaignService = $this->get('campaignchain.core.campaign');
         $campaign = $campaignService->getCampaign($wizard->getCampaign());
         $locationService = $this->get('campaignchain.core.location');
-        $location = $locationService->getLocation($wizard->getLocation());
+        if($wizard->getLocation()) {
+            $location = $locationService->getLocation($wizard->getLocation());
+        } else {
+            $location = null;
+        }
         $this->setActivityContext($campaign, $location);
 
         $activity = $wizard->getActivity();
+        $activity->setActivityModule($wizard->getActivityModule());
         $activity->setEqualsOperation($this->parameters['equals_operation']);
 
         $form = $this->createForm(
@@ -134,6 +142,14 @@ class ActivityModuleController extends Controller
             return $this->redirect($this->generateUrl('campaignchain_core_activities'));
         }
 
+        if($location){
+            $channelModule = $wizard->getChannelModule();
+            $channelModuleBundle = $wizard->getChannelModuleBundle();
+        } else {
+            $channelModule = null;
+            $channelModuleBundle = null;
+        }
+
         /*
          * Define default rendering options and then apply those defined by the
          * module's handler if applicable.
@@ -145,8 +161,6 @@ class ActivityModuleController extends Controller
                 'activity' => $activity,
                 'campaign' => $this->campaign,
                 'campaign_module' => $this->campaign->getCampaignModule(),
-                'channel_module' => $wizard->getChannelModule(),
-                'channel_module_bundle' => $wizard->getChannelModuleBundle(),
                 'location' => $this->location,
                 'form' => $form->createView(),
                 'form_submit_label' => 'Save',
@@ -168,21 +182,6 @@ class ActivityModuleController extends Controller
             $this->campaign = $activity->getCampaign();
         }
 
-        if(!$activity->getChannel()) {
-            $activity->setChannel($this->channel);
-        } elseif(!$this->channel){
-            $this->channel = $activity->getChannel();
-        }
-
-        if(!$activity->getLocation()) {
-            $activity->setLocation($this->location);
-        } elseif(!$this->location){
-            $this->location = $activity->getLocation();
-        }
-
-        // The Module's content.
-        $content = null;
-
         // If Activity module is not set, then do it.
         if(!$activity->getActivityModule()){
             $moduleService = $this->get('campaignchain.core.module');
@@ -195,42 +194,53 @@ class ActivityModuleController extends Controller
             );
         }
 
-        // Allow the module to change some data based on its custom input.
-        if($form->has($this->contentModuleFormName)) {
-            $this->handler->postFormSubmitNewEvent(
-                $activity,
-                $form->get($this->contentModuleFormName)->getData()
-            );
+        // Does the Activity module relate to at least one Channel module?
+        $hasChannel = $activity->getActivityModule()->getChannelModules()->count();
 
-            // Allow a module's handler to modify the Activity data.
-            $activity = $this->handler->processActivity(
-                $activity,
-                $form->get($this->contentModuleFormName)->getData()
-            );
-        }
-
-        // Get the operation module.
-        $operationService = $this->get('campaignchain.core.operation');
-        $operationModule = $operationService->getOperationModule(
-            $this->contentBundleName,
-            $this->contentModuleIdentifier
-        );
+        // The Module's content.
+        $content = null;
+        $operation = new Operation();
 
         if($this->parameters['equals_operation']) {
-            // The activity equals the operation. Thus, we create a new operation with the same data.
-            $operation = new Operation();
-            $operation->setName($activity->getName());
-            $operation->setStartDate($activity->getStartDate());
-            $operation->setEndDate($activity->getEndDate());
-            $operation->setTriggerHook($activity->getTriggerHook());
-            $operation->setActivity($activity);
-            $activity->addOperation($operation);
-            $operationModule->addOperation($operation);
-            $operation->setOperationModule($operationModule);
+            if($hasChannel) {
+                if (!$activity->getChannel()) {
+                    $activity->setChannel($this->channel);
+                } elseif (!$this->channel) {
+                    $this->channel = $activity->getChannel();
+                }
+
+                if (!$activity->getLocation()) {
+                    $activity->setLocation($this->location);
+                } elseif (!$this->location) {
+                    $this->location = $activity->getLocation();
+                }
+            }
+
+            // Allow the module to change some data based on its custom input.
+            if($form->has($this->contentModuleFormName)) {
+                $this->handler->postFormSubmitNewEvent(
+                    $activity,
+                    $form->get($this->contentModuleFormName)->getData()
+                );
+
+                // Allow a module's handler to modify the Activity data.
+                $activity = $this->handler->processActivity(
+                    $activity,
+                    $form->get($this->contentModuleFormName)->getData()
+                );
+            }
+
+            // Get the operation module.
+            $operationService = $this->get('campaignchain.core.operation');
+            $operation = $operationService->newOperationByActivity(
+                $activity,
+                $this->contentBundleName,
+                $this->contentModuleIdentifier
+            );
 
             // Will the Operation create a Location, i.e. the Operation
             // will be accessible through a URL after publishing?
-            if($operationModule->ownsLocation()) {
+            if($operation->getOperationModule()->ownsLocation()) {
                 // Get the location module.
                 $locationService = $this->get('campaignchain.core.location');
                 $locationModule = $locationService->getLocationModule(
@@ -267,9 +277,9 @@ class ActivityModuleController extends Controller
                 // Link the Operation details with the operation.
                 $content->setOperation($operation);
             }
-        } else {
-            throw new \Exception(
-                'Multiple Operations for one Activity not implemented yet.'
+        } elseif(count($this->parameters['operations']) > 1) {
+            $content = $this->handler->processMultiOperationMultiContent(
+                $activity, $form, $this->parameters['operations']
             );
         }
 
@@ -280,6 +290,13 @@ class ActivityModuleController extends Controller
             $repository->getConnection()->beginTransaction();
 
             $repository->persist($activity);
+
+            if(!$content) {
+                $content = $this->handler->processSingleContentMultiOperation(
+                    $activity, $form
+                );
+            }
+
             if($content) {
                 $repository->persist($content);
             }
@@ -610,39 +627,41 @@ class ActivityModuleController extends Controller
      */
     private function getContentFormTypes()
     {
-        if($this->parameters['equals_operation']) {
-            $operationForm = $this->contentFormType;
-            $contentFormType = new $operationForm(
-                $this->getDoctrine()->getManager(),
-                $this->get('service_container')
-            );
-
-            if($this->location) {
-                $contentFormType->setLocation($this->location);
-            }
-
-            if($this->handler){
-                if(isset($this->operations[0])){
-                    $content = $this->handler->getContent(
-                        $this->location, $this->operations[0]
-                    );
-                } else {
-                    $content = $this->handler->createContent($this->location, $this->campaign);
-                }
-                $contentFormType->setContent($content);
-            }
-
-            $operationForms[] = array(
-                'identifier' => $this->contentModuleFormName,
-                'form' => $contentFormType
-            );
-        } else {
-            throw new \Exception(
-                'Multiple Operations for one Activity not implemented yet.'
-            );
+        foreach($this->parameters['operations'] as $operationParams){
+            $operationForms[] = $this->getContentFormType($operationParams);
         }
 
         return $operationForms;
+    }
+
+    private function getContentFormType($params)
+    {
+        $contentFormType = new $params['form_type'](
+            $this->getDoctrine()->getManager(),
+            $this->get('service_container')
+        );
+
+        if($this->location) {
+            $contentFormType->setLocation($this->location);
+        }
+
+        if($this->handler){
+            if(isset($this->operations[0])){
+                $content = $this->handler->getContent(
+                    $this->location, $this->operations[0]
+                );
+            } else {
+                $content = $this->handler->createContent($this->location, $this->campaign);
+            }
+            $contentFormType->setContent($content);
+        }
+
+        $formName = str_replace('-', '_', $params['module_identifier']);
+
+        return array(
+            'identifier' => $formName,
+            'form' => $contentFormType
+        );
     }
 
     /**
