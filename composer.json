@@ -40,7 +40,7 @@
         "knplabs/knp-menu": "dev-master",
         "knplabs/knp-paginator-bundle": "dev-master",
         "knplabs/knp-menu-bundle":"dev-master",
-        "stephanecollot/datetimepicker-bundle": "dev-master",
+        "stephanecollot/datetimepicker-bundle": "1.0.1",
         "friendsofsymfony/user-bundle": "dev-master",
         "bmatzner/fontawesome-bundle": "dev-master",
         "ivaynberg/select2": "3.5.0",
