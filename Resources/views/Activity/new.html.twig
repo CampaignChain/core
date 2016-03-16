@@ -12,19 +12,27 @@ file that was distributed with this source code.
 {% block javascripts %}
     {{ parent() }}
     {{ form_javascript(form_single) }}
-    {{ form_javascript(form_multiple) }}
+    {% if form_multiple is not null %}
+        {{ form_javascript(form_multiple) }}
+    {% endif %}
 {% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
     {{ form_stylesheet(form_single) }}
-    {{ form_stylesheet(form_multiple) }}
+    {% if form_multiple is not null %}
+        {{ form_stylesheet(form_multiple) }}
+    {% endif %}
 {% endblock %}
 
 {% block form %}
 <div class="row">
+    {% if form_multiple is not null %}
     <div class="col-md-6">
-        <h2>Locations</h2>
+        <h2>Single Location</h2>
+    {% else %}
+    <div class="col-md-9">
+    {% endif %}
         <form method="POST" class="form-horizontal" role="form" enctype="multipart/form-data">
             {{ bootstrap_set_style('horizontal') }}
             {{ bootstrap_set_widget_col(8) }}
@@ -39,8 +47,9 @@ file that was distributed with this source code.
             </div>
         </form>
     </div>
+    {% if form_multiple is not null %}
     <div class="col-md-6">
-        <h2>Workflows</h2>
+        <h2>Multiple Locations</h2>
         <form method="POST" class="form-horizontal" role="form" enctype="multipart/form-data">
             {{ bootstrap_set_style('horizontal') }}
             {{ bootstrap_set_widget_col(8) }}
@@ -55,5 +64,6 @@ file that was distributed with this source code.
             </div>
         </form>
     </div>
+    {% endif %}
 </div>
 {% endblock %}
