@@ -317,7 +317,7 @@ fos_rest:
             html: false
     format_listener:
         rules:
-            - { path: '^/api/{version}', priorities: ['json'], fallback_format: json, exception_fallback_format: json, prefer_extension: true }
+            - { path: '^/api/{version}', priorities: ['json'], fallback_format: json, attributes: { _controller: FOS\RestBundle\Controller\ExceptionController }, prefer_extension: true }
             - { path: '^/', stop: true } # Turn off format listener
     access_denied_listener:
         json: true
