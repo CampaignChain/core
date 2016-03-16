@@ -96,10 +96,10 @@ file that was distributed with this source code.
     <p>Include below JavaScript code in the HTML of the channel. Make sure it appears in all pages below each root Location which you'd like to utilize for CTA tracking.</p>
 <pre>
 {% filter escape %}
-<script type="text/javascript" src="{{ app.request.getSchemeAndHttpHost() }}/bundles/campaignchaincore/js/campaignchain/campaignchain_tracking.js"></script>
 <script type="text/javascript">
     var campaignchainChannel = '{{ channel.trackingId }}';
 </script>
+<script type="text/javascript" src="{{ app.request.getSchemeAndHttpHost() }}/bundles/campaignchaincore/js/campaignchain/campaignchain_tracking.js"></script>
 {% endfilter %}
 </pre>
 

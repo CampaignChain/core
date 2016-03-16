@@ -14,6 +14,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 class UserType extends AbstractType
 {
@@ -85,7 +86,7 @@ class UserType extends AbstractType
 
         if ($options['new']) {
             $builder->add('password', 'repeated', array(
-                'required'        => false,
+                'required'        =>  true,
                 'type'            => 'password',
                 'first_name'      => 'password',
                 'second_name'     => 'password_again',
@@ -127,6 +128,18 @@ class UserType extends AbstractType
         $resolver->setDefaults(array(
             'data_class' => 'CampaignChain\CoreBundle\Entity\User',
             'new' => false,
+            'constraints' => [
+                new UniqueEntity([
+                    'fields' => ['email'],
+                    'errorPath' => 'email',
+                    'message' => 'E-Mail already exists'
+                ]),
+                new UniqueEntity([
+                    'fields' => ['username'],
+                    'errorPath' => 'username',
+                    'message' => 'Username already exists'
+                ])
+            ],
         ));
     }
 

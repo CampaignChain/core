@@ -15,9 +15,9 @@ use CampaignChain\CoreBundle\Entity\Campaign;
 use CampaignChain\CoreBundle\Entity\Location;
 use CampaignChain\CoreBundle\Entity\Medium;
 use CampaignChain\CoreBundle\Entity\Module;
+use CampaignChain\CoreBundle\Exception\ExternalApiException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Form;
-use Symfony\Component\HttpFoundation\Session\Session;
 use CampaignChain\CoreBundle\Entity\Operation;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -134,7 +134,7 @@ class ActivityModuleController extends Controller
 
             $activity = $this->createActivity($activity, $form);
 
-            $this->get('session')->getFlashBag()->add(
+            $this->addFlash(
                 'success',
                 'Your new activity <a href="'.$this->generateUrl('campaignchain_core_activity_edit', array('id' => $activity->getId())).'">'.$activity->getName().'</a> was created successfully.'
             );
@@ -321,7 +321,17 @@ class ActivityModuleController extends Controller
             throw $e;
         }
 
-        $this->handler->postPersistNewEvent($operation, $form, $content);
+        // if the module tries to execute the job immediately, catch url shortener api exceptions
+        try {
+            $this->handler->postPersistNewEvent($operation, $form, $content);
+        } catch (ExternalApiException $e) {
+            $this->addFlash(
+                'warning',
+                'The Activity could not be published. Please try again later.'
+            );
+            $logger = $this->has('monolog.logger.external') ? $this->get('monolog.logger.external') : $this->get('monolog.logger');
+            $logger->error($e->getMessage());
+        }
 
         return $activity;
     }
@@ -361,12 +371,22 @@ class ActivityModuleController extends Controller
         if ($form->isValid()) {
             $this->activity = $this->editActivity($this->activity, $form);
 
-            $this->get('session')->getFlashBag()->add(
+            $this->addFlash(
                 'success',
                 'Your activity <a href="'.$this->generateUrl('campaignchain_core_activity_edit', array('id' => $this->activity->getId())).'">'.$this->activity->getName().'</a> was edited successfully.'
             );
 
-            $this->handler->postPersistEditEvent($this->operations[0], $form, $content);
+            // if the module tries to execute the job immediately, catch url shortener api exceptions
+            try {
+                $this->handler->postPersistEditEvent($this->operations[0], $form, $content);
+            } catch (ExternalApiException $e) {
+                $this->addFlash(
+                    'warning',
+                    'The Activity could not be published. Please try again later.'
+                );
+                $logger = $this->has('monolog.logger.external') ? $this->get('monolog.logger.external') : $this->get('monolog.logger');
+                $logger->error($e->getMessage());
+            }
 
             return $this->redirect($this->generateUrl('campaignchain_core_activities'));
         }
@@ -706,7 +726,7 @@ class ActivityModuleController extends Controller
         $qb->from('CampaignChain\CoreBundle\Entity\Location', 'l');
         $qb->from('CampaignChain\CoreBundle\Entity\Channel', 'c');
         $qb->innerJoin('am.channelModules', 'cm');
-        $qb->where('cm.id = c.id');
+        $qb->where('cm.id = c.channelModule');
         $qb->andWhere('l.id = :location');
         $qb->andWhere('l.channel = c.id');
         $qb->andWhere('a.activityModule = am.id');

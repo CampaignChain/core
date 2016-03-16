@@ -6,243 +6,96 @@
 # file that was distributed with this source code.
 
 parameters:
+
     campaignchain_core:
-        display_name: Core Bundle
+        display_name: 'Core Bundle'
         formats:
             # Date and time formats as per http://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table
-            date: ['yyyy-MM-dd', 'd. MMMM, yyyy', 'EEEE, d. MMMM, yyyy', 'EEE, d. MMMM, yyyy']
-            time: ['hh:mm a', 'HH:mm', 'HH:mm:ss']
+            date:
+              - 'yyyy-MM-dd'
+              - 'd. MMMM, yyyy'
+              - 'EEEE, d. MMMM, yyyy'
+              - 'EEE, d. MMMM, yyyy'
+            time:
+              - 'hh:mm a'
+              - 'HH:mm'
+              - 'HH:mm:ss'
 
     # tell twig to use our own exception controller
-    twig.exception_listener.controller: campaignchain.core.controller.exception:showAction
+    twig.exception_listener.controller: 'campaignchain.core.controller.exception:showAction'
 
     # Defaults for these are set by CampaignChainCoreExtension
     campaignchain.core.upload_storage.path: ~
     campaignchain.core.upload_storage.url_prefix: ~
 
 services:
+
+    # Wizard
     campaignchain.core.channel.wizard:
         class: CampaignChain\CoreBundle\Wizard\ChannelWizard
         calls:
-            - [setContainer, ["@service_container"]]
+            - [setContainer, ['@service_container']]
+
     campaignchain.core.activity.wizard:
         class: CampaignChain\CoreBundle\Wizard\ActivityWizard
         calls:
-            - [setContainer, ["@service_container"]]
+            - [setContainer, ['@service_container']]
+
+    # Twig
     campaignchain.core.twig.campaignchain_core_extension:
         class: CampaignChain\CoreBundle\Twig\CampaignChainCoreExtension
-        arguments: [@doctrine.orm.entity_manager, "@service_container"]
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@service_container'
         tags:
             - { name: twig.extension }
+
+    # Listeners
     campaignchain.core.listener.login:
         class: CampaignChain\CoreBundle\EventListener\LoginListener
-        arguments: ["@security.token_storage", "@security.authorization_checker", "@session"]
+        arguments:
+            - '@security.token_storage'
+            - '@security.authorization_checker'
+            - '@session'
         tags:
             - { name: kernel.event_listener, event: security.interactive_login, method: onSecurityInteractiveLogin }
             - { name: kernel.event_listener, event: kernel.request, method: setLocale }
+
+    campaignchain.core.listener.firstlogin:
+        class: CampaignChain\CoreBundle\EventListener\FirstLoginListener
+        tags:
+            - { name: kernel.event_subscriber }
+
     campaignchain.core.listener.datetime:
         class: CampaignChain\CoreBundle\EventListener\DatetimeListener
-        arguments: ["@service_container"]
+        arguments:
+            - '@service_container'
         tags:
             - { name: doctrine.event_listener, event: postLoad }
             - { name: doctrine.event_listener, event: prePersist }
             - { name: doctrine.event_listener, event: preUpdate }
+
     campaignchain.core.listener.doctrine.meta:
         class: CampaignChain\CoreBundle\EventListener\DoctrineMetaListener
         tags:
             - { name: doctrine.event_listener, event: onFlush }
-    campaignchain.core.listerner.user_avatar:
+
+    campaignchain.core.listener.user_avatar:
         class: CampaignChain\CoreBundle\EventListener\UserAvatarListener
         arguments:
-            - @campaignchain.core.user
-            - @campaignchain.core.service.file_upload
-            - @liip_imagine.binary.loader.uploads
-            - @liip_imagine.filter.manager
+            - '@campaignchain.core.user'
+            - '@campaignchain.core.service.file_upload'
+            - '@liip_imagine.binary.loader.uploads'
+            - '@liip_imagine.filter.manager'
         tags:
             - { name: doctrine.orm.entity_listener }
             - { name: kernel.event_listener, event: oneup_uploader.post_persist, method: onUpload }
-    campaignchain.core.service.file_upload:
-        class: CampaignChain\CoreBundle\Service\FileUploadService
-        arguments:
-            - %campaignchain.core.upload_storage.path%
-            - %campaignchain.core.upload_storage.url_prefix%
-    campaignchain.core.util.datetime:
-        class: CampaignChain\CoreBundle\Util\DateTimeUtil
-        arguments: ["@service_container"]
-    campaignchain.core.module:
-        class: CampaignChain\CoreBundle\EntityService\ModuleService
-        arguments: [ @doctrine.orm.entity_manager, @service_container ]
-    campaignchain.core.form.type.campaign:
-        class: CampaignChain\CoreBundle\Form\Type\CampaignType
-        arguments: [ @doctrine.orm.entity_manager, @service_container ]
-    campaignchain.core.form.type.milestone:
-        class: CampaignChain\CoreBundle\Form\Type\MilestoneType
-        arguments: [ @doctrine.orm.entity_manager, @service_container ]
-    campaignchain.core.form.type.location:
-        class: CampaignChain\CoreBundle\Form\Type\LocationType
-        arguments: [ @doctrine.orm.entity_manager, @service_container ]
-    campaignchain.core.form.type.user:
-        class: CampaignChain\CoreBundle\Form\Type\UserType
-        arguments: [ "%campaignchain_core%" ]
-        tags:
-            - {name: form.type, alias: "campaignchain_core_user" }
-    campaignchain.core.location:
-        class: CampaignChain\CoreBundle\EntityService\LocationService
-        arguments: [ @doctrine.orm.entity_manager, @service_container, @campaignchain.core.activity]
-    campaignchain.core.fact:
-        class: CampaignChain\CoreBundle\EntityService\FactService
-        arguments: [ @doctrine.orm.entity_manager ]
-    campaignchain.core.form.type.location:
-        class: CampaignChain\CoreBundle\Form\Type\LocationType
-    campaignchain.core.form.type.activity:
-        class: CampaignChain\CoreBundle\Form\Type\ActivityType
-        arguments: [ @doctrine.orm.entity_manager, @service_container ]
-    campaignchain.core.channel:
-        class: CampaignChain\CoreBundle\EntityService\ChannelService
-        arguments: [ @doctrine.orm.entity_manager, @service_container, @campaignchain.core.activity, @campaignchain.core.location]
-    campaignchain.core.operation:
-        class: CampaignChain\CoreBundle\EntityService\OperationService
-        arguments: [ @doctrine.orm.entity_manager, @service_container ]
-    campaignchain.core.campaign:
-        class: CampaignChain\CoreBundle\EntityService\CampaignService
-        arguments: [ @doctrine.orm.entity_manager, @service_container ]
-    campaignchain.core.milestone:
-        class: CampaignChain\CoreBundle\EntityService\MilestoneService
-        arguments: [ @doctrine.orm.entity_manager, @service_container ]
-    campaignchain.core.activity:
-        class: CampaignChain\CoreBundle\EntityService\ActivityService
-        arguments: [ @doctrine.orm.entity_manager, @service_container ]
-    campaignchain.core.hook:
-        class: CampaignChain\CoreBundle\EntityService\HookService
-        arguments: [ @doctrine.orm.entity_manager, @service_container ]
-    campaignchain.core.cta:
-        class: CampaignChain\CoreBundle\EntityService\CTAService
-        arguments: [ @doctrine.orm.entity_manager, @service_container ]
-    campaignchain.core.user:
-        class: CampaignChain\CoreBundle\EntityService\UserService
-        arguments: [ @campaignchain.core.service.file_upload, @campaignchain.core.http_client]
-    campaignchain.core.system:
-        class: CampaignChain\CoreBundle\EntityService\SystemService
-        arguments: [ @doctrine.orm.entity_manager ]
-    campaignchain.core.model.dhtmlxgantt:
-        class: CampaignChain\CoreBundle\Model\DhtmlxGantt
-        arguments: [ @doctrine.orm.entity_manager, @service_container ]
-    campaignchain.core.model.fullcalendar:
-        class: CampaignChain\CoreBundle\Model\FullCalendar
-        arguments: [ @doctrine.orm.entity_manager, @service_container ]
+
     campaignchain.core.listener.hook:
         class: CampaignChain\CoreBundle\EventListener\HookListener
-        arguments: [ @doctrine.orm.entity_manager, @service_container ]
-    campaignchain.block.campaign.ongoing.listgroup:
-        class: CampaignChain\CoreBundle\Block\CampaignOngoingListGroupBlockService
-        arguments: [ 'campaignchain.block.campaign.ongoing.listgroup', @templating ]
-        calls:
-            - [ setService, [ @campaignchain.core.campaign ] ]
-        tags:
-            - {name: "sonata.block"}
-    campaignchain.block.activity.upcoming.listgroup:
-        class: CampaignChain\CoreBundle\Block\ActivityUpcomingListGroupBlockService
-        arguments: [ 'campaignchain.block.activity.upcoming.listgroup', @templating ]
-        calls:
-            - [ setService, [ @campaignchain.core.activity ] ]
-        tags:
-            - {name: "sonata.block"}
-    campaignchain.block.milestone.upcoming.listgroup:
-        class: CampaignChain\CoreBundle\Block\MilestoneUpcomingListGroupBlockService
-        arguments: [ 'campaignchain.block.milestone.upcoming.listgroup', @templating ]
-        calls:
-            - [ setService, [ @campaignchain.core.milestone ] ]
-        tags:
-            - {name: "sonata.block"}
-    campaignchain.block.rss:
-        class: CampaignChain\CoreBundle\Block\RssBlockService
-        arguments: [ 'campaignchain.block.rss', @templating ]
-        tags:
-            - {name: "sonata.block"}
-    campaignchain.core.install.wizard:
-        class: CampaignChain\CoreBundle\Wizard\InstallWizard
-        arguments: [ %kernel.root_dir% ]
-    campaignchain.core.install.wizard.step.system_modules:
-        class: CampaignChain\CoreBundle\Wizard\Install\Step\SystemModulesStep
-        public: false
-        calls:
-            - [ setServices, [ @campaignchain.core.util.command, @campaignchain.core.module.installer ] ]
-        tags:
-            - {name: "campaignchain.install.step", priority: '0'}
-    campaignchain.core.install.wizard.step.sfsecret:
-        class: CampaignChain\CoreBundle\Wizard\Install\Step\SfSecretStep
-        public: false
-        tags:
-            - {name: "campaignchain.install.step", priority: '100'}
-    campaignchain.core.install.wizard.step.bitly:
-        class: CampaignChain\CoreBundle\Wizard\Install\Step\BitlyStep
-        public: false
-        calls:
-            - [ setServices, [ @campaignchain.core.util.command ] ]
-        tags:
-            - {name: "campaignchain.install.step", priority: '200'}
-    campaignchain.core.install.wizard.step.admin:
-        class: CampaignChain\CoreBundle\Wizard\Install\Step\AdminStep
-        public: false
-        calls:
-            - [ setServices, [ @campaignchain.core.util.command ] ]
-        tags:
-            - {name: "campaignchain.install.step", priority: '300'}
-    campaignchain.core.voter.install:
-        class: CampaignChain\CoreBundle\Security\Authorization\Voter\InstallVoter
-        public: false
-        arguments: [ @doctrine.orm.entity_manager ]
-        tags:
-            - { name: security.voter }
-    campaignchain.core.module.installer:
-        class: CampaignChain\CoreBundle\Module\Installer
-        arguments: [ @doctrine.orm.entity_manager, @service_container ]
-    campaignchain.core.module.package:
-        class: CampaignChain\CoreBundle\Module\Package
-        arguments: [ %kernel.root_dir%, %campaignchain_dev% ]
-    campaignchain.core.module.repository:
-        class: CampaignChain\CoreBundle\Module\Repository
-        arguments: [ @doctrine.orm.entity_manager, %campaignchain_dev% ]
-    campaignchain.core.module.composer:
-        class: CampaignChain\CoreBundle\Module\Composer
-        arguments: [ %kernel.root_dir%, @campaignchain.core.util.command, @logger ]
-    campaignchain.core.module.kernel:
-        class: CampaignChain\CoreBundle\Module\Kernel
-        arguments: [ %kernel.root_dir%, @campaignchain.core.util.command, @logger ]
-    campaignchain.core.util.command:
-        class: CampaignChain\CoreBundle\Util\CommandUtil
-        arguments: [ @kernel ]
-    campaignchain.core.voter.dev:
-        class: CampaignChain\CoreBundle\Security\Authorization\Voter\DevVoter
-        public: false
-        arguments: [ %campaignchain_dev% ]
-        tags:
-            - { name: security.voter }
-
-    campaignchain.core.menu.list_group_renderer:
-        class: Knp\Menu\Renderer\TwigRenderer
         arguments:
-            - @twig
-            - "CampaignChainCoreBundle:Menu:list_group_theme.html.twig"
-            - @knp_menu.matcher
-        tags:
-            - { name: knp_menu.renderer, alias: list-group }
-
-    campaignchain.core.menu.dropdown_renderer:
-        class: Knp\Menu\Renderer\TwigRenderer
-        arguments:
-            - @twig
-            - "CampaignChainCoreBundle:Menu:dropdown_theme.html.twig"
-            - @knp_menu.matcher
-        tags:
-            - { name: knp_menu.renderer, alias: dropdown }
-
-    campaignchain.core.http_client:
-        class: GuzzleHttp\Client
-
-    hpatoio_bitly.client:
-        class: "Hpatoio\\Bitly\\Client"
-        arguments: ["@=service('campaignchain.core.system').getBitlyAccessToken()"]
+            - '@doctrine.orm.entity_manager'
+            - '@service_container'
 
     campaignchain.core.listener.console_exception:
         class: CampaignChain\CoreBundle\EventListener\ConsoleExceptionListener
@@ -252,11 +105,325 @@ services:
         tags:
             - { name: kernel.event_listener, event: console.exception }
 
+    campaign_chain_core.listener.external_exception:
+        class: CampaignChain\CoreBundle\EventListener\ExternalExceptionListener
+        arguments:
+            - '@monolog.logger.external'
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception }
+
+    # Services
+    campaignchain.core.module:
+        class: CampaignChain\CoreBundle\EntityService\ModuleService
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@service_container'
+
+    campaignchain.core.location:
+        class: CampaignChain\CoreBundle\EntityService\LocationService
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@service_container'
+            - '@campaignchain.core.activity'
+
+    campaignchain.core.fact:
+        class: CampaignChain\CoreBundle\EntityService\FactService
+        arguments:
+            - '@doctrine.orm.entity_manager'
+
+    campaignchain.core.channel:
+        class: CampaignChain\CoreBundle\EntityService\ChannelService
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@service_container'
+            - '@campaignchain.core.activity'
+            - '@campaignchain.core.location'
+
+    campaignchain.core.operation:
+        class: CampaignChain\CoreBundle\EntityService\OperationService
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@service_container'
+
+    campaignchain.core.campaign:
+        class: CampaignChain\CoreBundle\EntityService\CampaignService
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@service_container'
+
+    campaignchain.core.milestone:
+        class: CampaignChain\CoreBundle\EntityService\MilestoneService
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@service_container'
+
+    campaignchain.core.activity:
+        class: CampaignChain\CoreBundle\EntityService\ActivityService
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@service_container'
+
+    campaignchain.core.hook:
+        class: CampaignChain\CoreBundle\EntityService\HookService
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@service_container'
+
+    campaignchain.core.cta:
+        class: CampaignChain\CoreBundle\EntityService\CTAService
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@campaign_chain_core.service.url_shortener'
+            - '@campaignchain.core.location'
+
+    campaignchain.core.user:
+        class: CampaignChain\CoreBundle\EntityService\UserService
+        arguments:
+            - '@campaignchain.core.service.file_upload'
+            - '@campaignchain.core.http_client'
+
+    campaignchain.core.system:
+        class: CampaignChain\CoreBundle\EntityService\SystemService
+        arguments:
+            - '@doctrine.orm.entity_manager'
+
+    campaign_chain_core.service.url_shortener:
+        class: CampaignChain\CoreBundle\Service\UrlShortener\UrlShortenerService
+        arguments:
+            - '@mremi.url_shortener.provider.bitly.bitly_provider'
+
+    # Forms
+    campaignchain.core.form.type.campaign:
+        class: CampaignChain\CoreBundle\Form\Type\CampaignType
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@service_container'
+
+    campaignchain.core.form.type.milestone:
+        class: CampaignChain\CoreBundle\Form\Type\MilestoneType
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@service_container'
+
+    campaignchain.core.form.type.location:
+        class: CampaignChain\CoreBundle\Form\Type\LocationType
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@service_container'
+
+    campaignchain.core.form.type.user:
+        class: CampaignChain\CoreBundle\Form\Type\UserType
+        arguments:
+            - '%campaignchain_core%'
+        tags:
+            - { name: form.type, alias: campaignchain_core_user }
+
+    campaignchain.core.form.type.activity:
+        class: CampaignChain\CoreBundle\Form\Type\ActivityType
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@service_container'
+
+    # Model
+    campaignchain.core.model.dhtmlxgantt:
+        class: CampaignChain\CoreBundle\Model\DhtmlxGantt
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@service_container'
+
+    campaignchain.core.model.fullcalendar:
+        class: CampaignChain\CoreBundle\Model\FullCalendar
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@service_container'
+
+    # Sonata
+    campaignchain.block.campaign.ongoing.listgroup:
+        class: CampaignChain\CoreBundle\Block\CampaignOngoingListGroupBlockService
+        arguments:
+            - 'campaignchain.block.campaign.ongoing.listgroup'
+            - '@templating'
+        calls:
+            - [setService, ['@campaignchain.core.campaign']]
+        tags:
+            - { name: sonata.block }
+
+    campaignchain.block.activity.upcoming.listgroup:
+        class: CampaignChain\CoreBundle\Block\ActivityUpcomingListGroupBlockService
+        arguments:
+            - 'campaignchain.block.activity.upcoming.listgroup'
+            - '@templating'
+        calls:
+            - [setService, ['@campaignchain.core.activity']]
+        tags:
+            - { name: sonata.block }
+
+    campaignchain.block.milestone.upcoming.listgroup:
+        class: CampaignChain\CoreBundle\Block\MilestoneUpcomingListGroupBlockService
+        arguments:
+            - 'campaignchain.block.milestone.upcoming.listgroup'
+            - '@templating'
+        calls:
+            - [ setService, ['@campaignchain.core.milestone']]
+        tags:
+            - { name: sonata.block }
+
+    campaignchain.block.rss:
+        class: CampaignChain\CoreBundle\Block\RssBlockService
+        arguments:
+            - 'campaignchain.block.rss'
+            - '@templating'
+        tags:
+            - { name: sonata.block }
+
+    # Install Wizard
+    campaignchain.core.install.wizard:
+        class: CampaignChain\CoreBundle\Wizard\InstallWizard
+        arguments:
+            - '%kernel.root_dir%'
+
+    campaignchain.core.install.wizard.step.system_modules:
+        class: CampaignChain\CoreBundle\Wizard\Install\Step\SystemModulesStep
+        public: false
+        calls:
+            - [setServices, ['@campaignchain.core.util.command', '@campaignchain.core.module.installer']]
+        tags:
+            - { name: campaignchain.install.step, priority: 0 }
+
+    campaignchain.core.install.wizard.step.sfsecret:
+        class: CampaignChain\CoreBundle\Wizard\Install\Step\SfSecretStep
+        public: false
+        tags:
+            - { name: campaignchain.install.step, priority: 100 }
+
+    campaignchain.core.install.wizard.step.bitly:
+        class: CampaignChain\CoreBundle\Wizard\Install\Step\BitlyStep
+        public: false
+        calls:
+            - [setServices, ['@campaignchain.core.util.command']]
+        tags:
+            - { name: campaignchain.install.step, priority: 200 }
+
+    campaignchain.core.install.wizard.step.admin:
+        class: CampaignChain\CoreBundle\Wizard\Install\Step\AdminStep
+        public: false
+        calls:
+            - [setServices, ['@campaignchain.core.util.command']]
+        tags:
+            - { name: campaignchain.install.step, priority: 300 }
+
+    # Voter
+    campaignchain.core.voter.install:
+        class: CampaignChain\CoreBundle\Security\Authorization\Voter\InstallVoter
+        public: false
+        arguments:
+            - '@doctrine.orm.entity_manager'
+        tags:
+            - { name: security.voter }
+
+    campaignchain.core.voter.dev:
+        class: CampaignChain\CoreBundle\Security\Authorization\Voter\DevVoter
+        public: false
+        arguments:
+            - '%campaignchain_dev%'
+        tags:
+            - { name: security.voter }
+
+    # Modules
+    campaignchain.core.module.installer:
+        class: CampaignChain\CoreBundle\Module\Installer
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@service_container'
+
+    campaignchain.core.module.package:
+        class: CampaignChain\CoreBundle\Module\Package
+        arguments:
+            - '%kernel.root_dir%'
+            - '%campaignchain_dev%'
+
+    campaignchain.core.module.repository:
+        class: CampaignChain\CoreBundle\Module\Repository
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '%campaignchain_dev%'
+
+    campaignchain.core.module.composer:
+        class: CampaignChain\CoreBundle\Module\Composer
+        arguments:
+            - '%kernel.root_dir%'
+            - '@campaignchain.core.util.command'
+            - '@logger'
+
+    campaignchain.core.module.kernel:
+        class: CampaignChain\CoreBundle\Module\Kernel
+        arguments:
+            - '%kernel.root_dir%'
+            - '@campaignchain.core.util.command'
+            - '@logger'
+
+    # Menu
+    campaignchain.core.menu.list_group_renderer:
+        class: Knp\Menu\Renderer\TwigRenderer
+        arguments:
+            - '@twig'
+            - 'CampaignChainCoreBundle:Menu:list_group_theme.html.twig'
+            - '@knp_menu.matcher'
+        tags:
+            - { name: knp_menu.renderer, alias: list-group }
+
+    campaignchain.core.menu.dropdown_renderer:
+        class: Knp\Menu\Renderer\TwigRenderer
+        arguments:
+            - '@twig'
+            - 'CampaignChainCoreBundle:Menu:dropdown_theme.html.twig'
+            - '@knp_menu.matcher'
+        tags:
+            - { name: knp_menu.renderer, alias: dropdown }
+
+    # Logger
     campaignchain.core.monolog_psr_processor:
         class: Monolog\Processor\PsrLogMessageProcessor
         tags:
           - { name: monolog.processor }
 
+    # Exception
     campaignchain.core.controller.exception:
         class: CampaignChain\CoreBundle\Controller\ExceptionController
-        arguments: ['@twig', '%kernel.debug%']
+        arguments:
+            - '@twig'
+            - '%kernel.debug%'
+
+    # Utility
+    campaignchain.core.service.file_upload:
+        class: CampaignChain\CoreBundle\Service\FileUploadService
+        arguments:
+            - '%campaignchain.core.upload_storage.path%'
+            - '%campaignchain.core.upload_storage.url_prefix%'
+
+    campaignchain.core.util.datetime:
+        class: CampaignChain\CoreBundle\Util\DateTimeUtil
+        arguments:
+            - '@service_container'
+
+    campaignchain.core.util.command:
+        class: CampaignChain\CoreBundle\Util\CommandUtil
+        arguments:
+            - '@kernel'
+
+    # External
+    mremi.url_shortener.provider.bitly.bitly_provider:
+        class: Mremi\UrlShortener\Provider\Bitly\BitlyProvider
+        arguments:
+            - '@mremi.url_shortener.provider.bitly.generic_access_token_authenticator'
+
+    mremi.url_shortener.provider.bitly.generic_access_token_authenticator:
+        class: Mremi\UrlShortener\Provider\Bitly\GenericAccessTokenAuthenticator
+        arguments:
+            - '@=service("campaignchain.core.system").getBitlyAccessToken()'
+
+    fos_user.doctrine_registry:
+        alias: doctrine
+
+    campaignchain.core.http_client:
+        class: GuzzleHttp\Client

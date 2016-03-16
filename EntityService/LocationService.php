@@ -352,7 +352,7 @@ class LocationService
             );
         }
 
-        $toggle = (($location->getStatus()==Location::STATUS_ACTIVE) ? $location->setStatus(Location::STATUS_INACTIVE) : $location->setStatus(Location::STATUS_INACTIVE));
+        $toggle = (($location->getStatus()==Location::STATUS_ACTIVE) ? $location->setStatus(Location::STATUS_INACTIVE) : $location->setStatus(Location::STATUS_ACTIVE));
         $this->em->persist($location);
         $this->em->flush();
     }

@@ -47,7 +47,7 @@ class Builder extends ContainerAware
 
         $menu = $factory->createItem('root');
 
-        $securityContext = $this->container->get('security.context');
+        $securityContext = $this->container->get('security.authorization_checker');
         if ($securityContext->isGranted('ROLE_SUPER_ADMIN')) {
             $menu->addChild('List', array('route' => 'campaignchain_core_user'));
         }
@@ -71,9 +71,12 @@ class Builder extends ContainerAware
     {
         $menu = $factory->createItem('root');
 
-        $menu->addChild('Users', [
-            'route' => 'campaignchain_core_user',
-        ]);
+        $securityContext = $this->container->get('security.authorization_checker');
+        if ($securityContext->isGranted('ROLE_SUPER_ADMIN')) {
+            $menu->addChild('Users', [
+                'route' => 'campaignchain_core_user',
+            ]);
+        }
 
         $menu->addChild('Channels', [
             'route' => 'campaignchain_core_channel',

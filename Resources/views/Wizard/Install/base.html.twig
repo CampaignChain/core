@@ -58,7 +58,9 @@
                 <div class="page-header">
                     <h1>{{ page_title }} <small>Installation Wizard</small></h1>
                 </div>
-                {% include "CampaignChainCoreBundle:Wizard/Install:steps.html.twig" with { "index": index, "count": count } %}
+                {% if not noSteps|default(false) %}
+                    {% include "CampaignChainCoreBundle:Wizard/Install:steps.html.twig" with { "index": index, "count": count } %}
+                {% endif %}
 
                 {% block description %}{% endblock %}
 

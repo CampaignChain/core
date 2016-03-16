@@ -74,7 +74,7 @@ class LoginListener
     public function setLocale(GetResponseEvent $event)
     {
         // Execute only if the user is logged in.
-        if( $this->tokenStorage->getToken() && $this->authorizationChecker->isGranted('IS_AUTHENTICATED_REMEMBERED') ){
+        if( $this->tokenStorage->getToken() && $this->authorizationChecker->isGranted('IS_AUTHENTICATED_REMEMBERED') && $this->tokenStorage->getToken()->getUser() ){
                 // authenticated REMEMBERED, FULLY will imply REMEMBERED (NON anonymous)
             if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
                 return;
