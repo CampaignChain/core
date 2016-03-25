@@ -232,45 +232,51 @@ file that was distributed with this source code.
 
             <script type="text/javascript">
                 $(document).ready(function() {
-                    var text_max = {{ text_max }};
-                    var text = $('#{{ id }}').val();
-                    var text_remaining = text_max - twttr.txt.getTweetLength(text);
-
-                    remainingChars(text_remaining, text_max);
+                    remainingChars($('#{{ id }}').val(), {{ text_max }});
 
                     $('#{{ id }}').keyup(function(event) {
-                        text = $('#{{ id }}').val();
-                        text_remaining = text_max - twttr.txt.getTweetLength(text);
-                        remainingChars(text_remaining, text_max);
+                        remainingChars($('#{{ id }}').val(), {{ text_max }});
                     });
 
-                    function remainingChars(count, max)
+                    function remainingChars(text, max)
                     {
+                        var lengthWithShortUrls = twttr.txt.getTweetLength(text);
+                        var count = max - lengthWithShortUrls;
                         $('#{{ id }}_counter').html('<span id="number_counter">' + count + '</span> characters remaining');
 
                         if(count < 0) {
                             $('#number_counter').addClass('bg-danger').addClass('text-danger');
                         }
 
-                        highlightOverflow(count, max);
+                        // Calculate text length with expanded URLs.
+                        var $urls = twttr.txt.extractUrls(text);
+                        var $lengthWithExpandedUrls = text.length;
+                        var $maxLengthExpandedUrls = $lengthWithExpandedUrls;
+                        var $allUrlsLength = 0;
+                        for (var i = 0; i < $urls.length; i++) {
+                            $allUrlsLength = $allUrlsLength + $urls[i].length - 23;
+                        }
+
+                        $maxLengthExpandedUrls = max + $allUrlsLength;
+
+                        highlightOverflow($maxLengthExpandedUrls);
+
                     }
 
-                    function highlightOverflow(count, max)
+                    function highlightOverflow(start)
                     {
-                        if(count < 0) {
-                            $('#{{ id }}').highlightTextarea({
-                                ranges: [{
-                                    class: 'bg-danger',
-                                    start: max
-                                }],
-                                resizable: true
-                            });
+                        $('#{{ id }}').highlightTextarea({
+                            ranges: [{
+                                class: 'bg-danger',
+                                start: start
+                            }],
+                            resizable: true
+                        });
 
-                            $('.highlightTextarea-highlighter').css('width', $('#{{ id }}').width());
-                            $('.highlightTextarea-highlighter').css('height', $('#{{ id }}').height());
-                            $('.highlightTextarea-container').css('width', $('.highlightTextarea').width());
-                            $('.highlightTextarea-container').css('height', $('.highlightTextarea').height());
-                        }
+                        $('.highlightTextarea-highlighter').css('width', $('#{{ id }}').width());
+                        $('.highlightTextarea-highlighter').css('height', $('#{{ id }}').height());
+                        $('.highlightTextarea-container').css('width', $('.highlightTextarea').width());
+                        $('.highlightTextarea-container').css('height', $('.highlightTextarea').height());
                     }
                 });
             </script>
