@@ -234,7 +234,7 @@ file that was distributed with this source code.
                 $(document).ready(function() {
                     remainingChars($('#{{ id }}').val(), {{ text_max }});
 
-                    $('#{{ id }}').keyup(function(event) {
+                    $('#{{ id }}').on('input', function() {
                         remainingChars($('#{{ id }}').val(), {{ text_max }});
                     });
 
@@ -245,22 +245,33 @@ file that was distributed with this source code.
                         $('#{{ id }}_counter').html('<span id="number_counter">' + count + '</span> characters remaining');
 
                         if(count < 0) {
+                            // Change color of number.
                             $('#number_counter').addClass('bg-danger').addClass('text-danger');
+
+                            // Disable submit button.
+                            $('button[type="submit"]').prop('disabled', true);
+
+                            // Calculate text length with expanded URLs.
+                            var $urls = twttr.txt.extractUrls(text);
+                            var $lengthWithExpandedUrls = text.length;
+                            var $maxLengthExpandedUrls = $lengthWithExpandedUrls;
+                            var $allUrlsLength = 0;
+                            for (var i = 0; i < $urls.length; i++) {
+                                console.log($urls[i].length);
+                                $allUrlsLength = $allUrlsLength + ($urls[i].length - 23);
+                            }
+
+                            $maxLengthExpandedUrls = max + $allUrlsLength;
+
+                            console.log(max);
+                            console.log($maxLengthExpandedUrls);
+                            console.log(lengthWithShortUrls);
+
+                            highlightOverflow($maxLengthExpandedUrls);
+                        } else {
+                            // Enable submit button.
+                            $('button[type="submit"]').prop('disabled', false);
                         }
-
-                        // Calculate text length with expanded URLs.
-                        var $urls = twttr.txt.extractUrls(text);
-                        var $lengthWithExpandedUrls = text.length;
-                        var $maxLengthExpandedUrls = $lengthWithExpandedUrls;
-                        var $allUrlsLength = 0;
-                        for (var i = 0; i < $urls.length; i++) {
-                            $allUrlsLength = $allUrlsLength + $urls[i].length - 23;
-                        }
-
-                        $maxLengthExpandedUrls = max + $allUrlsLength;
-
-                        highlightOverflow($maxLengthExpandedUrls);
-
                     }
 
                     function highlightOverflow(start)
