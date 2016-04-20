@@ -11,38 +11,107 @@
 namespace CampaignChain\CoreBundle\Controller;
 
 use CampaignChain\CoreBundle\Entity\User;
-use CampaignChain\CoreBundle\Form\Type\UserType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * Class UserController
+ * @package CampaignChain\CoreBundle\Controller
+ */
 class UserController extends Controller
-
 {
-    public function loginAction()
-    {
-        if ($this->container->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
-
-            return $this->redirectToRoute('campaignchain_core_homepage');
-        }
-
-        return $this->forward('FOSUserBundle:Security:login');
-    }
 
     /**
      * List every user from the DB
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function indexAction(){
+    public function indexAction()
+    {
         $userManager = $this->get('fos_user.user_manager');
         $users = $userManager->findUsers();
 
         return $this->render('CampaignChainCoreBundle:User:index.html.twig',
             array(
-                'users' =>   $users,
-                'page_title' => 'Users',
+                'users' => $users,
+                'page_title' => 'Current Users',
             ));
+    }
+
+    /**
+     * @param Request $request
+     * @param User $userToEdit
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     *
+     * @Security("has_role('ROLE_SUPER_ADMIN')")
+     */
+    public function editAction(Request $request, User $userToEdit)
+    {
+        $form = $this->createForm('campaignchain_core_user', $userToEdit);
+
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+
+            /** @var $userManager \FOS\UserBundle\Model\UserManagerInterface */
+            $userManager = $this->get('fos_user.user_manager');
+            $userManager->updateUser($userToEdit);
+
+            $this->addFlash(
+                'success',
+                'The user '.$userToEdit->getNameAndUsername().' was edited successfully.'
+            );
+
+            return $this->redirectToRoute('campaignchain_core_user_edit', array('id' => $userToEdit->getId()));
+        }
+
+        return $this->render(
+            'CampaignChainCoreBundle:User:edit.html.twig',
+            array(
+                'page_title' => 'Edit User '.$userToEdit->getNameAndUsername(),
+                'form' => $form->createView(),
+                'form_submit_label' => 'Save',
+                'user' => $userToEdit,
+            ));
+    }
+
+    /**
+     * @param Request $request
+     * @param User $userToEdit
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     *
+     * @Security("has_role('ROLE_SUPER_ADMIN')")
+     */
+    public function changePasswordAction(Request $request, User $userToEdit)
+    {
+
+        /** @var $formFactory \FOS\UserBundle\Form\Factory\FactoryInterface */
+        $formFactory = $this->get('fos_user.change_password.form.factory');
+
+        $form = $formFactory->createForm();
+        $form->setData($userToEdit);
+        $form->remove('current_password');
+
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            /** @var $userManager \FOS\UserBundle\Model\UserManagerInterface */
+            $userManager = $this->get('fos_user.user_manager');
+            $userManager->updateUser($userToEdit);
+
+            $this->addFlash(
+                'success',
+                'The password for '.$userToEdit->getNameAndUsername().' was successfully changed!'
+            );
+
+            return $this->redirectToRoute('campaignchain_core_user');
+        }
+
+        return $this->render('CampaignChainCoreBundle:User:changePassword.html.twig', array(
+            'form' => $form->createView(),
+            'page_title' => 'Change Password for '.$userToEdit->getNameAndUsername(),
+        ));
     }
 
     /**
@@ -56,11 +125,11 @@ class UserController extends Controller
     public function newAction(Request $request)
     {
         $userManager = $this->get('fos_user.user_manager');
-        /** @var User  $user */
+
+        /** @var User $user */
         $user = $userManager->createUser();
 
         $form = $this->createForm('campaignchain_core_user', $user, ['new' => true]);
-
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -77,36 +146,40 @@ class UserController extends Controller
         return $this->render('CampaignChainCoreBundle:User:new.html.twig',
             array(
                 'form' => $form->createView(),
-                'page_title' => 'New User',
+                'page_title' => 'Create New User',
             ));
     }
 
-    public function toggleEnablingAction($id){
-        $userManager = $this->get('fos_user.user_manager');
-        $user = $userManager->findUserBy(array('id'=>$id));
+    /**
+     * Toggle enabled state of a user
+     *
+     * @param User $userToEdit
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     *
+     * @Security("has_role('ROLE_SUPER_ADMIN')")
+     */
+    public function toggleEnablingAction(User $userToEdit)
+    {
 
-        if (!$user) {
-            throw $this->createNotFoundException(
-                'No User found for id '.$id
+        // only normal users/admins can be changed
+        if (!$userToEdit->isSuperAdmin()) {
+
+            /** @var $userManager \FOS\UserBundle\Model\UserManagerInterface */
+            $userManager = $this->get('fos_user.user_manager');
+
+            $userToEdit->setEnabled(!$userToEdit->isEnabled());
+            $userManager->updateUser($userToEdit);
+
+            $this->addFlash(
+                'info',
+                $userToEdit->isEnabled() ? 'User '.$userToEdit->getNameAndUsername().' enabled' : 'User '.$userToEdit->getNameAndUsername().' disabled'
             );
-        }
 
-        if (!$user->isSuperAdmin()) {
+        } else {
 
-            $activation = ($user->isEnabled()) ? $user->setEnabled(false) : $user->setEnabled(true);
-            $userManager->updateUser($user);
-
-            if ($user->isEnabled()) {
-                $this->addFlash('info', 'User account enabled!');
-            } else {
-                $this->addFlash('info', 'User account disabled!');
-            }
-
-            return $this->redirectToRoute('campaignchain_core_user');
-        }
-        else{
             $this->addFlash('warning', 'Users with super admin privileges can not be disabled');
-            return $this->redirectToRoute('campaignchain_core_user');
         }
+
+        return $this->redirectToRoute('campaignchain_core_user');
     }
 }

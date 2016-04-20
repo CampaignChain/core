@@ -62,7 +62,7 @@ file that was distributed with this source code.
                             {#<li><span id="campaignchain_user_datetime"></span></li>#}
                             {#<li class="divider"></li>#}
                             <li class="dropdown-header">{{ app.user.name }} ({{ app.user.username }})</li>
-                            <li><a href="{{ path('campaignchain_core_profile_edit', {'id' : app.user.id}) }}"><span class="fa fa-user"></span> Profile</a></li>
+                            <li><a href="{{ path('campaignchain_core_profile_edit') }}"><span class="fa fa-user"></span> Profile</a></li>
                             <li><a href="{{ path('fos_user_security_logout') }}"><span class="fa fa-sign-out"></span> Logout</a></li>
                         </ul>
                     </li>

@@ -65,10 +65,6 @@ class LoginListener
             }
         }
 
-        $this->session->set('campaignchain.locale', $this->tokenStorage->getToken()->getUser()->getLocale());
-        $this->session->set('campaignchain.timezone', $this->tokenStorage->getToken()->getUser()->getTimezone());
-        $this->session->set('campaignchain.dateFormat', $this->tokenStorage->getToken()->getUser()->getDateFormat());
-        $this->session->set('campaignchain.timeFormat', $this->tokenStorage->getToken()->getUser()->getTimeFormat());
     }
 
     public function setLocale(GetResponseEvent $event)
