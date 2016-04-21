@@ -1,6 +1,6 @@
 {% trans_default_domain 'FOSUserBundle' %}
 {% block subject %}
-Reset Password - CampaignChain
+Reset Password - {{ campaignchain_system.name }}
 {% endblock %}
 {% block body_text %}
 Hello {{ user.username }},
@@ -9,6 +9,6 @@ To reset your password - please visit
 {{ confirmationUrl }}
 
 Regards,
-The CampaignChain Team
+The {{ campaignchain_system.name }} Team
 {% endblock %}
 {% block body_html %}{% endblock %}

@@ -35,7 +35,7 @@ class UserController extends Controller
         return $this->render('CampaignChainCoreBundle:User:index.html.twig',
             array(
                 'users' => $users,
-                'page_title' => 'Current Users',
+                'page_title' => 'Users',
             ));
     }
 
