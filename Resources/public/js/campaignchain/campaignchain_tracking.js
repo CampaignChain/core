@@ -32,13 +32,13 @@
      Includes JQuery if not yet available.
      */
     if(typeof jQuery == 'undefined'){
-        loadScript("http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.1.min.js");
+        loadScript("//ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.1.min.js");
     }
 
     /*
      Include JQuery Cookies library.
      */
-    loadScript("http://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js");
+    loadScript("//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js");
 
     /**
      *  Define the CampaignChain class.
