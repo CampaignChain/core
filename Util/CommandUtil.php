@@ -139,6 +139,7 @@ class CommandUtil
         $user->setSuperAdmin(true);
         $user->setFirstName($parameters['firstName']);
         $user->setLastName($parameters['lastName']);
+        $user->setTimezone($parameters['timezone']);
 
         $userManager->updateUser($user);
     }
