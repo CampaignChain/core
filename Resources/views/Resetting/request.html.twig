@@ -1,0 +1,82 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) CampaignChain, Inc. <info@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+{#
+This file is used to override the FOSUserBundle default template
+#}
+
+{% set page_title = 'Reset password' %}
+
+{% extends 'CampaignChainCoreBundle:Base:base_fullscreen.html.twig' %}
+
+{% trans_default_domain 'FOSUserBundle' %}
+
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    {% stylesheets '@campaignchain_login_css' filter="cssrewrite"
+    'bundles/campaignchaincore/css/*' %}
+    <link href="{{ asset_url }}" type="text/css" rel="stylesheet"/>
+    {% endstylesheets %}
+{% endblock %}
+
+{% block body %}
+    <!-- Modal -->
+    <div class="modal fade" id="ResetPasswordRequestModal" tabindex="-1" role="dialog" aria-labelledby="Reset password"
+         aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <img src="/logo.png" height="24">
+                <h4 class="modal-title">Reset Password</h4>
+            </div>
+            <div class="modal-body">
+                {% block fos_user_content %}
+                    <form action="{{ path('fos_user_resetting_send_email') }}" method="POST" class="form-horizontal"
+                          id="fos_user_resetting_send_email">
+                        {% if invalid_username is defined %}
+                            <div class="alert alert-warning alert-dismissable">
+                                <p>
+                                    <span class="fa fa-exclamation-triangle"></span> {{ 'resetting.request.invalid_username'|trans({'%username%': invalid_username}) }}
+                                </p>
+                            </div>
+                        {% endif %}
+                        <p>
+                            Please provide your username or your email to reset your password.
+                        </p>
+                        <div class="form-group">
+
+                            {#<label for="username"#}
+                                   {#class="col-sm-4 control-label required">{{ 'resetting.request.username'|trans }}</label>#}
+
+                            <div class="col-sm-8">
+                                <input type="text" id="username" name="username" required="required"
+                                       class="form-control" placeholder="Username or email"/>
+                            </div>
+
+                        </div>
+                    </form>
+
+                {% endblock fos_user_content %}
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-link" href="{{ path('fos_user_security_login') }}" role="button">Back to login</a>
+                <button type="submit" class="btn btn-primary" form="fos_user_resetting_send_email">{{ 'resetting.request.submit'|trans }}</button>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $('#ResetPasswordRequestModal').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+        $('#ResetPasswordRequestModal').modal('show');
+    </script>
+{% endblock %}

@@ -112,6 +112,17 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.exception }
 
+    campaign_chain_core.listener.password_reset:
+        class: CampaignChain\CoreBundle\EventListener\PasswordResetListener
+        arguments: ['@router']
+        tags:
+            - { name: kernel.event_subscriber }
+
+    campaign_chain_core.listener.user_date_time:
+        class: CampaignChain\CoreBundle\EventListener\UserDateTimeListener
+        tags:
+            - { name: kernel.event_subscriber }
+
     # Services
     campaignchain.core.module:
         class: CampaignChain\CoreBundle\EntityService\ModuleService

@@ -1,0 +1,68 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) CampaignChain, Inc. <info@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+{#
+This file is used to override the FOSUserBundle default template
+#}
+
+{% set page_title = 'Reset password' %}
+
+{% extends 'CampaignChainCoreBundle:Base:base_fullscreen.html.twig' %}
+
+{% trans_default_domain 'FOSUserBundle' %}
+
+{% form_theme form 'CampaignChainCoreBundle:Form:modal_fields.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    {% stylesheets '@campaignchain_login_css' filter="cssrewrite"
+    'bundles/campaignchaincore/css/*' %}
+    <link href="{{ asset_url }}" type="text/css" rel="stylesheet"/>
+    {% endstylesheets %}
+{% endblock %}
+
+{% block body %}
+    <!-- Modal -->
+    <div class="modal fade" id="ResetPasswordUpdateModal" tabindex="-1" role="dialog" aria-labelledby="Reset password"
+         aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <img src="/logo.png" height="24">
+                <h4 class="modal-title">Reset Password</h4>
+            </div>
+            <div class="modal-body">
+                {% block fos_user_content %}
+                    <p>
+                        Please enter your new password:
+                    </p>
+
+                    {{ form_start(form, { 'action': path('fos_user_resetting_reset', {'token': token}), 'attr': { 'id': 'fos_user_resetting_reset' } }) }}
+                    {{ form_widget(form) }}
+                    {{ form_end(form) }}
+
+                    </form>
+                {% endblock fos_user_content %}
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary"
+                        form="fos_user_resetting_reset">Change Password
+                </button>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $('#ResetPasswordUpdateModal').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+        $('#ResetPasswordUpdateModal').modal('show');
+    </script>
+{% endblock %}
