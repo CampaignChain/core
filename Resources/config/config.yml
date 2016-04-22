@@ -254,6 +254,10 @@ fos_user:
     user_class: "CampaignChain\\CoreBundle\\Entity\\User"
     group:
         group_class: "CampaignChain\\CoreBundle\\Entity\\Group"
+    from_email:
+            address:        "%mailer_sender_address%"
+            sender_name:    "%mailer_sender_name%"
+
 sp_bower:
     allow_root: true
     assetic:
