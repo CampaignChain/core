@@ -16,8 +16,42 @@ use CampaignChain\CoreBundle\Entity\Job;
 use DateTime;
 use Doctrine\ORM\EntityRepository;
 
+/**
+ * Class CampaignRepository
+ * @package CampaignChain\CoreBundle\Repository
+ */
 class CampaignRepository extends EntityRepository
 {
+
+    /**
+     * get a list of all campaigns
+     *
+     * @return array
+     */
+    public function getCampaigns() {
+
+        return $this->createQueryBuilder('campaign')
+            ->where('campaign.status != :statusBackgroundProcess')
+            ->setParameter('statusBackgroundProcess', Action::STATUS_BACKGROUND_PROCESS)
+            ->orderBy('campaign.startDate', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @param $moduleIdentifier
+     * @return array
+     */
+    public function getCampaignsByModule($moduleIdentifier) {
+
+        return $this->createQueryBuilder('campaign')
+            ->select('campaign')
+            ->leftJoin('campaign.campaignModule', 'module', 'WITH', 'module.identifier = :moduleIdentifier')
+            ->setParameter('moduleIdentifier', $moduleIdentifier)
+            ->orderBy('campaign.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 
     /**
      * @param DateTime $periodStart

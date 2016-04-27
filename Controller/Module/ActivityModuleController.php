@@ -21,9 +21,6 @@ use Symfony\Component\Form\Form;
 use CampaignChain\CoreBundle\Entity\Operation;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 
 class ActivityModuleController extends Controller
 {
@@ -273,20 +270,20 @@ class ActivityModuleController extends Controller
             );
         }
 
-        $repository = $this->getDoctrine()->getManager();
+        $em = $this->getDoctrine()->getManager();
 
         // Make sure that data stays intact by using transactions.
         try {
-            $repository->getConnection()->beginTransaction();
+            $em->getConnection()->beginTransaction();
 
-            $repository->persist($activity);
+            $em->persist($activity);
             if($content) {
-                $repository->persist($content);
+                $em->persist($content);
             }
 
             // We need the activity ID for storing the hooks. Hence we must
             // flush here.
-            $repository->flush();
+            $em->flush();
 
             $hookService = $this->get('campaignchain.core.hook');
             $activity = $hookService->processHooks(
@@ -296,11 +293,11 @@ class ActivityModuleController extends Controller
                 $form,
                 true
             );
-            $repository->flush();
+            $em->flush();
 
-            $repository->getConnection()->commit();
+            $em->getConnection()->commit();
         } catch (\Exception $e) {
-            $repository->getConnection()->rollback();
+            $em->getConnection()->rollback();
             throw $e;
         }
 
@@ -401,11 +398,11 @@ class ActivityModuleController extends Controller
         $activityService = $this->get('campaignchain.core.activity');
         $operation = $activityService->getOperation($activity->getId());
 
-        $repository = $this->getDoctrine()->getManager();
+        $em = $this->getDoctrine()->getManager();
 
         // Make sure that data stays intact by using transactions.
         try {
-            $repository->getConnection()->beginTransaction();
+            $em->getConnection()->beginTransaction();
 
             if($this->handler->hasContent('edit')) {
                 // Get the content data from request.
@@ -417,14 +414,14 @@ class ActivityModuleController extends Controller
                 if ($this->parameters['equals_operation']) {
                     // The activity equals the operation. Thus, we update the operation with the same data.
                     $operation->setName($activity->getName());
-                    $repository->persist($operation);
+                    $em->persist($operation);
                 } else {
                     throw new \Exception(
                         'Multiple Operations for one Activity not implemented yet.'
                     );
                 }
 
-                $repository->persist($content);
+                $em->persist($content);
             }
 
             $hookService = $this->get('campaignchain.core.hook');
@@ -434,15 +431,15 @@ class ActivityModuleController extends Controller
                 $activity,
                 $form
             );
-            $repository->persist($activity);
+            $em->persist($activity);
 
-            $repository->flush();
+            $em->flush();
 
-            $repository->getConnection()->commit();
+            $em->getConnection()->commit();
 
             return $activity;
         } catch (\Exception $e) {
-            $repository->getConnection()->rollback();
+            $em->getConnection()->rollback();
             throw $e;
         }
     }
@@ -539,11 +536,11 @@ class ActivityModuleController extends Controller
             );
         }
 
-        $repository = $this->getDoctrine()->getManager();
-        $repository->persist($this->activity);
-        $repository->persist($this->operations[0]);
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($this->activity);
+        $em->persist($this->operations[0]);
         if($this->handler->hasContent('editModal')) {
-            $repository->persist($content);
+            $em->persist($content);
         }
 
         $hookService = $this->get('campaignchain.core.hook');
@@ -554,18 +551,15 @@ class ActivityModuleController extends Controller
             $data
         );
 
-        $repository->flush();
+        $em->flush();
 
         $responseData['start_date'] =
         $responseData['end_date'] =
             $this->activity->getStartDate()->format(\DateTime::ISO8601);
 
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new GetSetMethodNormalizer());
-        $serializer = new Serializer($normalizers, $encoders);
-
-        $response = new Response($serializer->serialize($responseData, 'json'));
-        return $response->setStatusCode(Response::HTTP_OK);
+        $serializer = $this->get('campaignchain.core.serializer.default');
+        
+        return new Response($serializer->serialize($responseData, 'json'));
     }
 
     /**
