@@ -102,13 +102,13 @@ class ProfileController extends Controller
     public function cropAvatarAction(Request $request)
     {
         $lastUpload = $request->getSession()->get('campaignchain_last_uploaded_avatar');
-        $imageLoader = $this->get('liip_imagine.binary.loader.uploads');
+        $dataManager = $this->get('liip_imagine.data.manager');
         $filterManager = $this->get('liip_imagine.filter.manager');
         $userService = $this->get('campaignchain.core.user');
         $fileUploadService = $this->get('campaignchain.core.service.file_upload');
 
         try {
-            $image = $imageLoader->find($lastUpload);
+            $image = $dataManager->find("auto_rotate", $lastUpload);
         } catch (NotLoadableException $e) {
             throw new NotFoundHttpException("No pending avatar upload found", $e);
         }
@@ -130,8 +130,7 @@ class ProfileController extends Controller
         $newPath = $userService->storeImageAsAvatar($croppedImage);
         $fileUploadService->deleteFile($lastUpload);
 
-        $imageUrl = $this->get('liip_imagine.cache.manager')->getBrowserPath($fileUploadService->getPublicUrl($newPath),
-            'avatar');
+        $imageUrl = $fileUploadService->getPublicUrl($newPath, 'avatar');
 
         return new JsonResponse(array(
             'path' => $newPath,

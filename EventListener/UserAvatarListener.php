@@ -9,10 +9,11 @@ use CampaignChain\CoreBundle\EntityService\UserService;
 use CampaignChain\CoreBundle\Service\FileUploadService;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
+use Gaufrette\Filesystem;
 use Liip\ImagineBundle\Binary\Loader\LoaderInterface as ImageLoaderInterface;
 use Liip\ImagineBundle\Imagine\Filter\FilterManager;
 use Oneup\UploaderBundle\Event\PostPersistEvent;
-use Symfony\Component\HttpFoundation\File\File;
+use Oneup\UploaderBundle\Uploader\File\GaufretteFile;
 
 class UserAvatarListener
 {
@@ -23,7 +24,7 @@ class UserAvatarListener
     private $fileUploadService;
 
     /** @var ImageLoaderInterface */
-    private $imageLoader;
+    private $dataManager;
 
     /** @var FilterManager */
     private $filterManager;
@@ -32,14 +33,12 @@ class UserAvatarListener
      * UserAvatarListener constructor.
      * @param UserService $userService
      * @param FileUploadService $fileUploadService
-     * @param ImageLoaderInterface $imageLoader
      * @param FilterManager $filterManager
      */
-    public function __construct(UserService $userService, FileUploadService $fileUploadService, ImageLoaderInterface $imageLoader, FilterManager $filterManager)
+    public function __construct(UserService $userService, FileUploadService $fileUploadService, FilterManager $filterManager)
     {
         $this->userService = $userService;
         $this->fileUploadService = $fileUploadService;
-        $this->imageLoader = $imageLoader;
         $this->filterManager = $filterManager;
     }
 
@@ -90,19 +89,18 @@ class UserAvatarListener
     public function onUpload(PostPersistEvent $event)
     {
         $response = $event->getResponse();
-        /** @var File $file */
+        /** @var GaufretteFile $file */
         $file = $event->getFile();
+        $rename = $file->getFilesystem()->rename($file->getPathname(), $event->getType().'/'.$file->getPathname());
+        $avatarPath = $file->getPathname();
+        if ($rename) {
+            $avatarPath = $event->getType().'/'.$file->getPathname();
+        }
 
-        $avatarPath = $this->fileUploadService->getRelativePath($file->getPathname());
-
-        $image = $this->imageLoader->find($avatarPath);
-        $rotatedImage = $this->filterManager->applyFilter($image, "auto_rotate");
-        $file->openFile('w')->fwrite($rotatedImage->getContent());
-
-        $imageSize = getimagesize($file->getPathname());
+        $imageSize = getimagesize('gaufrette://images/'.$avatarPath);
         $response['path'] = $avatarPath;
         $response['url'] = $this->fileUploadService->getPublicUrl($avatarPath);
-        $response['type'] = $rotatedImage->getMimeType();
+        $response['type'] = $file->getMimeType();
         list($response['width'], $response['height']) = $imageSize;
 
         $event->getRequest()->getSession()->set('campaignchain_last_uploaded_avatar', $avatarPath);
