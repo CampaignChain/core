@@ -274,20 +274,36 @@ sonata_block:
         campaignchain.block.milestone.upcoming.listgroup: null
         campaignchain.block.campaign.ongoing.listgroup: null
         campaignchain.block.rss: null
+
+knp_gaufrette:
+    stream_wrapper: ~
+    adapters:
+        images:
+            local:
+                directory: '%campaignchain.core.upload_storage.path%'
+                create: true
+    filesystems:
+        images:
+            adapter: images
+
 oneup_uploader:
     mappings:
         avatar:
             frontend: blueimp
             storage:
-                directory: %campaignchain.core.upload_storage.path%/avatar
+                type: gaufrette
+                filesystem: gaufrette.images_filesystem
+                stream_wrapper: gaufrette://images/
             allowed_mimetypes:
                 - image/jpeg
                 - image/png
                 - image/gif
 liip_imagine:
     loaders:
-        uploads:
-            filesystem: {data_root: %campaignchain.core.upload_storage.path%}
+        stream_loader:
+            stream:
+                wrapper: gaufrette://images/
+    data_loader: stream_loader
     filter_sets:
         auto_rotate:
             filters:

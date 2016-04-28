@@ -56,7 +56,6 @@ class CampaignChainCoreExtension extends \Twig_Extension
             new \Twig_SimpleFilter('campaignchain_ltrim', array($this, 'ltrim')),
             new \Twig_SimpleFilter('campaignchain_make_links', array($this, 'makeLinks')),
             new \Twig_SimpleFilter('campaignchain_btn_copy_campaign', array($this, 'btnCopyCampaign'), array('is_safe' => array('html'))),
-            new \Twig_SimpleFilter('campaignchain_user_avatar', array($this, 'userAvatar')),
             new \Twig_SimpleFilter('campaignchain_is_removable', array($this, 'isRemovable')),
         );
     }
@@ -72,7 +71,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
         if(strpos($class, 'CoreBundle\Entity\Location') !== false) {
             return $object->getImage();
         } elseif(strpos($class, 'CoreBundle\Entity\User') !== false){
-            return $this->userAvatar($object);
+            return $this->container->get('liip_imagine.cache.manager')->getBrowserPath($object->getAvatarImage(), 'navbar_avatar');
         } else {
             return $this->channelAssetPath($object).'/images/icons/32x32/'.$this->channelIconName($object);
         }
@@ -459,15 +458,6 @@ class CampaignChainCoreExtension extends \Twig_Extension
         } else {
             return 'UTC';
         }
-    }
-
-    public function userAvatar($val)
-    {
-        if ($val instanceof User) {
-            $val = $val->getAvatarImage();
-        }
-
-        return $this->container->get('campaignchain.core.service.file_upload')->getPublicUrl($val);
     }
 
     public function getName()

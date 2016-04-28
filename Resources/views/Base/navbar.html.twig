@@ -55,7 +55,7 @@ file that was distributed with this source code.
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown navbar-profile-dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="{{ app.user.name }}">
-                            <img class="navbar-profile-avatar" src="{{ app.user|campaignchain_user_avatar|imagine_filter('navbar_avatar') }}" class="avatar" alt="{{ app.user.name }}">
+                            <img class="navbar-profile-avatar" src="{{ app.user.avatarImage|imagine_filter('navbar_avatar') }}" class="avatar" alt="{{ app.user.name }}">
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">

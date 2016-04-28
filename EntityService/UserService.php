@@ -85,10 +85,7 @@ class UserService
             $response = $this->httpClient->get($gravatarUrl);
             $avatarPath = $this->generateAvatarPath($response->getHeader('Content-Type'));
 
-            // Copy response body to file
-            $f = $this->fileUploadService->openFile($avatarPath, "w");
-            stream_copy_to_stream(GuzzleStreamWrapper::getResource($response->getBody()), $f);
-            fclose($f);
+            $this->fileUploadService->storeImage($avatarPath, $response->getBody());
 
             return $avatarPath;
         } catch (\Exception $e) {
@@ -112,9 +109,7 @@ class UserService
     public function storeImageAsAvatar(BinaryInterface $image)
     {
         $path = $this->generateAvatarPath($image->getMimeType());
-        $f = $this->fileUploadService->openFile($path, "w");
-        fwrite($f, $image->getContent());
-        fclose($f);
+        $this->fileUploadService->storeImage($path, $image->getContent());
 
         return $path;
     }

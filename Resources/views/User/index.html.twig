@@ -29,7 +29,7 @@
                             {% if user.expired == true or user.enabled == 0 %}text-muted {% endif %}
                             ">
                         <td>
-                            <img class="campaignchain-profile-image" src="{{ user|campaignchain_user_avatar|imagine_filter('navbar_avatar') }}" class="avatar" alt="{{ app.user.name }}">
+                            <img class="campaignchain-profile-image" src="{{ user.avatarImage|imagine_filter('navbar_avatar') }}" class="avatar" alt="{{ app.user.name }}">
                             {{ user.name }}
                         </td>
                         <td>{{ user.username }}</td>

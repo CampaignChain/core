@@ -356,7 +356,7 @@ file that was distributed with this source code.
 
     <div class="avatar-upload-container" id="{{ containerId }}">
         {% if data is not empty %}
-            <img class="avatar-image image-selected" src="{{ data|campaignchain_user_avatar|imagine_filter('avatar') }}" alt="">
+            <img class="avatar-image image-selected" src="{{ data|imagine_filter('avatar') }}" alt="">
         {% else %}
             <span class="avatar-image no-avatar"></span>
         {% endif %}
