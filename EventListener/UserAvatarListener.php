@@ -91,16 +91,17 @@ class UserAvatarListener
         $response = $event->getResponse();
         /** @var GaufretteFile $file */
         $file = $event->getFile();
-        $rename = $file->getFilesystem()->rename($file->getPathname(), $event->getType().'/'.$file->getPathname());
         $avatarPath = $file->getPathname();
+        $mimeType = $file->getMimeType();
+        $rename = $file->getFilesystem()->rename($file->getPathname(), $event->getType().'/'.$avatarPath);
         if ($rename) {
-            $avatarPath = $event->getType().'/'.$file->getPathname();
+            $avatarPath = $event->getType().'/'.$avatarPath;
         }
 
         $imageSize = getimagesize('gaufrette://images/'.$avatarPath);
         $response['path'] = $avatarPath;
         $response['url'] = $this->fileUploadService->getPublicUrl($avatarPath);
-        $response['type'] = $file->getMimeType();
+        $response['type'] = $mimeType;
         list($response['width'], $response['height']) = $imageSize;
 
         $event->getRequest()->getSession()->set('campaignchain_last_uploaded_avatar', $avatarPath);
