@@ -46,7 +46,7 @@ class CampaignRepository extends EntityRepository
 
         return $this->createQueryBuilder('campaign')
             ->select('campaign')
-            ->leftJoin('campaign.campaignModule', 'module', 'WITH', 'module.identifier = :moduleIdentifier')
+            ->Join('campaign.campaignModule', 'module', 'WITH', 'module.identifier = :moduleIdentifier')
             ->setParameter('moduleIdentifier', $moduleIdentifier)
             ->orderBy('campaign.name', 'ASC')
             ->getQuery()
