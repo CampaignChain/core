@@ -10,6 +10,8 @@
 
 namespace CampaignChain\CoreBundle\Entity;
 
+use CampaignChain\Hook\ImageBundle\Entity\Image;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -82,14 +84,20 @@ class Activity extends Action implements AssignableInterface
      */
     protected $assignee;
 
+    /**
+     * @ORM\OneToMany(targetEntity="CampaignChain\Hook\ImageBundle\Entity\Image", mappedBy="activity")
+     */
+    protected $images;
+
 
     /**
      * Constructor
      */
     public function __construct()
     {
-        $this->operations = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->fact = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->operations = new ArrayCollection();
+        $this->fact = new ArrayCollection();
+        $this->images = new ArrayCollection();
     }
 
     /**
@@ -388,5 +396,37 @@ class Activity extends Action implements AssignableInterface
     public function getParent()
     {
         return $this->parent;
+    }
+
+    /**
+     * @return Image[]
+     */
+    public function getImages()
+    {
+        return $this->images;
+    }
+
+    /**
+     * @param Image[] $images
+     */
+    public function setImages($images)
+    {
+        $this->images = $images;
+    }
+
+    /**
+     * @param Image $image
+     */
+    public function addImage(Image $image)
+    {
+        $this->images[] = $image;
+    }
+
+    /**
+     * @param Image $image
+     */
+    public function removeImage(Image $image)
+    {
+        $this->images->removeElement($image);
     }
 }
