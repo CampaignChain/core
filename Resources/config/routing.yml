@@ -60,6 +60,7 @@ campaignchain_core_campaign_new:
     pattern:  /campaign/new/
     defaults: { _controller: CampaignChainCoreBundle:Campaign:new }
     options:
+        expose: true
         campaignchain:
             description: Create a new campaign
             rest:
