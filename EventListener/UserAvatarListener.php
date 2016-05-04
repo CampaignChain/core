@@ -104,6 +104,8 @@ class UserAvatarListener
         $response['type'] = $mimeType;
         list($response['width'], $response['height']) = $imageSize;
 
-        $event->getRequest()->getSession()->set('campaignchain_last_uploaded_avatar', $avatarPath);
+        if ($event->getType() == 'avatar') {
+            $event->getRequest()->getSession()->set('campaignchain_last_uploaded_avatar', $avatarPath);
+        }
     }
 }

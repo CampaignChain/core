@@ -153,7 +153,7 @@ class HookListener implements EventSubscriberInterface
 
                     $hookService = $this->container->get($hookConfig->getServices()['entity']);
                     $hookData = $hookService->getHook($entity);
-                    $hookLabel = $hookConfig->getLabel();
+                    $hookLabel = empty($hookConfig->getLabel()) ? false : $hookConfig->getLabel();
                     $hookHelpText = null;
 
                     if(isset($this->hooksOptions[$hookConfig->getIdentifier()])){

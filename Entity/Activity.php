@@ -85,7 +85,7 @@ class Activity extends Action implements AssignableInterface
     protected $assignee;
 
     /**
-     * @ORM\OneToMany(targetEntity="CampaignChain\Hook\ImageBundle\Entity\Image", mappedBy="activity")
+     * @ORM\OneToMany(targetEntity="CampaignChain\Hook\ImageBundle\Entity\Image", mappedBy="activity", cascade={"persist"})
      */
     protected $images;
 

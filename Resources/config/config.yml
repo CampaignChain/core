@@ -298,6 +298,16 @@ oneup_uploader:
                 - image/jpeg
                 - image/png
                 - image/gif
+        hook_image:
+            frontend: blueimp
+            storage:
+                type: gaufrette
+                filesystem: gaufrette.images_filesystem
+                stream_wrapper: gaufrette://images/
+            allowed_mimetypes:
+                - image/jpeg
+                - image/png
+                - image/gif
 liip_imagine:
     loaders:
         stream_loader:
