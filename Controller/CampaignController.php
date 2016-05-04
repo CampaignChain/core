@@ -14,6 +14,7 @@ use CampaignChain\CoreBundle\Util\DateTimeUtil;
 use CampaignChain\CoreBundle\Form\Type\CampaignType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use CampaignChain\CoreBundle\Entity\Campaign;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Serializer;
@@ -26,7 +27,8 @@ class CampaignController extends Controller
 {
     const FORMAT_DATEINTERVAL = 'Years: %Y, months: %m, days: %d, hours: %h, minutes: %i, seconds: %s';
 
-    public function indexAction(){
+    public function indexAction()
+    {
         $repository = $this->getDoctrine()
             ->getRepository('CampaignChainCoreBundle:Campaign');
 
@@ -52,10 +54,10 @@ class CampaignController extends Controller
             ->add('campaign_module', 'entity', array(
                 'label' => 'Type',
                 'class' => 'CampaignChainCoreBundle:CampaignModule',
-                'query_builder' => function(EntityRepository $er) {
-                        return $er->createQueryBuilder('cm')
-                            ->orderBy('cm.displayName', 'ASC');
-                    },
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('cm')
+                        ->orderBy('cm.displayName', 'ASC');
+                },
                 'property' => 'displayName',
                 'empty_value' => 'Select the type of campaign',
                 'empty_data' => null,
@@ -70,19 +72,26 @@ class CampaignController extends Controller
             $campaignModule = $campaignService->getCampaignModule($form->get('campaign_module')->getData());
 
             $routes = $campaignModule->getRoutes();
-            return $this->redirect(
-                $this->generateUrl($routes['new'])
-            );
+
+            if ($this->getRequest()->isXmlHttpRequest()) {
+                return new JsonResponse(array(
+                    'step' => 1,
+                    'next_step' => $routes['new'],
+                ));
+            } else {
+                return $this->redirectToRoute($routes['new']);
+            }
         }
 
         return $this->render(
-            'CampaignChainCoreBundle:Base:new.html.twig',
+            $this->getRequest()->isXmlHttpRequest() ? 'CampaignChainCoreBundle:Base:new_modal.html.twig' : 'CampaignChainCoreBundle:Base:new.html.twig',
             array(
                 'page_title' => 'Create New Campaign',
                 'form' => $form->createView(),
                 'form_submit_label' => 'Next',
             ));
     }
+
 
     public function editAction(Request $request, $id)
     {
