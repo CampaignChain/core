@@ -399,7 +399,7 @@ class Activity extends Action implements AssignableInterface
     }
 
     /**
-     * @return Image[]
+     * @return Image[]|ArrayCollection
      */
     public function getImages()
     {
