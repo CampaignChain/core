@@ -13,6 +13,39 @@ file that was distributed with this source code.
     {{ parent() }}
     {{ form_javascript(form_single) }}
     {{ form_javascript(form_multiple) }}
+
+    {% javascripts '@blockui_js' combine=true %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#campaign_new_1, #campaign_new_2').on('click', function () {
+
+                var modal = new CampaignChain.Modal();
+
+                modal.init({
+                    spinner_start: $.blockUI,
+                    spinner_stop: $.unblockUI
+                });
+
+                modal.showForm('campaignchain_core_campaign_new');
+
+                $(document).on('campaignchain:form:submit:success', function (e, data) {
+                    // if step 1 goto step 2
+                    if (data.step === 1) {
+                        modal.showForm(data.next_step);
+
+                    // if step 2 reload current page
+                    } else if (data.step === 2) {
+                        location.reload();
+                    }
+                });
+
+                // TODO: when there is proper validation in the controller implemented, show error messages here
+            });
+        });
+    </script>
 {% endblock %}
 
 {% block stylesheets %}
@@ -22,38 +55,55 @@ file that was distributed with this source code.
 {% endblock %}
 
 {% block form %}
-<div class="row">
-    <div class="col-md-6">
-        <h2>Single Location</h2>
-        <form method="POST" class="form-horizontal" role="form" enctype="multipart/form-data">
-            {{ bootstrap_set_style('horizontal') }}
-            {{ bootstrap_set_widget_col(8) }}
-            {{ bootstrap_set_label_col(3) }}
-            {{ form_widget(form_single) }}
-            <div class="form-group">
-                <div class="col-lg-offset-3 col-lg-8">
-                    <div class="btn-group pull-right" role="group" aria-label="...">
-                        {% include 'CampaignChainCoreBundle:Base:form_footer_buttons.html.twig' %}
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Single Location</h2>
+            <form method="POST" class="form-horizontal" role="form" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-lg-10">
+                        {{ bootstrap_set_style('horizontal') }}
+                        {{ bootstrap_set_widget_col(9) }}
+                        {{ bootstrap_set_label_col(3) }}
+                        {{ form_widget(form_single) }}
+                    </div>
+                    <div class="col-lg-1">
+                        <button class="btn btn-default" type="button" id="campaign_new_1"><i
+                                    class="fa fa-plus"></i></button>
                     </div>
                 </div>
-            </div>
-        </form>
-    </div>
-    <div class="col-md-6">
-        <h2>Multiple Locations</h2>
-        <form method="POST" class="form-horizontal" role="form" enctype="multipart/form-data">
-            {{ bootstrap_set_style('horizontal') }}
-            {{ bootstrap_set_widget_col(8) }}
-            {{ bootstrap_set_label_col(3) }}
-            {{ form_widget(form_multiple) }}
-            <div class="form-group">
-                <div class="col-lg-offset-3 col-lg-8">
-                    <div class="btn-group pull-right" role="group" aria-label="...">
-                        {% include 'CampaignChainCoreBundle:Base:form_footer_buttons.html.twig' %}
+                <div class="form-group">
+                    <div class="col-lg-offset-2 col-lg-8">
+                        <div class="btn-group pull-right" role="group" aria-label="...">
+                            {% include 'CampaignChainCoreBundle:Base:form_footer_buttons.html.twig' %}
+                        </div>
                     </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <h2>Multiple Locations</h2>
+            <form method="POST" class="form-horizontal" role="form" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-lg-10">
+                        {{ bootstrap_set_style('horizontal') }}
+                        {{ bootstrap_set_widget_col(9) }}
+                        {{ bootstrap_set_label_col(3) }}
+                        {{ form_widget(form_multiple) }}
+                    </div>
+                    <div class="col-lg-1">
+                        <button class="btn btn-default" type="button" id="campaign_new_2"><i
+                                    class="fa fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-lg-offset-2 col-lg-8">
+                        <div class="btn-group pull-right" role="group" aria-label="...">
+                            {% include 'CampaignChainCoreBundle:Base:form_footer_buttons.html.twig' %}
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 {% endblock %}
+
