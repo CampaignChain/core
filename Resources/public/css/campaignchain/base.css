@@ -433,3 +433,7 @@ div.scrollable {
 .avatar-modal .avatar-rotation-controls {
     margin: 5px 0 15px;
 }
+
+.secondary-nav {
+    padding-bottom: 30px;
+}

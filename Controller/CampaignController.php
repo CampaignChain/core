@@ -12,6 +12,8 @@ namespace CampaignChain\CoreBundle\Controller;
 
 use CampaignChain\CoreBundle\Util\DateTimeUtil;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use CampaignChain\CoreBundle\Entity\Campaign;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityRepository;
@@ -58,11 +60,18 @@ class CampaignController extends Controller
 
             $routes = $campaignModule->getRoutes();
 
-            return $this->redirectToRoute($routes['new']);
+            if ($this->getRequest()->isXmlHttpRequest()) {
+                return new JsonResponse(array(
+                    'step' => 1,
+                    'next_step' => $routes['new'],
+                ));
+            } else {
+                return $this->redirectToRoute($routes['new']);
+            }
         }
 
         return $this->render(
-            'CampaignChainCoreBundle:Base:new.html.twig',
+            $this->getRequest()->isXmlHttpRequest() ? 'CampaignChainCoreBundle:Base:new_modal.html.twig' : 'CampaignChainCoreBundle:Base:new.html.twig',
             array(
                 'page_title' => 'Create New Campaign',
                 'form' => $form->createView(),

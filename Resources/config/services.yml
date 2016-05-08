@@ -85,7 +85,6 @@ services:
         arguments:
             - '@campaignchain.core.user'
             - '@campaignchain.core.service.file_upload'
-            - '@liip_imagine.binary.loader.uploads'
             - '@liip_imagine.filter.manager'
         tags:
             - { name: doctrine.orm.entity_listener }
@@ -429,6 +428,8 @@ services:
         arguments:
             - '%campaignchain.core.upload_storage.path%'
             - '%campaignchain.core.upload_storage.url_prefix%'
+            - '@gaufrette.images_filesystem'
+            - '@liip_imagine.cache.manager'
 
     campaignchain.core.util.datetime:
         class: CampaignChain\CoreBundle\Util\DateTimeUtil

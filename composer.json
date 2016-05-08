@@ -56,7 +56,8 @@
         "nelmio/api-doc-bundle": "dev-master",
         "friendsofsymfony/rest-bundle": "dev-master",
         "jms/serializer-bundle": "dev-master",
-        "mremi/url-shortener": "dev-master"
+        "mremi/url-shortener": "dev-master",
+        "knplabs/knp-gaufrette-bundle": "^0.3.0"
     },
     "autoload": {
         "psr-4": { "CampaignChain\\CoreBundle\\": "" }
@@ -80,7 +81,8 @@
                     "JMS\\SerializerBundle\\JMSSerializerBundle",
                     "FOS\\RestBundle\\FOSRestBundle",
                     "Oneup\\UploaderBundle\\OneupUploaderBundle",
-                    "Liip\\ImagineBundle\\LiipImagineBundle"
+                    "Liip\\ImagineBundle\\LiipImagineBundle",
+                    "Knp\\Bundle\\GaufretteBundle\\KnpGaufretteBundle"
                 ]
             }
         }
