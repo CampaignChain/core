@@ -11,17 +11,12 @@
 namespace CampaignChain\CoreBundle\Controller;
 
 use CampaignChain\CoreBundle\Util\DateTimeUtil;
-use CampaignChain\CoreBundle\Form\Type\CampaignType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use CampaignChain\CoreBundle\Entity\Campaign;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 use Doctrine\ORM\EntityRepository;
-use CampaignChain\CoreBundle\Entity\Action;
 
 class CampaignController extends Controller
 {
@@ -29,16 +24,8 @@ class CampaignController extends Controller
 
     public function indexAction()
     {
-        $repository = $this->getDoctrine()
-            ->getRepository('CampaignChainCoreBundle:Campaign');
 
-        $query = $repository->createQueryBuilder('campaign')
-            ->where('campaign.status != :statusBackgroundProcess')
-            ->setParameter('statusBackgroundProcess', Action::STATUS_BACKGROUND_PROCESS)
-            ->orderBy('campaign.startDate', 'DESC')
-            ->getQuery();
-
-        $repository_campaigns = $query->getResult();
+        $repository_campaigns = $this->getDoctrine()->getRepository('CampaignChainCoreBundle:Campaign')->getCampaigns();
 
         return $this->render(
             'CampaignChainCoreBundle:Campaign:index.html.twig',
@@ -92,7 +79,6 @@ class CampaignController extends Controller
             ));
     }
 
-
     public function editAction(Request $request, $id)
     {
         // TODO: If a campaign is ongoing, only the end date can be changed.
@@ -101,14 +87,7 @@ class CampaignController extends Controller
         $campaignModule = $campaignService->getCampaignModuleByCampaign($id);
         $routes = $campaignModule->getRoutes();
 
-        return $this->redirect(
-            $this->generateUrl(
-                $routes['edit'],
-                array(
-                    'id' => $id,
-                )
-            )
-        );
+        return $this->redirectToRoute($routes['edit'], array('id' => $id));
     }
 
     public function editModalAction(Request $request, $id)
@@ -119,21 +98,13 @@ class CampaignController extends Controller
         $campaignModule = $campaignService->getCampaignModuleByCampaign($id);
         $routes = $campaignModule->getRoutes();
 
-        return $this->redirect(
-            $this->generateUrl(
-                $routes['edit_modal'],
-                array(
-                    'id' => $id,
-                )
-            )
-        );
+        return $this->redirectToRoute($routes['edit_modal'], array('id' => $id));
+
     }
 
     public function moveApiAction(Request $request)
     {
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new GetSetMethodNormalizer());
-        $serializer = new Serializer($normalizers, $encoders);
+        $serializer = $this->get('campaignchain.core.serializer.default');
 
         $responseData = array();
 
@@ -157,7 +128,6 @@ class CampaignController extends Controller
         $responseData['campaign']['new_start_date'] = $campaign->getStartDate()->format(\DateTime::ISO8601);
         $responseData['campaign']['new_end_date'] = $campaign->getEndDate()->format(\DateTime::ISO8601);
 
-        $response = new Response($serializer->serialize($responseData, 'json'));
-        return $response->setStatusCode(Response::HTTP_OK);
+        return new Response($serializer->serialize($responseData, 'json'));
     }
 }

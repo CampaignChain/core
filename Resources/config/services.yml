@@ -160,6 +160,7 @@ services:
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@service_container'
+            - '@campaignchain.core.serializer.default'
 
     campaignchain.core.milestone:
         class: CampaignChain\CoreBundle\EntityService\MilestoneService
@@ -240,12 +241,14 @@ services:
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@service_container'
+            - '@campaignchain.core.serializer.default'
 
     campaignchain.core.model.fullcalendar:
         class: CampaignChain\CoreBundle\Model\FullCalendar
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@service_container'
+            - '@campaignchain.core.serializer.default'
 
     # Sonata
     campaignchain.block.campaign.ongoing.listgroup:
@@ -390,6 +393,21 @@ services:
             - '@knp_menu.matcher'
         tags:
             - { name: knp_menu.renderer, alias: dropdown }
+
+    # Serializer
+    campaignchain.core.serializer.encoder.json:
+        class: 'Symfony\Component\Serializer\Encoder\JsonEncoder'
+
+    campaignchain.core.serializer.normalizer.getsetmethod:
+        class: 'Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer'
+
+    campaignchain.core.serializer.default:
+        class: 'Symfony\Component\Serializer\Serializer'
+        arguments:
+            0:
+                - '@campaignchain.core.serializer.normalizer.getsetmethod'
+            1:
+                - '@campaignchain.core.serializer.encoder.json'
 
     # Logger
     campaignchain.core.monolog_psr_processor:

@@ -219,9 +219,9 @@ class TrackingController extends Controller
             }
             $reportCTA->setTime();
 
-            $repository = $this->getDoctrine()->getManager();
-            $repository->persist($reportCTA);
-            $repository->flush();
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($reportCTA);
+            $em->flush();
 
             $logger->info('-------');
             $logger->info('Tracking data:');

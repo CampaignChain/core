@@ -216,8 +216,8 @@ class DevelopmentController extends Controller
             $entity->setStartDate($hook->getStartDate());
             $entity->setEndDate($hook->getEndDate());
 
-            $repository = $this->getDoctrine()->getManager();
-            $repository->persist($entity);
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($entity);
         }
     }
 

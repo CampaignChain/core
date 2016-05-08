@@ -11,7 +11,6 @@
 namespace CampaignChain\CoreBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use CampaignChain\CoreBundle\Entity\Module;
 
 /**
  * @ORM\Entity
