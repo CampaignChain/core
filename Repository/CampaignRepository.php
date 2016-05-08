@@ -40,14 +40,17 @@ class CampaignRepository extends EntityRepository
 
     /**
      * @param $moduleIdentifier
+     * @param $bundleName
      * @return array
      */
-    public function getCampaignsByModule($moduleIdentifier) {
+    public function getCampaignsByModule($moduleIdentifier, $bundleName) {
 
         return $this->createQueryBuilder('campaign')
             ->select('campaign')
             ->Join('campaign.campaignModule', 'module', 'WITH', 'module.identifier = :moduleIdentifier')
+            ->Join('module.bundle', 'bundle', 'WITH', 'bundle.name = :bundleName')
             ->setParameter('moduleIdentifier', $moduleIdentifier)
+            ->setParameter('bundleName', $bundleName)
             ->orderBy('campaign.name', 'ASC')
             ->getQuery()
             ->getResult();
