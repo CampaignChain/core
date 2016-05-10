@@ -25,6 +25,7 @@ file that was distributed with this source code.
     {% javascripts '@daterangepicker_js' combine=false %}
         <!-- Daterangepicker JS --><script src="{{ asset_url }}"></script>
     {% endjavascripts %}
+
 {% endblock %}
 
 {% block stylesheets %}
@@ -65,7 +66,7 @@ file that was distributed with this source code.
                             <button class="btn btn-primary" type="submit" data-toggle="tooltip" data-placement="top" data-original-title="Save"><i class="fa fa-save"></i></button>
                         {% elseif form_submit_label == 'Upload' %}
                             <button class="btn btn-primary" type="submit" data-toggle="tooltip" data-placement="top" data-original-title="Upload"><i class="fa fa-upload"></i></button>
-                        {% elseif form_submit_label == 'Upload' %}
+                        {% elseif form_submit_label == 'Next' %}
                             <button class="btn btn-primary" type="submit" data-toggle="tooltip" data-placement="top" data-original-title="Next"><i class="fa fa-arrow-right"></i></button>
                         {% endif %}
                     {% else %}
@@ -82,5 +83,4 @@ file that was distributed with this source code.
         })
     </script>
     {% block form_footer %}{% endblock %}
-
 {% endblock %}

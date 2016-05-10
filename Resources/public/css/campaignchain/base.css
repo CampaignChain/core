@@ -434,6 +434,10 @@ div.scrollable {
     margin: 5px 0 15px;
 }
 
+.secondary-nav {
+    padding-bottom: 30px;
+}
+
 .hook-images-container .hook-images-row {
     padding: 10px 15px;
 }

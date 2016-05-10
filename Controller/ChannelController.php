@@ -15,9 +15,6 @@ use CampaignChain\CoreBundle\Entity\Channel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityRepository;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 
 class ChannelController extends Controller
 {
@@ -125,10 +122,7 @@ class ChannelController extends Controller
             }
 //        }
 
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new GetSetMethodNormalizer());
-
-        $serializer = new Serializer($normalizers, $encoders);
+        $serializer = $this->get('campaignchain.core.serializer.default');
 
         return new Response($serializer->serialize($response, 'json'));
     }
@@ -180,10 +174,7 @@ class ChannelController extends Controller
 
         $response['ok'] = $trackingStatus;
 
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new GetSetMethodNormalizer());
-
-        $serializer = new Serializer($normalizers, $encoders);
+        $serializer = $this->get('campaignchain.core.serializer.default');
 
         return new Response($serializer->serialize($response, 'json'));
     }

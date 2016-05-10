@@ -11,10 +11,8 @@
 namespace CampaignChain\CoreBundle\Model;
 
 use Doctrine\ORM\EntityManager;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class FullCalendar
 {
@@ -22,19 +20,17 @@ class FullCalendar
 
     protected $em;
     protected $container;
+    protected $serializer;
 
-    public function __construct(EntityManager $em, ContainerInterface $container)
+    public function __construct(EntityManager $em, ContainerInterface $container, SerializerInterface $serializer)
     {
         $this->em = $em;
         $this->container = $container;
+        $this->serializer = $serializer;
     }
 
     public function getEvents($bundleName = null, $moduleIdentifier = null, $campaignId = null){
         $calendarEvents = array();
-
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new GetSetMethodNormalizer());
-        $serializer = new Serializer($normalizers, $encoders);
 
         $qb = $this->em->createQueryBuilder();
         $qb->select('c')
@@ -117,21 +113,21 @@ class FullCalendar
         }
 
         if(isset($campaignEvents['ongoing'])){
-            $calendarEvents['campaign_ongoing']['data'] = $serializer->serialize($campaignEvents['ongoing'], 'json');
+            $calendarEvents['campaign_ongoing']['data'] = $this->serializer->serialize($campaignEvents['ongoing'], 'json');
             $calendarEvents['campaign_ongoing']['options'] = array(
                 'className' => 'campaignchain-calendar-ongoing campaignchain-calendar-campaign',
                 'startEditable' => false,
             );
         }
         if(isset($campaignEvents['done'])){
-            $calendarEvents['campaign_done']['data'] = $serializer->serialize($campaignEvents['done'], 'json');
+            $calendarEvents['campaign_done']['data'] = $this->serializer->serialize($campaignEvents['done'], 'json');
             $calendarEvents['campaign_done']['options'] = array(
                 'className' => 'campaignchain-calendar-done campaignchain-calendar-campaign',
                 'editable' => false,
             );
         }
         if(isset($campaignEvents['upcoming'])){
-            $calendarEvents['campaign_upcoming']['data'] = $serializer->serialize($campaignEvents['upcoming'], 'json');
+            $calendarEvents['campaign_upcoming']['data'] = $this->serializer->serialize($campaignEvents['upcoming'], 'json');
             $calendarEvents['campaign_upcoming']['options'] = array(
                 'className' => 'campaignchain-calendar-upcoming campaignchain-calendar-campaign',
                 'startEditable' => false,
@@ -173,14 +169,14 @@ class FullCalendar
             }
 
             if(isset($activityEvents['done'])){
-                $calendarEvents['activity_done']['data'] = $serializer->serialize($activityEvents['done'], 'json');
+                $calendarEvents['activity_done']['data'] = $this->serializer->serialize($activityEvents['done'], 'json');
                 $calendarEvents['activity_done']['options'] = array(
                     'className' => 'campaignchain-activity campaignchain-activity-done',
                     'editable' => false,
                 );
             }
             if(isset($activityEvents['upcoming'])){
-                $calendarEvents['activity_upcoming']['data'] = $serializer->serialize($activityEvents['upcoming'], 'json');
+                $calendarEvents['activity_upcoming']['data'] = $this->serializer->serialize($activityEvents['upcoming'], 'json');
                 $calendarEvents['activity_upcoming']['options'] = array(
                     'className' => 'campaignchain-activity',
                     'durationEditable' => false,
@@ -224,14 +220,14 @@ class FullCalendar
             }
 
             if(isset($milestoneEvents['done'])){
-                $calendarEvents['milestone_done']['data'] = $serializer->serialize($milestoneEvents['done'], 'json');
+                $calendarEvents['milestone_done']['data'] = $this->serializer->serialize($milestoneEvents['done'], 'json');
                 $calendarEvents['milestone_done']['options'] = array(
                     'className' => 'campaignchain-milestone campaignchain-milestone-done',
                     'editable' => false,
                 );
             }
             if(isset($milestoneEvents['upcoming'])){
-                $calendarEvents['milestone_upcoming']['data'] = $serializer->serialize($milestoneEvents['upcoming'], 'json');
+                $calendarEvents['milestone_upcoming']['data'] = $this->serializer->serialize($milestoneEvents['upcoming'], 'json');
                 $calendarEvents['milestone_upcoming']['options'] = array(
                     'className' => 'campaignchain-milestone',
                     'durationEditable' => false,
