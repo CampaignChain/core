@@ -379,6 +379,8 @@ file that was distributed with this source code.
                     originalMaxFiles: max_number_of_images,
                     maxNumberOfFiles: (max_number_of_images - form.children|length)
                 }|json_encode|raw }}
+
+                $(".hook-images-container").parent().parent().hide();
                 $(".hook-images-container").appendTo("#campaignchain-operation-field .panel-body");
 
                 $('.hook-images-row').on('click', '.remove-image', function(e) {
