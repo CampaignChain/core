@@ -31,30 +31,7 @@ class ScriptHandler extends SensioScriptHandler
      */
     public static function initApp(CommandEvent $event)
     {
-        $campaignchainBundlesKernel = 'app'.DIRECTORY_SEPARATOR.'campaignchain_bundles.php';
-        $symfonyConfigDir = 'app'.DIRECTORY_SEPARATOR.'config';
-        $campaignchainBundlesConfig = $symfonyConfigDir.
-            DIRECTORY_SEPARATOR.'campaignchain'.
-            DIRECTORY_SEPARATOR.'config_bundles.yml';
-        $routingFile = $symfonyConfigDir.DIRECTORY_SEPARATOR.'routing.yml';
-        $campaignchainBundlesSecurity = $symfonyConfigDir.
-            DIRECTORY_SEPARATOR.'campaignchain'.
-            DIRECTORY_SEPARATOR.'security.yml';
-
-        $fs = new Filesystem();
-
-        if(!$fs->exists($campaignchainBundlesKernel)){
-            $fs->copy($campaignchainBundlesKernel.'.dist', $campaignchainBundlesKernel, true);
-        }
-        if(!$fs->exists($campaignchainBundlesConfig)){
-            $fs->copy($campaignchainBundlesConfig.'.dist', $campaignchainBundlesConfig, true);
-        }
-        if(!$fs->exists($routingFile)){
-            $fs->copy($routingFile.'.dist', $routingFile, true);
-        }
-        if(!$fs->exists($campaignchainBundlesSecurity)){
-            $fs->copy($campaignchainBundlesSecurity.'.dist', $campaignchainBundlesSecurity, true);
-        }
+        SystemUtil::initApp();
     }
 
     public static function registerModules(CommandEvent $event)
