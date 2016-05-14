@@ -169,31 +169,7 @@ class DevelopmentController extends Controller
                 'Please confirm.'
             );
         } elseif ($form->isValid() && $form['confirm']->getData()) {
-            $kernelFile = $this->get('kernel')->getRootDir().DIRECTORY_SEPARATOR.'campaignchain_bundles.php';
-            $configDir = $this->get('kernel')->getRootDir().DIRECTORY_SEPARATOR.'config';
-            $configFile = $configDir.DIRECTORY_SEPARATOR.'campaignchain'.DIRECTORY_SEPARATOR.'config_bundles.yml';
-            $routingFile = $configDir.DIRECTORY_SEPARATOR.'routing.yml';
-            $securityFile = $configDir.DIRECTORY_SEPARATOR.'campaignchain'.DIRECTORY_SEPARATOR.'security.yml';
-
-            // Reset files
-            $fs = new Filesystem();
-            $fs->copy($configFile.'.dist', $configFile, true);
-            $fs->copy($routingFile.'.dist', $routingFile, true);
-            $fs->copy($securityFile.'.dist', $securityFile, true);
-            $fs->remove($kernelFile);
-            $fs->dumpFile($kernelFile, '<?php'."\xA");
-
-            // Drop all tables
-            $currentDir = getcwd();
-            chdir($this->get('kernel')->getRootDir().DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR);
-            $command = 'php app/console doctrine:schema:drop --force --full-database';
-            ob_start();
-            system($command, $output);
-            ob_get_clean();
-            chdir($currentDir);
-
-            // Set install mode.
-            SystemUtil::enableInstallMode();
+            SystemUtil::resetApp();
 
             header('Location: ../../campaignchain/install.php');
             exit;
@@ -205,6 +181,7 @@ class DevelopmentController extends Controller
                 'page_title' => 'Reset System',
                 'form' => $form->createView(),
                 'form_submit_label' => 'Reset',
+                'blockui' => true,
             ));
     }
 
