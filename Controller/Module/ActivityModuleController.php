@@ -606,6 +606,9 @@ class ActivityModuleController extends Controller
         $activityFormType->setModuleIdentifier(
             $this->parameters['module_identifier']
         );
+        if (isset($this->parameters['hooks_options'])) {
+            $activityFormType->setHooksOptions($this->parameters['hooks_options']);
+        }
         if($this->handler->hasContent($this->view)) {
             $activityFormType->setContentForms(
                 $this->getContentFormTypes()

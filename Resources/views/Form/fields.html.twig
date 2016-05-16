@@ -347,6 +347,97 @@ file that was distributed with this source code.
     {% endspaceless %}
 {% endblock bootstrap_collection_widget %}
 
+{% block campaignchain_hook_campaignchain_image_widget %}
+    {% set max_number_of_images = form.vars.number_of_images|default(1) %}
+        <div class="form-group hook-images-container" style="">
+            <div class="col-lg-12 hook-images-row">
+                {% for i, img in data %}
+                    <div class="hook-image">
+                        <img src="{{ img.path|imagine_filter("auto_rotate") }}" alt="">
+                        <span class="remove-image">X</span>
+                        {{ form_widget(form.children[i]) }}
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="col-lg-12">
+                <div class="image-upload">
+                    <input type="file"
+                           {% if max_number_of_images > 1 %}multiple {% endif %}
+                           accept=".jpg,.jpeg,.png,.gif,image/jpeg,image/png,image/gif"
+                           data-url="{{ oneup_uploader_endpoint('hook_image') }}"
+                    >
+                </div>
+            </div>
+        </div>
+        <script type="application/javascript">
+            $(document).ready(function() {
+
+                var hook_settings = {{ {
+                    id: form.vars.id,
+                    name: form.vars.full_name,
+                    counter: form.children|length,
+                    originalMaxFiles: max_number_of_images,
+                    maxNumberOfFiles: (max_number_of_images - form.children|length)
+                }|json_encode|raw }}
+
+                $(".hook-images-container").parent().parent().hide();
+                $(".hook-images-container").appendTo("#campaignchain-operation-field .panel-body");
+
+                $('.hook-images-row').on('click', '.remove-image', function(e) {
+                    if (!$(this).hasClass('remove')) {
+                        $(this).addClass('remove');
+                        hook_settings.maxNumberOfFiles++;
+                    }
+                    $(this).parent().fadeOut('slow', function(){ $(this).remove(); });
+                });
+
+                $("input[type=file]")
+                        .fileupload({
+                            dataType: 'json',
+                            acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+                            add: function(e, data) {
+                                if (hook_settings.maxNumberOfFiles < 1) {
+                                    var $errorBox = $("<div>")
+                                            .addClass("help-block")
+                                            .text("You have reached the maximum number of "+hook_settings.originalMaxFiles+" Image(s)")
+                                            .insertAfter($(".image-upload"));
+
+                                    setTimeout(function(){
+                                        $errorBox.fadeOut("slow", function(){
+                                            $(this).remove();
+                                        });
+                                    }, 1000);
+
+                                    return false;
+                                }
+                                hook_settings.maxNumberOfFiles--;
+                                data.submit();
+                            },
+                            done: function(e, data) {
+                                var response = data.response();
+                                var result = response.result;
+
+                                var imageContainer = $('.hook-images-row');
+
+                                $("<div>")
+                                        .addClass("hook-image")
+                                        .append($("<img>").attr("src", result.url))
+                                        .append($("<span>").addClass("remove-image").text("X"))
+                                        .append($("<input>")
+                                                .attr("type", "hidden")
+                                                .attr("id", hook_settings.id + "_" + hook_settings.counter + "_path")
+                                                .attr("name", hook_settings.name + "[" + hook_settings.counter + "][path]")
+                                                .attr("value", result.path))
+                                        .appendTo(imageContainer);
+
+                                hook_settings.counter++;
+                            }
+                        });
+            });
+        </script>
+
+{% endblock %}
+
 {% block avatar_upload_widget %}
     {% set modalId = "avatar_modal_"~id %}
     {% set containerId = "avatar_upload_"~id %}
