@@ -111,7 +111,9 @@ gantt.templates.tooltip_text = function (start_date, end_date, e) {
 
 // Show the edit dialogue when someone clicks on a task.
 gantt.attachEvent("onTaskDblClick", function(id,e){
-    // TODO: Fade in/out tooltip while modal for editing task is visible.
+    // Fade out tooltip while modal for editing task is visible.
+    $(".gantt_tooltip").fadeOut();
+
     var task = gantt.getTask(id);
 
     campaignchainShowModal(

@@ -235,6 +235,10 @@ gantt.attachEvent("onTaskDrag", function (t) {
     gantt._is_tooltip(t) || this._hide_tooltip()
 })
 
+gantt.attachEvent("onMouseMove", function (){
+    $(".gantt_tooltip").fadeIn();
+});
+
 gantt.attachEvent("onMouseLeave", function (t) {
     gantt._is_tooltip(t) || this._hide_tooltip()
 })
