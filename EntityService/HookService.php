@@ -72,14 +72,25 @@ class HookService
                         $entity->setTriggerHook($hookModule);
                     }
 
+                    $hasHookData = false;
+
                     if(is_array($data)){
-                        $hookDataArray = $data['campaignchain_hook_'.str_replace('-', '_', $identifier)];
-                        $hook = $hookService->arrayToObject($hookDataArray);
+                        // Check if data for specific Hook is available.
+                        if(isset($data['campaignchain_hook_'.str_replace('-', '_', $identifier)])){
+                            $hookDataArray = $data['campaignchain_hook_'.str_replace('-', '_', $identifier)];
+                            $hook = $hookService->arrayToObject($hookDataArray);
+
+                            $hasHookData = true;
+                        }
                     } elseif(is_object($data) && get_class($data) == 'Symfony\Component\Form\Form'){
                         $hook = $data->get('campaignchain_hook_'.str_replace('-', '_', $identifier))->getData();
+
+                        $hasHookData = true;
                     }
 
-                    $entity = $hookService->processHook($entity, $hook);
+                    if($hasHookData){
+                        $entity = $hookService->processHook($entity, $hook);
+                    }
                 }
             }
         }
