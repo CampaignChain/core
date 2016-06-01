@@ -66,6 +66,10 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
+    campaignchain.core.listener.entry_point:
+        class: CampaignChain\CoreBundle\EventListener\EntryPoint
+        arguments: [ @router ]
+
     campaignchain.core.listener.datetime:
         class: CampaignChain\CoreBundle\EventListener\DatetimeListener
         arguments:

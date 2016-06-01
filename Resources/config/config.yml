@@ -7,6 +7,7 @@ assetic:
         campaignchain_base_js:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/base.js"
+                - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/exception.js"
                 - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/modal.js"
                 - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/sidemenu.js"
                 - "@CampaignChainCoreBundle/Resources/public/components/ScrollToFixed/jquery-scrolltofixed.js"

@@ -355,14 +355,19 @@ campaignchain_core_profile_crop_avatar:
     methods: [POST]
 
 
-# FOSUserBundle routes
-# only import what we need!
+# User / security routes
 fos_user_security:
     resource: "@FOSUserBundle/Resources/config/routing/security.xml"
 
 fos_user_resetting:
     resource: "@FOSUserBundle/Resources/config/routing/resetting.xml"
     prefix: /user/resetting
+
+campaignchain_core_security_resume:
+    pattern:  /resume
+    defaults: { _controller: CampaignChainCoreBundle:Security:resume }
+    options:
+        expose: true
 
 # FOSJsRoutingBundle routes
 fos_js_routing:

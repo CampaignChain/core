@@ -19,6 +19,8 @@ CampaignChain.Modal = (function () {
         // override to define a spinner
         spinner_start: function () {},
         spinner_stop: function () {},
+        closeable: true,
+        close_event: function () {},
     };
 
     var _modal;
@@ -70,12 +72,38 @@ CampaignChain.Modal = (function () {
             // and update modal if successful
             .done(function (data) {
                 _modal.find('.modal-content').html(data);
-
+                
                 // bind event to submit button
                 _modal.find('form').submit(function (e) {
                     _processSubmit($(this), form_action);
                     e.preventDefault();
                 });
+
+                _isCloseable();
+
+                _modal.modal('show');
+                
+                _options.spinner_stop();
+            })
+    };
+
+    /**
+     * Loads the page content.
+     * 
+     * @param route
+     */
+    var showContent = function (route) {
+        _options.spinner_start();
+
+        // retrieve form
+        $.get(
+            Routing.generate(route))
+
+        // and update modal if successful
+            .done(function (data) {
+                _modal.find('.modal-content').html(data);
+
+                _isCloseable();
 
                 // show modal
                 _modal.modal('show');
@@ -84,6 +112,28 @@ CampaignChain.Modal = (function () {
             })
     };
 
+    /**
+     * Can the modal be closed?
+     *
+     * @private
+     */
+    var _isCloseable = function () {
+        if(!_options.closeable){
+            /*
+             Don't allow the modal to be closed by clicking on the background
+             or hitting ESC.
+             */
+            _modal.modal({
+                backdrop: 'static',
+                keyboard: false
+            });
+            // Hide the close button.
+            _modal.find('.close').remove();
+            // Call a custom function.
+            _options.close_event();
+        }
+    };
+    
     var init = function (options) {
         /**
          * user options overwrite default options
@@ -103,7 +153,8 @@ CampaignChain.Modal = (function () {
      */
     return {
         init: init,
-        showForm: showForm
+        showForm: showForm,
+        showContent: showContent
     };
 
 });

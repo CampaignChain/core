@@ -38,9 +38,9 @@ function campaignchainDependentSelect2(parent, child, route){
                         formatResult: format
                     });
                 })
-                .fail(function( jqxhr, textStatus, error ) {
-                    var err = textStatus + ", " + error;
-                    console.log( "Request Failed: " + err );
+                .fail(function( jqXHR, textStatus, error ) {
+                    var exception = new CampaignChain.Exception();
+                    exception.http(jqXHR.status);
                 });
 
             $(this).focus();
