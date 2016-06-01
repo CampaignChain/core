@@ -1,0 +1,49 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) CampaignChain, Inc. <info@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+{% trans_default_domain 'FOSUserBundle' %}
+
+{% block body %}
+    <form action="{{ path("fos_user_security_check") }}" method="post" class="form-horizontal"
+          id="fos_user_security_check"
+          role="form">
+
+        <div class="alert alert-warning alert-dismissable">
+            <p>
+                <span class="fa fa-exclamation-triangle"></span> You were logged out due to inactivity.
+            </p>
+        </div>
+
+        <input type="hidden" name="_csrf_token"
+               value="{{ csrf_token('authenticate') }}"
+        >
+        <div class="form-group">
+            {#<label for="username"#}
+            {#class="col-sm-3 control-label required">{{ 'security.login.username'|trans }}</label>#}
+            <div class="col-sm-offset-2 col-sm-8">
+                <input type="hidden" id="username" name="_username" value="{{ app.user.username }}"
+                       required="required" class="form-control"/>
+            </div>
+        </div>
+        <div class="form-group">
+            {#<label for="password"#}
+            {#class="control-label col-sm-3 required">{{ 'security.login.password'|trans }}</label>#}
+            <div class="col-sm-offset-2 col-sm-8">
+                <input type="password" id="password" name="_password" required="required"
+                       placeholder="Password"
+                       class="form-control"/>
+            </div>
+        </div>
+    </form>
+    <div class="modal-footer">
+        <button type="submit" id="_submit" class="btn btn-primary" form="fos_user_security_check"
+                name="_submit">{{ 'security.login.submit'|trans }}</button>
+
+    </div>
+{% endblock %}
