@@ -63,8 +63,11 @@ class ActivityModuleController extends Controller
             $this->parameters['equals_operation'] = false;
         }
 
-        $this->locationBundleName = $this->parameters['location']['bundle_name'];
-        $this->locationModuleIdentifier = $this->parameters['location']['module_identifier'];
+        if(isset($this->parameters['location'])){
+            $this->locationBundleName = $this->parameters['location']['bundle_name'];
+            $this->locationModuleIdentifier = $this->parameters['location']['module_identifier'];
+        }
+
         if($this->parameters['equals_operation']) {
             $this->contentBundleName = $this->parameters['operations'][0]['bundle_name'];
             $this->contentModuleIdentifier = $this->parameters['operations'][0]['module_identifier'];
