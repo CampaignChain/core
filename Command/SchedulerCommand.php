@@ -382,8 +382,8 @@ class SchedulerCommand extends ContainerAwareCommand
                 $tableHeaders[] = 'Campaign Status';
             }
             if ($actionType == Action::TYPE_OPERATION) {
-                $tableHeaders[] = 'Activity ID';
-                $tableHeaders[] = 'Activity Status';
+                $tableHeaders[] = 'Action ID';
+                $tableHeaders[] = 'Action Status';
             }
 
             $outputTableRows = array();
