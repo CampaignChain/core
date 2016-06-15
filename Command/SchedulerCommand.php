@@ -112,7 +112,7 @@ class SchedulerCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->io = new SymfonyStyle($input, $output);
-        $this->io->title('Campaignchain Scheduler');
+        $this->io->title('CampaignChain Scheduler');
 
         // Prevent multiple console runs
         $lock = new LockHandler('campaignchain:scheduler');
