@@ -78,13 +78,11 @@ class CampaignRepository extends EntityRepository
                 ' OR '.
                 '(c.endDate IS NOT NULL AND c.startDate <= :periodStart AND c.endDate >= :periodStart AND c.endDate <= :periodEnd)'.
                 ' OR '.
-                '('.
-                '(c.intervalStartDate IS NULL OR c.intervalStartDate <= :periodEnd)'.
-                ' AND '.
-                '(c.intervalEndDate IS NULL OR c.intervalEndDate <= :periodEnd)'.
-                ' AND '.
-                'c.intervalNextRun IS NOT NULL AND c.intervalNextRun >= :periodStart AND c.intervalNextRun <= :periodEnd'.
-                ')'
+                '(c.intervalStartDate IS NOT NULL AND c.intervalStartDate >= :periodStart AND c.intervalStartDate <= :periodEnd)'.
+                ' OR '.
+                '(c.intervalEndDate IS NOT NULL AND c.intervalEndDate >= :periodStart AND c.intervalEndDate <= :periodEnd)'.
+                ' OR '.
+                '(c.intervalNextRun IS NOT NULL AND c.intervalNextRun >= :periodStart AND c.intervalNextRun <= :periodEnd)'
             )
             ->setParameter('status', ACTION::STATUS_CLOSED)
             ->setParameter('jobStatus', JOB::STATUS_OPEN)
