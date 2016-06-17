@@ -92,7 +92,7 @@ file that was distributed with this source code.
     {% endspaceless %}
 {% endblock choice_widget_options %}
 
-{% block daterangepicker_widget %}
+{% block campaignchain_daterangepicker_widget %}
     {% spaceless %}
         {% set value = data|campaignchain_datetime() %}
         {% if widget == 'single_text' %}
@@ -183,7 +183,7 @@ file that was distributed with this source code.
             </script>
             {% endif %}
     {% endspaceless %}
-{% endblock daterangepicker_widget %}
+{% endblock campaignchain_daterangepicker_widget %}
 
 {% block textarea_widget %}
     {% spaceless %}

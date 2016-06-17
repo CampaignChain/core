@@ -13,7 +13,7 @@ namespace CampaignChain\CoreBundle\Form\Type;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-class DaterangepickerType extends AbstractType
+class DateRangePickerType extends AbstractType
 {
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
@@ -22,11 +22,11 @@ class DaterangepickerType extends AbstractType
 
     public function getParent()
     {
-        return 'datetime';
+        return 'campaignchain_datetime';
     }
 
     public function getName()
     {
-        return 'daterangepicker';
+        return 'campaignchain_daterangepicker';
     }
 }

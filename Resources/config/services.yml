@@ -239,6 +239,25 @@ services:
             - '@doctrine.orm.entity_manager'
             - '@service_container'
 
+    campaignchain.core.form.type.datetime:
+        class: CampaignChain\CoreBundle\Form\Type\DateTimeType
+        arguments:
+            - '@campaignchain.core.util.datetime'
+        tags:
+            - { name: form.type, alias: campaignchain_datetime }
+
+    campaignchain.core.form.type.datetimepicker:
+        class: CampaignChain\CoreBundle\Form\Type\DateTimePickerType
+        arguments:
+            - '@campaignchain.core.util.datetime'
+        tags:
+            - { name: form.type, alias: campaignchain_datetimepicker }
+
+    campaignchain.core.form.type.daterangepicker:
+        class: CampaignChain\CoreBundle\Form\Type\DateRangePickerType
+        tags:
+            - { name: form.type, alias: campaignchain_daterangepicker }
+
     # Model
     campaignchain.core.model.dhtmlxgantt:
         class: CampaignChain\CoreBundle\Model\DhtmlxGantt

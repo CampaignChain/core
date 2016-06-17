@@ -33,8 +33,10 @@ file that was distributed with this source code.
                             {% if activity.status == "closed" or activity.status == "paused" %}text-muted {% endif %}
                             ">
                         <td align="center">
-                            {% if activity.status == "open" or activity.status == "paused" %}
+                            {% if activity.status == "open" %}
                                 <i class="fa fa-clock-o"></i>
+                            {% elseif activity.status == "paused" %}
+                                <i class="fa fa-pause-circle-o"></i>
                             {% elseif activity.status == "closed" %}
                                 <i class="fa fa-check-circle"></i>
                             {% endif %}

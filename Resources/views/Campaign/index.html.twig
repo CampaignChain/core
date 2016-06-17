@@ -65,6 +65,7 @@ file that was distributed with this source code.
         <table id="example" class="table table-striped table-bordered dataTable">
             <thead>
                 <tr>
+                    <th></th>
                     <th>Name</th>
                     <th>Execution</th>
                     <th></th>
@@ -73,8 +74,17 @@ file that was distributed with this source code.
             <tbody>
                 {% for campaign in repository_campaigns%}
                     <tr class="
-                            {% if campaign.status == "paused" %}text-muted {% endif %}
+                            {% if campaign.status == "paused" or campaign.status == "closed" %}text-muted {% endif %}
                             ">
+                        <td align="center">
+                            {% if campaign.status == "open" %}
+                                <i class="fa fa-clock-o"></i>
+                            {% elseif campaign.status == "paused" %}
+                                <i class="fa fa-pause-circle-o"></i>
+                            {% elseif campaign.status == "closed" %}
+                                <i class="fa fa-check-circle"></i>
+                            {% endif %}
+                        </td>
                         <td>{{ campaign|campaignchain_tpl_teaser }}</td>
                         <td>{{ campaign|campaignchain_tpl_trigger_hook_inline }}</td>
                         <td align="center">
