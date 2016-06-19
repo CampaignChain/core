@@ -33,7 +33,7 @@ file that was distributed with this source code.
                             ">
                         <td>{{ milestone.name }}</td>
                         <td>  <a href="{{ path(milestone.campaign.campaignModule.routes.plan_detail,{'id': milestone.campaign.id}) }}">{{ milestone.campaign.name }}</a></td>
-                        <td>{{ milestone|campaignchain_tpl_trigger_hook_inline }}</td>
+                        <td>{{ milestone|campaignchain_tpl_trigger_hook }}</td>
                         <td align="center">
                             {% if milestone.status == "open" or milestone.status == "paused" %}
                             <a  class="btn btn-primary"

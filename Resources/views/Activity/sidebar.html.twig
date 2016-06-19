@@ -36,13 +36,13 @@ file that was distributed with this source code.
     <div class="campaignchain-sidebar-item">
         <h5>Campaign</h5>
         {{ campaign|campaignchain_tpl_teaser(campaign_tpl_options) }}<br/>
-        {{ campaign|campaignchain_tpl_trigger_hook_inline }}
+        {{ campaign|campaignchain_tpl_trigger_hook }}
     </div>
     {% if activity.getStatus() == 'closed' or show_date == true %}
         <div class="campaignchain-sidebar-item">
             <h5>Execution</h5>
             <div class="campaignchain-sidebar-icon"><i class="fa fa-clock-o"></i></div>
-            <div class="campaignchain-sidebar-data">{{ activity|campaignchain_tpl_trigger_hook_inline }}</div>
+            <div class="campaignchain-sidebar-data">{{ activity|campaignchain_tpl_trigger_hook }}</div>
         </div>
     {% endif %}
     {% if location.getUrl() != '' %}

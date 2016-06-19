@@ -48,7 +48,8 @@ class CampaignChainCoreExtension extends \Twig_Extension
             new \Twig_SimpleFilter('campaignchain_timezone', array($this, 'timezone')),
             new \Twig_SimpleFilter('campaignchain_data_trigger_hook', array($this, 'dataTriggerHook')),
             new \Twig_SimpleFilter('campaignchain_tpl_teaser', array($this, 'tplTeaser'), array('is_safe' => array('html'))),
-            new \Twig_SimpleFilter('campaignchain_tpl_trigger_hook_inline', array($this, 'tplTriggerHookInline'), array('is_safe' => array('html'))),
+            new \Twig_SimpleFilter('campaignchain_tpl_trigger_hook', array($this, 'tplTriggerHookInline'), array('is_safe' => array('html'))),
+            new \Twig_SimpleFilter('campaignchain_tpl_delete_activity', array($this, 'tplDeleteActivity'), array('is_safe' => array('html'))),
             new \Twig_SimpleFilter('campaignchain_channel_root_locations', array($this, 'channelRootLocations')),
             new \Twig_SimpleFilter('campaignchain_remaining_time', array($this, 'remainingTime')),
             new \Twig_SimpleFilter('campaignchain_remaining_time_badge', array($this, 'remainingTimeBadge')),
@@ -353,6 +354,14 @@ class CampaignChainCoreExtension extends \Twig_Extension
         $hookConfig = $this->em->getRepository('CampaignChainCoreBundle:Hook')->find($object->getTriggerHook());
         $hookService = $this->container->get($hookConfig->getServices()['entity']);
         return $hookService->tplInline($object);
+    }
+
+    public function tplDeleteActivity($object)
+    {
+        return $this->container->get('templating')->render(
+            'CampaignChainCoreBundle:Activity:widget_delete.html.twig',
+            array('activity' => $object)
+        );
     }
 
     public function channelRootLocations($object)
