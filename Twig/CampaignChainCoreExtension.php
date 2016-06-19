@@ -48,7 +48,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
             new \Twig_SimpleFilter('campaignchain_timezone', array($this, 'timezone')),
             new \Twig_SimpleFilter('campaignchain_data_trigger_hook', array($this, 'dataTriggerHook')),
             new \Twig_SimpleFilter('campaignchain_tpl_teaser', array($this, 'tplTeaser'), array('is_safe' => array('html'))),
-            new \Twig_SimpleFilter('campaignchain_tpl_trigger_hook', array($this, 'tplTriggerHookInline'), array('is_safe' => array('html'))),
+            new \Twig_SimpleFilter('campaignchain_tpl_trigger_hook', array($this, 'tplTriggerHook'), array('is_safe' => array('html'))),
             new \Twig_SimpleFilter('campaignchain_tpl_delete_activity', array($this, 'tplDeleteActivity'), array('is_safe' => array('html'))),
             new \Twig_SimpleFilter('campaignchain_channel_root_locations', array($this, 'channelRootLocations')),
             new \Twig_SimpleFilter('campaignchain_remaining_time', array($this, 'remainingTime')),
@@ -348,7 +348,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
         return $hookData;
     }
 
-    public function tplTriggerHookInline($object)
+    public function tplTriggerHook($object)
     {
         // TODO: Store already retrieved service string in a property of this class for performance reasons.
         $hookConfig = $this->em->getRepository('CampaignChainCoreBundle:Hook')->find($object->getTriggerHook());
