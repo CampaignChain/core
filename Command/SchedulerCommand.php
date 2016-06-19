@@ -691,7 +691,6 @@ class SchedulerCommand extends ContainerAwareCommand
         $process->setTimeout($this->timeout);
         $process->run();
 
-
         while ($process->isRunning()) {
             $this->logger->info('Process ID: '.$process->getPid());
             $job->setPid($process->getPid());
@@ -699,6 +698,9 @@ class SchedulerCommand extends ContainerAwareCommand
         }
 
         if (!$process->isSuccessful()) {
+//            $this->logger->error($process->getErrorOutput());
+//            $job->setMessage($process->getErrorOutput());
+//            $this->em->flush();
             throw new \RuntimeException($process->getErrorOutput());
         }
     }
