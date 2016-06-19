@@ -11,6 +11,7 @@
 namespace CampaignChain\CoreBundle\Controller;
 
 use CampaignChain\CoreBundle\Entity\Location;
+use CampaignChain\CoreBundle\EntityService\LocationService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use CampaignChain\CoreBundle\Entity\Channel;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,9 +33,7 @@ class LocationController extends Controller
             ->join('location.channel','channel')
             ->join('location.locationModule', 'locationModule')
             ->where('location.operation IS NULL')
-            ->andWhere('channel.status = ?1')
             ->orderBy('location.name', 'ASC')
-            ->setParameters(array(1 => Channel::STATUS_ACTIVE))
             ->getQuery();
 
         $locations = $query->getResult();
@@ -92,6 +91,7 @@ class LocationController extends Controller
     }
     public function toggleStatusAction(Request $request, $id)
     {
+        /** @var LocationService $locationService */
         $locationService = $this->get('campaignchain.core.location');
         $locationService->toggleStatus($id);
         return $this->redirectToRoute('campaignchain_core_location');

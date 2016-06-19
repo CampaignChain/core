@@ -179,15 +179,7 @@ class ChannelService
     }
 
     public function toggleStatusChannel($id){
-        $channel = $this->em
-            ->getRepository('CampaignChainCoreBundle:Channel')
-            ->find($id);
-
-        if (!$channel) {
-            throw new \Exception(
-                'No channel found for id ' . $id
-            );
-        }
+        $channel = $this->getChannel($id);
 
         $toggle = (($channel->getStatus()==Location::STATUS_ACTIVE) ? $channel->setStatus(Location::STATUS_INACTIVE) : $channel->setStatus(Location::STATUS_ACTIVE));
         foreach ($channel->getLocations() as $location) {

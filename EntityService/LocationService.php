@@ -342,14 +342,18 @@ class LocationService
     }
 
     public function toggleStatus($id){
-        $location = $this->em
-            ->getRepository('CampaignChainCoreBundle:Location')
-            ->find($id);
+        /** @var Location $location */
+        $location = $this->getLocation($id);
 
-        if (!$location) {
-            throw new \Exception(
-                'No location found for id ' . $id
-            );
+        /*
+         * If a Location's status switches from inactive to active, and the
+         * Channel is inactive, then the Channel becomes active as well.
+         */
+        if(
+            $location->getStatus() == Location::STATUS_INACTIVE &&
+            $location->getChannel()->getStatus() == Channel::STATUS_INACTIVE
+        ) {
+            $location->getChannel()->setStatus(Channel::STATUS_ACTIVE);
         }
 
         $toggle = (($location->getStatus()==Location::STATUS_ACTIVE) ? $location->setStatus(Location::STATUS_INACTIVE) : $location->setStatus(Location::STATUS_ACTIVE));
