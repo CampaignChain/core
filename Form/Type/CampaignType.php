@@ -10,6 +10,7 @@
 
 namespace CampaignChain\CoreBundle\Form\Type;
 
+use CampaignChain\CoreBundle\Util\DateTimeUtil;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -17,13 +18,18 @@ class CampaignType extends HookListenerType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        /** @var DateTimeUtil $dateTimeUtil */
+        $dateTimeUtil = $this->container->get('campaignchain.core.util.datetime');
         $builder
             ->add('name', 'text', array(
                 'attr' => array(
                     'placeholder' => 'Give your campaign a name',
                 )
             ))
-            ->add('timezone', 'timezone');
+            ->add('timezone', 'timezone', array(
+                'label' => 'Timezone of Audience',
+                'data' => $dateTimeUtil->getUserTimezone(),
+            ));
 
         $hookListener = $this->getHookListener($builder);
 
