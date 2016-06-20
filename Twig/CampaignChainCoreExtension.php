@@ -188,7 +188,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
                 $tplVars['name'] = $object->getLocation()->getName();
             }
             if($teaserOptions['show_trigger'] == true){
-                $tplVars['trigger'] = $this->tplTriggerHookInline($object);
+                $tplVars['trigger'] = $this->tplTriggerHook($object);
             }
         } elseif(strpos($class, 'CoreBundle\Entity\CampaignModule') !== false){
             $tplVars['url'] = $this->container->get('router')->generate(
