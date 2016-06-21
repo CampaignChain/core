@@ -40,7 +40,7 @@
     /*
      Includes JQuery if not yet available.
      */
-    if(typeof jQuery == 'undefined'){
+    if(typeof jQuery === 'undefined'){
         loadScript("//ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.1.min.js");
     }
 
