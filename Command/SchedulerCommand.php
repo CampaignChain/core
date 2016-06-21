@@ -396,7 +396,10 @@ class SchedulerCommand extends ContainerAwareCommand
                         'No job service defined for module "'
                         . $action->getModule()->getIdentifier()
                         . '" in bundle "'
-                        . $action->getModule()->getBundle()->getName() . '".';
+                        . $action->getModule()->getBundle()->getName() . '" '
+                        . 'while processing Action of type "'.$action->getType().'" '
+                        . 'with ID "'.$action->getId().'"'
+                        .'.';
 
                     $this->io->text($message);
 
