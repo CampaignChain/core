@@ -10,31 +10,42 @@
 
 namespace CampaignChain\CoreBundle\Module;
 
-use Doctrine\ORM\EntityManager;
+use CampaignChain\CoreBundle\EntityService\SystemService;
 use Guzzle\Http\Client;
 
+/**
+ * Class Repository
+ * @package CampaignChain\CoreBundle\Module
+ */
 class Repository
 {
     const STATUS_NO_REPOSITORIES = 'No repositories defined';
     const STATUS_NO_MODULES = 'No modules available';
 
-    private $em;
 
+    /**
+     * @var bool
+     */
     private $devMode;
 
     private $repositories;
 
     private $distributionVersion;
 
-    public function __construct(EntityManager $em, $devMode = false)
+    /**
+     * @var SystemService
+     */
+    private $systemService;
+
+    public function __construct(SystemService $systemService, $devMode = false)
     {
-        $this->em = $em;
         $this->devMode = $devMode;
+        $this->systemService = $systemService;
     }
 
     public function loadRepositories()
     {
-        $system = $this->em->getRepository('CampaignChainCoreBundle:System')->find(1);
+        $system = $this->systemService->getActiveSystem();
 
         if($this->devMode){
             if(isset($system->getModules()['repositories-dev'])){
@@ -62,7 +73,7 @@ class Repository
     {
         $modules = array();
 
-        $system = $this->em->getRepository('CampaignChainCoreBundle:System')->find(1);
+        $system = $this->systemService->getActiveSystem();
 
         foreach($this->repositories as $repository){
             // Retrieve compatible modules.
