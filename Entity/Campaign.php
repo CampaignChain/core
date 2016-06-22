@@ -27,6 +27,11 @@ class Campaign extends Action implements AssignableInterface
     protected $id;
 
     /**
+     * @ORM\Column(type="text")
+     */
+    protected $description;
+
+    /**
      * @ORM\OneToMany(targetEntity="Activity", mappedBy="campaign", cascade={"persist"})
      */
     protected $activities;
@@ -81,6 +86,29 @@ class Campaign extends Action implements AssignableInterface
     public function __toString()
     {
         return (string) $this->getId();
+    }
+
+    /**
+     * Set description
+     *
+     * @param string $description
+     * @return Campaign
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
     }
 
     /**

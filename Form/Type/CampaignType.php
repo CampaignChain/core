@@ -26,6 +26,13 @@ class CampaignType extends HookListenerType
                     'placeholder' => 'Give your campaign a name',
                 )
             ))
+            ->add('description', 'textarea', array(
+                'label' => 'Description',
+                'attr' => array(
+                    'placeholder' => 'What is the campaign about?',
+                    'maxlength' => 1000,
+                ),
+            ))
             ->add('timezone', 'timezone', array(
                 'label' => 'Timezone of Audience',
                 'data' => $dateTimeUtil->getUserTimezone(),
