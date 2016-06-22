@@ -706,7 +706,7 @@ class SchedulerCommand extends ContainerAwareCommand
             $job->setPid($process->getPid());
             $this->em->flush();
         } catch (ProcessFailedException $e) {
-            $errMsg = 'Process '.$process->getPid().' failed for Job due to runtime exception. Process error output is: '.$e->getMessage();
+            $errMsg = 'Process failed: '.$e->getMessage();
 
             $this->logger->error($errMsg);
             $this->logger->info(self::LOGGER_MSG_END);
