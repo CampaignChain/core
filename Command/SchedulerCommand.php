@@ -22,6 +22,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\LockHandler;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Stopwatch\Stopwatch;
 use Symfony\Component\Process\Process;
 
@@ -696,22 +697,26 @@ class SchedulerCommand extends ContainerAwareCommand
 
         $this->logger->info('Executing Job with command: '.$command);
         $process->setTimeout($this->timeout);
-        $process->start();
 
-        while ($process->isRunning()) {
+        try {
+            $process->mustRun();
+
             $this->logger->info('Process ID: '.$process->getPid());
+
             $job->setPid($process->getPid());
             $this->em->flush();
-        }
+        } catch (ProcessFailedException $e) {
+            $errMsg = 'Process '.$process->getPid().' failed for Job due to runtime exception. Process error output is: '.$e->getMessage();
 
-        if (!$process->isSuccessful()) {
-            $errMsg = 'Could not create process for Job due to runtime exception. Process error output is: '.$process->getErrorOutput();
             $this->logger->error($errMsg);
             $this->logger->info(self::LOGGER_MSG_END);
+
+            $job->setPid($process->getPid());
             $job->setStatus(Job::STATUS_ERROR);
             $job->setMessage($errMsg);
             $this->em->flush();
-            throw new \RuntimeException($process->getErrorOutput());
+
+            throw new \RuntimeException($e->getMessage());
         }
     }
 }
