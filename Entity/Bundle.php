@@ -32,6 +32,7 @@ class Bundle extends Meta
     const TYPE_REPORT_BUDGET = 'campaignchain-report/budget';
     const TYPE_REPORT_SALES = 'campaignchain-report/sales';
     const TYPE_HOOK = 'campaignchain-hook';
+    const TYPE_SYMFONY = 'campaignchain-symfony';
 
     /**
      * @ORM\Column(type="integer")
@@ -283,6 +284,7 @@ class Bundle extends Meta
             self::TYPE_REPORT_BUDGET,
             self::TYPE_REPORT_SALES,
             self::TYPE_HOOK,
+            self::TYPE_SYMFONY,
         ))) {
             throw new \InvalidArgumentException("Invalid bundle type.");
         }
