@@ -39,6 +39,9 @@ use Symfony\Component\Process\Process;
  */
 class SchedulerCommand extends ContainerAwareCommand
 {
+    const LOGGER_MSG_START = '----- START -----';
+    const LOGGER_MSG_END = '----- END -----';
+
     // TODO: Get this from the system settings.
     /**
      * @var int Interval in minutes.
@@ -125,6 +128,11 @@ class SchedulerCommand extends ContainerAwareCommand
 
         $this->initializeVariables();
 
+        $this->scheduler = $this->startScheduler($this->interval);
+
+        $this->logger->info(self::LOGGER_MSG_START);
+        $this->logger->info('Scheduler with ID {id} started', ['id' => $this->scheduler->getId()]);
+
         $this->io->text('Running scheduler with:');
         $this->io->listing([
             'Scheduler ID: '.$this->scheduler->getId(),
@@ -151,7 +159,7 @@ class SchedulerCommand extends ContainerAwareCommand
         $this->em->flush();
 
         $this->io->success('Duration of scheduler: '.$stopwatchSchedulerEvent->getDuration().' milliseconds');
-        $this->logger->info('----- Execution finished -----');
+        $this->logger->info(self::LOGGER_MSG_END);
     }
 
     protected function testDatabase()
@@ -347,10 +355,6 @@ class SchedulerCommand extends ContainerAwareCommand
         }
 
         $this->em = $this->getContainer()->get('doctrine.orm.entity_manager');
-
-        $this->scheduler = $this->startScheduler($this->interval);
-
-        $this->logger->info('Scheduler with ID {id} started', ['id' => $this->scheduler->getId()]);
     }
 
     /**
@@ -692,7 +696,7 @@ class SchedulerCommand extends ContainerAwareCommand
 
         $this->logger->info('Executing Job with command: '.$command);
         $process->setTimeout($this->timeout);
-        $process->run();
+        $process->start();
 
         while ($process->isRunning()) {
             $this->logger->info('Process ID: '.$process->getPid());
@@ -703,6 +707,7 @@ class SchedulerCommand extends ContainerAwareCommand
         if (!$process->isSuccessful()) {
             $errMsg = 'Could not create process for Job due to runtime exception. Process error output is: '.$process->getErrorOutput();
             $this->logger->error($errMsg);
+            $this->logger->info(self::LOGGER_MSG_END);
             $job->setStatus(Job::STATUS_ERROR);
             $job->setMessage($errMsg);
             $this->em->flush();
