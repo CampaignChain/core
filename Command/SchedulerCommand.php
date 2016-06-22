@@ -701,9 +701,11 @@ class SchedulerCommand extends ContainerAwareCommand
         }
 
         if (!$process->isSuccessful()) {
-//            $this->logger->error($process->getErrorOutput());
-//            $job->setMessage($process->getErrorOutput());
-//            $this->em->flush();
+            $errMsg = 'Could not create process for Job due to runtime exception. Process error output is: '.$process->getErrorOutput();
+            $this->logger->error($errMsg);
+            $job->setStatus(Job::STATUS_ERROR);
+            $job->setMessage($errMsg);
+            $this->em->flush();
             throw new \RuntimeException($process->getErrorOutput());
         }
     }
