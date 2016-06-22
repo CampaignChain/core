@@ -225,7 +225,7 @@ class ParserUtil
     static function validateUrl($url)
     {
         if(!filter_var($url, FILTER_VALIDATE_URL)) {
-            throw new \Exception('Invalid URL');
+            return false;
         }
 
         return true;
