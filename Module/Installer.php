@@ -452,7 +452,7 @@ class Installer
          * If a system entry already exists (e.g. from sample
          * data), then update it.
          */
-        $system = $this->em->getRepository('CampaignChainCoreBundle:System')->findOneBy([], ['id' => 'ASC']);
+        $system = $this->container->get('campaignchain.core.system')->getActiveSystem();
 
         if(!$system){
             $system = new System();
@@ -703,7 +703,7 @@ class Installer
              * If a system entry already exists, then update it. Otherwise,
              * create a new one.
              */
-            $system = $this->em->getRepository('CampaignChainCoreBundle:System')->findOneBy([], ['id' => 'ASC']);
+            $system = $this->container->get('campaignchain.core.system')->getActiveSystem();
             if(!$system){
                 $system = new System();
                 $system->setNavigation(array());
