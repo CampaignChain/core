@@ -67,6 +67,11 @@ class Installer
     private $kernelConfig;
 
     /**
+     * @var Locator
+     */
+    private $locator;
+
+    /**
      * Specifies which routes must be defined by which type of module.
      *
      * @var array
@@ -86,9 +91,10 @@ class Installer
         )
     );
 
-    public function __construct(EntityManager $em, ContainerInterface $container)
+    public function __construct(EntityManager $em, Locator $locator, ContainerInterface $container)
     {
         $this->em = $em;
+        $this->locator = $locator;
         $this->container = $container;
         $this->command = $this->container->get('campaignchain.core.util.command');
         $this->logger = $this->container->get('logger');
@@ -107,9 +113,13 @@ class Installer
 
     public function install(){
         $this->logger->info('START: MODULES INSTALLER');
-        if(!$this->getNewBundles()){
+
+        $newBundles = $this->locator->getNewBundles();
+
+        if (empty($newBundles)) {
             $this->logger->info('No new modules found.');
             $this->logger->info('END: MODULES INSTALLER');
+
             return false;
         }
 
