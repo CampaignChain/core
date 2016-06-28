@@ -34,11 +34,29 @@ campaignchain_core_about:
                 expose: true
 
 campaignchain_core_plan:
-    pattern:  /plan/{id}
-    defaults: { _controller: CampaignChainCoreBundle:Plan:index, id: 0 }
+    pattern:  /plan/
+    defaults: { _controller: CampaignChainCoreBundle:Plan:index }
     options:
         campaignchain:
             description: Plan campaigns
+            rest:
+                expose: true
+
+campaignchain_core_plan_closed:
+    pattern:  /plan/closed/
+    defaults: { _controller: CampaignChainCoreBundle:Plan:index }
+    options:
+        campaignchain:
+            description: View closed campaigns
+            rest:
+                expose: true
+
+campaignchain_core_plan_templates:
+    pattern:  /plan/templates/
+    defaults: { _controller: CampaignChainCoreBundle:Plan:index }
+    options:
+        campaignchain:
+            description: Manage campaign templates
             rest:
                 expose: true
 

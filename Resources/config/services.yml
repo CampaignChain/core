@@ -361,7 +361,7 @@ services:
         class: CampaignChain\CoreBundle\Security\Authorization\Voter\DevVoter
         public: false
         arguments:
-            - '%campaignchain_dev%'
+            - '%campaignchain.dev_mode%'
         tags:
             - { name: security.voter }
 
@@ -376,13 +376,13 @@ services:
         class: CampaignChain\CoreBundle\Module\Package
         arguments:
             - '%kernel.root_dir%'
-            - '%campaignchain_dev%'
+            - '%campaignchain.dev_mode%'
 
     campaignchain.core.module.repository:
         class: CampaignChain\CoreBundle\Module\Repository
         arguments:
             - '@doctrine.orm.entity_manager'
-            - '%campaignchain_dev%'
+            - '%campaignchain.dev_mode%'
 
     campaignchain.core.module.composer:
         class: CampaignChain\CoreBundle\Module\Composer

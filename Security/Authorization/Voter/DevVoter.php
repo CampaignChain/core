@@ -58,7 +58,7 @@ class DevVoter implements VoterInterface
         }
 
         /*
-         * If campaignchain_dev is true, then we grant access.
+         * If campaignchain.dev_mode is true, then we grant access.
          */
         if($this->dev){
             return VoterInterface::ACCESS_GRANTED;

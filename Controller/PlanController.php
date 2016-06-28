@@ -16,6 +16,9 @@ use Doctrine\ORM\EntityRepository;
 
 class PlanController extends Controller
 {
+    const BUNDLE_NAME = 'campaignchain/campaign-scheduled';
+    const MODULE_IDENTIFIER = 'campaignchain-scheduled';
+
     public function indexAction(Request $request)
     {
         $repository = $this->getDoctrine()
@@ -30,35 +33,14 @@ class PlanController extends Controller
         return $this->render(
             'CampaignChainCoreBundle:Plan:index.html.twig',
             array(
-                'page_title' => 'Select Campaign Type',
-                'campaign_modules' => $campaignModules,
+                'page_title' => 'Plan Campaigns',
+                'gantt_tasks' => $this->get('campaignchain.core.model.dhtmlxgantt')->getOngoingUpcomingCampaigns(
+                    self::BUNDLE_NAME, self::MODULE_IDENTIFIER
+                ),
+                'gantt_toolbar_status' => 'default',
+                'path_embedded' => $this->generateUrl('campaignchain_campaign_scheduled_plan_timeline'),
+                'path_fullscreen' =>  $this->generateUrl('campaignchain_campaign_scheduled_plan_timeline_fullscreen'),
+                'gantt_toolbar_timescale_hours' => false,
             ));
     }
 }
-
-//        $form = $this->createFormBuilder()
-//            ->add('campaign_module', 'entity', array(
-//                'label' => 'Type',
-//                'class' => 'CampaignChainCoreBundle:CampaignModule',
-//                'query_builder' => function(EntityRepository $er) {
-//                        return $er->createQueryBuilder('cm')
-//                            ->orderBy('cm.displayName', 'ASC');
-//                    },
-//                'property' => 'displayName',
-//                'empty_value' => 'Select the type of campaign',
-//                'empty_data' => null,
-//            ))
-//            ->getForm();
-//
-//        $form->handleRequest($request);
-//
-//        if ($form->isValid()) {
-//            // Get the activity module's activity.
-//            $campaignService = $this->get('campaignchain.core.campaign');
-//            $campaignModule = $campaignService->getCampaignModule($form->get('campaign_module')->getData());
-//
-//            $routes = $campaignModule->getRoutes();
-//            return $this->redirect(
-//                $this->generateUrl($routes['plan'])
-//            );
-//        }

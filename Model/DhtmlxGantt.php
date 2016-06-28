@@ -10,8 +10,11 @@
 
 namespace CampaignChain\CoreBundle\Model;
 
+use CampaignChain\CoreBundle\Entity\Action;
+use CampaignChain\CoreBundle\Entity\Campaign;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Security\Acl\Exception\Exception;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class DhtmlxGantt
@@ -22,11 +25,146 @@ class DhtmlxGantt
     protected $container;
     protected $serializer;
 
+    private $maxTimelineDate;
+
     public function __construct(EntityManager $em, ContainerInterface $container, SerializerInterface $serializer)
     {
         $this->em = $em;
         $this->container = $container;
         $this->serializer = $serializer;
+
+        $now = new \DateTime('now');
+        $this->maxTimelineDate = $now->modify($this->container->getParameter('campaignchain.max_date_interval'));
+    }
+
+    public function getOngoingUpcomingCampaigns()
+    {
+        $qb = $this->em->createQueryBuilder();
+        $qb->select('c')
+            ->from('CampaignChain\CoreBundle\Entity\Campaign', 'c')
+            ->where('c.status != :status')
+            ->andWhere(
+                '(c.startDate > :fake_date AND c.interval IS NULL)'
+                .'OR '
+                .'(c.startDate = :fake_date AND c.interval IS NOT NULL)'
+            )
+            ->setParameter('status', Action::STATUS_CLOSED)
+            ->setParameter('fake_date', new \DateTime('2012-01-01 00:00:00'));
+
+        $qb->orderBy('c.startDate', 'DESC');
+
+        $query = $qb->getQuery();
+        $campaigns = $query->getResult();
+
+        /** @var Campaign $campaign */
+        foreach($campaigns as $campaign) {
+
+            $data['type'] = 'campaign';
+            $data['campaignchain_id'] = (string)$campaign->getId();
+            $data['text'] = $campaign->getName();
+            $data['route_edit_api'] = $campaign->getCampaignModule()->getRoutes()['edit_api'];
+            $campaignService = $this->container->get('campaignchain.core.campaign');
+            $data['tpl_teaser'] = $campaignService->tplTeaser(
+                $campaign->getCampaignModule(),
+                array(
+                    'only_icon' => true,
+                    'size' => 24,
+                )
+            );
+
+            // Define the trigger hook's identifier.
+            if (!$campaign->getInterval() && $campaign->getTriggerHook()) {
+                $data['id'] = (string) $campaign->getId().'_campaign';
+
+                $hookService = $this->container->get($campaign->getTriggerHook()->getServices()['entity']);
+                $hook = $hookService->getHook($campaign);
+                $data['start_date'] = $hook->getStartDate()->format(self::FORMAT_TIMELINE_DATE);
+                if ($hook->getEndDate()) {
+                    $data['end_date'] = $hook->getEndDate()->format(self::FORMAT_TIMELINE_DATE);
+                } else {
+                    $data['end_date'] = $data['start_date'];
+                }
+
+                $ganttCampaignData[] = $data;
+            } elseif($campaign->getInterval()) {
+                // Handle repeating campaigns.
+                if(!$campaign->getIntervalEndOccurrence()) {
+                    $occurrences = 1;
+                } else {
+                    $occurrences = $campaign->getIntervalEndOccurrence();
+                }
+
+                /** @var \DateTime $startDate */
+                $startDate = $campaign->getIntervalStartDate();
+                /** @var \DateInterval $duration */
+                $duration = $campaign->getStartDate()->diff($campaign->getEndDate());
+                $now = new \DateTime('now');
+                $maxTimelineDate = clone $now;
+                $maxTimelineDate->modify(
+                    $this->container->getParameter('campaignchain.max_date_interval')
+                );
+
+                /*
+                 * Let's iterate through all the instances of a repeating
+                 * campaign.
+                 */
+                for($i = 0; $i < $occurrences; $i++){
+                    /*
+                     * Take the interval's start/end date for the first instance,
+                     * otherwise calculate the start/end date by adding the
+                     * campaign's interval to the start/end date of the
+                     * previous instance.
+                     */
+                    $startDate->modify($campaign->getInterval());
+                    $endDate = clone $startDate;
+                    $endDate->add($duration);
+
+                    $hasEnded = (
+                        $campaign->getIntervalEndDate() != NULL &&
+                        $endDate > $campaign->getIntervalEndDate()
+                    );
+
+                    /*
+                     * If the instance is in the past, skip it,
+                     * because we only want ongoing or upcoming ones.
+                     */
+                    if(!$hasEnded && ($startDate > $now || $endDate > $now)) {
+                        $data['id'] = (string)$campaign->getId() . '_' . $i . '_campaign';
+                        $data['start_date'] = $startDate->format(self::FORMAT_TIMELINE_DATE);
+                        $data['end_date'] = $endDate->format(self::FORMAT_TIMELINE_DATE);
+
+                        $ganttCampaignData[] = $data;
+                    }
+
+                    if (
+                        $campaign->getIntervalEndOccurrence() == NULL &&
+                        (!$hasEnded && $startDate < $maxTimelineDate)
+                    ) {
+                        $occurrences++;
+                    }
+                }
+            } else {
+                throw new \Exception('Unknown campaign type.');
+            }
+        }
+
+        $ganttTasks = array();
+
+        if(isset($ganttCampaignData) && is_array($ganttCampaignData)){
+            $ganttTasks['data'] = $ganttCampaignData;
+        } else {
+            $this->container->get('session')->getFlashBag()->add(
+                'warning',
+                'No campaigns available yet. Please create one.'
+            );
+
+            header('Location: '.
+                $this->container->get('router')->generate('campaignchain_core_campaign_new')
+            );
+            exit;
+        }
+
+        return $this->serializer->serialize($ganttTasks, 'json');
     }
 
     /**

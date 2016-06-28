@@ -9,46 +9,47 @@ file that was distributed with this source code.
 
 {% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
 
+{% block javascripts %}
+    {{ parent() }}
+
+    {% javascripts '@blockui_js' combine=true %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#campaign_new').on('click', function () {
+
+                var modal = new CampaignChain.Modal();
+
+                modal.init({
+                    spinner_start: $.blockUI,
+                    spinner_stop: $.unblockUI
+                });
+
+                modal.showForm('campaignchain_campaign_scheduled_new');
+
+                $(document).on('campaignchain:form:submit:success', function (e, data) {
+                    location.reload();
+                });
+
+                // TODO: when there is proper validation in the controller implemented, show error messages here
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block bodytabs %}
+    {{ knp_menu_render('CampaignChainCoreBundle:Builder:planTab', { 'style': 'tabs' }) }}
+{% endblock %}
+
 {% block body %}
-    <style>
-        .equal, .equal > div[class*='col-'] {
-            display: -webkit-box;
-            display: -moz-box;
-            display: -ms-flexbox;
-            display: -webkit-flex;
-            display: flex;
-            flex:1 1 auto;
-        }
-
-        .panel {
-            display: flex;
-            flex-direction:column;
-            align-content:stretch;
-        }
-
-        .panel-body {
-            display: flex;
-            flex-grow:1;
-        }
-    </style>
-    {% for campaign_module in campaign_modules %}
-        {% if loop.first or loop.index is divisible by(4) %}
-            <div class="row equal">
-        {% endif %}
-        <div class="col-md-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">{{ campaign_module|campaignchain_tpl_teaser }}</div>
-                <div class="panel-body">
-                    {{ campaign_module.getDescription() }}
-                </div>
-                <div class="panel-footer pull-down">
-                    <a href="{{ path(campaign_module.getRoutes().plan) }}" class="btn btn-primary pull-right btn-sm" role="button" data-toggle="tooltip" data-placement="top" data-original-title="Start planning"><i class="fa fa-arrow-right"></i></a>
-                    <div class="clearfix"></div>
-                </div>
-            </div>
+    <div class="row">
+        <div class="col-sm-12 secondary-nav">
+            <button class="btn btn-primary" id="campaign_new">
+                <span class="fa fa-plus"></span> Create new scheduled campaign
+            </button>
         </div>
-        {% if loop.index is divisible by(3) %}
-            </div>
-        {% endif %}
-    {% endfor %}
+    </div>
+    {% include 'CampaignChainCoreBundle:Plan/Timeline:inline.html.twig' %}
 {% endblock %}

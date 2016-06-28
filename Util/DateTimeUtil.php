@@ -89,7 +89,7 @@ class DateTimeUtil
     public function getUserTimeFormat(){
         return $this->container->get('session')->get('campaignchain.timeFormat');
     }
-
+    
     public function getRemainingTime($futureDate, $format = 'string'){
         $now = new \DateTime('now', new \DateTimeZone($this->getUserTimezone()));
 
