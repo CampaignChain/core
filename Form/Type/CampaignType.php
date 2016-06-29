@@ -28,6 +28,7 @@ class CampaignType extends HookListenerType
             ))
             ->add('description', 'textarea', array(
                 'label' => 'Description',
+                'required' => false,
                 'attr' => array(
                     'placeholder' => 'What is the campaign about?',
                     'maxlength' => 1000,
