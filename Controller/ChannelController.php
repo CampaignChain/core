@@ -33,9 +33,7 @@ class ChannelController extends Controller
         $repository_channels = $query->getResult();
 
         if(!count($repository_channels)){
-            $system = $this->getDoctrine()
-                ->getRepository('CampaignChainCoreBundle:System')
-                ->find(1);
+            $system = $this->get('campaignchain.core.system')->getActiveSystem();
             $this->get('session')->getFlashBag()->add(
                 'warning',
                 'No channels defined yet. To learn how to create one, please <a href="#" onclick="popupwindow(\''.

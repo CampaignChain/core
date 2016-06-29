@@ -381,7 +381,7 @@ services:
     campaignchain.core.module.repository:
         class: CampaignChain\CoreBundle\Module\Repository
         arguments:
-            - '@doctrine.orm.entity_manager'
+            - '@campaignchain.core.system'
             - '%campaignchain_dev%'
 
     campaignchain.core.module.composer:
