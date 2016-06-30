@@ -55,14 +55,11 @@ class ScriptHandler extends SensioScriptHandler
             return;
         }
 
-        $paramsFile = SystemUtil::getRootDir().'app/config/parameters.yml';
-
-        $paramsContent = file_get_contents($paramsFile);
-        $paramsContent .= "\$imports:";
-        $paramsContent .= "\$\xA- { resource: parameters_platformsh.php }";
+        $orig = SystemUtil::getRootDir().'app/config/parameters_platformsh.yml.dist';
+        $target = SystemUtil::getRootDir().'app/config/parameters.yml';
 
         $fs = new Filesystem();
-        $fs->dumpFile($paramsFile, $paramsContent);
+        $fs->copy($orig, $target, true);
 
         $event->getIO()->write('Initialized Platform.sh configuration.');
     }
