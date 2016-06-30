@@ -47,4 +47,23 @@ class ScriptHandler extends SensioScriptHandler
         self::executeCommand($event, $consoleDir, 'campaignchain:module:update --config-only', $options['process-timeout']);
         self::executeCommand($event, $consoleDir, 'campaignchain:module:update --routing-only', $options['process-timeout']);
     }
+
+    public static function initPlatformsh(CommandEvent $event)
+    {
+        $isPlatformsh = getenv("PLATFORM_RELATIONSHIPS");
+        if (!$isPlatformsh) {
+            return;
+        }
+
+        $paramsFile = SystemUtil::getRootDir().'app/config/parameters.yml';
+
+        $paramsContent = file_get_contents($paramsFile);
+        $paramsContent .= "\$imports:";
+        $paramsContent .= "\$\xA- { resource: parameters_platformsh.php }";
+
+        $fs = new Filesystem();
+        $fs->dumpFile($paramsFile, $paramsContent);
+
+        $event->getIO()->write('Initialized Platform.sh configuration.');
+    }
 }
