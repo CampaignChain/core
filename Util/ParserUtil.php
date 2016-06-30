@@ -27,7 +27,11 @@ class ParserUtil
         // Grab the HTML
         $client = new Client($website);
         $request = $client->get($page);
-        $response = $request->send();
+        try {
+            $response = $request->send();
+        } catch (\Exception $e) {
+            return $website;
+        }
         // Crawl the DOM tree
         $crawler = new Crawler($response->getBody(true));
         return $crawler->filter('title')->first()->text();
