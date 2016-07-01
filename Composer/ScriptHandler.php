@@ -21,7 +21,7 @@ class ScriptHandler extends SensioScriptHandler
     {
         SystemUtil::enableInstallMode();
 
-        $event->getIO()->write('Enabled CampaignChain install mode.');
+        $event->getIO()->write('CampaignChain: Enabled install mode.');
     }
 
     /**
@@ -32,6 +32,8 @@ class ScriptHandler extends SensioScriptHandler
     public static function initApp(CommandEvent $event)
     {
         SystemUtil::initApp();
+
+        $event->getIO()->write('CampaignChain: Created configuration files.');
     }
 
     public static function registerModules(CommandEvent $event)
@@ -46,5 +48,7 @@ class ScriptHandler extends SensioScriptHandler
         self::executeCommand($event, $consoleDir, 'campaignchain:module:update --class-only', $options['process-timeout']);
         self::executeCommand($event, $consoleDir, 'campaignchain:module:update --config-only', $options['process-timeout']);
         self::executeCommand($event, $consoleDir, 'campaignchain:module:update --routing-only', $options['process-timeout']);
+
+        $event->getIO()->write('CampaignChain: Registered modules.');
     }
 }
