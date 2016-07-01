@@ -29,9 +29,9 @@ class ScriptHandler extends SensioScriptHandler
      *
      * @param CommandEvent $event
      */
-    public static function initApp(CommandEvent $event)
+    public static function initConfig(CommandEvent $event)
     {
-        SystemUtil::initApp();
+        SystemUtil::initConfig();
     }
 
     public static function registerModules(CommandEvent $event)
