@@ -266,7 +266,7 @@ sp_bower:
         enabled: false
     bundles:
         CampaignChainCoreBundle:
-            asset_dir: "%campaignchain.bower.asset_dir%/campaignchaincore"
+            asset_dir: "%campaignchain.bower.asset_dir%"
             cache: "%campaignchain.bower.cache_dir%/campaignchaincore"
 sonata_block:
     default_contexts:
