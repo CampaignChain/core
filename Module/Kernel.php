@@ -140,7 +140,7 @@ class Kernel
             );
         }
 
-        $yamlConfig = new YamlConfig('', $this->configFiles['security']);
+        $yamlConfig = new YamlConfig('', $this->configFiles['security_dist']);
         $appParameters = $yamlConfig->read();
 
         // Read content of all security.yml files and merge the arrays.
