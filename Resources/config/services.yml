@@ -378,7 +378,13 @@ services:
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@campaignchain.core.module.locator'
-            - '@service_container'
+            - '%kernel.root_dir%'
+            - '@campaignchain.core.system'
+            - '@campaignchain.core.module.kernel'
+            - '@campaignchain.core.module.package'
+            - '@campaignchain.core.util.command'
+            - '@campaignchain.core.module.repository'
+            - '@logger'
 
     campaignchain.core.module.package:
         class: CampaignChain\CoreBundle\Module\Package

@@ -10,7 +10,6 @@
 
 namespace CampaignChain\CoreBundle\Module;
 
-
 use CampaignChain\CoreBundle\Entity\Bundle;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\Finder\Finder;
@@ -93,6 +92,7 @@ class Locator
 
     /**
      * Return only new or need to be updated Bundles
+     * skipVersion == false
      *
      * @return Bundle[]
      */
@@ -105,6 +105,7 @@ class Locator
             // Check whether this bundle has already been installed
             switch ($this->isRegisteredBundle($bundle)) {
                 case Installer::STATUS_REGISTERED_NO:
+                    $bundle->setStatus(Installer::STATUS_REGISTERED_NO);
                     $newBundles[] = $bundle;
                     break;
 
@@ -121,10 +122,12 @@ class Locator
                     $registeredBundle->setHomepage($bundle->getHomepage());
                     $registeredBundle->setVersion($bundle->getVersion());
 
+                    $registeredBundle->setStatus(Installer::STATUS_REGISTERED_OLDER);
                     $newBundles[] = $registeredBundle;
                     break;
 
                 case Installer::STATUS_REGISTERED_SAME:
+                    $bundle->setStatus(Installer::STATUS_REGISTERED_SAME);
                     break;
             }
         }
@@ -195,7 +198,7 @@ class Locator
      * @param Bundle $newBundle
      * @return string
      */
-    private function isRegisteredBundle(Bundle $newBundle)
+    public function isRegisteredBundle(Bundle $newBundle)
     {
         /** @var Bundle $registeredBundle */
         $registeredBundle = $this->entityManager
