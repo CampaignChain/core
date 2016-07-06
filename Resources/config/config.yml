@@ -265,7 +265,9 @@ sp_bower:
     assetic:
         enabled: false
     bundles:
-        CampaignChainCoreBundle: null
+        CampaignChainCoreBundle:
+            cache: %kernel.cache_dir%/../bower
+
 sonata_block:
     default_contexts:
         - "sonata_page_bundle"
