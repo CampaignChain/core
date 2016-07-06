@@ -187,13 +187,17 @@ campaignchain_core_milestone_remove:
 
 # report routes
 campaignchain_core_report:
-    pattern:  /reports/{id}
-    defaults: { _controller: CampaignChainCoreBundle:Report:index, id: 0 }
+    pattern:  /reports
+    defaults: { _controller: CampaignChainCoreBundle:Report:index }
     options:
         campaignchain:
             description: View all reports
             rest:
                 expose: true
+
+campaignchain_core_report_show:
+    pattern:  /report/{id}
+    defaults: { _controller: CampaignChainCoreBundle:Report:show }
 
 campaignchain_core_report_list_cta_locations_per_campaign_api:
     pattern:  /api/private/report/cta/campaign/{id}/locations

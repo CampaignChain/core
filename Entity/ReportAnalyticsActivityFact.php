@@ -18,7 +18,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class ReportAnalyticsActivityFact
 {
-
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id
@@ -33,19 +32,17 @@ class ReportAnalyticsActivityFact
     protected $operation;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Activity", inversedBy="fact")
-     * @ORM\JoinColumn(referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Activity", inversedBy="facts")
      */
     protected $activity;
 
     /**
      * @ORM\ManyToOne(targetEntity="Campaign", inversedBy="activityFacts")
-     * @ORM\JoinColumn(referencedColumnName="id")
      */
     protected $campaign;
 
     /**
-     * @ORM\ManyToOne(targetEntity="ReportAnalyticsActivityMetric")
+     * @ORM\ManyToOne(targetEntity="ReportAnalyticsActivityMetric", inversedBy="facts")
      */
     protected $metric;
 
@@ -60,9 +57,9 @@ class ReportAnalyticsActivityFact
     protected $time;
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer 
+     * @return int
      */
     public function getId()
     {
@@ -70,10 +67,21 @@ class ReportAnalyticsActivityFact
     }
 
     /**
-     * Set value
+     * Get value.
      *
-     * @param integer $value
-     * @return Statistics
+     * @return int
+     */
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    /**
+     * Set value.
+     *
+     * @param int $value
+     *
+     * @return ReportAnalyticsActivityFact
      */
     public function setValue($value)
     {
@@ -83,44 +91,22 @@ class ReportAnalyticsActivityFact
     }
 
     /**
-     * Get value
-     *
-     * @return integer 
-     */
-    public function getValue()
-    {
-        return $this->value;
-    }
-
-    /**
-     * Get time in JavaScript timestamp format
+     * Get time in JavaScript timestamp format.
      *
      * @return \DateTime
      */
     public function getJavascriptTimestamp()
     {
         $date = new \DateTime($this->time->format('Y-m-d H:i:s'));
-        $javascriptTimestamp = $date->getTimestamp()*1000;
+        $javascriptTimestamp = $date->getTimestamp() * 1000;
+
         return $javascriptTimestamp;
     }
 
     /**
-     * Set operation
+     * Get operation.
      *
-     * @param \CampaignChain\CoreBundle\Entity\Operation $operation
-     * @return Statistics
-     */
-    public function setOperation(\CampaignChain\CoreBundle\Entity\Operation $operation = null)
-    {
-        $this->operation = $operation;
-
-        return $this;
-    }
-
-    /**
-     * Get operation
-     *
-     * @return \CampaignChain\CoreBundle\Entity\Operation
+     * @return Operation
      */
     public function getOperation()
     {
@@ -128,22 +114,23 @@ class ReportAnalyticsActivityFact
     }
 
     /**
-     * Set activity
+     * Set operation.
      *
-     * @param \CampaignChain\CoreBundle\Entity\Activity $activity
-     * @return Statistics
+     * @param Operation $operation
+     *
+     * @return ReportAnalyticsActivityFact
      */
-    public function setActivity(\CampaignChain\CoreBundle\Entity\Activity $activity = null)
+    public function setOperation(Operation $operation = null)
     {
-        $this->activity = $activity;
+        $this->operation = $operation;
 
         return $this;
     }
 
     /**
-     * Get activity
+     * Get activity.
      *
-     * @return \CampaignChain\CoreBundle\Entity\Activity
+     * @return Activity
      */
     public function getActivity()
     {
@@ -151,22 +138,23 @@ class ReportAnalyticsActivityFact
     }
 
     /**
-     * Set campaign
+     * Set activity.
      *
-     * @param \CampaignChain\CoreBundle\Entity\Campaign $campaign
-     * @return Statistics
+     * @param Activity $activity
+     *
+     * @return ReportAnalyticsActivityFact
      */
-    public function setCampaign(\CampaignChain\CoreBundle\Entity\Campaign $campaign = null)
+    public function setActivity(Activity $activity = null)
     {
-        $this->campaign = $campaign;
+        $this->activity = $activity;
 
         return $this;
     }
 
     /**
-     * Get campaign
+     * Get campaign.
      *
-     * @return \CampaignChain\CoreBundle\Entity\Campaign
+     * @return Campaign
      */
     public function getCampaign()
     {
@@ -174,10 +162,35 @@ class ReportAnalyticsActivityFact
     }
 
     /**
-     * Set time
+     * Set campaign.
+     *
+     * @param Campaign $campaign
+     *
+     * @return ReportAnalyticsActivityFact
+     */
+    public function setCampaign(Campaign $campaign = null)
+    {
+        $this->campaign = $campaign;
+
+        return $this;
+    }
+
+    /**
+     * Get time.
+     *
+     * @return \DateTime
+     */
+    public function getTime()
+    {
+        return $this->time;
+    }
+
+    /**
+     * Set time.
      *
      * @param \DateTime $time
-     * @return ReportData
+     *
+     * @return ReportAnalyticsActivityFact
      */
     public function setTime($time)
     {
@@ -187,35 +200,26 @@ class ReportAnalyticsActivityFact
     }
 
     /**
-     * Get time
+     * Get metric.
      *
-     * @return \DateTime 
-     */
-    public function getTime()
-    {
-        return $this->time;
-    }
-
-    /**
-     * Set metric
-     *
-     * @param \CampaignChain\CoreBundle\Entity\ReportAnalyticsActivityMetric $metric
-     * @return ReportAnalyticsActivityFact
-     */
-    public function setMetric(\CampaignChain\CoreBundle\Entity\ReportAnalyticsActivityMetric $metric = null)
-    {
-        $this->metric = $metric;
-
-        return $this;
-    }
-
-    /**
-     * Get metric
-     *
-     * @return \CampaignChain\CoreBundle\Entity\ReportAnalyticsActivityMetric
+     * @return ReportAnalyticsActivityMetric
      */
     public function getMetric()
     {
         return $this->metric;
+    }
+
+    /**
+     * Set metric.
+     *
+     * @param ReportAnalyticsActivityMetric $metric
+     *
+     * @return ReportAnalyticsActivityFact
+     */
+    public function setMetric(ReportAnalyticsActivityMetric $metric = null)
+    {
+        $this->metric = $metric;
+
+        return $this;
     }
 }

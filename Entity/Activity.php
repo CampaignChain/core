@@ -20,7 +20,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Activity extends Action implements AssignableInterface
 {
-
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id
@@ -65,7 +64,7 @@ class Activity extends Action implements AssignableInterface
     /**
      * @ORM\OneToMany(targetEntity="ReportAnalyticsActivityFact", mappedBy="activity")
      */
-    protected $fact;
+    protected $facts;
 
     /**
      * @ORM\ManyToOne(targetEntity="ActivityModule", inversedBy="activities")
@@ -89,21 +88,21 @@ class Activity extends Action implements AssignableInterface
      */
     protected $images;
 
-
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
         $this->operations = new ArrayCollection();
-        $this->fact = new ArrayCollection();
         $this->images = new ArrayCollection();
+        $this->facts = new ArrayCollection();
+        $this->children = new ArrayCollection();
     }
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -111,45 +110,9 @@ class Activity extends Action implements AssignableInterface
     }
 
     /**
-     * Set equalsOperation
+     * Get campaign.
      *
-     * @param boolean $equalsOperation
-     * @return Activity
-     */
-    public function setEqualsOperation($equalsOperation)
-    {
-        $this->equalsOperation = $equalsOperation;
-
-        return $this;
-    }
-
-    /**
-     * Get equalsOperation
-     *
-     * @return boolean
-     */
-    public function getEqualsOperation()
-    {
-        return $this->equalsOperation;
-    }
-
-    /**
-     * Set campaign
-     *
-     * @param \CampaignChain\CoreBundle\Entity\Campaign $campaign
-     * @return Activity
-     */
-    public function setCampaign(\CampaignChain\CoreBundle\Entity\Campaign $campaign = null)
-    {
-        $this->campaign = $campaign;
-
-        return $this;
-    }
-
-    /**
-     * Get campaign
-     *
-     * @return \CampaignChain\CoreBundle\Entity\Campaign
+     * @return Campaign
      */
     public function getCampaign()
     {
@@ -157,22 +120,23 @@ class Activity extends Action implements AssignableInterface
     }
 
     /**
-     * Set channel
+     * Set campaign.
      *
-     * @param \CampaignChain\CoreBundle\Entity\Channel $channel
+     * @param Campaign $campaign
+     *
      * @return Activity
      */
-    public function setChannel(\CampaignChain\CoreBundle\Entity\Channel $channel)
+    public function setCampaign(Campaign $campaign = null)
     {
-        $this->channel = $channel;
+        $this->campaign = $campaign;
 
         return $this;
     }
 
     /**
-     * Get channel
+     * Get channel.
      *
-     * @return \CampaignChain\CoreBundle\Entity\Channel
+     * @return Channel
      */
     public function getChannel()
     {
@@ -180,22 +144,23 @@ class Activity extends Action implements AssignableInterface
     }
 
     /**
-     * Set location
+     * Set channel.
      *
-     * @param \CampaignChain\CoreBundle\Entity\Location $location
+     * @param Channel $channel
+     *
      * @return Activity
      */
-    public function setLocation(\CampaignChain\CoreBundle\Entity\Location $location)
+    public function setChannel(Channel $channel)
     {
-        $this->location = $location;
+        $this->channel = $channel;
 
         return $this;
     }
 
     /**
-     * Get location
+     * Get location.
      *
-     * @return \CampaignChain\CoreBundle\Entity\Location
+     * @return Location
      */
     public function getLocation()
     {
@@ -203,12 +168,27 @@ class Activity extends Action implements AssignableInterface
     }
 
     /**
-     * Add operations
+     * Set location.
      *
-     * @param \CampaignChain\CoreBundle\Entity\Operation $operations
+     * @param Location $location
+     *
      * @return Activity
      */
-    public function addOperation(\CampaignChain\CoreBundle\Entity\Operation $operations)
+    public function setLocation(Location $location)
+    {
+        $this->location = $location;
+
+        return $this;
+    }
+
+    /**
+     * Add operations.
+     *
+     * @param Operation $operations
+     *
+     * @return Activity
+     */
+    public function addOperation(Operation $operations)
     {
         $this->operations[] = $operations;
 
@@ -216,75 +196,53 @@ class Activity extends Action implements AssignableInterface
     }
 
     /**
-     * Remove operations
+     * Remove operations.
      *
-     * @param \CampaignChain\CoreBundle\Entity\Operation $operations
+     * @param Operation $operation
      */
-    public function removeOperation(\CampaignChain\CoreBundle\Entity\Operation $operations)
+    public function removeOperation(Operation $operation)
     {
-        $this->operations->removeElement($operations);
+        $this->operations->removeElement($operation);
     }
 
     /**
-     * Get operations
+     * Add fact.
      *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getOperations()
-    {
-        return $this->operations;
-    }
-
-    /**
-     * Add fact
+     * @param ReportAnalyticsActivityFact $fact
      *
-     * @param \CampaignChain\CoreBundle\Entity\ReportAnalyticsActivityFact $fact
      * @return Activity
      */
-    public function addFact(\CampaignChain\CoreBundle\Entity\ReportAnalyticsActivityFact $fact)
+    public function addFact(ReportAnalyticsActivityFact $fact)
     {
-        $this->fact[] = $fact;
+        $this->facts->add($fact);
 
         return $this;
     }
 
     /**
-     * Remove fact
+     * Remove fact.
      *
-     * @param \CampaignChain\CoreBundle\Entity\ReportAnalyticsActivityFact $fact
+     * @param ReportAnalyticsActivityFact $fact
      */
-    public function removeFact(\CampaignChain\CoreBundle\Entity\ReportAnalyticsActivityFact $fact)
+    public function removeFact(ReportAnalyticsActivityFact $fact)
     {
-        $this->fact->removeElement($fact);
+        $this->facts->removeElement($fact);
     }
 
     /**
-     * Get fact
+     * Get fact.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getFact()
+    public function getFacts()
     {
-        return $this->fact;
+        return $this->facts;
     }
 
     /**
-     * Set activityModule
+     * Get activityModule.
      *
-     * @param \CampaignChain\CoreBundle\Entity\ActivityModule $activityModule
-     * @return Activity
-     */
-    public function setActivityModule(\CampaignChain\CoreBundle\Entity\ActivityModule $activityModule = null)
-    {
-        $this->activityModule = $activityModule;
-
-        return $this;
-    }
-
-    /**
-     * Get activityModule
-     *
-     * @return \CampaignChain\CoreBundle\Entity\ActivityModule
+     * @return ActivityModule
      */
     public function getActivityModule()
     {
@@ -292,9 +250,23 @@ class Activity extends Action implements AssignableInterface
     }
 
     /**
-     * Convenience method that masquerades getActivityModule()
+     * Set activityModule.
      *
-     * @return \CampaignChain\CoreBundle\Entity\ActivityModule
+     * @param ActivityModule $activityModule
+     *
+     * @return Activity
+     */
+    public function setActivityModule(ActivityModule $activityModule = null)
+    {
+        $this->activityModule = $activityModule;
+
+        return $this;
+    }
+
+    /**
+     * Convenience method that masquerades getActivityModule().
+     *
+     * @return ActivityModule
      */
     public function getModule()
     {
@@ -305,6 +277,8 @@ class Activity extends Action implements AssignableInterface
      * If the Activity equals the Operation, then set the status of the Activity to the same value.
      *
      * @param string $status
+     * @param bool   $calledFromOperation
+     *
      * @return Activity
      */
     public function setStatus($status, $calledFromOperation = false)
@@ -312,11 +286,45 @@ class Activity extends Action implements AssignableInterface
         parent::setStatus($status);
 
         // Change the Operation as well only if this method has not been called by an Operation instance to avoid recursion.
-        if(!$calledFromOperation && $this->getEqualsOperation() && count($this->getOperations())) {
+        if (!$calledFromOperation && $this->getEqualsOperation() && count($this->getOperations())) {
             $this->getOperations()[0]->setStatus($this->status, true);
         }
 
         return $this;
+    }
+
+    /**
+     * Get equalsOperation.
+     *
+     * @return bool
+     */
+    public function getEqualsOperation()
+    {
+        return $this->equalsOperation;
+    }
+
+    /**
+     * Set equalsOperation.
+     *
+     * @param bool $equalsOperation
+     *
+     * @return Activity
+     */
+    public function setEqualsOperation($equalsOperation)
+    {
+        $this->equalsOperation = $equalsOperation;
+
+        return $this;
+    }
+
+    /**
+     * Get operations.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getOperations()
+    {
+        return $this->operations;
     }
 
     public function __clone()
@@ -343,12 +351,13 @@ class Activity extends Action implements AssignableInterface
     }
 
     /**
-     * Add children
+     * Add children.
      *
-     * @param \CampaignChain\CoreBundle\Entity\Activity $children
+     * @param Activity $children
+     *
      * @return Activity
      */
-    public function addChild(\CampaignChain\CoreBundle\Entity\Activity $children)
+    public function addChild(Activity $children)
     {
         $this->children[] = $children;
 
@@ -356,17 +365,17 @@ class Activity extends Action implements AssignableInterface
     }
 
     /**
-     * Remove children
+     * Remove children.
      *
-     * @param \CampaignChain\CoreBundle\Entity\Activity $children
+     * @param Activity $children
      */
-    public function removeChild(\CampaignChain\CoreBundle\Entity\Activity $children)
+    public function removeChild(Activity $children)
     {
         $this->children->removeElement($children);
     }
 
     /**
-     * Get children
+     * Get children.
      *
      * @return \Doctrine\Common\Collections\Collection
      */
@@ -376,26 +385,27 @@ class Activity extends Action implements AssignableInterface
     }
 
     /**
-     * Set parent
+     * Get parent.
      *
-     * @param \CampaignChain\CoreBundle\Entity\Activity $parent
      * @return Activity
-     */
-    public function setParent(\CampaignChain\CoreBundle\Entity\Activity $parent = null)
-    {
-        $this->parent = $parent;
-
-        return $this;
-    }
-
-    /**
-     * Get parent
-     *
-     * @return \CampaignChain\CoreBundle\Entity\Activity
      */
     public function getParent()
     {
         return $this->parent;
+    }
+
+    /**
+     * Set parent.
+     *
+     * @param Activity $parent
+     *
+     * @return Activity
+     */
+    public function setParent(Activity $parent = null)
+    {
+        $this->parent = $parent;
+
+        return $this;
     }
 
     /**

@@ -15,9 +15,9 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="campaignchain_report_analytics_activity_metric")
+ * @ORM\Table(name="campaignchain_report_analytics_location_metric")
  */
-class ReportAnalyticsActivityMetric
+class ReportAnalyticsLocationMetric
 {
     /**
      * @ORM\Column(type="integer")
@@ -27,7 +27,7 @@ class ReportAnalyticsActivityMetric
     protected $id;
 
     /**
-     * @ORM\OneToMany(targetEntity="ReportAnalyticsActivityFact", mappedBy="metric")
+     * @ORM\OneToMany(targetEntity="ReportAnalyticsLocationFact", mappedBy="metric")
      */
     protected $facts;
 
@@ -40,6 +40,16 @@ class ReportAnalyticsActivityMetric
      * @ORM\Column(type="string")
      */
     protected $bundle;
+
+    public function getBundle()
+    {
+        return $this->bundle;
+    }
+
+    public function setBundle($bundle)
+    {
+        $this->bundle = $bundle;
+    }
 
     /**
      * Constructor.
@@ -74,7 +84,7 @@ class ReportAnalyticsActivityMetric
      *
      * @param string $name
      *
-     * @return ReportAnalyticsActivityMetric
+     * @return ReportAnalyticsLocationMetric
      */
     public function setName($name)
     {
@@ -86,11 +96,11 @@ class ReportAnalyticsActivityMetric
     /**
      * Add fact.
      *
-     * @param ReportAnalyticsActivityMetric $fact
+     * @param ReportAnalyticsLocationFact $fact
      *
-     * @return ReportAnalyticsActivityMetric
+     * @return ReportAnalyticsLocationMetric
      */
-    public function addFact(ReportAnalyticsActivityMetric $fact)
+    public function addFact(ReportAnalyticsLocationFact $fact)
     {
         $this->facts->add($fact);
 
@@ -100,44 +110,20 @@ class ReportAnalyticsActivityMetric
     /**
      * Remove fact.
      *
-     * @param ReportAnalyticsActivityFact $fact
+     * @param ReportAnalyticsLocationFact $fact
      */
-    public function removeFact(ReportAnalyticsActivityFact $fact)
+    public function removeFact(ReportAnalyticsLocationFact $fact)
     {
         $this->facts->removeElement($fact);
     }
 
     /**
-     * Get Facts.
+     * Get facts.
      *
      * @return ArrayCollection
      */
     public function getFacts()
     {
         return $this->facts;
-    }
-
-    /**
-     * Get bundle.
-     *
-     * @return string
-     */
-    public function getBundle()
-    {
-        return $this->bundle;
-    }
-
-    /**
-     * Set bundle.
-     *
-     * @param string $bundle
-     *
-     * @return ReportAnalyticsActivityMetric
-     */
-    public function setBundle($bundle)
-    {
-        $this->bundle = $bundle;
-
-        return $this;
     }
 }

@@ -20,19 +20,20 @@ class Action extends Meta
     /**
      * Types of actions.
      */
-    const TYPE_CAMPAIGN     = 'campaign';
-    const TYPE_MILESTONE    = 'milestone';
-    const TYPE_ACTIVITY     = 'activity';
-    const TYPE_OPERATION    = 'operation';
+    const TYPE_CAMPAIGN = 'campaign';
+    const TYPE_MILESTONE = 'milestone';
+    const TYPE_ACTIVITY = 'activity';
+    const TYPE_OPERATION = 'operation';
+    const TYPE_LOCATION = 'location';
 
     /**
      * Status constants.
      */
-    const STATUS_OPEN                   = 'open';
-    const STATUS_PAUSED                 = 'paused';
-    const STATUS_CLOSED                 = 'closed';
-    const STATUS_INTERACTION_REQUIRED   = 'interaction required';
-    const STATUS_BACKGROUND_PROCESS     = 'background process';
+    const STATUS_OPEN = 'open';
+    const STATUS_PAUSED = 'paused';
+    const STATUS_CLOSED = 'closed';
+    const STATUS_INTERACTION_REQUIRED = 'interaction required';
+    const STATUS_BACKGROUND_PROCESS = 'background process';
 
     /**
      * @ORM\Column(type="string", length=100, nullable=true)
@@ -100,353 +101,21 @@ class Action extends Meta
      */
     protected $triggerHook;
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return Action
-     */
-    public function setName($name)
+    public static function getStatuses()
     {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * Set startDate
-     *
-     * @param \DateTime $startDate
-     * @return Action
-     */
-    public function setStartDate($startDate)
-    {
-        $this->startDate = $startDate;
-
-        return $this;
-    }
-
-    /**
-     * Get startDate
-     *
-     * @return \DateTime
-     */
-    public function getStartDate()
-    {
-        return $this->startDate;
-    }
-
-    /**
-     * Set intervalStartDate
-     *
-     * @param \DateTime $intervalStartDate
-     * @return Action
-     */
-    public function setIntervalStartDate($intervalStartDate)
-    {
-        $this->intervalStartDate = $intervalStartDate;
-
-        return $this;
-    }
-
-    /**
-     * Get intervalStartDate
-     *
-     * @return \DateTime
-     */
-    public function getIntervalStartDate()
-    {
-        return $this->intervalStartDate;
-    }
-
-    /**
-     * Set interval
-     *
-     * @param string $interval
-     * @return Action
-     */
-    public function setInterval($interval)
-    {
-        $this->interval = $interval;
-
-        return $this;
-    }
-
-    /**
-     * Get interval
-     *
-     * @return string
-     */
-    public function getInterval()
-    {
-        return $this->interval;
-    }
-
-    public function getIntervalHumanReadable()
-    {
-        if (strpos($this->interval,'days') !== false) {
-            $intervalParts = explode(' ',$this->interval);
-            $days = str_replace('+', '', $intervalParts[0]);
-            if($days == '1'){
-                return 'Every day';
-            } else {
-                return "Every ".$days." days";
-            }
-        } elseif (strpos($this->interval,'weeks') !== false) {
-            $intervalParts = explode(' ',$this->interval);
-            $weeks = str_replace('+', '', $intervalParts[2]);
-            $dayOfWeek = $intervalParts[1];
-            if($weeks == '1'){
-                return 'Every '.$dayOfWeek;
-            } else {
-                return $dayOfWeek.' every '.$weeks.' weeks';
-            }
-        } elseif (strpos($this->interval,'month') !== false) {
-            $intervalParts = explode(' ',$this->interval);
-
-            if (strpos($this->interval,'hours') !== false) {
-                // Day of month
-                $days = str_replace('+', '', $intervalParts[5])/24;
-                $months = str_replace('+', '', $intervalParts[7]);
-                if($days == '1'){
-                    if($months == '1'){
-                        return 'Day 1 of every month';
-                    } else {
-                        return 'Day 1 of a month every '.$months.' months';
-                    }
-                } else {
-                    if($months == '1'){
-                        return 'Day '.$days.' of every month';
-                    } else {
-                        return 'Day '.$days.' of a month every '.$months.' months';
-                    }
-                }
-
-                $dataMonthly['repeat_by'] = 'day_of_month';
-
-
-            } else {
-                // Day of week
-                $months = str_replace('+', '', $intervalParts[5]);
-                $occurrence = $intervalParts[0];
-                $dayOfWeek = $intervalParts[1];
-                if($months == '1'){
-                    return 'Every '.$occurrence.' '.$dayOfWeek.' of a month';
-                } else {
-                    return 'Every '.$occurrence.' '.$dayOfWeek.' every '.$months.' months';
-                }
-            }
-        } elseif (strpos($this->interval,'years') !== false) {
-            $intervalParts = explode(' ',$this->interval);
-            $years = str_replace('+', '', $intervalParts[0]);
-            if($years == '1'){
-                return 'Every year';
-            } else {
-                return "Every ".$years." years";
-            }
-        }
-    }
-
-    /**
-     * Set intervalNextRun
-     *
-     * @param \DateTime $intervalNextRun
-     * @return Action
-     */
-    public function setIntervalNextRun($intervalNextRun)
-    {
-        $this->intervalNextRun = $intervalNextRun;
-
-        return $this;
-    }
-
-    /**
-     * Get intervalNextRun
-     *
-     * @return \DateTime
-     */
-    public function getIntervalNextRun()
-    {
-        return $this->intervalNextRun;
-    }
-
-    /**
-     * Set intervalEndDate
-     *
-     * @param \DateTime $intervalEndDate
-     * @return Action
-     */
-    public function setIntervalEndDate($intervalEndDate)
-    {
-        $this->intervalEndDate = $intervalEndDate;
-
-        return $this;
-    }
-
-    /**
-     * Get intervalEndDate
-     *
-     * @return \DateTime
-     */
-    public function getIntervalEndDate()
-    {
-        return $this->intervalEndDate;
-    }
-
-    /**
-     * @param mixed $intervalEndOccurrence
-     */
-    public function setIntervalEndOccurrence($intervalEndOccurrence)
-    {
-        $this->intervalEndOccurrence = $intervalEndOccurrence;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getIntervalEndOccurrence()
-    {
-        return $this->intervalEndOccurrence;
-    }
-
-    /**
-     * Set endDate
-     *
-     * @param \DateTime $endDate
-     * @return Action
-     */
-    public function setEndDate($endDate)
-    {
-        $this->endDate = $endDate;
-
-        return $this;
-    }
-
-    /**
-     * Get endDate
-     *
-     * @return \DateTime
-     */
-    public function getEndDate()
-    {
-        return $this->endDate;
-    }
-
-    /**
-     * Set status
-     *
-     * @param string $status
-     * @return Action
-     */
-    public function setStatus($status)
-    {
-        if (!in_array($status, array(
-            self::STATUS_OPEN,
-            self::STATUS_PAUSED,
-            self::STATUS_CLOSED,
-            self::STATUS_INTERACTION_REQUIRED,
-            self::STATUS_BACKGROUND_PROCESS,
-        ))) {
-            throw new \InvalidArgumentException("Invalid status in ".get_class($this).".");
-        }
-
-        // If end date is in the past, status is automatically "closed" if status is not "paused".
-        if(
-        ($status != self::STATUS_BACKGROUND_PROCESS && $status != self::STATUS_CLOSED && $status != self::STATUS_PAUSED && $this->endDate && $this->endDate < new \DateTime('now'))
-        ||
-        ($status != self::STATUS_BACKGROUND_PROCESS && $status != self::STATUS_CLOSED && $status != self::STATUS_PAUSED && !$this->endDate && $this->startDate && $this->startDate < new \DateTime('now'))){
-            // TODO: Warning that status is different from what has been provided.
-            $status = self::STATUS_CLOSED;
-        }
-
-        $this->status = $status;
-
-        return $this;
-    }
-
-    /**
-     * Get status
-     *
-     * @return string
-     */
-    public function getStatus()
-    {
-        return $this->status;
-    }
-
-    /**
-     * Set triggerHook
-     *
-     * @param \CampaignChain\CoreBundle\Entity\Hook $triggerHook
-     * @return Action
-     */
-    public function setTriggerHook(\CampaignChain\CoreBundle\Entity\Hook $triggerHook = null)
-    {
-        $this->triggerHook = $triggerHook;
-
-        return $this;
-    }
-
-    /**
-     * Get triggerHook
-     *
-     * @return \CampaignChain\CoreBundle\Entity\Hook
-     */
-    public function getTriggerHook()
-    {
-        return $this->triggerHook;
-    }
-
-    static function getStatuses()
-    {
-        return array(
+        return [
             self::STATUS_BACKGROUND_PROCESS,
             self::STATUS_CLOSED,
             self::STATUS_INTERACTION_REQUIRED,
             self::STATUS_OPEN,
             self::STATUS_PAUSED,
             self::STATUS_PAUSED,
-        );
+        ];
     }
 
-    /**
-     * Identifies the type of action.
-     *
-     * @param $action
-     * @return string
-     */
-    public function getType(){
-        $class = get_class($this);
-
-        if(strpos($class, 'CoreBundle\Entity\Operation') !== false){
-            return self::TYPE_OPERATION;
-        }
-        if(strpos($class, 'CoreBundle\Entity\Activity') !== false){
-            return self::TYPE_ACTIVITY;
-        }
-        if(strpos($class, 'CoreBundle\Entity\Milestone') !== false){
-            return self::TYPE_MILESTONE;
-        }
-        if(strpos($class, 'CoreBundle\Entity\Campaign') !== false){
-            return self::TYPE_CAMPAIGN;
-        }
-
-        return false;
-    }
-
-    static function getRepositoryName($actionType)
+    public static function getRepositoryName($actionType)
     {
-        switch($actionType){
+        switch ($actionType) {
             case self::TYPE_OPERATION:
                 $repositoryName = 'CampaignChainCoreBundle:Operation';
                 break;
@@ -465,5 +134,353 @@ class Action extends Meta
         }
 
         return $repositoryName;
+    }
+
+    /**
+     * Get name.
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Set name.
+     *
+     * @param string $name
+     *
+     * @return Action
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Get startDate.
+     *
+     * @return \DateTime
+     */
+    public function getStartDate()
+    {
+        return $this->startDate;
+    }
+
+    /**
+     * Set startDate.
+     *
+     * @param \DateTime $startDate
+     *
+     * @return Action
+     */
+    public function setStartDate($startDate)
+    {
+        $this->startDate = $startDate;
+
+        return $this;
+    }
+
+    /**
+     * Get intervalStartDate.
+     *
+     * @return \DateTime
+     */
+    public function getIntervalStartDate()
+    {
+        return $this->intervalStartDate;
+    }
+
+    /**
+     * Set intervalStartDate.
+     *
+     * @param \DateTime $intervalStartDate
+     *
+     * @return Action
+     */
+    public function setIntervalStartDate($intervalStartDate)
+    {
+        $this->intervalStartDate = $intervalStartDate;
+
+        return $this;
+    }
+
+    /**
+     * Get interval.
+     *
+     * @return string
+     */
+    public function getInterval()
+    {
+        return $this->interval;
+    }
+
+    /**
+     * Set interval.
+     *
+     * @param string $interval
+     *
+     * @return Action
+     */
+    public function setInterval($interval)
+    {
+        $this->interval = $interval;
+
+        return $this;
+    }
+
+    public function getIntervalHumanReadable()
+    {
+        if (strpos($this->interval, 'days') !== false) {
+            $intervalParts = explode(' ', $this->interval);
+            $days = str_replace('+', '', $intervalParts[0]);
+            if ($days == '1') {
+                return 'Every day';
+            } else {
+                return 'Every '.$days.' days';
+            }
+        } elseif (strpos($this->interval, 'weeks') !== false) {
+            $intervalParts = explode(' ', $this->interval);
+            $weeks = str_replace('+', '', $intervalParts[2]);
+            $dayOfWeek = $intervalParts[1];
+            if ($weeks == '1') {
+                return 'Every '.$dayOfWeek;
+            } else {
+                return $dayOfWeek.' every '.$weeks.' weeks';
+            }
+        } elseif (strpos($this->interval, 'month') !== false) {
+            $intervalParts = explode(' ', $this->interval);
+
+            if (strpos($this->interval, 'hours') !== false) {
+                // Day of month
+                $days = str_replace('+', '', $intervalParts[5]) / 24;
+                $months = str_replace('+', '', $intervalParts[7]);
+                if ($days == '1') {
+                    if ($months == '1') {
+                        return 'Day 1 of every month';
+                    } else {
+                        return 'Day 1 of a month every '.$months.' months';
+                    }
+                } else {
+                    if ($months == '1') {
+                        return 'Day '.$days.' of every month';
+                    } else {
+                        return 'Day '.$days.' of a month every '.$months.' months';
+                    }
+                }
+
+                $dataMonthly['repeat_by'] = 'day_of_month';
+            } else {
+                // Day of week
+                $months = str_replace('+', '', $intervalParts[5]);
+                $occurrence = $intervalParts[0];
+                $dayOfWeek = $intervalParts[1];
+                if ($months == '1') {
+                    return 'Every '.$occurrence.' '.$dayOfWeek.' of a month';
+                } else {
+                    return 'Every '.$occurrence.' '.$dayOfWeek.' every '.$months.' months';
+                }
+            }
+        } elseif (strpos($this->interval, 'years') !== false) {
+            $intervalParts = explode(' ', $this->interval);
+            $years = str_replace('+', '', $intervalParts[0]);
+            if ($years == '1') {
+                return 'Every year';
+            } else {
+                return 'Every '.$years.' years';
+            }
+        }
+    }
+
+    /**
+     * Get intervalNextRun.
+     *
+     * @return \DateTime
+     */
+    public function getIntervalNextRun()
+    {
+        return $this->intervalNextRun;
+    }
+
+    /**
+     * Set intervalNextRun.
+     *
+     * @param \DateTime $intervalNextRun
+     *
+     * @return Action
+     */
+    public function setIntervalNextRun($intervalNextRun)
+    {
+        $this->intervalNextRun = $intervalNextRun;
+
+        return $this;
+    }
+
+    /**
+     * Get intervalEndDate.
+     *
+     * @return \DateTime
+     */
+    public function getIntervalEndDate()
+    {
+        return $this->intervalEndDate;
+    }
+
+    /**
+     * Set intervalEndDate.
+     *
+     * @param \DateTime $intervalEndDate
+     *
+     * @return Action
+     */
+    public function setIntervalEndDate($intervalEndDate)
+    {
+        $this->intervalEndDate = $intervalEndDate;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIntervalEndOccurrence()
+    {
+        return $this->intervalEndOccurrence;
+    }
+
+    /**
+     * @param mixed $intervalEndOccurrence
+     */
+    public function setIntervalEndOccurrence($intervalEndOccurrence)
+    {
+        $this->intervalEndOccurrence = $intervalEndOccurrence;
+    }
+
+    /**
+     * Get endDate.
+     *
+     * @return \DateTime
+     */
+    public function getEndDate()
+    {
+        return $this->endDate;
+    }
+
+    /**
+     * Set endDate.
+     *
+     * @param \DateTime $endDate
+     *
+     * @return Action
+     */
+    public function setEndDate($endDate)
+    {
+        $this->endDate = $endDate;
+
+        return $this;
+    }
+
+    /**
+     * Get status.
+     *
+     * @return string
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * Set status.
+     *
+     * @param string $status
+     *
+     * @return Action
+     */
+    public function setStatus($status)
+    {
+        if (!in_array(
+            $status,
+            [
+                self::STATUS_OPEN,
+                self::STATUS_PAUSED,
+                self::STATUS_CLOSED,
+                self::STATUS_INTERACTION_REQUIRED,
+                self::STATUS_BACKGROUND_PROCESS,
+            ]
+        )
+        ) {
+            throw new \InvalidArgumentException('Invalid status in '.get_class($this).'.');
+        }
+
+        // If end date is in the past, status is automatically "closed" if status is not "paused".
+        if (
+            ($status != self::STATUS_BACKGROUND_PROCESS && $status != self::STATUS_CLOSED && $status != self::STATUS_PAUSED && $this->endDate && $this->endDate < new \DateTime(
+                    'now'
+                ))
+            ||
+            ($status != self::STATUS_BACKGROUND_PROCESS && $status != self::STATUS_CLOSED && $status != self::STATUS_PAUSED && !$this->endDate && $this->startDate && $this->startDate < new \DateTime(
+                    'now'
+                ))
+        ) {
+            // TODO: Warning that status is different from what has been provided.
+            $status = self::STATUS_CLOSED;
+        }
+
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * Get triggerHook.
+     *
+     * @return Hook
+     */
+    public function getTriggerHook()
+    {
+        return $this->triggerHook;
+    }
+
+    /**
+     * Set triggerHook.
+     *
+     * @param Hook $triggerHook
+     *
+     * @return Action
+     */
+    public function setTriggerHook(Hook $triggerHook = null)
+    {
+        $this->triggerHook = $triggerHook;
+
+        return $this;
+    }
+
+    /**
+     * Identifies the type of action.
+     * @return string
+     *
+     */
+    public function getType()
+    {
+        $class = get_class($this);
+
+        if (strpos($class, 'CoreBundle\Entity\Operation') !== false) {
+            return self::TYPE_OPERATION;
+        }
+        if (strpos($class, 'CoreBundle\Entity\Activity') !== false) {
+            return self::TYPE_ACTIVITY;
+        }
+        if (strpos($class, 'CoreBundle\Entity\Milestone') !== false) {
+            return self::TYPE_MILESTONE;
+        }
+        if (strpos($class, 'CoreBundle\Entity\Campaign') !== false) {
+            return self::TYPE_CAMPAIGN;
+        }
+
+        return false;
     }
 }

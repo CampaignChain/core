@@ -24,31 +24,33 @@ class FactService
 
     public function addFacts($factType, $bundleName, Operation $operation, array $facts)
     {
-        switch($factType){
+        switch ($factType) {
             case 'activity':
                 $factClass = 'CampaignChain\\CoreBundle\\Entity\\ReportAnalyticsActivityFact';
                 $metricRepo = 'ReportAnalyticsActivityMetric';
                 break;
-            case 'channel':
-                $factClass = 'CampaignChain\\CoreBundle\\Entity\\ReportAnalyticsChannelFact';
-                $metricRepo = 'ReportAnalyticsChannelMetric';
+            case 'location':
+                $factClass = 'CampaignChain\\CoreBundle\\Entity\\ReportAnalyticsLocationFact';
+                $metricRepo = 'ReportAnalyticsLocationMetric';
                 break;
             default:
                 throw new \Exception(
                     "Unknown fact type '".$factType."'."
-                    ."Pick 'activity' or 'channel' instead."
+                    ."Pick 'activity' or 'location' instead."
                 );
                 break;
         }
 
-        foreach($facts as $metricName => $value){
+        foreach ($facts as $metricName => $value) {
             // Get metrics object.
             $metric = $this->em
                 ->getRepository('CampaignChainCoreBundle:'.$metricRepo)
-                ->findOneBy(array(
-                    'name' => $metricName,
-                    'bundle'=> $bundleName
-                ));
+                ->findOneBy(
+                    [
+                        'name' => $metricName,
+                        'bundle' => $bundleName,
+                    ]
+                );
             if (!$metric) {
                 throw new \Exception('No metric found with name "'.$metricName.'" for bundle "'.$bundleName.'"');
             }
@@ -58,6 +60,34 @@ class FactService
             $fact->setOperation($operation);
             $fact->setActivity($operation->getActivity());
             $fact->setCampaign($operation->getActivity()->getCampaign());
+            $fact->setTime(new \DateTime('now', new \DateTimeZone('UTC')));
+            $fact->setValue($value);
+            $this->em->persist($fact);
+        }
+    }
+
+    public function addLocationFacts($bundleName, $location, array $facts)
+    {
+        $factClass = 'CampaignChain\\CoreBundle\\Entity\\ReportAnalyticsLocationFact';
+        $metricRepo = 'ReportAnalyticsLocationMetric';
+
+        foreach ($facts as $metricName => $value) {
+            // Get metrics object.
+            $metric = $this->em
+                ->getRepository('CampaignChainCoreBundle:'.$metricRepo)
+                ->findOneBy(
+                    [
+                        'name' => $metricName,
+                        'bundle' => $bundleName,
+                    ]
+                );
+            if (!$metric) {
+                throw new \Exception('No metric found with name "'.$metricName.'" for bundle "'.$bundleName.'"');
+            }
+            // Create new facts entry
+            $fact = new $factClass();
+            $fact->setMetric($metric);
+            $fact->setLocation($location);
             $fact->setTime(new \DateTime('now', new \DateTimeZone('UTC')));
             $fact->setValue($value);
             $this->em->persist($fact);
