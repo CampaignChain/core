@@ -408,6 +408,7 @@ services:
     campaignchain.core.module.kernel:
         class: CampaignChain\CoreBundle\Module\Kernel
         arguments:
+            - '%kernel.root_dir%'
             - '@campaignchain.core.util.command'
             - '@logger'
 

@@ -41,12 +41,19 @@ class Kernel
     private $configFiles;
 
     /**
+     * @var string
+     */
+    private $rootDir;
+
+    /**
      * Kernel constructor.
+     * @param string      $kernelRootDir
      * @param CommandUtil $command
      * @param Logger      $logger
      */
-    public function __construct(CommandUtil $command, Logger $logger)
+    public function __construct($kernelRootDir, CommandUtil $command, Logger $logger)
     {
+        $this->rootDir = $kernelRootDir.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR;
         $this->command = $command;
         $this->logger = $logger;
         $this->configFiles = SystemUtil::getConfigFiles();
@@ -85,8 +92,6 @@ class Kernel
      */
     public function parseBundlesForKernelConfig(array $bundles)
     {
-        dump($this->configFiles);
-        exit;
         foreach ($bundles as $bundle) {
             $extra = $bundle->getExtra();
 

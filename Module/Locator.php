@@ -121,6 +121,7 @@ class Locator
                     $registeredBundle->setAuthors($bundle->getAuthors());
                     $registeredBundle->setHomepage($bundle->getHomepage());
                     $registeredBundle->setVersion($bundle->getVersion());
+                    $registeredBundle->setExtra($bundle->getExtra());
 
                     $registeredBundle->setStatus(Installer::STATUS_REGISTERED_OLDER);
                     $newBundles[] = $registeredBundle;
