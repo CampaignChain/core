@@ -47,7 +47,7 @@
     /*
      Include JQuery Cookies library.
      */
-    loadScript("//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js");
+    loadScript("//cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.2/js.cookie.min.js");
 
     /**
      *  Define the CampaignChain class.
@@ -229,7 +229,7 @@
          */
         switch (affiliation){
             case 'current':
-                jQuery.cookie(this.idName, this.idValue);
+                Cookies.set(this.idName, this.idValue);
 
                 if(this.mode == 'dev' || this.mode == 'dev-stay'){
                     console.log('Stored in cookie: Tracking ID with affiliation "' + affiliation + '", name "' + this.idName + '" and value "' + this.idValue + '".' );
@@ -273,7 +273,7 @@
      * @returns {string}
      */
     CampaignChain.prototype.getCookie = function() {
-        return jQuery.cookie(this.idName);
+        return Cookies.get(this.idName);
     }
 
     /**
@@ -288,7 +288,7 @@
             // Is the visitor from a page outside of this pages domain?
             if(document.referrer.indexOf(location.protocol + "//" + location.host) !== 0){
                 // Delete existing cookie.
-                jQuery.removeCookie(this.idName);
+                Cookies.remove(this.idName);
                 if(this.mode == 'dev' || this.mode == 'dev-stay'){
                     console.log('New visit.');
                     console.log('Cookie deleted.');
@@ -305,36 +305,44 @@
         return false;
     }
 
+    function init() {
+        if (window.jQuery && window.Cookies){
+            var campaignchain = new CampaignChain();
+
+            // If Tracking ID is not in cookie, then this is a first-time visit and
+            // we want to report that.
+            if(campaignchain.newVisit() == true){
+                /*
+                 We pass this page as the target. The tracking API will then
+                 detect that the source equals the target and will understand
+                 that the CTA is the actual source.
+                 */
+                campaignchain.sendUrlReport(window.location.href);
+            }
+
+            // Disable clicks if dev-stay mode.
+            if(campaignchain.mode == 'dev-stay'){
+                jQuery('a').on('click', function(event) {
+                    event.preventDefault();
+                });
+            }
+
+            // Has a link been clicked?
+            jQuery('a').click(function(){
+                campaignchain.sendUrlReport(jQuery(this).attr("href"));
+                return false;
+            })
+            // TODO: Has a form been submitted?
+        } else {
+            setTimeout(function () {
+                init()
+            }, 50);
+        }
+    }
+
     /*
      *  Initiate the tracking functionality.
      */
-    jQuery(document).ready(function() {
-        var campaignchain = new CampaignChain();
-
-        // If Tracking ID is not in cookie, then this is a first-time visit and
-        // we want to report that.
-        if(campaignchain.newVisit() == true){
-            /*
-             We pass this page as the target. The tracking API will then
-             detect that the source equals the target and will understand
-             that the CTA is the actual source.
-             */
-            campaignchain.sendUrlReport(window.location.href);
-        }
-
-        // Disable clicks if dev-stay mode.
-        if(campaignchain.mode == 'dev-stay'){
-            jQuery('a').on('click', function(event) {
-                event.preventDefault();
-            });
-        }
-
-        // Has a link been clicked?
-        jQuery('a').click(function(){
-            campaignchain.sendUrlReport(jQuery(this).attr("href"));
-            return false;
-        })
-        // TODO: Has a form been submitted?
-    });
+    init();
 
 })();

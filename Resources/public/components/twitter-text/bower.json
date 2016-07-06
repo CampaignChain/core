@@ -1,0 +1,10 @@
+{
+  "name": "twitter-text-js",
+  "main": "js/twitter-text.js",
+  "ignore": [
+    "conformance/*",
+    "java/*",
+    "objc/*",
+    "rb/*"
+  ]
+}

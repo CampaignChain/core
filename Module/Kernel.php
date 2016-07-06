@@ -12,11 +12,11 @@ namespace CampaignChain\CoreBundle\Module;
 
 use CampaignChain\CoreBundle\Entity\Bundle;
 use CampaignChain\CoreBundle\Util\CommandUtil;
-use CampaignChain\CoreBundle\Util\ParserUtil;
+use CampaignChain\CoreBundle\Util\SystemUtil;
 use CampaignChain\CoreBundle\Util\VariableUtil;
+use CampaignChain\CoreBundle\Wizard\Install\Driver\YamlConfig;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\Filesystem\Filesystem;
-use CampaignChain\CoreBundle\Wizard\Install\Driver\YamlConfig;
 
 class Kernel
 {
@@ -36,27 +36,20 @@ class Kernel
     private $kernelConfig;
 
     /**
-     * @var
+     * @var array
      */
-    private $appDir;
-
-    /**
-     * @var string
-     */
-    private $rootDir;
+    private $configFiles;
 
     /**
      * Kernel constructor.
-     * @param string      $kernelRootDir
      * @param CommandUtil $command
      * @param Logger      $logger
      */
-    public function __construct($kernelRootDir, CommandUtil $command, Logger $logger)
+    public function __construct(CommandUtil $command, Logger $logger)
     {
-        $this->appDir = $kernelRootDir;
-        $this->rootDir = $kernelRootDir.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR;
         $this->command = $command;
         $this->logger = $logger;
+        $this->configFiles = SystemUtil::getConfigFiles();
         $this->kernelConfig = new KernelConfig();
     }
 
@@ -92,6 +85,8 @@ class Kernel
      */
     public function parseBundlesForKernelConfig(array $bundles)
     {
+        dump($this->configFiles);
+        exit;
         foreach ($bundles as $bundle) {
             $extra = $bundle->getExtra();
 
@@ -156,10 +151,8 @@ class Kernel
      */
     protected function registerClasses()
     {
-        $campaignchainBundlesFile = $this->appDir.DIRECTORY_SEPARATOR.'campaignchain_bundles.php';
-        $symfonyBundlesFile = $this->appDir.DIRECTORY_SEPARATOR.'AppKernel.php';
-        $campaignchainBundlesContent = file_get_contents($campaignchainBundlesFile);
-        $symfonyBundlesContent = file_get_contents($symfonyBundlesFile);
+        $campaignchainBundlesContent = file_get_contents($this->configFiles['bundles']);
+        $symfonyBundlesContent = file_get_contents($this->configFiles['kernel_symfony']);
 
         $hasNewBundles = false;
 
@@ -189,7 +182,8 @@ class Kernel
         }
 
         $fs = new Filesystem();
-        $fs->dumpFile($campaignchainBundlesFile, $campaignchainBundlesContent);
+        $fs->dumpFile($this->configFiles['bundles'], $campaignchainBundlesContent);
+
     }
 
     /**
@@ -197,11 +191,7 @@ class Kernel
      */
     protected function registerConfigs()
     {
-        $configFile = DIRECTORY_SEPARATOR . 'config' .
-            DIRECTORY_SEPARATOR . 'campaignchain' .
-            DIRECTORY_SEPARATOR . 'config_bundles.yml';
-
-        $yamlConfig = new YamlConfig($this->appDir, $configFile);
+        $yamlConfig = new YamlConfig('', $this->configFiles['config']);
         $parameters = $yamlConfig->read();
 
         $hasNewConfigs = false;
@@ -226,7 +216,7 @@ class Kernel
             return;
         }
 
-        $yamlConfig = new YamlConfig($this->appDir, $configFile);
+        $yamlConfig = new YamlConfig('', $this->configFiles['config']);
         $yamlConfig->write($parameters);
         $yamlConfig->clean();
     }
@@ -236,24 +226,20 @@ class Kernel
      */
     protected function registerSecurity()
     {
-        $appSecurityFile = DIRECTORY_SEPARATOR.'config'.
-            DIRECTORY_SEPARATOR.'campaignchain'.
-            DIRECTORY_SEPARATOR.'security.yml';
-
         /*
          * Re-create the security.yml file to avoid duplicates in merged array
          * that occur upon multiple parsing.
          */
         $fs = new Filesystem();
-        if (!$fs->exists($appSecurityFile)) {
+        if(!$fs->exists($this->configFiles['security'])){
             $fs->copy(
-                $this->appDir.$appSecurityFile.'.dist',
-                $this->appDir.$appSecurityFile,
+                $this->configFiles['security_dist'],
+                $this->configFiles['security'],
                 true
             );
         }
 
-        $yamlConfig = new YamlConfig($this->appDir, $appSecurityFile);
+        $yamlConfig = new YamlConfig('', $this->configFiles['security_dist']);
         $appParameters = $yamlConfig->read();
 
         // Read content of all security.yml files and merge the arrays.
@@ -268,7 +254,7 @@ class Kernel
             $appParameters = VariableUtil::arrayMerge($bundleParameters, $appParameters);
         }
 
-        $yamlConfig = new YamlConfig($this->appDir, $appSecurityFile);
+        $yamlConfig = new YamlConfig('', $this->configFiles['security']);
         $yamlConfig->write($appParameters, 5);
         $yamlConfig->clean();
     }
@@ -278,10 +264,7 @@ class Kernel
      */
     protected function registerRoutings()
     {
-        $campaignchainRoutingsFile = DIRECTORY_SEPARATOR.'config'.
-            DIRECTORY_SEPARATOR.'routing.yml';
-
-        $yamlConfig = new YamlConfig($this->appDir, $campaignchainRoutingsFile);
+        $yamlConfig = new YamlConfig('', $this->configFiles['routing']);
         $parameters = $yamlConfig->read();
 
         $hasNewRoutings = false;
@@ -311,7 +294,7 @@ class Kernel
             return;
         }
 
-        $yamlConfig = new YamlConfig($this->appDir, $campaignchainRoutingsFile);
+        $yamlConfig = new YamlConfig('', $this->configFiles['routing']);
         $yamlConfig->write($parameters);
         $yamlConfig->clean();
     }
