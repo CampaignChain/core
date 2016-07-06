@@ -10,7 +10,7 @@ assetic:
                 - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/exception.js"
                 - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/modal.js"
                 - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/sidemenu.js"
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/ScrollToFixed/jquery-scrolltofixed.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/ScrollToFixed/jquery-scrolltofixed.js"
         campaignchain_login_css:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/css/campaignchain/login.css"
@@ -21,20 +21,20 @@ assetic:
                 - "?yui_js"
         moment_js:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/moment/moment.js"
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/moment-timezone/builds/moment-timezone-with-data.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/moment/moment.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/moment-timezone/builds/moment-timezone-with-data.js"
         jquery_file_upload_js:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/jquery-file-upload/js/vendor/jquery.ui.widget.js"
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/jquery-file-upload/js/jquery.fileupload.js"
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/jquery-file-upload/js/jquery.fileupload-process.js"
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/jquery-file-upload/js/jquery.fileupload-validate.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/jquery-file-upload/js/vendor/jquery.ui.widget.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/jquery-file-upload/js/jquery.fileupload.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/jquery-file-upload/js/jquery.fileupload-process.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/jquery-file-upload/js/jquery.fileupload-validate.js"
         jquery_cropper_js:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/cropper/dist/cropper.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/cropper/dist/cropper.js"
         jquery_cropper_css:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/cropper/dist/cropper.css"
+                - "@CampaignChainCoreBundle/Resources/public/components/cropper/dist/cropper.css"
         bootstrap_js:
             inputs:
                 - "%kernel.root_dir%/../vendor/twbs/bootstrap/js/transition.js"
@@ -95,43 +95,43 @@ assetic:
             output: "css/select2-spinner.gif"
         datatables_js:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/datatables/media/js/jquery.dataTables.min.js"
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/datatables/media/js/dataTables.bootstrap.min.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/datatables/media/js/jquery.dataTables.min.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/datatables/media/js/dataTables.bootstrap.min.js"
         datatables_css:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/datatables/media/css/dataTables.bootstrap.min.css"
+                - "@CampaignChainCoreBundle/Resources/public/components/datatables/media/css/dataTables.bootstrap.min.css"
         datatables_sort_asc:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/datatables/media/images/sort_asc.png"
+                - "@CampaignChainCoreBundle/Resources/public/components/datatables/media/images/sort_asc.png"
             output: "images/sort_asc.png"
         datatables_sort_asc_disabled:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/datatables/media/images/sort_asc_disabled.png"
+                - "@CampaignChainCoreBundle/Resources/public/components/datatables/media/images/sort_asc_disabled.png"
             output: "images/sort_asc_disabled.png"
         datatables_sort_both:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/datatables/media/images/sort_both.png"
+                - "@CampaignChainCoreBundle/Resources/public/components/datatables/media/images/sort_both.png"
             output: "images/sort_both.png"
         datatables_sort_desc:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/datatables/media/images/sort_desc.png"
+                - "@CampaignChainCoreBundle/Resources/public/components/datatables/media/images/sort_desc.png"
             output: "images/sort_desc.png"
         datatables_sort_desc_disabled:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/datatables/media/images/sort_desc_disabled.png"
+                - "@CampaignChainCoreBundle/Resources/public/components/datatables/media/images/sort_desc_disabled.png"
             output: "images/sort_desc_disabled.png"
         daterangepicker_js:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/bootstrap-daterangepicker/daterangepicker.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/bootstrap-daterangepicker/daterangepicker.js"
         daterangepicker_css:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/bootstrap-daterangepicker/daterangepicker-bs3.css"
+                - "@CampaignChainCoreBundle/Resources/public/components/bootstrap-daterangepicker/daterangepicker-bs3.css"
         dhtmlxgantt_js:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/gantt/codebase/dhtmlxgantt.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/gantt/codebase/dhtmlxgantt.js"
         dhtmlxgantt_tooltip_js:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/gantt/codebase/ext/dhtmlxgantt_tooltip.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/gantt/codebase/ext/dhtmlxgantt_tooltip.js"
         campaignchain_dhtmlxgantt_pre_init_global_js:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/pre_init_global.js"
@@ -159,78 +159,78 @@ assetic:
                 - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/post_init_relative_dates.js"
         dhtmlxgantt_css:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/gantt/codebase/dhtmlxgantt.css"
+                - "@CampaignChainCoreBundle/Resources/public/components/gantt/codebase/dhtmlxgantt.css"
                 - "@CampaignChainCoreBundle/Resources/public/css/campaignchain/dhtmlxgantt.css"
         d3_js:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/d3/d3.min.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/d3/d3.min.js"
         d3_sankey_js:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/d3-plugins/sankey/sankey.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/d3-plugins/sankey/sankey.js"
         flot_js:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/flot/jquery.flot.js"
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/flot/jquery.flot.time.js"
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/flot/jquery.flot.symbol.js"
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/flot/jquery.flot.crosshair.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/flot/jquery.flot.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/flot/jquery.flot.time.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/flot/jquery.flot.symbol.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/flot/jquery.flot.crosshair.js"
         flot_comments_js:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/jquery.flot.comments/jquery.flot.comments.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/jquery.flot.comments/jquery.flot.comments.js"
         flot_tooltip_js:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/flot.tooltip/js/jquery.flot.tooltip.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/flot.tooltip/js/jquery.flot.tooltip.js"
         campaignchain_flot_css:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/css/campaignchain/flot.css"
         fullcalendar_js:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/fullcalendar/dist/fullcalendar.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/fullcalendar/dist/fullcalendar.js"
                 - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/fullcalendar.js"
         fullcalendar_css:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/fullcalendar/dist/fullcalendar.css"
+                - "@CampaignChainCoreBundle/Resources/public/components/fullcalendar/dist/fullcalendar.css"
                 - "@CampaignChainCoreBundle/Resources/public/css/campaignchain/fullcalendar.css"
         countdown_js:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/jquery.countdown/dist/jquery.countdown.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/jquery.countdown/dist/jquery.countdown.js"
         ladda_js:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/ladda/dist/spin.min.js"
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/ladda/dist/ladda.min.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/ladda/dist/spin.min.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/ladda/dist/ladda.min.js"
         ladda_css:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/ladda/dist/ladda-themeless.min.css"
+                - "@CampaignChainCoreBundle/Resources/public/components/ladda/dist/ladda-themeless.min.css"
         blockui_js:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/blockui/jquery.blockUI.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/blockui/jquery.blockUI.js"
                 - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/blockui.js"
         hideshowpassword_js:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/hideshowpassword/hideShowPassword.min.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/hideshowpassword/hideShowPassword.min.js"
         hideshowpassword_css:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/hideshowpassword/css/example.minimal.css"
+                - "@CampaignChainCoreBundle/Resources/public/components/hideshowpassword/css/example.minimal.css"
                 - "@CampaignChainCoreBundle/Resources/public/css/campaignchain/hideshowpassword.css"
         intro_js:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/intro.js/minified/intro.min.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/intro.js/minified/intro.min.js"
         intro_css:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/intro.js/minified/introjs.min.css"
+                - "@CampaignChainCoreBundle/Resources/public/components/intro.js/minified/introjs.min.css"
         require_js:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/requirejs/require.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/requirejs/require.js"
         twitter_text_js:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/twitter-text/js/twitter-text.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/twitter-text/js/twitter-text.js"
         highlight_textarea_js:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/jquery-ui/jquery-ui.min.js"
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/jquery-highlighttextarea/jquery.highlighttextarea.min.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/jquery-ui/jquery-ui.min.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/jquery-highlighttextarea/jquery.highlighttextarea.min.js"
         highlight_textarea_css:
             inputs:
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/jquery-ui/themes/base/jquery-ui.min.css"
-                - "%campaignchain.bower.asset_dir%/campaignchaincore/jquery-highlighttextarea/jquery.highlighttextarea.min.css"
+                - "@CampaignChainCoreBundle/Resources/public/components/jquery-ui/themes/base/jquery-ui.min.css"
+                - "@CampaignChainCoreBundle/Resources/public/components/jquery-highlighttextarea/jquery.highlighttextarea.min.css"
     bundles:
         - "CampaignChainCoreBundle"
         - "FOSUserBundle"
@@ -265,9 +265,7 @@ sp_bower:
     assetic:
         enabled: false
     bundles:
-        CampaignChainCoreBundle:
-            asset_dir: "%campaignchain.bower.asset_dir%/campaignchaincore"
-            cache: "%campaignchain.bower.cache_dir%/campaignchaincore"
+        CampaignChainCoreBundle: null
 sonata_block:
     default_contexts:
         - "sonata_page_bundle"
