@@ -11,7 +11,6 @@
 namespace CampaignChain\CoreBundle\Composer;
 
 use CampaignChain\CoreBundle\Util\SystemUtil;
-use Symfony\Component\Filesystem\Filesystem;
 use Composer\Script\CommandEvent;
 use Sensio\Bundle\DistributionBundle\Composer\ScriptHandler as SensioScriptHandler;
 
@@ -45,10 +44,7 @@ class ScriptHandler extends SensioScriptHandler
             return;
         }
 
-        self::executeCommand($event, $consoleDir, 'campaignchain:module:update --class-only', $options['process-timeout']);
-        self::executeCommand($event, $consoleDir, 'campaignchain:module:update --config-only', $options['process-timeout']);
-        self::executeCommand($event, $consoleDir, 'campaignchain:module:update --routing-only', $options['process-timeout']);
-
+        self::executeCommand($event, $consoleDir, 'campaignchain:module:update --class-only --config-only --routing-only', $options['process-timeout']);
         $event->getIO()->write('CampaignChain: Registered modules.');
     }
 }
