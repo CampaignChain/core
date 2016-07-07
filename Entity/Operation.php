@@ -10,6 +10,7 @@
 
 namespace CampaignChain\CoreBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -58,12 +59,23 @@ class Operation extends Action
     /**
      * @ORM\OneToMany(targetEntity="ReportAnalyticsActivityFact", mappedBy="operation")
      */
-    protected $fact;
+    protected $facts;
 
     /**
-     * Get id
+     * Constructor.
+     */
+    public function __construct()
+    {
+        $this->locations = new ArrayCollection();
+        $this->outboundCTAs = new ArrayCollection();
+        $this->scheduledReports = new ArrayCollection();
+        $this->facts = new ArrayCollection();
+    }
+
+    /**
+     * Get id.
      *
-     * @return integer 
+     * @return int
      */
     public function getId()
     {
@@ -71,22 +83,9 @@ class Operation extends Action
     }
 
     /**
-     * Set operationModule
+     * Get operationModule.
      *
-     * @param \CampaignChain\CoreBundle\Entity\OperationModule $operationModule
-     * @return Operation
-     */
-    public function setOperationModule(\CampaignChain\CoreBundle\Entity\OperationModule $operationModule = null)
-    {
-        $this->operationModule = $operationModule;
-
-        return $this;
-    }
-
-    /**
-     * Get operationModule
-     *
-     * @return \CampaignChain\CoreBundle\Entity\OperationModule
+     * @return OperationModule
      */
     public function getOperationModule()
     {
@@ -94,9 +93,23 @@ class Operation extends Action
     }
 
     /**
-     * Convenience method that masquerades getOperationModule()
+     * Set operationModule.
      *
-     * @return \CampaignChain\CoreBundle\Entity\OperationModule
+     * @param OperationModule $operationModule
+     *
+     * @return Operation
+     */
+    public function setOperationModule(OperationModule $operationModule = null)
+    {
+        $this->operationModule = $operationModule;
+
+        return $this;
+    }
+
+    /**
+     * Convenience method that masquerades getOperationModule().
+     *
+     * @return OperationModule
      */
     public function getModule()
     {
@@ -104,41 +117,19 @@ class Operation extends Action
     }
 
     /**
-     * Set activity
-     *
-     * @param \CampaignChain\CoreBundle\Entity\Activity $activity
-     * @return Operation
-     */
-    public function setActivity(\CampaignChain\CoreBundle\Entity\Activity $activity = null)
-    {
-        $this->activity = $activity;
-
-        return $this;
-    }
-
-    /**
-     * Get activity
-     *
-     * @return \CampaignChain\CoreBundle\Entity\Activity
-     */
-    public function getActivity()
-    {
-        return $this->activity;
-    }
-
-    /**
      * If the Activity equals the Operation, then set the status of the Activity to the same value.
      *
      * @param string $status
-     * @param bool $calledFromActivity
-     * @return $this|BaseTask
+     * @param bool   $calledFromActivity
+     *
+     * @return Operation
      */
     public function setStatus($status, $calledFromActivity = false)
     {
         parent::setStatus($status);
 
         // Change the Activity as well only if this method has not been called by an Activity instance to avoid recursion.
-        if(!$calledFromActivity && $this->getActivity() && $this->getActivity()->getEqualsOperation()){
+        if (!$calledFromActivity && $this->getActivity() && $this->getActivity()->getEqualsOperation()) {
             $this->getActivity()->setStatus($this->status, true);
         }
 
@@ -146,32 +137,57 @@ class Operation extends Action
     }
 
     /**
-     * Add locations
+     * Get activity.
      *
-     * @param \CampaignChain\CoreBundle\Entity\Location $locations
+     * @return Activity
+     */
+    public function getActivity()
+    {
+        return $this->activity;
+    }
+
+    /**
+     * Set activity.
+     *
+     * @param Activity $activity
+     *
      * @return Operation
      */
-    public function addLocation(\CampaignChain\CoreBundle\Entity\Location $locations)
+    public function setActivity(Activity $activity = null)
     {
-        $this->locations[] = $locations;
+        $this->activity = $activity;
 
         return $this;
     }
 
     /**
-     * Remove locations
+     * Add location.
      *
-     * @param \CampaignChain\CoreBundle\Entity\Location $locations
+     * @param Location $location
+     *
+     * @return Operation
      */
-    public function removeLocation(\CampaignChain\CoreBundle\Entity\Location $locations)
+    public function addLocation(Location $location)
     {
-        $this->locations->removeElement($locations);
+        $this->locations->add($location);
+
+        return $this;
     }
 
     /**
-     * Get locations
+     * Remove location.
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @param Location $location
+     */
+    public function removeLocation(Location $location)
+    {
+        $this->locations->removeElement($location);
+    }
+
+    /**
+     * Get locations.
+     *
+     * @return ArrayCollection
      */
     public function getLocations()
     {
@@ -179,42 +195,33 @@ class Operation extends Action
     }
 
     /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->locations = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->outboundCTAs = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->scheduledReports = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
-    /**
-     * Add outboundCTAs
+     * Add outboundCTA.
      *
-     * @param \CampaignChain\CoreBundle\Entity\CTA $outboundCTAs
+     * @param CTA $outboundCTA
+     *
      * @return Operation
      */
-    public function addOutboundCTA(\CampaignChain\CoreBundle\Entity\CTA $outboundCTAs)
+    public function addOutboundCTA(CTA $outboundCTA)
     {
-        $this->outboundCTAs[] = $outboundCTAs;
+        $this->outboundCTAs->add($outboundCTA);
 
         return $this;
     }
 
     /**
-     * Remove outboundCTAs
+     * Remove outboundCTA.
      *
-     * @param \CampaignChain\CoreBundle\Entity\CTA $outboundCTAs
+     * @param CTA $outboundCTA
      */
-    public function removeOutboundCTA(\CampaignChain\CoreBundle\Entity\CTA $outboundCTAs)
+    public function removeOutboundCTA(CTA $outboundCTA)
     {
-        $this->outboundCTAs->removeElement($outboundCTAs);
+        $this->outboundCTAs->removeElement($outboundCTA);
     }
 
     /**
-     * Get outboundCTAs
+     * Get outboundCTAs.
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return ArrayCollection
      */
     public function getOutboundCTAs()
     {
@@ -222,32 +229,37 @@ class Operation extends Action
     }
 
     /**
-     * Add scheduledReports
+     * Add scheduledReport.
      *
-     * @param \CampaignChain\CoreBundle\Entity\SchedulerReportOperation $scheduledReports
-     * @return OperationModule
+     * @param SchedulerReportOperation $schedulerReportOperation
+     *
+     * @return Operation
+     *
+     * @internal param SchedulerReportOperation $scheduledReport
      */
-    public function addScheduledReport(\CampaignChain\CoreBundle\Entity\SchedulerReportOperation $scheduledReports)
+    public function addScheduledReport(SchedulerReportOperation $schedulerReportOperation)
     {
-        $this->scheduledReports[] = $scheduledReports;
+        $this->scheduledReports->add($schedulerReportOperation);
 
         return $this;
     }
 
     /**
-     * Remove scheduledReports
+     * Remove scheduledReport.
      *
-     * @param \CampaignChain\CoreBundle\Entity\SchedulerReportOperation $scheduledReports
+     * @param SchedulerReportOperation $schedulerReportOperation
+     *
+     * @internal param SchedulerReportOperation $schedulerReportOperdation
      */
-    public function removeScheduledReport(\CampaignChain\CoreBundle\Entity\SchedulerReportOperation $scheduledReports)
+    public function removeScheduledReport(SchedulerReportOperation $schedulerReportOperation)
     {
-        $this->scheduledReports->removeElement($scheduledReports);
+        $this->scheduledReports->removeElement($schedulerReportOperation);
     }
 
     /**
-     * Get scheduledReports
+     * Get scheduledReports.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return ArrayCollection
      */
     public function getScheduledReports()
     {
@@ -255,36 +267,37 @@ class Operation extends Action
     }
 
     /**
-     * Add fact
+     * Add fact.
      *
-     * @param \CampaignChain\CoreBundle\Entity\ReportAnalyticsActivityFact $fact
+     * @param ReportAnalyticsActivityFact $fact
+     *
      * @return Operation
      */
-    public function addFact(\CampaignChain\CoreBundle\Entity\ReportAnalyticsActivityFact $fact)
+    public function addFact(ReportAnalyticsActivityFact $fact)
     {
-        $this->fact[] = $fact;
+        $this->facts->add($fact);
 
         return $this;
     }
 
     /**
-     * Remove fact
+     * Remove fact.
      *
-     * @param \CampaignChain\CoreBundle\Entity\ReportAnalyticsActivityFact $fact
+     * @param ReportAnalyticsActivityFact $fact
      */
-    public function removeFact(\CampaignChain\CoreBundle\Entity\ReportAnalyticsActivityFact $fact)
+    public function removeFact(ReportAnalyticsActivityFact $fact)
     {
-        $this->fact->removeElement($fact);
+        $this->facts->removeElement($fact);
     }
 
     /**
-     * Get fact
+     * Get fact.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return ArrayCollection
      */
-    public function getFact()
+    public function getFacts()
     {
-        return $this->fact;
+        return $this->facts;
     }
 
     public function __clone()

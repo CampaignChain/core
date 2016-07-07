@@ -10,24 +10,21 @@
 
 namespace CampaignChain\CoreBundle\EntityService;
 
+use CampaignChain\CoreBundle\Entity\Action;
+use CampaignChain\CoreBundle\Entity\Activity;
+use CampaignChain\CoreBundle\Entity\Campaign;
 use CampaignChain\CoreBundle\Entity\Hook;
 use CampaignChain\CoreBundle\Entity\Location;
 use CampaignChain\CoreBundle\Entity\Operation;
-use CampaignChain\CoreBundle\Entity\ReportAnalyticsActivityFact;
 use CampaignChain\CoreBundle\Twig\CampaignChainCoreExtension;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use CampaignChain\CoreBundle\Entity\Action;
-use CampaignChain\CoreBundle\Entity\Activity;
-use CampaignChain\CoreBundle\Entity\Campaign;
-
 
 class ActivityService
 {
     protected $em;
     protected $container;
-
 
     public function __construct(EntityManager $em, ContainerInterface $container)
     {
@@ -35,39 +32,44 @@ class ActivityService
         $this->container = $container;
     }
 
-    public function getAllActiveActivities($options = array()){
+    public function getAllActiveActivities($options = [])
+    {
         $qb = $this->em->createQueryBuilder();
         $qb->select('a', 'l')
             ->from('CampaignChain\CoreBundle\Entity\Activity', 'a')
-            ->join('a.location','l')
+            ->join('a.location', 'l')
             ->where('a.parent IS NULL')
             ->andWhere('l.status = ?1')
             ->orderBy('a.startDate')
-            ->setParameters(array(1 => Location::STATUS_ACTIVE));
-        if(isset($options['limit'])){
+            ->setParameters([1 => Location::STATUS_ACTIVE]);
+        if (isset($options['limit'])) {
             $qb->setMaxResults($options['limit']);
         }
         $query = $qb->getQuery();
+
         return $query->getResult();
     }
-    public function getAllActivities($options = array()){
+    public function getAllActivities($options = [])
+    {
         $qb = $this->em->createQueryBuilder();
         $qb->select('a')
             ->from('CampaignChain\CoreBundle\Entity\Activity', 'a')
             ->where('a.parent IS NULL')
             ->orderBy('a.startDate');
-        if(isset($options['limit'])){
+        if (isset($options['limit'])) {
             $qb->setMaxResults($options['limit']);
         }
         $query = $qb->getQuery();
+
         return $query->getResult();
     }
 
-    public function getUpcomingActivities($options = array()){
+    public function getUpcomingActivities($options = [])
+    {
         $qb = $this->em->createQueryBuilder();
         $qb->select('a')
             ->from('CampaignChain\CoreBundle\Entity\Activity', 'a')
-            ->join('a.location','l')
+            ->join('a.location', 'l')
             ->where('a.startDate > :now')
             ->andWhere('a.status != :paused')
             ->andWhere('a.parent IS NULL')
@@ -76,15 +78,16 @@ class ActivityService
             ->setParameter('now', new \DateTime('now'))
             ->setParameter('status', Location::STATUS_ACTIVE)
             ->setParameter('paused', Action::STATUS_PAUSED);
-        if(isset($options['limit'])){
+        if (isset($options['limit'])) {
             $qb->setMaxResults($options['limit']);
         }
         $query = $qb->getQuery();
+
         return $query->getResult();
     }
 
-
-    public function getActivity($id){
+    public function getActivity($id)
+    {
         $activity = $this->em
             ->getRepository('CampaignChainCoreBundle:Activity')
             ->find($id);
@@ -100,12 +103,13 @@ class ActivityService
 
     /**
      * @param Activity $activity
+     *
      * @return bool
      */
     public function isRemovable(Activity $activity)
     {
         //Deletion should only be possible if the activity is not closed
-        if ($activity->getStatus() == "closed") {
+        if ($activity->getStatus() == 'closed') {
             return false;
         }
 
@@ -123,7 +127,7 @@ class ActivityService
             ->getQuery()
             ->getOneOrNullResult();
 
-        if (!$activity->getFact()->isEmpty()) {
+        if (!$activity->getFacts()->isEmpty()) {
             return false;
         }
 
@@ -141,10 +145,10 @@ class ActivityService
 
         $schedulerReportsActivities = $this->em
                 ->getRepository('CampaignChainCoreBundle:SchedulerReportActivity')
-                ->findBy(array('endActivity' => $activity));
-        $ctaActivities =$this->em
+                ->findBy(['endActivity' => $activity]);
+        $ctaActivities = $this->em
                 ->getRepository('CampaignChainCoreBundle:ReportCTA')
-                ->findBy(array('activity' => $activity));
+                ->findBy(['activity' => $activity]);
 
         if (!empty($schedulerReportsActivities) or !empty($ctaActivities)) {
             return false;
@@ -160,9 +164,11 @@ class ActivityService
      * Each activity has a module specific operation i.e. "operation_twitter_status".
      *
      * @param $id
+     *
      * @throws \Exception
      */
-    public function removeActivity($id){
+    public function removeActivity($id)
+    {
         $activity = $this->em
             ->getRepository('CampaignChainCoreBundle:Activity')
             ->find($id);
@@ -173,7 +179,7 @@ class ActivityService
             );
         }
 
-        if ( !$this->isRemovable($activity)) {
+        if (!$this->isRemovable($activity)) {
             throw new \LogicException(
                 'Deletion of activities is not possible when status is set to closed or there are scheduled reports'
             );
@@ -208,7 +214,8 @@ class ActivityService
         $this->em->flush();
     }
 
-    public function getActivityModule($id){
+    public function getActivityModule($id)
+    {
         // Get the activity module's activity.
         $activityModule = $this->em
             ->getRepository('CampaignChainCoreBundle:ActivityModule')
@@ -223,26 +230,30 @@ class ActivityService
         return $activityModule;
     }
 
-    public function getActivityModuleByActivity($id){
+    public function getActivityModuleByActivity($id)
+    {
         $activity = $this->getActivity($id);
 
         return $activity->getActivityModule();
     }
 
-    public function getOperation($id){
+    public function getOperation($id)
+    {
         // TODO: Exception if equalsOperation == false.
         $activity = $this->getActivity($id);
         $operations = $activity->getOperations();
+
         return $operations[0];
     }
 
-    public function moveActivity(Activity $activity, $interval){
+    public function moveActivity(Activity $activity, $interval)
+    {
         $hookService = $this->container->get($activity->getTriggerHook()->getServices()['entity']);
         $hook = $hookService->getHook($activity, Hook::MODE_MOVE);
-        if($hook->getStartDate() !== null){
+        if ($hook->getStartDate() !== null) {
             $hook->setStartDate(new \DateTime($hook->getStartDate()->add($interval)->format(\DateTime::ISO8601)));
         }
-        if($hook->getEndDate() !== null){
+        if ($hook->getEndDate() !== null) {
             $hook->setEndDate(new \DateTime($hook->getEndDate()->add($interval)->format(\DateTime::ISO8601)));
         }
 
@@ -252,9 +263,9 @@ class ActivityService
 
         // Move all related Operations.
         $operations = $activity->getOperations();
-        if($operations->count()){
+        if ($operations->count()) {
             $operationService = $this->container->get('campaignchain.core.operation');
-            foreach($operations as $operation){
+            foreach ($operations as $operation) {
                 $operation = $operationService->moveOperation($operation, $interval);
                 //$activity->addOperation($operation);
             }
@@ -266,9 +277,9 @@ class ActivityService
     }
 
     /**
-     * Compose the channel icon path
+     * Compose the channel icon path.
      *
-     * @param $channel
+     * @param $activity
      * @return mixed
      */
     public function getIcons($activity)
@@ -281,7 +292,7 @@ class ActivityService
         return $icon;
     }
 
-    public function tplTeaser($activity, $options = array())
+    public function tplTeaser($activity, $options = [])
     {
         $twigExt = new CampaignChainCoreExtension($this->em, $this->container);
 
@@ -294,7 +305,7 @@ class ActivityService
         $clonedActivity->setCampaign($campaign);
         $campaign->addActivity($clonedActivity);
 
-        if($status != null){
+        if ($status != null) {
             $clonedActivity->setStatus($status);
         }
 
@@ -302,9 +313,9 @@ class ActivityService
 
         // Clone all related Operations.
         $operations = $activity->getOperations();
-        if($operations->count()){
+        if ($operations->count()) {
             $operationService = $this->container->get('campaignchain.core.operation');
-            foreach($operations as $operation){
+            foreach ($operations as $operation) {
                 $operationService->cloneOperation($activity, $operation);
             }
         }

@@ -11,8 +11,9 @@
 namespace CampaignChain\CoreBundle\Command;
 
 use CampaignChain\CoreBundle\Entity\Action;
-use CampaignChain\CoreBundle\Entity\Scheduler;
 use CampaignChain\CoreBundle\Entity\Job;
+use CampaignChain\CoreBundle\Entity\Scheduler;
+use CampaignChain\CoreBundle\Entity\SchedulerReportLocation;
 use CampaignChain\CoreBundle\Entity\SchedulerReportOperation;
 use DateTime;
 use Doctrine\ORM\EntityManager;
@@ -23,11 +24,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\LockHandler;
 use Symfony\Component\Process\Exception\ProcessFailedException;
-use Symfony\Component\Stopwatch\Stopwatch;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
- * Class SchedulerCommand
+ * Class SchedulerCommand.
  *
  * Usage:
  * php app/console campaignchain:scheduler
@@ -35,7 +36,6 @@ use Symfony\Component\Process\Process;
  * Configuration:
  * Create a cron job that runs this command every minute.
  *
- * @package CampaignChain\CoreBundle\Command
  * @author Sandro Groganz <sandro@campaignchain.com>
  */
 class SchedulerCommand extends ContainerAwareCommand
@@ -104,7 +104,23 @@ class SchedulerCommand extends ContainerAwareCommand
     protected $stopwatchScheduler;
 
     /**
-     * @inheritdoc
+     * @return Scheduler
+     */
+    public function getScheduler()
+    {
+        return $this->scheduler;
+    }
+
+    /**
+     * @return SymfonyStyle
+     */
+    public function getIo()
+    {
+        return $this->io;
+    }
+
+    /**
+     * {@inheritdoc}
      */
     protected function configure()
     {
@@ -135,18 +151,20 @@ class SchedulerCommand extends ContainerAwareCommand
         $this->logger->info('Scheduler with ID {id} started', ['id' => $this->scheduler->getId()]);
 
         $this->io->text('Running scheduler with:');
-        $this->io->listing([
-            'Scheduler ID: '.$this->scheduler->getId(),
-            'Interval: '.$this->scheduler->getPeriodInterval().' minute(s)',
-            'Period starts: '.$this->scheduler->getPeriodStart()->format('Y-m-d H:i:s T'),
-            'Period ends: '.$this->scheduler->getPeriodEnd()->format('Y-m-d H:i:s T'),
-        ]);
+        $this->io->listing(
+            [
+                'Scheduler ID: '.$this->scheduler->getId(),
+                'Interval: '.$this->scheduler->getPeriodInterval().' minute(s)',
+                'Period starts: '.$this->scheduler->getPeriodStart()->format('Y-m-d H:i:s T'),
+                'Period ends: '.$this->scheduler->getPeriodEnd()->format('Y-m-d H:i:s T'),
+            ]
+        );
 
         //Que jobs
         $this->gatherActionData();
 
         // Execute the scheduled report jobs.
-        $this->executeScheduledReportJobs();
+        $this->prepareReportJobs();
 
         $this->executeJobs();
 
@@ -163,180 +181,8 @@ class SchedulerCommand extends ContainerAwareCommand
         $this->logger->info(self::LOGGER_MSG_END);
     }
 
-    protected function testDatabase()
-    {
-        try {
-            $this->em->getConnection()->connect();
-        } catch (\Exception $e) {
-            $this->logger->error('No database connection.');
-            exit;
-        }
-    }
-
-    protected function testInternet()
-    {
-        $connected = @fsockopen("www.example.com", 80);
-        if ($connected){
-            fclose($connected);
-            return true;
-        } else {
-            $errMsg = 'No connection to Internet.';
-            $this->scheduler->setStatus(Scheduler::STATUS_ERROR);
-            $this->scheduler->setMessage($errMsg);
-            $this->em->flush();
-            $this->logger->error($errMsg);
-            throw new \Exception($errMsg);
-            exit;
-        }
-    }
-
     /**
-     * Create a new scheduler instance
-     *
-     * @param $interval
-     * @return Scheduler
-     */
-    protected function startScheduler($interval){
-        $this->now = new \DateTime('now', new \DateTimeZone('UTC'));
-
-        $periodStart = clone $this->now;
-        $periodStart->modify("-".$interval." minutes");
-
-        $scheduler = new Scheduler();
-        $scheduler->setStatus(Scheduler::STATUS_RUNNING);
-        $scheduler->setExecutionStart($this->now);
-        $scheduler->setPeriodStart($periodStart);
-        $scheduler->setPeriodEnd($this->now);
-        $scheduler->setPeriodInterval($interval);
-
-        $this->em->persist($scheduler);
-        $this->em->flush();
-
-        return $scheduler;
-    }
-
-    /**
-     * @param $actionType
-     * @param DateTime $periodStart
-     * @param DateTime $periodEnd
-     * @return Action[]
-     */
-    protected function getActions($actionType, \DateTime $periodStart, \DateTime $periodEnd){
-
-        switch($actionType){
-            case Action::TYPE_OPERATION:
-                return $this->em
-                    ->getRepository('CampaignChainCoreBundle:Operation')
-                    ->getScheduledOperation($periodStart, $periodEnd);
-
-            case Action::TYPE_ACTIVITY:
-                return $this->em
-                    ->getRepository('CampaignChainCoreBundle:Activity')
-                    ->getScheduledActivity($periodStart, $periodEnd);
-
-            case Action::TYPE_MILESTONE:
-                return $this->em
-                    ->getRepository('CampaignChainCoreBundle:Milestone')
-                    ->getScheduledMilestone($periodStart, $periodEnd);
-
-            case Action::TYPE_CAMPAIGN:
-                return $this->em
-                    ->getRepository('CampaignChainCoreBundle:Campaign')
-                    ->getScheduledCampaign($periodStart, $periodEnd);
-
-            default:
-                throw new \LogicException('Wrong action type: '. $actionType);
-        }
-
-    }
-
-    /**
-     * Create new job
-     *
-     * @param $actionType
-     * @param $actionId
-     * @param $service
-     * @param null $jobType
-     */
-    protected function queueJob($actionType, $actionId, $service, $jobType = null)
-    {
-        $job = new Job();
-        $job->setScheduler($this->scheduler);
-        //$this->scheduler->addJob($job);
-        $job->setActionType($actionType);
-        $job->setActionId($actionId);
-        $job->setName($service);
-        $job->setJobType($jobType);
-        $job->setStatus(Job::STATUS_OPEN);
-
-        $this->em->persist($job);
-        $this->em->flush();
-    }
-
-    protected function queueReportJob($scheduledReport)
-    {
-        if($scheduledReport instanceof \CampaignChain\CoreBundle\Entity\SchedulerReportOperation){
-            $module = $scheduledReport->getOperation()->getOperationModule();
-            $type = Action::TYPE_OPERATION;
-            $id = $scheduledReport->getOperation()->getId();
-            $name = $scheduledReport->getOperation()->getName();
-        }/* elseif($scheduledReport instanceof \CampaignChain\CoreBundle\Entity\SchedulerReportActivity){
-            $module = $scheduledReport->getActivity()->getActivityModule();
-            $type = Action::TYPE_ACTIVITY;
-            $id = $scheduledReport->getActivity()->getId();
-        } elseif($scheduledReport instanceof \CampaignChain\CoreBundle\Entity\SchedulerReportMilestone){
-            $module = $scheduledReport->getMilestone()->getMilestoneModule();
-            $type = Action::TYPE_MILESTONE;
-            $id = $scheduledReport->getMilestone()->getId();
-        }*/
-
-        $text = 'Adding Job for collecting report data for '.Action::TYPE_OPERATION.' '.$id.' "'.$name.'".';
-        $this->io->text($text);
-        $this->logger->info($text);
-
-        // Has a report job been defined for the module?
-        $moduleServices = $module->getServices();
-        if(!is_array($moduleServices) || !isset($moduleServices['report'])){
-            $msg = 'No report service defined for module "'
-                .$module->getIdentifier()
-                .'" in bundle "'
-                .$module->getBundle()->getName().'".';
-
-            $this->logger->error($msg);
-            if($this->getContainer()->getParameter('campaignchain_dev')){
-                throw new \Exception($msg);
-            }
-            $this->logger->error($msg);
-        }
-
-        $this->queueJob(
-            $type,
-            $id,
-            $module->getServices()['report'],
-            'report'
-        );
-
-        $this->io->text("Queued report job with service ".$module->getServices()['report']);
-    }
-
-    /**
-     * @return Scheduler
-     */
-    public function getScheduler()
-    {
-        return $this->scheduler;
-    }
-
-    /**
-     * @return SymfonyStyle
-     */
-    public function getIo()
-    {
-        return $this->io;
-    }
-
-    /**
-     * Initialize the variables for the command
+     * Initialize the variables for the command.
      */
     protected function initializeVariables()
     {
@@ -359,8 +205,35 @@ class SchedulerCommand extends ContainerAwareCommand
     }
 
     /**
+     * Create a new scheduler instance.
+     *
+     * @param $interval
+     *
+     * @return Scheduler
+     */
+    protected function startScheduler($interval)
+    {
+        $this->now = new \DateTime('now', new \DateTimeZone('UTC'));
+
+        $periodStart = clone $this->now;
+        $periodStart->modify('-'.$interval.' minutes');
+
+        $scheduler = new Scheduler();
+        $scheduler->setStatus(Scheduler::STATUS_RUNNING);
+        $scheduler->setExecutionStart($this->now);
+        $scheduler->setPeriodStart($periodStart);
+        $scheduler->setPeriodEnd($this->now);
+        $scheduler->setPeriodInterval($interval);
+
+        $this->em->persist($scheduler);
+        $this->em->flush();
+
+        return $scheduler;
+    }
+
+    /**
      * Gather all the action for the command
-     * and if it's possible add it to the job queue
+     * and if it's possible add it to the job queue.
      */
     protected function gatherActionData()
     {
@@ -375,13 +248,13 @@ class SchedulerCommand extends ContainerAwareCommand
             // Store all the Action-related info in the Job entity.
             if (!$actions) {
                 $this->io->text(
-                    'No actions of type "' . $actionType . '" scheduled within the past ' . $this->interval . ' minutes.'
+                    'No actions of type "'.$actionType.'" scheduled within the past '.$this->interval.' minutes.'
                 );
 
                 continue;
             }
 
-            $tableHeaders = array('ID', 'Start Date', 'End Date', 'Name', 'Status');
+            $tableHeaders = ['ID', 'Start Date', 'End Date', 'Name', 'Status'];
             if ($actionType != Action::TYPE_CAMPAIGN) {
                 $tableHeaders[] = 'Campaign ID';
                 $tableHeaders[] = 'Campaign Status';
@@ -391,7 +264,7 @@ class SchedulerCommand extends ContainerAwareCommand
                 $tableHeaders[] = 'Action Status';
             }
 
-            $outputTableRows = array();
+            $outputTableRows = [];
 
             foreach ($actions as $action) {
                 // Has a scheduler job been defined in the Action's module?
@@ -399,11 +272,11 @@ class SchedulerCommand extends ContainerAwareCommand
                 if (!is_array($actionServices) || !isset($actionServices['job'])) {
                     $message =
                         'No job service defined for module "'
-                        . $action->getModule()->getIdentifier()
-                        . '" in bundle "'
-                        . $action->getModule()->getBundle()->getName() . '" '
-                        . 'while processing Action of type "'.$action->getType().'" '
-                        . 'with ID "'.$action->getId().'"'
+                        .$action->getModule()->getIdentifier()
+                        .'" in bundle "'
+                        .$action->getModule()->getBundle()->getName().'" '
+                        .'while processing Action of type "'.$action->getType().'" '
+                        .'with ID "'.$action->getId().'"'
                         .'.';
 
                     $this->io->text($message);
@@ -420,20 +293,22 @@ class SchedulerCommand extends ContainerAwareCommand
                 );
 
                 $this->logger->info(
-                    'New job of {type} with the action ID {id} queued', [
-                    'type' => $action->getType(),
-                    'id' => $action->getId(),
-                ]);
+                    'New job of {type} with the action ID {id} queued',
+                    [
+                        'type' => $action->getType(),
+                        'id' => $action->getId(),
+                    ]
+                );
 
                 // Highlight the date that is within the execution period.
                 $startDate = $action->getStartDate()->format('Y-m-d H:i:s');
                 $endDate = null;
 
                 if ($action->getStartDate() >= $this->scheduler->getPeriodStart()) {
-                    $startDate = '<options=bold>' . $startDate . '</options=bold>';
+                    $startDate = '<options=bold>'.$startDate.'</options=bold>';
                 } elseif ($action->getEndDate()) {
                     $endDate = $action->getEndDate()->format('Y-m-d H:i:s');
-                    $endDate = '<options=bold>' . $endDate . '</options=bold>';
+                    $endDate = '<options=bold>'.$endDate.'</options=bold>';
                 }
 
                 $tableRows = [
@@ -461,29 +336,94 @@ class SchedulerCommand extends ContainerAwareCommand
             if (count($outputTableRows)) {
                 // Create the table rows for output.
                 $this->io->newLine();
-                $this->io->text('These actions of type "' . $actionType . '"  will be executed:');
+                $this->io->text('These actions of type "'.$actionType.'"  will be executed:');
                 $this->io->table($tableHeaders, $outputTableRows);
             } else {
                 $this->io->text(
-                    'No actions of type "' . $actionType . '" scheduled within the past ' . $this->interval . ' minutes.'
+                    'No actions of type "'.$actionType.'" scheduled within the past '.$this->interval.' minutes.'
                 );
             }
         }
     }
 
     /**
+     * @param $actionType
+     * @param DateTime $periodStart
+     * @param DateTime $periodEnd
      *
+     * @return Action[]
+     */
+    protected function getActions($actionType, \DateTime $periodStart, \DateTime $periodEnd)
+    {
+        switch ($actionType) {
+            case Action::TYPE_OPERATION:
+                return $this->em
+                    ->getRepository('CampaignChainCoreBundle:Operation')
+                    ->getScheduledOperation($periodStart, $periodEnd);
+
+            case Action::TYPE_ACTIVITY:
+                return $this->em
+                    ->getRepository('CampaignChainCoreBundle:Activity')
+                    ->getScheduledActivity($periodStart, $periodEnd);
+
+            case Action::TYPE_MILESTONE:
+                return $this->em
+                    ->getRepository('CampaignChainCoreBundle:Milestone')
+                    ->getScheduledMilestone($periodStart, $periodEnd);
+
+            case Action::TYPE_CAMPAIGN:
+                return $this->em
+                    ->getRepository('CampaignChainCoreBundle:Campaign')
+                    ->getScheduledCampaign($periodStart, $periodEnd);
+
+            default:
+                throw new \LogicException('Wrong action type: '.$actionType);
+        }
+    }
+
+    /**
+     * Create new job.
+     *
+     * @param $actionType
+     * @param $actionId
+     * @param $service
+     * @param null $jobType
+     */
+    protected function queueJob($actionType, $actionId, $service, $jobType = null)
+    {
+        $job = new Job();
+        $job->setScheduler($this->scheduler);
+        //$this->scheduler->addJob($job);
+        $job->setActionType($actionType);
+        $job->setActionId($actionId);
+        $job->setName($service);
+        $job->setJobType($jobType);
+        $job->setStatus(Job::STATUS_OPEN);
+
+        $this->em->persist($job);
+        $this->em->flush();
+    }
+
+    /**
      * TODO: Make this work with Milestones and Activities as well.
      *
      * @throws \Exception
      */
-    protected function executeScheduledReportJobs()
+    protected function prepareReportJobs()
+    {
+        $this->prepareReportOperationJobs();
+        $this->prepareReportLocationJobs();
+    }
+
+    protected function prepareReportOperationJobs()
     {
         /** @var SchedulerReportOperation[] $scheduledReports */
         $scheduledReports = $this->em
             ->getRepository('CampaignChainCoreBundle:SchedulerReportOperation')
-            ->getScheduledReportJobsForSchedulerCommand($this->scheduler->getPeriodStart(), $this->scheduler->getPeriodEnd());
-
+            ->getScheduledReportJobsForSchedulerCommand(
+                $this->scheduler->getPeriodStart(),
+                $this->scheduler->getPeriodEnd()
+            );
 
         if (empty($scheduledReports)) {
             $this->io->text('No scheduled Operation reports.');
@@ -497,7 +437,7 @@ class SchedulerCommand extends ContainerAwareCommand
         $this->logger->info('Processing scheduled Operation reports.');
 
         foreach ($scheduledReports as $scheduledReport) {
-            $txt = 'Report ID: ' . $scheduledReport->getId();
+            $txt = 'Report ID: '.$scheduledReport->getId();
             $this->io->section($txt);
             $this->logger->info($txt);
 
@@ -516,23 +456,23 @@ class SchedulerCommand extends ContainerAwareCommand
                 $newEndDate = clone $scheduledReport->getEndAction();
                 $scheduledReport->setEndDate($newEndDate);
 
-                $txt = "Action's end date changed to " . $newEndDate->format(\DateTime::ISO8601);
+                $txt = "Action's end date changed to ".$newEndDate->format(\DateTime::ISO8601);
                 $this->io->note($txt);
                 $this->logger->info($txt);
             }
 
             // Check whether we're past the prolonged end date if defined.
             if ($scheduledReport->getProlongation() != null) {
-                $this->io->text("Prolongation: " . $scheduledReport->getProlongation());
+                $this->io->text('Prolongation: '.$scheduledReport->getProlongation());
 
-                $interval = \DateInterval::createfromdatestring($scheduledReport->getProlongation());
+                $interval = \DateInterval::createFromDateString($scheduledReport->getProlongation());
                 $prolongedEndDate = clone $scheduledReport->getEndDate();
                 $prolongedEndDate->add($interval);
 
                 // Prolonged end date is older than now.
                 if ($prolongedEndDate < $this->now) {
                     if (!$endDateChanged) {
-                        $txt = "Past prolongation period. Skipping this report job.";
+                        $txt = 'Past prolongation period. Skipping this report job.';
                         $this->io->text($txt);
                         $this->logger->info($txt);
 
@@ -547,7 +487,7 @@ class SchedulerCommand extends ContainerAwareCommand
                 // No prolongation, so check if end date is older than next run.
             } elseif ($scheduledReport->getEndDate() < $scheduledReport->getNextRun()) {
                 if (!$endDateChanged) {
-                    $txt = "No prolongation and past end date. Skipping this report job.";
+                    $txt = 'No prolongation and past end date. Skipping this report job.';
                     $this->io->text($txt);
                     $this->logger->info($txt);
 
@@ -570,11 +510,11 @@ class SchedulerCommand extends ContainerAwareCommand
                 $scheduledReport->getEndDate() > $this->now &&
                 $scheduledReport->getInterval() != null
             ) {
-                $interval = \DateInterval::createfromdatestring($scheduledReport->getInterval());
+                $interval = \DateInterval::createFromDateString($scheduledReport->getInterval());
                 $nextRun = clone $scheduledReport->getNextRun();
                 $scheduledReport->setNextRun($nextRun->add($interval));
 
-                $txt = "Regular period. Next run is in " . $scheduledReport->getInterval();
+                $txt = 'Regular period. Next run is in '.$scheduledReport->getInterval();
                 $this->io->text($txt);
                 $this->logger->info($txt);
 
@@ -584,7 +524,7 @@ class SchedulerCommand extends ContainerAwareCommand
                 $prolongedEndDate > $this->now &&
                 $scheduledReport->getProlongationInterval() != null
             ) {
-                $interval = \DateInterval::createfromdatestring($scheduledReport->getProlongationInterval());
+                $interval = \DateInterval::createFromDateString($scheduledReport->getProlongationInterval());
                 /*
                  * The prolongation interval starts with the end date.
                  * Hence, if this is the first interval within the
@@ -598,7 +538,113 @@ class SchedulerCommand extends ContainerAwareCommand
                 }
                 $scheduledReport->setNextRun($nextRun->add($interval));
 
-                $txt = "Prolonged period. Next run is in " . $scheduledReport->getProlongationInterval();
+                $txt = 'Prolonged period. Next run is in '.$scheduledReport->getProlongationInterval();
+                $this->io->text($txt);
+                $this->logger->info($txt);
+            }
+
+            $this->em->persist($scheduledReport);
+        }
+
+        //update the next run dates for the scheduler
+        $this->em->flush();
+    }
+
+    protected function queueReportJob($scheduledReport)
+    {
+        if ($scheduledReport instanceof SchedulerReportOperation) {
+            $module = $scheduledReport->getOperation()->getOperationModule();
+            $type = Action::TYPE_OPERATION;
+            $id = $scheduledReport->getOperation()->getId();
+            $name = $scheduledReport->getOperation()->getName();
+        } elseif ($scheduledReport instanceof SchedulerReportLocation) {
+            $module = $scheduledReport->getLocation()->getLocationModule();
+            $type = Action::TYPE_LOCATION;
+            $id = $scheduledReport->getLocation()->getId();
+            $name = $scheduledReport->getLocation()->getName();
+        }
+
+        /* elseif($scheduledReport instanceof \CampaignChain\CoreBundle\Entity\SchedulerReportActivity){
+            $module = $scheduledReport->getActivity()->getActivityModule();
+            $type = Action::TYPE_ACTIVITY;
+            $id = $scheduledReport->getActivity()->getId();
+        } elseif($scheduledReport instanceof \CampaignChain\CoreBundle\Entity\SchedulerReportMilestone){
+            $module = $scheduledReport->getMilestone()->getMilestoneModule();
+            $type = Action::TYPE_MILESTONE;
+            $id = $scheduledReport->getMilestone()->getId();
+        }*/
+
+        $text = 'Adding Job for collecting report data for '.Action::TYPE_OPERATION.' '.$id.' "'.$name.'".';
+        $this->io->text($text);
+        $this->logger->info($text);
+
+        // Has a report job been defined for the module?
+        $moduleServices = $module->getServices();
+        if (!is_array($moduleServices) || !isset($moduleServices['report'])) {
+            $msg = 'No report service defined for module "'
+                .$module->getIdentifier()
+                .'" in bundle "'
+                .$module->getBundle()->getName().'".';
+
+            $this->logger->error($msg);
+            if ($this->getContainer()->getParameter('campaignchain_dev')) {
+                throw new \Exception($msg);
+            }
+            $this->logger->error($msg);
+        }
+
+        $this->queueJob(
+            $type,
+            $id,
+            $module->getServices()['report'],
+            'report'
+        );
+
+        $this->io->text('Queued report job with service '.$module->getServices()['report']);
+    }
+
+    protected function prepareReportLocationJobs()
+    {
+        /** @var SchedulerReportLocation[] $scheduledReports */
+        $scheduledReports = $this->em
+            ->getRepository('CampaignChainCoreBundle:SchedulerReportLocation')
+            ->getScheduledReportJobsForSchedulerCommand(
+                $this->scheduler->getPeriodStart(),
+                $this->scheduler->getPeriodEnd()
+            );
+
+        if (empty($scheduledReports)) {
+            $this->io->text('No scheduled Location reports.');
+            $this->logger->info('No scheduled Location reports.');
+
+            return;
+        }
+
+        // Queue the scheduled reports.
+        $this->io->text('Processing scheduled Location reports.');
+        $this->logger->info('Processing scheduled Location reports.');
+
+        foreach ($scheduledReports as $scheduledReport) {
+            $txt = 'Report ID: '.$scheduledReport->getId();
+            $this->io->section($txt);
+            $this->logger->info($txt);
+
+            $this->queueReportJob($scheduledReport);
+
+            /*
+             * Update next run.
+             */
+
+            // Are we within the regular scheduled period?
+            if (
+                $scheduledReport->getEndDate() > $this->now &&
+                $scheduledReport->getInterval() != null
+            ) {
+                $interval = \DateInterval::createFromDateString($scheduledReport->getInterval());
+                $nextRun = clone $scheduledReport->getNextRun();
+                $scheduledReport->setNextRun($nextRun->add($interval));
+
+                $txt = 'Regular period. Next run is in '.$scheduledReport->getInterval();
                 $this->io->text($txt);
                 $this->logger->info($txt);
             }
@@ -612,7 +658,7 @@ class SchedulerCommand extends ContainerAwareCommand
 
     /**
      * Search for open jobs and executes them
-     * then show a report about the done job
+     * then show a report about the done job.
      */
     protected function executeJobs()
     {
@@ -626,7 +672,7 @@ class SchedulerCommand extends ContainerAwareCommand
         }
 
         $this->io->section('Executing jobs now:');
-        $this->logger->info('Executing {counter} jobs now:',['counter' => count($jobsInQueue)]);
+        $this->logger->info('Executing {counter} jobs now:', ['counter' => count($jobsInQueue)]);
         $this->io->progressStart(count($jobsInQueue));
 
         foreach ($jobsInQueue as $jobInQueue) {
@@ -652,28 +698,44 @@ class SchedulerCommand extends ContainerAwareCommand
         // Display the results of the execution.
 
         $tableHeader = [
-            'Job ID', 'Operation ID', 'Process ID', 'Job Name', 'Job Start Date', 'Job End Date', 'Duration', 'Status', 'Message'
+            'Job ID',
+            'Operation ID',
+            'Process ID',
+            'Job Name',
+            'Job Start Date',
+            'Job End Date',
+            'Duration',
+            'Status',
+            'Message',
         ];
         $outputTableRows = [];
 
-        foreach($jobsProcessed as $jobProcessed){
+        foreach ($jobsProcessed as $jobProcessed) {
             $startDate = null;
             $endDate = null;
 
-            if($jobProcessed->getStartDate()) {
+            if ($jobProcessed->getStartDate()) {
                 $startDate = $jobProcessed->getStartDate()->format('Y-m-d H:i:s');
             }
-            if($jobProcessed->getEndDate()) {
+            if ($jobProcessed->getEndDate()) {
                 $endDate = $jobProcessed->getEndDate()->format('Y-m-d H:i:s');
             }
 
             $jobData = [
-                $jobProcessed->getId(), $jobProcessed->getActionId(), $jobProcessed->getPid(), $jobProcessed->getName(), $startDate, $endDate, $jobProcessed->getDuration().' ms', $jobProcessed->getStatus(), $jobProcessed->getMessage(),
+                $jobProcessed->getId(),
+                $jobProcessed->getActionId(),
+                $jobProcessed->getPid(),
+                $jobProcessed->getName(),
+                $startDate,
+                $endDate,
+                $jobProcessed->getDuration().' ms',
+                $jobProcessed->getStatus(),
+                $jobProcessed->getMessage(),
             ];
 
             $outputTableRows[] = $jobData;
 
-            if (JOB::STATUS_ERROR === $jobProcessed->getStatus()) {
+            if (Job::STATUS_ERROR === $jobProcessed->getStatus()) {
                 $context = array_combine($tableHeader, $jobData);
                 $this->logger->error($jobProcessed->getMessage(), $context);
             }
@@ -684,7 +746,7 @@ class SchedulerCommand extends ContainerAwareCommand
     }
 
     /**
-     * Execute one job
+     * Execute one job.
      *
      * @param Job $job
      */
@@ -692,7 +754,9 @@ class SchedulerCommand extends ContainerAwareCommand
     {
         $job->setStartDate($this->now);
 
-        $command = 'php app/console campaignchain:job '.$job->getId() . ' --env='. $this->getContainer()->get('kernel')->getEnvironment();
+        $command = 'php app/console campaignchain:job '.$job->getId().' --env='.$this->getContainer()->get(
+                'kernel'
+            )->getEnvironment();
         $process = new Process($command);
 
         $this->logger->info('Executing Job with command: '.$command);
@@ -717,6 +781,33 @@ class SchedulerCommand extends ContainerAwareCommand
             $this->em->flush();
 
             throw new \RuntimeException($e->getMessage());
+        }
+    }
+
+    protected function testDatabase()
+    {
+        try {
+            $this->em->getConnection()->connect();
+        } catch (\Exception $e) {
+            $this->logger->error('No database connection.');
+            exit;
+        }
+    }
+
+    protected function testInternet()
+    {
+        $connected = @fsockopen('www.example.com', 80);
+        if ($connected) {
+            fclose($connected);
+
+            return true;
+        } else {
+            $errMsg = 'No connection to Internet.';
+            $this->scheduler->setStatus(Scheduler::STATUS_ERROR);
+            $this->scheduler->setMessage($errMsg);
+            $this->em->flush();
+            $this->logger->error($errMsg);
+            throw new \Exception($errMsg);
         }
     }
 }
