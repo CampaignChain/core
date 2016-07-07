@@ -116,17 +116,19 @@ EOT
             $io->listing($listing);
             $kernel->register($types);
 
-            $io->success('CampaignChain modules are updated');
+            $io->success('CampaignChain modules configuration files are updated');
 
             return;
+        } else {
+            $withSchemaUpdate = $input->getOption('schema-update') != 'false';
+            $io->text(sprintf('Updating CampaignChain system registry for all modules <comment>%s</comment> Schema update', $withSchemaUpdate ? 'with' : 'without'));
+
+            $installer = $this->getContainer()->get('campaignchain.core.module.installer');
+            $installer->install($io, $withSchemaUpdate);
+
+            $io->success('CampaignChain modules configuration files & database tables are updated');
+            
+            return;
         }
-
-        $withSchemaUpdate = $input->getOption('schema-update') != 'false';
-        $io->text(sprintf('Updating CampaignChain system registry for all modules <comment>%s</comment> Schema update', $withSchemaUpdate ? 'with' : 'without' ));
-
-        $installer = $this->getContainer()->get('campaignchain.core.module.installer');
-        $installer->install($io, $withSchemaUpdate);
-
-        $io->success('CampaignChain modules are updated');
     }
 }
