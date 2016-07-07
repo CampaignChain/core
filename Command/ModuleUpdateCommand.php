@@ -14,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -39,6 +40,12 @@ The <info>campaignchain:module:update</info> command updates CampaignChain modul
 To update only the configuration provided by the modules that have already been
 downloaded, then use the <comment>--config-only</comment> option.
 EOT
+            )
+            ->addOption(
+                'schema-update',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'During install should a doctrine schema update run.'
             )
             ->addOption(
                 'config-only',
@@ -68,40 +75,58 @@ EOT
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $io = new SymfonyStyle($input, $output);
+
         if (
             $input->getOption('config-only') ||
             $input->getOption('routing-only') ||
             $input->getOption('class-only') ||
             $input->getOption('security-only')
         ) {
-            $installer = $this->getContainer()->get('campaignchain.core.module.installer');
-            $installer->setSkipVersion(true);
-            $installer->getNewBundles();
+            $types = [];
+            $listing = [];
+
+            if ($input->getOption('config-only')){
+                $types = array_merge($types, ['configs' => true]);
+                $listing[] = 'Registering config.yml files of all CampaignChain modules';
+            }
+
+            if ($input->getOption('routing-only')){
+                $types = array_merge($types, ['routings' => true]);
+                $listing[] = 'Registering routing.yml files of all CampaignChain modules';
+            }
+
+            if ($input->getOption('class-only')) {
+                $types = array_merge($types, ['classes' => true]);
+                $listing[] = 'Registering bundle classes of all CampaignChain modules in AppKernel.php.';
+            }
+
+            if($input->getOption('security-only')) {
+                $types = array_merge($types, ['security' => true]);
+                $listing[] = 'Registering security.yml files of all CampaignChain modules';
+            }
+
+            $availableBundles = $this->getContainer()
+                ->get('campaignchain.core.module.locator')
+                ->getAvailableBundles();
 
             $kernel = $this->getContainer()->get('campaignchain.core.module.kernel');
-            if($input->getOption('config-only')){
-                $types = array('configs' => true);
-                $output->writeln('Registering config.yml files of all CampaignChain modules');
-            } elseif($input->getOption('routing-only')){
-                $types = array('routings' => true);
-                $output->writeln('Registering routing.yml files of all CampaignChain modules');
-            } elseif($input->getOption('class-only')){
-                $types = array('classes' => true);
-                $output->writeln('Registering bundle classes of all CampaignChain modules in AppKernel.php.');
-            } elseif($input->getOption('security-only')) {
-                $types = array('security' => true);
-                $output->writeln('Registering security.yml files of all CampaignChain modules');
-            }
-            $kernel->register($installer->getKernelConfig(), $types);
-            $output->writeln('Done');
-        } else {
-            $this->getContainer()->enterScope('request');
-            $this->getContainer()->set('request', new Request(), 'request');
-            $output->writeln('Updating CampaignChain system registry for all modules');
-            $installer = $this->getContainer()->get('campaignchain.core.module.installer');
-//            $installer->setSkipVersion(true);
-            $installer->install();
-            $output->writeln('Done');
+            $kernel->parseBundlesForKernelConfig($availableBundles);
+
+            $io->listing($listing);
+            $kernel->register($types);
+
+            $io->success('CampaignChain modules are updated');
+
+            return;
         }
+
+        $withSchemaUpdate = $input->getOption('schema-update') != 'false';
+        $io->text(sprintf('Updating CampaignChain system registry for all modules <comment>%s</comment> Schema update', $withSchemaUpdate ? 'with' : 'without' ));
+
+        $installer = $this->getContainer()->get('campaignchain.core.module.installer');
+        $installer->install($io, $withSchemaUpdate);
+
+        $io->success('CampaignChain modules are updated');
     }
 }

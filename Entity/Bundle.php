@@ -136,6 +136,13 @@ class Bundle extends Meta
     protected $extra;
 
     /**
+     * @var string
+     * Not mapped to the DB
+     * It's used only at the install
+     */
+    protected $status = false;
+
+    /**
      * Get id
      *
      * @return integer
@@ -834,5 +841,21 @@ class Bundle extends Meta
     public function getExtra()
     {
         return $this->extra;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param string $status
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
     }
 }
