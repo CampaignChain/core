@@ -44,7 +44,7 @@ class ScriptHandler extends SensioScriptHandler
             return;
         }
 
-        self::executeCommand($event, $consoleDir, 'campaignchain:module:update --class-only --config-only --routing-only', $options['process-timeout']);
+        self::executeCommand($event, $consoleDir, 'campaignchain:kernel:update --class-only --config-only --routing-only', $options['process-timeout']);
         $event->getIO()->write('CampaignChain: Registered modules.');
     }
 }
