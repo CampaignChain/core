@@ -50,7 +50,6 @@ EOT
     {
         $io = new SymfonyStyle($input, $output);
 
-
         $withSchemaUpdate = $input->getOption('schema-update') != 'false';
         $io->text(sprintf('Updating CampaignChain system registry for all modules <comment>%s</comment> Schema update', $withSchemaUpdate ? 'with' : 'without'));
 
