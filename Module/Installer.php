@@ -10,26 +10,23 @@
 
 namespace CampaignChain\CoreBundle\Module;
 
+use CampaignChain\CoreBundle\Entity\ActivityModule;
 use CampaignChain\CoreBundle\Entity\Bundle;
-use CampaignChain\CoreBundle\Entity\Hook;
-use CampaignChain\CoreBundle\Entity\ChannelModule;
 use CampaignChain\CoreBundle\Entity\CampaignModule;
 use CampaignChain\CoreBundle\Entity\CampaignModuleConversion;
-use CampaignChain\CoreBundle\Entity\ActivityModule;
-use CampaignChain\CoreBundle\Entity\Report;
+use CampaignChain\CoreBundle\Entity\ChannelModule;
+use CampaignChain\CoreBundle\Entity\Hook;
 use CampaignChain\CoreBundle\Entity\Module;
 use CampaignChain\CoreBundle\Entity\System;
 use CampaignChain\CoreBundle\EntityService\SystemService;
 use CampaignChain\CoreBundle\Util\CommandUtil;
-use CampaignChain\CoreBundle\Util\ParserUtil;
 use Doctrine\ORM\EntityManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Yaml\Yaml;
 
 /**
- * Class Installer
- * @package CampaignChain\CoreBundle\Module
+ * Class Installer.
  */
 class Installer
 {
@@ -104,21 +101,34 @@ class Installer
      */
     private $requiredRoutes = [
         'campaignchain-channel' => [
-            'new'
+            'new',
         ],
         'campaignchain-activity' => [
-            'new', 'edit', 'edit_modal', 'edit_api', 'read'
+            'new',
+            'edit',
+            'edit_modal',
+            'edit_api',
+            'read',
         ],
         'campaignchain-campaign' => [
-            'new', 'edit', 'edit_modal', 'edit_api', 'plan', 'plan_detail'
+            'new',
+            'edit',
+            'edit_modal',
+            'edit_api',
+            'plan',
+            'plan_detail',
         ],
         'campaignchain-milestone' => [
-            'new', 'edit', 'edit_modal', 'edit_api'
-        ]
+            'new',
+            'edit',
+            'edit_modal',
+            'edit_api',
+        ],
     ];
 
     /**
      * Installer constructor.
+     *
      * @param EntityManager   $em
      * @param BundleConfig    $bundleConfigService
      * @param string          $rootDir
@@ -128,10 +138,18 @@ class Installer
      * @param CommandUtil     $commandUtil
      * @param Repository      $repository
      * @param LoggerInterface $logger
-     *
      */
-    public function __construct(EntityManager $em, BundleConfig $bundleConfigService, $rootDir, SystemService $systemService, Kernel $kernel, Package $packageService, CommandUtil $commandUtil, Repository $repository, LoggerInterface $logger)
-    {
+    public function __construct(
+        EntityManager $em,
+        BundleConfig $bundleConfigService,
+        $rootDir,
+        SystemService $systemService,
+        Kernel $kernel,
+        Package $packageService,
+        CommandUtil $commandUtil,
+        Repository $repository,
+        LoggerInterface $logger
+    ) {
         $this->em = $em;
         $this->bundleConfigService = $bundleConfigService;
         $this->rootDir = $rootDir.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR;
@@ -144,7 +162,8 @@ class Installer
     }
 
     /**
-     * Get module versions from CampaignChain
+     * Get module versions from CampaignChain.
+     *
      * @return array|string
      */
     public function getAll()
@@ -162,7 +181,7 @@ class Installer
             if (!$version) {
                 // Not installed at all.
                 unset($modules[$key]);
-            } elseif(version_compare($version, $module->version, '<')) {
+            } elseif (version_compare($version, $module->version, '<')) {
                 // Older version installed.
                 $modules[$key]->hasUpdate = true;
                 $modules[$key]->versionInstalled = $version;
@@ -176,7 +195,7 @@ class Installer
     }
 
     /**
-     * Get updates from CampaignChain
+     * Get updates from CampaignChain.
      *
      * @return array|string
      */
@@ -195,7 +214,7 @@ class Installer
             if (!$version) {
                 // Not installed at all.
                 unset($modules[$key]);
-            } elseif(version_compare($version, $module->version, '<')) {
+            } elseif (version_compare($version, $module->version, '<')) {
                 // Older version installed.
                 $modules[$key]->versionInstalled = $version;
             } else {
@@ -207,23 +226,23 @@ class Installer
     }
 
     /**
-     * Get modules that needs to be installed
+     * Get modules that needs to be installed.
      *
      * @return array|string
      */
     public function getInstalls()
     {
-        if(!$this->repositoryService->loadRepositories()){
+        if (!$this->repositoryService->loadRepositories()) {
             return Repository::STATUS_NO_REPOSITORIES;
         }
 
         $modules = $this->repositoryService->getModules();
 
         // Is the package already installed? If yes, is a higher version available?
-        foreach($modules as $key => $module) {
+        foreach ($modules as $key => $module) {
             $version = $this->packageService->getVersion($module->name);
             // Not installed yet.
-            if($version){
+            if ($version) {
                 // Older version installed.
                 unset($modules[$key]);
             }
@@ -277,8 +296,8 @@ class Installer
         $this->registerDistribution();
 
         try {
-            foreach($newBundles as $newBundle){
-                switch($newBundle->getType()){
+            foreach ($newBundles as $newBundle) {
+                switch ($newBundle->getType()) {
                     case 'campaignchain-core':
                         break;
                     case 'campaignchain-hook':
@@ -310,7 +329,7 @@ class Installer
 
             $this->em->getConnection()->commit();
         } catch (\Exception $e) {
-            $this->em->getConnection()->rollback();
+            $this->em->getConnection()->rollBack();
             if ($io) {
                 $io->error('Error at update: '.$e->getMessage());
             }
@@ -351,7 +370,6 @@ class Installer
         $this->logger->info('Output of assetic:dump --no-debug');
         $this->logger->info($output);
 
-
         if ($updateDatabase) {
             if ($io) {
                 $io->listing(['Update DB']);
@@ -376,65 +394,7 @@ class Installer
     }
 
     /**
-     * @param $moduleConfig
-     *
-     * @return array
-     */
-    protected function getModule($moduleConfig)
-    {
-        if(!file_exists($moduleConfig)) {
-            return [];
-        }
-
-        $moduleConfigContent = file_get_contents($moduleConfig);
-
-        return Yaml::parse($moduleConfigContent);
-    }
-
-    /**
-     * @param Bundle $bundle
-     */
-    private function registerHook(Bundle $bundle)
-    {
-        $params = $this->getModule($this->rootDir.$bundle->getPath().DIRECTORY_SEPARATOR.'campaignchain.yml');
-
-        if(!is_array($params['hooks']) || !count($params['hooks'])) {
-            return;
-        }
-
-        foreach($params['hooks'] as $identifier => $hookParams){
-            if ($bundle->getStatus()) {
-                $status = $bundle->getStatus();
-            } else {
-                $status = $this->bundleConfigService->isRegisteredBundle($bundle);
-            }
-
-            // Check whether this Hook has already been installed
-            switch($status){
-                case self::STATUS_REGISTERED_NO :
-                    $hook = new Hook();
-                    $hook->setIdentifier($identifier);
-                    $hook->setBundle($bundle);
-                    break;
-                case self::STATUS_REGISTERED_OLDER :
-                    // Get the existing bundle.
-                    $hook = $this->em
-                        ->getRepository('CampaignChainCoreBundle:Hook')
-                        ->findOneByIdentifier(strtolower($identifier));
-                    break;
-                case self::STATUS_REGISTERED_SAME :
-                    continue;
-            }
-
-            $hook->setServices($hookParams['services']);
-            $hook->setType($hookParams['type']);
-            $hook->setLabel($hookParams['label']);
-            $bundle->addHook($hook);
-        }
-    }
-
-    /**
-     * Updates the system descriptions
+     * Updates the system descriptions.
      */
     private function registerDistribution()
     {
@@ -471,6 +431,65 @@ class Installer
 
     /**
      * @param Bundle $bundle
+     */
+    private function registerHook(Bundle $bundle)
+    {
+        $params = $this->getModule($this->rootDir.$bundle->getPath().DIRECTORY_SEPARATOR.'campaignchain.yml');
+
+        if (!is_array($params['hooks']) || !count($params['hooks'])) {
+            return;
+        }
+
+        foreach ($params['hooks'] as $identifier => $hookParams) {
+            if ($bundle->getStatus()) {
+                $status = $bundle->getStatus();
+            } else {
+                $status = $this->bundleConfigService->isRegisteredBundle($bundle);
+            }
+
+            // Check whether this Hook has already been installed
+            switch ($status) {
+                case self::STATUS_REGISTERED_NO :
+                    $hook = new Hook();
+                    $hook->setIdentifier($identifier);
+                    $hook->setBundle($bundle);
+                    break;
+                case self::STATUS_REGISTERED_OLDER :
+                    // Get the existing bundle.
+                    $hook = $this->em
+                        ->getRepository('CampaignChainCoreBundle:Hook')
+                        ->ç(strtolower($identifier));
+                    break;
+                case self::STATUS_REGISTERED_SAME :
+                    continue;
+            }
+
+            $hook->setServices($hookParams['services']);
+            $hook->setType($hookParams['type']);
+            $hook->setLabel($hookParams['label']);
+            $bundle->addHook($hook);
+        }
+    }
+
+    /**
+     * @param $moduleConfig
+     *
+     * @return array
+     */
+    protected function getModule($moduleConfig)
+    {
+        if (!file_exists($moduleConfig)) {
+            return [];
+        }
+
+        $moduleConfigContent = file_get_contents($moduleConfig);
+
+        return Yaml::parse($moduleConfigContent);
+    }
+
+    /**
+     * @param Bundle $bundle
+     *
      * @throws \Exception
      */
     private function registerModule(Bundle $bundle)
@@ -482,8 +501,7 @@ class Installer
             return;
         }
 
-        foreach($params['modules'] as $identifier => $moduleParams){
-
+        foreach ($params['modules'] as $identifier => $moduleParams) {
             $module = null;
 
             if ($bundle->getStatus()) {
@@ -497,17 +515,19 @@ class Installer
              * for this bundle, but the module is not anymore defined in
              * its campaignchain.yml.
              */
-            if ($status== self::STATUS_REGISTERED_OLDER) {
+            if ($status == self::STATUS_REGISTERED_OLDER) {
                 $module = $this->em
                     ->getRepository('CampaignChainCoreBundle:Module')
-                    ->findOneBy([
-                        'bundle' => $bundle,
-                        'identifier' => strtolower($identifier)
-                    ]);
+                    ->findOneBy(
+                        [
+                            'bundle' => $bundle,
+                            'identifier' => strtolower($identifier),
+                        ]
+                    );
             }
 
-            if(!$module){
-                switch($bundle->getType()){
+            if (!$module) {
+                switch ($bundle->getType()) {
                     case 'campaignchain-channel':
                         $moduleEntity = 'ChannelModule';
                         break;
@@ -550,7 +570,10 @@ class Installer
             }
 
             // Verify routes.
-            if ( in_array($bundle->getType(), ['campaignchain-activity', 'campaignchain-channel', 'campaignchain-campaign', 'campaignchain-milestone'])) {
+            if (in_array(
+                $bundle->getType(),
+                ['campaignchain-activity', 'campaignchain-channel', 'campaignchain-campaign', 'campaignchain-milestone']
+            )) {
                 // Throw error if no routes defined.
                 if (
                     !isset($moduleParams['routes'])
@@ -567,7 +590,7 @@ class Installer
                     $hasMissingRoutes = false;
                     $missingRoutes = '';
 
-                    foreach($this->requiredRoutes[$bundle->getType()] as $requiredRoute){
+                    foreach ($this->requiredRoutes[$bundle->getType()] as $requiredRoute) {
                         if (!array_key_exists($requiredRoute, $moduleParams['routes'])) {
                             $hasMissingRoutes = true;
                             $missingRoutes .= $requiredRoute.', ';
@@ -585,11 +608,17 @@ class Installer
                         $module->setRoutes($moduleParams['routes']);
                     }
                 }
-            } elseif(isset($moduleParams['routes']) && is_array($moduleParams['routes']) && count($moduleParams['routes'])) {
+            } elseif (isset($moduleParams['routes']) && is_array($moduleParams['routes']) && count(
+                    $moduleParams['routes']
+                )
+            ) {
                 $module->setRoutes($moduleParams['routes']);
             }
 
-            if (isset($moduleParams['services']) && is_array($moduleParams['services']) && count($moduleParams['services'])) {
+            if (isset($moduleParams['services']) && is_array($moduleParams['services']) && count(
+                    $moduleParams['services']
+                )
+            ) {
                 $module->setServices($moduleParams['services']);
             }
             if (isset($moduleParams['hooks']) && is_array($moduleParams['hooks']) && count($moduleParams['hooks'])) {
@@ -600,28 +629,33 @@ class Installer
                 $this->systemParams[] = $moduleParams['system'];
             }
             // Are metrics for the reports defined?
-            if (isset($moduleParams['metrics']) && is_array($moduleParams['metrics']) && count($moduleParams['metrics'])) {
+            if (isset($moduleParams['metrics']) && is_array($moduleParams['metrics']) && count(
+                    $moduleParams['metrics']
+                )
+            ) {
                 foreach ($moduleParams['metrics'] as $metricType => $metricNames) {
                     switch ($metricType) {
                         case 'activity':
                             $metricClass = 'ReportAnalyticsActivityMetric';
                             break;
-                        case 'channel':
-                            $metricClass = 'ReportAnalyticsChannelMetric';
+                        case 'location':
+                            $metricClass = 'ReportAnalyticsLocationMetric';
                             break;
                         default:
                             throw new \Exception(
                                 "Unknown metric type '".$metricType."'."
-                                ."Pick 'activity' or 'channel' instead."
+                                ."Pick 'activity' or 'location' instead."
                             );
                             break;
                     }
                     foreach ($metricNames as $metricName) {
                         $metric = $this->em->getRepository('CampaignChainCoreBundle:'.$metricClass)
-                            ->findOneBy([
-                                'name' => $metricName,
-                                'bundle' => $bundle->getName()
-                            ]);
+                            ->findOneBy(
+                                [
+                                    'name' => $metricName,
+                                    'bundle' => $bundle->getName(),
+                                ]
+                            );
 
                         // Does the metric already exist?
                         if ($metric) {
@@ -632,9 +666,9 @@ class Installer
                             if ($status == self::STATUS_REGISTERED_NO) {
                                 throw new \Exception(
                                     "Metric '".$metricName."' of type '".$metricType."'"
-                                    ." already exists for bundle ".$bundle->getName().". "
-                                    ."Please define another name "
-                                    ."in campaignchain.yml of ".$bundle->getName()."."
+                                    .' already exists for bundle '.$bundle->getName().'. '
+                                    .'Please define another name '
+                                    .'in campaignchain.yml of '.$bundle->getName().'.'
                                 );
                             }
                             // Skip if same or older version of bundle.
@@ -654,8 +688,11 @@ class Installer
             // Process the params specific to a module type.
 
             // Params that must be defined for Operation modules
-            if ($bundle->getType() == 'campaignchain-operation' && !isset($moduleParams['params']['owns_location'])){
-                throw new \Exception("You must set the 'owns_location' parameter in campaignchain.yml to 'true' or 'false' for module '".$identifier."' in bundle '".$bundle->getName()."'.");
+            if ($bundle->getType() == 'campaignchain-operation' && !isset($moduleParams['params']['owns_location'])) {
+                throw new \Exception(
+                    "You must set the 'owns_location' parameter in campaignchain.yml to 'true' or 'false' for module '".$identifier."' in bundle '".$bundle->getName(
+                    )."'."
+                );
             }
 
             if (isset($moduleParams['params'])) {
@@ -668,24 +705,134 @@ class Installer
             $bundle->$addModuleMethod($module);
 
             // If a campaign module, remember the conversion to other campaign types.
-            if(
+            if (
                 $bundle->getType() == 'campaignchain-campaign' &&
                 isset($moduleParams['conversions']) &&
                 is_array($moduleParams['conversions']) &&
                 count($moduleParams['conversions'])
-            ){
+            ) {
                 $this->campaignConversions[$bundle->getName()][$module->getIdentifier()] = $moduleParams['conversions'];
             }
 
             // If an activity module, remember the related channels.
-            if(
+            if (
                 $bundle->getType() == 'campaignchain-activity' &&
                 isset($moduleParams['channels']) &&
                 is_array($moduleParams['channels'])
-            ){
+            ) {
                 $this->activityChannels[$bundle->getName()][$module->getIdentifier()] = $moduleParams['channels'];
             }
         }
+    }
+
+    /**
+     * Register campaign conversions.
+     */
+    private function registerCampaignConversions()
+    {
+        if (!count($this->campaignConversions)) {
+            return;
+        }
+
+        foreach ($this->campaignConversions as $campaignBundleName => $campaignModules) {
+            $campaignBundle = $this->em->getRepository('CampaignChainCoreBundle:Bundle')
+                ->findOneByName($campaignBundleName);
+
+            foreach ($campaignModules as $campaignModuleIdentifier => $conversionURIs) {
+                $fromCampaignModule = $this->em
+                    ->getRepository('CampaignChainCoreBundle:CampaignModule')
+                    ->findOneBy(
+                        [
+                            'bundle' => $campaignBundle,
+                            'identifier' => $campaignModuleIdentifier,
+                        ]
+                    );
+
+                foreach ($conversionURIs as $conversionURI) {
+                    $conversionURISplit = explode('/', $conversionURI);
+                    $toCampaignBundleName = $conversionURISplit[0].'/'.$conversionURISplit[1];
+                    $toCampaignModuleIdentifier = $conversionURISplit[2];
+                    $toCampaignBundle = $this->em->getRepository('CampaignChainCoreBundle:Bundle')
+                        ->findOneByName($toCampaignBundleName);
+                    $toCampaignModule = $this->em->getRepository('CampaignChainCoreBundle:CampaignModule')
+                        ->findOneBy(
+                            [
+                                'bundle' => $toCampaignBundle,
+                                'identifier' => $toCampaignModuleIdentifier,
+                            ]
+                        );
+
+                    $campaignModuleConversion = new CampaignModuleConversion();
+                    $campaignModuleConversion->setFrom($fromCampaignModule);
+                    $campaignModuleConversion->setTo($toCampaignModule);
+                    $this->em->persist($campaignModuleConversion);
+                }
+            }
+        }
+    }
+
+    /**
+     * Register activity Channels.
+     */
+    private function registerActivityChannels()
+    {
+        if (!count($this->activityChannels)) {
+            return;
+        }
+
+        foreach ($this->activityChannels as $activityBundleIdentifier => $activityModules) {
+            $activityBundle = $this->em->getRepository('CampaignChainCoreBundle:Bundle')
+                ->findOneByName($activityBundleIdentifier);
+
+            foreach ($activityModules as $activityModuleIdentifier => $activityModuleChannels) {
+                $activityModule = $this->em->getRepository('CampaignChainCoreBundle:ActivityModule')
+                    ->findOneBy(
+                        [
+                            'bundle' => $activityBundle,
+                            'identifier' => $activityModuleIdentifier,
+                        ]
+                    );
+
+                foreach ($activityModuleChannels as $channelURI) {
+                    $channelURISplit = explode('/', $channelURI);
+                    $channelBundleIdentifier = $channelURISplit[0].'/'.$channelURISplit[1];
+                    $channelModuleIdentifier = $channelURISplit[2];
+                    $channelBundle = $this->em->getRepository('CampaignChainCoreBundle:Bundle')
+                        ->findOneByName($channelBundleIdentifier);
+                    $channelModule = $this->em->getRepository('CampaignChainCoreBundle:ChannelModule')
+                        ->findOneBy(
+                            [
+                                'bundle' => $channelBundle,
+                                'identifier' => $channelModuleIdentifier,
+                            ]
+                        );
+
+                    /*
+                     * If an updated bundle, then do nothing for an existing
+                     * Activity/Channel relationship.
+                     *
+                     * TODO: Check if existing relationship has been removed
+                     * from campaignchain.yml and throw error.
+                     */
+                    if ($this->bundleConfigService->isRegisteredBundle($activityBundle) == self::STATUS_REGISTERED_OLDER) {
+                        $registeredModules = $this->em->getRepository('CampaignChainCoreBundle:ChannelModule')
+                            ->findRegisteredModulesByActivityModule($activityModule);
+
+                        if (count($registeredModules) && $registeredModules[0]->getIdentifier(
+                            ) == $channelModule->getIdentifier()
+                        ) {
+                            continue;
+                        }
+                    }
+
+                    // Map activity and channel.
+                    $activityModule->addChannelModule($channelModule);
+                    $this->em->persist($activityModule);
+                }
+            }
+        }
+
+        $this->em->flush();
     }
 
     /**
@@ -713,8 +860,8 @@ class Installer
             $system->setNavigation([]);
         }
 
-        foreach($this->systemParams as $moduleParams){
-            foreach($moduleParams as $key => $params) {
+        foreach ($this->systemParams as $moduleParams) {
+            foreach ($moduleParams as $key => $params) {
                 switch ($key) {
                     case 'navigation':
                         // Merge existing navigations.
@@ -722,106 +869,6 @@ class Installer
 
                         $system->setNavigation($navigation);
                         break;
-                }
-            }
-        }
-
-        $this->em->flush();
-    }
-
-    /**
-     * Register campaign conversions
-     */
-    private function registerCampaignConversions()
-    {
-        if (!count($this->campaignConversions)) {
-            return;
-        }
-
-        foreach ($this->campaignConversions as $campaignBundleName => $campaignModules) {
-            $campaignBundle = $this->em->getRepository('CampaignChainCoreBundle:Bundle')
-                ->findOneByName($campaignBundleName);
-
-            foreach ($campaignModules as $campaignModuleIdentifier => $conversionURIs) {
-                $fromCampaignModule = $this->em
-                    ->getRepository('CampaignChainCoreBundle:CampaignModule')
-                    ->findOneBy([
-                        'bundle' => $campaignBundle,
-                        'identifier' => $campaignModuleIdentifier
-                    ]);
-
-                foreach ($conversionURIs as $conversionURI) {
-                    $conversionURISplit = explode('/', $conversionURI);
-                    $toCampaignBundleName = $conversionURISplit[0].'/'.$conversionURISplit[1];
-                    $toCampaignModuleIdentifier = $conversionURISplit[2];
-                    $toCampaignBundle = $this->em->getRepository('CampaignChainCoreBundle:Bundle')
-                        ->findOneByName($toCampaignBundleName);
-                    $toCampaignModule = $this->em->getRepository('CampaignChainCoreBundle:CampaignModule')
-                        ->findOneBy([
-                            'bundle' => $toCampaignBundle,
-                            'identifier' => $toCampaignModuleIdentifier
-                        ]);
-
-                    $campaignModuleConversion = new CampaignModuleConversion();
-                    $campaignModuleConversion->setFrom($fromCampaignModule);
-                    $campaignModuleConversion->setTo($toCampaignModule);
-                    $this->em->persist($campaignModuleConversion);
-                }
-            }
-        }
-    }
-
-    /**
-     * Register activity Channels
-     */
-    private function registerActivityChannels()
-    {
-        if (!count($this->activityChannels)) {
-            return;
-        }
-
-        foreach ($this->activityChannels as $activityBundleIdentifier => $activityModules) {
-            $activityBundle = $this->em->getRepository('CampaignChainCoreBundle:Bundle')
-                ->findOneByName($activityBundleIdentifier);
-
-            foreach($activityModules as $activityModuleIdentifier => $activityModuleChannels){
-                $activityModule = $this->em->getRepository('CampaignChainCoreBundle:ActivityModule')
-                    ->findOneBy([
-                        'bundle' => $activityBundle,
-                        'identifier' => $activityModuleIdentifier
-                    ]);
-
-                foreach($activityModuleChannels as $channelURI){
-                    $channelURISplit = explode('/', $channelURI);
-                    $channelBundleIdentifier = $channelURISplit[0].'/'.$channelURISplit[1];
-                    $channelModuleIdentifier = $channelURISplit[2];
-                    $channelBundle = $this->em->getRepository('CampaignChainCoreBundle:Bundle')
-                        ->findOneByName($channelBundleIdentifier);
-                    $channelModule = $this->em->getRepository('CampaignChainCoreBundle:ChannelModule')
-                        ->findOneBy([
-                            'bundle' => $channelBundle,
-                            'identifier' => $channelModuleIdentifier
-                        ]);
-
-                    /*
-                     * If an updated bundle, then do nothing for an existing
-                     * Activity/Channel relationship.
-                     *
-                     * TODO: Check if existing relationship has been removed
-                     * from campaignchain.yml and throw error.
-                     */
-                    if ($this->bundleConfigService->isRegisteredBundle($activityBundle) == self::STATUS_REGISTERED_OLDER) {
-                        $registeredModules = $this->em->getRepository('CampaignChainCoreBundle:ChannelModule')
-                            ->findRegisteredModulesByActivityModule($activityModule);
-
-                        if (count($registeredModules) && $registeredModules[0]->getIdentifier() == $channelModule->getIdentifier()) {
-                            continue;
-                        }
-                    }
-
-                    // Map activity and channel.
-                    $activityModule->addChannelModule($channelModule);
-                    $this->em->persist($activityModule);
                 }
             }
         }

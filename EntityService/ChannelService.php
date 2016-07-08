@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * This file is part of the CampaignChain package.
  *
  * (c) CampaignChain, Inc. <info@campaignchain.com>
@@ -10,14 +10,11 @@
 
 namespace CampaignChain\CoreBundle\EntityService;
 
+use CampaignChain\CoreBundle\Entity\Channel;
+use CampaignChain\CoreBundle\Entity\Location;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use CampaignChain\CoreBundle\Util\ParserUtil;
-use CampaignChain\CoreBundle\Entity\CTA;
-use Doctrine\Common\Collections\ArrayCollection;
-use CampaignChain\CoreBundle\Entity\Activity;
-use CampaignChain\CoreBundle\Entity\Location;
-use CampaignChain\CoreBundle\Entity\Channel;
 
 class ChannelService
 {
@@ -26,30 +23,20 @@ class ChannelService
     protected $activityService;
     protected $locationService;
 
-
-    public function __construct(EntityManager $em, ContainerInterface $container, ActivityService $activityService, LocationService $locationService)
-    {
+    public function __construct(
+        EntityManager $em,
+        ContainerInterface $container,
+        ActivityService $activityService,
+        LocationService $locationService
+    ) {
         $this->em = $em;
         $this->container = $container;
         $this->activityService = $activityService;
         $this->locationService = $locationService;
     }
 
-    public function getChannel($id){
-        $channel = $this->em
-            ->getRepository('CampaignChainCoreBundle:Channel')
-            ->find($id);
-
-        if (!$channel) {
-            throw new \Exception(
-                'No Channel found for id '.$id
-            );
-        }
-
-        return $channel;
-    }
-
-    public function getChannelByLocation($locationId){
+    public function getChannelByLocation($locationId)
+    {
         $location = $this->em
             ->getRepository('CampaignChainCoreBundle:Location')
             ->find($locationId);
@@ -62,13 +49,27 @@ class ChannelService
 
         $channel = $location->getChannel();
 
-        if(!$channel){
+        if (!$channel) {
             throw new \Exception(
                 'This is not a Channel Location'
             );
         }
 
         return $channel;
+    }
+
+    public function generateTrackingId()
+    {
+        $trackingId = md5(uniqid(mt_rand(), true));
+
+        // Check with DB, whether already exists. If yes, then generate new one and check again.
+        $cta = $this->em->getRepository('CampaignChainCoreBundle:Channel')->findOneByTrackingId($trackingId);
+
+        if ($cta) {
+            return $this->generateTrackingId();
+        } else {
+            return $trackingId;
+        }
     }
 
     /*
@@ -79,19 +80,6 @@ class ChannelService
      *
      * @return string
      */
-    public function generateTrackingId()
-    {
-        $trackingId = md5(uniqid(mt_rand(), true));
-
-        // Check with DB, whether already exists. If yes, then generate new one and check again.
-        $cta = $this->em->getRepository('CampaignChainCoreBundle:Channel')->findOneByTrackingId($trackingId);
-
-        if($cta){
-            return $this->generateTrackingId();
-        } else {
-            return $trackingId;
-        }
-    }
 
     public function getRootLocations($channel)
     {
@@ -106,11 +94,13 @@ class ChannelService
 
         return $query->getResult();
     }
+
     /**
      * This method deletes a channel if there are no closed activities.
-     * If there are open activities the location is deactivated
+     * If there are open activities the location is deactivated.
      *
      * @param $id
+     *
      * @throws \Exception
      */
     public function removeChannel($id)
@@ -121,7 +111,7 @@ class ChannelService
 
         if (!$channel) {
             throw new \Exception(
-                'No channel found for id ' . $id
+                'No channel found for id '.$id
             );
         }
         //
@@ -129,14 +119,14 @@ class ChannelService
 
         $openActivities = new ArrayCollection();
         $closedActivities = new ArrayCollection();
-        foreach ($locations as $location){
-        foreach ($location->getActivities() as $activity) {
-            if ($activity->getStatus() == 'closed') {
-                $closedActivities->add($activity);
-            } else {
-                $openActivities->add($activity);
+        foreach ($locations as $location) {
+            foreach ($location->getActivities() as $activity) {
+                if ($activity->getStatus() == 'closed') {
+                    $closedActivities->add($activity);
+                } else {
+                    $openActivities->add($activity);
+                }
             }
-        }
         }
 
         if (!$closedActivities->isEmpty()) {
@@ -145,43 +135,37 @@ class ChannelService
             foreach ($openActivities as $activity) {
                 $this->activityService->removeActivity($activity);
             }
-            foreach($locations as $location){
+            foreach ($locations as $location) {
                 $this->locationService->removeLocation($location);
             }
             $this->em->remove($channel);
             $this->em->flush();
-
-
         }
     }
 
     /**
      * @param Channel $channel
+     *
      * @return bool
      */
-    public function isRemovable(Channel $channel){
-
-        $schedulerReportsChannels = $this->em
-            ->getRepository('CampaignChainCoreBundle:ReportAnalyticsChannelFact')
-            ->findBy(array('channel' => $channel));
-
-        if (!empty($schedulerReportsChannels)) {
-            return false;
-        }
-
+    public function isRemovable(Channel $channel)
+    {
         foreach ($channel->getLocations() as $location) {
             if (!$this->locationService->isRemovable($location)) {
                 return false;
             }
         }
-        
+
         return true;
     }
 
-    public function toggleStatusChannel($id){
+    public function toggleStatusChannel($id)
+    {
         $channel = $this->getChannel($id);
 
-        $toggle = (($channel->getStatus()==Location::STATUS_ACTIVE) ? $channel->setStatus(Location::STATUS_INACTIVE) : $channel->setStatus(Location::STATUS_ACTIVE));
+        $toggle = (($channel->getStatus() == Location::STATUS_ACTIVE) ? $channel->setStatus(
+            Location::STATUS_INACTIVE
+        ) : $channel->setStatus(Location::STATUS_ACTIVE));
         foreach ($channel->getLocations() as $location) {
             $location->setStatus($channel->getStatus());
         }
@@ -189,4 +173,18 @@ class ChannelService
         $this->em->flush();
     }
 
+    public function getChannel($id)
+    {
+        $channel = $this->em
+            ->getRepository('CampaignChainCoreBundle:Channel')
+            ->find($id);
+
+        if (!$channel) {
+            throw new \Exception(
+                'No Channel found for id '.$id
+            );
+        }
+
+        return $channel;
+    }
 }

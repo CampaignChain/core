@@ -22,13 +22,13 @@ file that was distributed with this source code.
         </tr>
         </thead>
         <tbody>
-        {% for report in reports%}
+        {% for report in reports %}
             <tr>
                 <td>{{ report.displayName }}</td>
                 <td>{{ report.description }}</td>
                 <td>
                     <a class="btn btn-primary"
-                       href="{{ path(app.request.attributes.get('_route'), {id: report.id}) }}">
+                       href="{{ path('campaignchain_core_report_show', {id: report.id}) }}">
                         <span class="fa fa-folder-open"></span></a>
                 </td>
             </tr>
