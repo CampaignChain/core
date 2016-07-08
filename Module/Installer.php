@@ -48,9 +48,9 @@ class Installer
     private $rootDir;
 
     /**
-     * @var Locator
+     * @var BundleConfig
      */
-    private $locator;
+    private $bundleConfigService;
 
     /**
      * @var SystemService
@@ -120,7 +120,7 @@ class Installer
     /**
      * Installer constructor.
      * @param EntityManager   $em
-     * @param Locator         $locator
+     * @param BundleConfig    $bundleConfigService
      * @param string          $rootDir
      * @param SystemService   $systemService
      * @param Kernel          $kernel
@@ -130,10 +130,10 @@ class Installer
      * @param LoggerInterface $logger
      *
      */
-    public function __construct(EntityManager $em, Locator $locator, $rootDir, SystemService $systemService, Kernel $kernel, Package $packageService, CommandUtil $commandUtil, Repository $repository, LoggerInterface $logger)
+    public function __construct(EntityManager $em, BundleConfig $bundleConfigService, $rootDir, SystemService $systemService, Kernel $kernel, Package $packageService, CommandUtil $commandUtil, Repository $repository, LoggerInterface $logger)
     {
         $this->em = $em;
-        $this->locator = $locator;
+        $this->bundleConfigService = $bundleConfigService;
         $this->rootDir = $rootDir.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR;
         $this->systemService = $systemService;
         $this->kernelService = $kernel;
@@ -253,7 +253,7 @@ class Installer
             $this->logger->info($output);
         }
 
-        $newBundles = $this->locator->getNewBundles();
+        $newBundles = $this->bundleConfigService->getNewBundles();
 
         if (empty($newBundles)) {
             if ($io) {
@@ -406,7 +406,7 @@ class Installer
             if ($bundle->getStatus()) {
                 $status = $bundle->getStatus();
             } else {
-                $status = $this->locator->isRegisteredBundle($bundle);
+                $status = $this->bundleConfigService->isRegisteredBundle($bundle);
             }
 
             // Check whether this Hook has already been installed
@@ -489,7 +489,7 @@ class Installer
             if ($bundle->getStatus()) {
                 $status = $bundle->getStatus();
             } else {
-                $status = $this->locator->isRegisteredBundle($bundle);
+                $status = $this->bundleConfigService->isRegisteredBundle($bundle);
             }
 
             /*
@@ -810,7 +810,7 @@ class Installer
                      * TODO: Check if existing relationship has been removed
                      * from campaignchain.yml and throw error.
                      */
-                    if ($this->locator->isRegisteredBundle($activityBundle) == self::STATUS_REGISTERED_OLDER) {
+                    if ($this->bundleConfigService->isRegisteredBundle($activityBundle) == self::STATUS_REGISTERED_OLDER) {
                         $registeredModules = $this->em->getRepository('CampaignChainCoreBundle:ChannelModule')
                             ->findRegisteredModulesByActivityModule($activityModule);
 

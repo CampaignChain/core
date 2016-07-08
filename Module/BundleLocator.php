@@ -17,7 +17,7 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
-class Locator
+class BundleLocator
 {
     /**
      * @var string
@@ -36,21 +36,15 @@ class Locator
     private $packageService;
 
     /**
-     * @var EntityManager
-     */
-    private $entityManager;
-
-    /**
      * Locator constructor.
      * @param $rootDir
      * @param Package $package
      * @param EntityManager $entityManager
      */
-    public function __construct($rootDir, Package $package, EntityManager $entityManager)
+    public function __construct($rootDir, Package $package)
     {
         $this->rootDir = $rootDir.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR;
         $this->packageService = $package;
-        $this->entityManager = $entityManager;
     }
 
     /**
@@ -88,52 +82,6 @@ class Locator
         $this->availableBundles = $bundles;
 
         return $bundles;
-    }
-
-    /**
-     * Return only new or need to be updated Bundles
-     * skipVersion == false
-     *
-     * @return Bundle[]
-     */
-    public function getNewBundles()
-    {
-        $bundles = $this->getAvailableBundles();
-        $newBundles = [];
-
-        foreach ($bundles as $bundle) {
-            // Check whether this bundle has already been installed
-            switch ($this->isRegisteredBundle($bundle)) {
-                case Installer::STATUS_REGISTERED_NO:
-                    $bundle->setStatus(Installer::STATUS_REGISTERED_NO);
-                    $newBundles[] = $bundle;
-                    break;
-
-                case Installer::STATUS_REGISTERED_OLDER:
-                    // Get the existing bundle.
-                    /** @var Bundle $registeredBundle */
-                    $registeredBundle = $this->entityManager
-                        ->getRepository('CampaignChainCoreBundle:Bundle')
-                        ->findOneByName($bundle->getName());
-                    // Update the existing bundle's data.
-                    $registeredBundle->setDescription($bundle->getDescription());
-                    $registeredBundle->setLicense($bundle->getLicense());
-                    $registeredBundle->setAuthors($bundle->getAuthors());
-                    $registeredBundle->setHomepage($bundle->getHomepage());
-                    $registeredBundle->setVersion($bundle->getVersion());
-                    $registeredBundle->setExtra($bundle->getExtra());
-
-                    $registeredBundle->setStatus(Installer::STATUS_REGISTERED_OLDER);
-                    $newBundles[] = $registeredBundle;
-                    break;
-
-                case Installer::STATUS_REGISTERED_SAME:
-                    $bundle->setStatus(Installer::STATUS_REGISTERED_SAME);
-                    break;
-            }
-        }
-
-        return $newBundles;
     }
 
     /**
@@ -193,34 +141,5 @@ class Locator
         );
 
         return $bundle;
-    }
-
-    /**
-     * @param Bundle $newBundle
-     * @return string
-     */
-    public function isRegisteredBundle(Bundle $newBundle)
-    {
-        /** @var Bundle $registeredBundle */
-        $registeredBundle = $this->entityManager
-            ->getRepository('CampaignChainCoreBundle:Bundle')
-            ->findOneByName($newBundle->getName());
-
-        if (!$registeredBundle){
-            // This case covers development of modules.
-            return Installer::STATUS_REGISTERED_NO;
-        }
-
-        if ($registeredBundle->getVersion() == 'dev-master' && $newBundle->getVersion() == 'dev-master') {
-            return Installer::STATUS_REGISTERED_OLDER;
-        }
-
-        // Bundle with same version is already registered.
-        if(version_compare($registeredBundle->getVersion(), $newBundle->getVersion(), '==')){
-            return Installer::STATUS_REGISTERED_SAME;
-        }
-
-        // Bundle with older version is already registered.
-        return Installer::STATUS_REGISTERED_OLDER;
     }
 }

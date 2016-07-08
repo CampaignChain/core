@@ -366,18 +366,23 @@ services:
             - { name: security.voter }
 
     # Modules
+    campaignchain.core.module.bundle:
+            class: CampaignChain\CoreBundle\Module\BundleConfig
+            arguments:
+                - '@campaignchain.core.module.locator'
+                - '@doctrine.orm.default_entity_manager'
+
     campaignchain.core.module.locator:
-        class: CampaignChain\CoreBundle\Module\Locator
+        class: CampaignChain\CoreBundle\Module\BundleLocator
         arguments:
             - '%kernel.root_dir%'
             - '@campaignchain.core.module.package'
-            - '@doctrine.orm.default_entity_manager'
 
     campaignchain.core.module.installer:
         class: CampaignChain\CoreBundle\Module\Installer
         arguments:
             - '@doctrine.orm.entity_manager'
-            - '@campaignchain.core.module.locator'
+            - '@campaignchain.core.module.bundle'
             - '%kernel.root_dir%'
             - '@campaignchain.core.system'
             - '@campaignchain.core.module.kernel'
