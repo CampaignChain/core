@@ -458,7 +458,7 @@ class Installer
                     // Get the existing bundle.
                     $hook = $this->em
                         ->getRepository('CampaignChainCoreBundle:Hook')
-                        ->ç(strtolower($identifier));
+                        ->findOneByIdentifier(strtolower($identifier));
                     break;
                 case self::STATUS_REGISTERED_SAME :
                     continue;
