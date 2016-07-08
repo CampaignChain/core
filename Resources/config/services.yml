@@ -414,8 +414,6 @@ services:
         class: CampaignChain\CoreBundle\Module\Kernel
         arguments:
             - '%kernel.root_dir%'
-            - '@campaignchain.core.util.command'
-            - '@logger'
 
     # Menu
     campaignchain.core.menu.list_group_renderer:

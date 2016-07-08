@@ -11,25 +11,13 @@
 namespace CampaignChain\CoreBundle\Module;
 
 use CampaignChain\CoreBundle\Entity\Bundle;
-use CampaignChain\CoreBundle\Util\CommandUtil;
 use CampaignChain\CoreBundle\Util\SystemUtil;
 use CampaignChain\CoreBundle\Util\VariableUtil;
 use CampaignChain\CoreBundle\Wizard\Install\Driver\YamlConfig;
-use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\Filesystem\Filesystem;
 
 class Kernel
 {
-    /**
-     * @var Logger
-     */
-    private $logger;
-
-    /**
-     * @var CommandUtil
-     */
-    private $command;
-
     /**
      * @var KernelConfig
      */
@@ -48,14 +36,10 @@ class Kernel
     /**
      * Kernel constructor.
      * @param string      $kernelRootDir
-     * @param CommandUtil $command
-     * @param Logger      $logger
      */
-    public function __construct($kernelRootDir, CommandUtil $command, Logger $logger)
+    public function __construct($kernelRootDir)
     {
         $this->rootDir = $kernelRootDir.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR;
-        $this->command = $command;
-        $this->logger = $logger;
         $this->configFiles = SystemUtil::getConfigFiles();
         $this->kernelConfig = new KernelConfig();
     }
