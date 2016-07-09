@@ -21,6 +21,10 @@ function campaignchainDependentSelect2(parent, child, route){
 
     $parentSelect.change(function(){
         if ($(this).val() != '') {
+            $childSelect.select2('destroy');
+            $childSelect.hide();
+            $childLabel.hide();
+
             var $route = Routing.generate(route, { id: $parentSelect.val() });
             $.getJSON( $route )
                 .done(function( json ) {
@@ -34,9 +38,9 @@ function campaignchainDependentSelect2(parent, child, route){
                         formatResult: format
                     });
                 })
-                .fail(function( jqxhr, textStatus, error ) {
-                    var err = textStatus + ", " + error;
-                    console.log( "Request Failed: " + err );
+                .fail(function( jqXHR, textStatus, error ) {
+                    var exception = new CampaignChain.Exception();
+                    exception.http(jqXHR.status);
                 });
 
             $(this).focus();
@@ -49,11 +53,5 @@ function campaignchainDependentSelect2(parent, child, route){
 
             $previousSelect = $parentSelect.val();
         }
-    });
-
-    $parentSelect.on("select2-opening", function() {
-        $childSelect.select2('destroy');
-        $childSelect.hide();
-        $childLabel.hide();
     });
 }

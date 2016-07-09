@@ -32,6 +32,7 @@ class Bundle extends Meta
     const TYPE_REPORT_BUDGET = 'campaignchain-report/budget';
     const TYPE_REPORT_SALES = 'campaignchain-report/sales';
     const TYPE_HOOK = 'campaignchain-hook';
+    const TYPE_SYMFONY = 'campaignchain-symfony';
 
     /**
      * @ORM\Column(type="integer")
@@ -133,6 +134,13 @@ class Bundle extends Meta
     protected $version = 'dev-master';
 
     protected $extra;
+
+    /**
+     * @var string
+     * Not mapped to the DB
+     * It's used only at the install
+     */
+    protected $status = false;
 
     /**
      * Get id
@@ -283,6 +291,7 @@ class Bundle extends Meta
             self::TYPE_REPORT_BUDGET,
             self::TYPE_REPORT_SALES,
             self::TYPE_HOOK,
+            self::TYPE_SYMFONY,
         ))) {
             throw new \InvalidArgumentException("Invalid bundle type.");
         }
@@ -832,5 +841,21 @@ class Bundle extends Meta
     public function getExtra()
     {
         return $this->extra;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param string $status
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
     }
 }

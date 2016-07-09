@@ -66,6 +66,10 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
+    campaignchain.core.listener.entry_point:
+        class: CampaignChain\CoreBundle\EventListener\EntryPoint
+        arguments: [ @router ]
+
     campaignchain.core.listener.datetime:
         class: CampaignChain\CoreBundle\EventListener\DatetimeListener
         arguments:
@@ -85,7 +89,6 @@ services:
         arguments:
             - '@campaignchain.core.user'
             - '@campaignchain.core.service.file_upload'
-            - '@liip_imagine.binary.loader.uploads'
             - '@liip_imagine.filter.manager'
         tags:
             - { name: doctrine.orm.entity_listener }
@@ -111,6 +114,17 @@ services:
             - '@monolog.logger.external'
         tags:
             - { name: kernel.event_listener, event: kernel.exception }
+
+    campaign_chain_core.listener.password_reset:
+        class: CampaignChain\CoreBundle\EventListener\PasswordResetListener
+        arguments: ['@router']
+        tags:
+            - { name: kernel.event_subscriber }
+
+    campaign_chain_core.listener.user_date_time:
+        class: CampaignChain\CoreBundle\EventListener\UserDateTimeListener
+        tags:
+            - { name: kernel.event_subscriber }
 
     # Services
     campaignchain.core.module:
@@ -150,6 +164,7 @@ services:
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@service_container'
+            - '@campaignchain.core.serializer.default'
 
     campaignchain.core.milestone:
         class: CampaignChain\CoreBundle\EntityService\MilestoneService
@@ -224,18 +239,39 @@ services:
             - '@doctrine.orm.entity_manager'
             - '@service_container'
 
+    campaignchain.core.form.type.datetime:
+        class: CampaignChain\CoreBundle\Form\Type\DateTimeType
+        arguments:
+            - '@campaignchain.core.util.datetime'
+        tags:
+            - { name: form.type, alias: campaignchain_datetime }
+
+    campaignchain.core.form.type.datetimepicker:
+        class: CampaignChain\CoreBundle\Form\Type\DateTimePickerType
+        arguments:
+            - '@campaignchain.core.util.datetime'
+        tags:
+            - { name: form.type, alias: campaignchain_datetimepicker }
+
+    campaignchain.core.form.type.daterangepicker:
+        class: CampaignChain\CoreBundle\Form\Type\DateRangePickerType
+        tags:
+            - { name: form.type, alias: campaignchain_daterangepicker }
+
     # Model
     campaignchain.core.model.dhtmlxgantt:
         class: CampaignChain\CoreBundle\Model\DhtmlxGantt
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@service_container'
+            - '@campaignchain.core.serializer.default'
 
     campaignchain.core.model.fullcalendar:
         class: CampaignChain\CoreBundle\Model\FullCalendar
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@service_container'
+            - '@campaignchain.core.serializer.default'
 
     # Sonata
     campaignchain.block.campaign.ongoing.listgroup:
@@ -330,11 +366,30 @@ services:
             - { name: security.voter }
 
     # Modules
+    campaignchain.core.module.bundle:
+            class: CampaignChain\CoreBundle\Module\BundleConfig
+            arguments:
+                - '@campaignchain.core.module.locator'
+                - '@doctrine.orm.default_entity_manager'
+
+    campaignchain.core.module.locator:
+        class: CampaignChain\CoreBundle\Module\BundleLocator
+        arguments:
+            - '%kernel.root_dir%'
+            - '@campaignchain.core.module.package'
+
     campaignchain.core.module.installer:
         class: CampaignChain\CoreBundle\Module\Installer
         arguments:
             - '@doctrine.orm.entity_manager'
-            - '@service_container'
+            - '@campaignchain.core.module.bundle'
+            - '%kernel.root_dir%'
+            - '@campaignchain.core.system'
+            - '@campaignchain.core.module.kernel'
+            - '@campaignchain.core.module.package'
+            - '@campaignchain.core.util.command'
+            - '@campaignchain.core.module.repository'
+            - '@logger'
 
     campaignchain.core.module.package:
         class: CampaignChain\CoreBundle\Module\Package
@@ -345,7 +400,7 @@ services:
     campaignchain.core.module.repository:
         class: CampaignChain\CoreBundle\Module\Repository
         arguments:
-            - '@doctrine.orm.entity_manager'
+            - '@campaignchain.core.system'
             - '%campaignchain_dev%'
 
     campaignchain.core.module.composer:
@@ -359,8 +414,6 @@ services:
         class: CampaignChain\CoreBundle\Module\Kernel
         arguments:
             - '%kernel.root_dir%'
-            - '@campaignchain.core.util.command'
-            - '@logger'
 
     # Menu
     campaignchain.core.menu.list_group_renderer:
@@ -381,6 +434,21 @@ services:
         tags:
             - { name: knp_menu.renderer, alias: dropdown }
 
+    # Serializer
+    campaignchain.core.serializer.encoder.json:
+        class: 'Symfony\Component\Serializer\Encoder\JsonEncoder'
+
+    campaignchain.core.serializer.normalizer.getsetmethod:
+        class: 'Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer'
+
+    campaignchain.core.serializer.default:
+        class: 'Symfony\Component\Serializer\Serializer'
+        arguments:
+            0:
+                - '@campaignchain.core.serializer.normalizer.getsetmethod'
+            1:
+                - '@campaignchain.core.serializer.encoder.json'
+
     # Logger
     campaignchain.core.monolog_psr_processor:
         class: Monolog\Processor\PsrLogMessageProcessor
@@ -400,6 +468,8 @@ services:
         arguments:
             - '%campaignchain.core.upload_storage.path%'
             - '%campaignchain.core.upload_storage.url_prefix%'
+            - '@gaufrette.images_filesystem'
+            - '@liip_imagine.cache.manager'
 
     campaignchain.core.util.datetime:
         class: CampaignChain\CoreBundle\Util\DateTimeUtil
@@ -410,6 +480,16 @@ services:
         class: CampaignChain\CoreBundle\Util\CommandUtil
         arguments:
             - '@kernel'
+
+    # Fixtures aka sample data
+    campaignchain.core.fixture:
+        class: CampaignChain\CoreBundle\Fixture\FileLoader
+        arguments:
+            - '@campaignchain.core.user'
+            - '@h4cc_alice_fixtures.manager'
+            - '@doctrine.orm.default_entity_manager'
+            - '@liip_imagine.mime_type_guesser'
+            - '@liip_imagine.extension_guesser'
 
     # External
     mremi.url_shortener.provider.bitly.bitly_provider:

@@ -32,11 +32,11 @@ class Builder extends ContainerAware
 
         $menu->addChild('All', array(
             'route' => 'campaignchain_core_module'
-            ))
+        ))
             ->setAttribute('class', 'campaignchain-modules-all');
         $menu->addChild('New', array(
             'route' => 'campaignchain_core_module_new'
-            ));
+        ));
 
         return $menu;
     }
@@ -47,13 +47,8 @@ class Builder extends ContainerAware
 
         $menu = $factory->createItem('root');
 
-        $securityContext = $this->container->get('security.authorization_checker');
-        if ($securityContext->isGranted('ROLE_SUPER_ADMIN')) {
-            $menu->addChild('List', array('route' => 'campaignchain_core_user'));
-        }
-
-        $menu->addChild('Settings', array('route' => 'campaignchain_core_profile_edit', 'routeParameters' => array('id' => $request->attributes->getInt('id') )));
-        $menu->addChild('Password', array('route' => 'campaignchain_core_profile_change_password', 'routeParameters' => array('id' => $request->attributes->getInt('id') )));
+        $menu->addChild('Settings', array('route' => 'campaignchain_core_profile_edit'));
+        $menu->addChild('Password', array('route' => 'campaignchain_core_profile_change_password'));
 
         return $menu;
     }
@@ -66,6 +61,26 @@ class Builder extends ContainerAware
 
         return $menu;
     }
+
+    public function userEditTab(FactoryInterface $factory, array $options)
+    {
+        $menu = $factory->createItem('root');
+
+        $menu->addChild('Back to List', array('route' => 'campaignchain_core_user'));
+        $menu->addChild('Edit User', array(
+            'route' => 'campaignchain_core_user_edit',
+            'routeParameters' => array(
+                'id' => $this->container->get('request')->get('id')
+            )));
+        $menu->addChild('Change Password', array(
+            'route' => 'campaignchain_core_user_change_password',
+            'routeParameters' => array(
+                'id' => $this->container->get('request')->get('id')
+            )));
+
+        return $menu;
+    }
+
 
     public function settingsMenu(FactoryInterface $factory, array $options)
     {
@@ -92,7 +107,7 @@ class Builder extends ContainerAware
         $system = $this->container->get('campaignchain.core.system')->getActiveSystem();
         $systemNavigation = $system->getNavigation();
 
-        if($systemNavigation) {
+        if ($systemNavigation) {
             foreach ($systemNavigation['settings'] as $systemSetting) {
                 list($label, $route) = $systemSetting;
 

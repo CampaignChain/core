@@ -13,13 +13,9 @@ namespace CampaignChain\CoreBundle\Controller;
 use CampaignChain\CoreBundle\Entity\Medium;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use CampaignChain\CoreBundle\Entity\Activity;
-use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 use CampaignChain\CoreBundle\Entity\Action;
 
 class ActivityController extends Controller
@@ -268,9 +264,7 @@ class ActivityController extends Controller
 
     public function moveApiAction(Request $request)
     {
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new GetSetMethodNormalizer());
-        $serializer = new Serializer($normalizers, $encoders);
+        $serializer = $this->get('campaignchain.core.serializer.default');
 
         $responseData = array();
 
@@ -302,11 +296,10 @@ class ActivityController extends Controller
         // TODO: Check whether start = end date.
         $responseData['new_end_date'] = $responseData['new_start_date'];
 
-        $repository = $this->getDoctrine()->getManager();
-        $repository->persist($activity);
-        $repository->flush();
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($activity);
+        $em->flush();
 
-        $response = new Response($serializer->serialize($responseData, 'json'));
-        return $response->setStatusCode(Response::HTTP_OK);
+        return new Response($serializer->serialize($responseData, 'json'));
     }
 }

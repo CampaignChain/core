@@ -44,6 +44,11 @@ class AdminStep implements StepInterface
      */
     public $user;
 
+    /**
+     * @Assert\NotBlank
+     */
+    public $timezone = 'UTC';
+
     private $context;
 
     private $command;
@@ -78,6 +83,12 @@ class AdminStep implements StepInterface
             $this->email = null;
         } else {
             $this->email = $parameters['email'];
+        }
+
+        if (!isset($parameters['timezone'])) {
+            $this->timezone = 'UTC';
+        } else {
+            $this->timezone = $parameters['timezone'];
         }
     }
 
@@ -118,6 +129,7 @@ class AdminStep implements StepInterface
             'email' => $data->email,
             'password' => $data->password,
             'username' => $data->user,
+            'timezone' => $data->timezone,
         );
     }
 

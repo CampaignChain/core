@@ -12,23 +12,23 @@ namespace CampaignChain\CoreBundle\EntityService;
 
 use CampaignChain\CoreBundle\Entity\Hook;
 use Doctrine\ORM\EntityManager;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use CampaignChain\CoreBundle\Entity\Action;
 use CampaignChain\CoreBundle\Entity\Campaign;
 use CampaignChain\CoreBundle\Twig\CampaignChainCoreExtension;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class CampaignService
 {
     protected $em;
     protected $container;
+    protected $serializer;
 
-    public function __construct(EntityManager $em, ContainerInterface $container)
+    public function __construct(EntityManager $em, ContainerInterface $container, SerializerInterface $serializer)
     {
         $this->em = $em;
         $this->container = $container;
+        $this->serializer = $serializer;
     }
 
     public function getAllCampaigns(){
@@ -105,11 +105,7 @@ class CampaignService
             );
         }
 
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new GetSetMethodNormalizer());
-        $serializer = new Serializer($normalizers, $encoders);
-
-        return $serializer->serialize($campaignsDates, 'json');
+        return $this->serializer->serialize($campaignsDates, 'json');
     }
 
     public function moveCampaign(Campaign $campaign, $newStartDate, $status = null){

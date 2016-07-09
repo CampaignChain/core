@@ -34,6 +34,7 @@ class AdminStepType extends AbstractType
                 'second_name'     => 'password_again',
                 'invalid_message' => 'The password fields must match.',
             ))
+            ->add('timezone', 'timezone')
             ->add('email', 'email');
     }
 

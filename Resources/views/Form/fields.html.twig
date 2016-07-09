@@ -92,7 +92,7 @@ file that was distributed with this source code.
     {% endspaceless %}
 {% endblock choice_widget_options %}
 
-{% block daterangepicker_widget %}
+{% block campaignchain_daterangepicker_widget %}
     {% spaceless %}
         {% set value = data|campaignchain_datetime() %}
         {% if widget == 'single_text' %}
@@ -183,7 +183,7 @@ file that was distributed with this source code.
             </script>
             {% endif %}
     {% endspaceless %}
-{% endblock daterangepicker_widget %}
+{% endblock campaignchain_daterangepicker_widget %}
 
 {% block textarea_widget %}
     {% spaceless %}
@@ -202,25 +202,88 @@ file that was distributed with this source code.
 
         {% set attr = attr|merge({ 'class': (attr.class|default('') ~ ' form-control')|trim }) %}
 
-        <textarea {{ block('widget_attributes') }}>{{ value }}</textarea>
+        {% javascripts '@twitter_text_js' %}
+        <script
+        {% endjavascripts %}
+        {% javascripts '@twitter_text_js' %}
+        src="{{ asset_url }}"></script>
+        {% endjavascripts %}
 
         {% if attr.maxlength is defined %}
+            {% set text_max = attr.maxlength %}
+        {% elseif attr.maxlength_soft is defined %}
+            {% set text_max = attr.maxlength_soft %}
+        {% endif %}
+
+        <textarea {{ block('widget_attributes') }}>{{ value }}</textarea>
+
+        {% if attr.maxlength is defined or attr.maxlength_soft is defined %}
+
+            {% if attr.maxlength_soft is defined %}
+                {% javascripts '@highlight_textarea_js' %}
+                <script src="{{ asset_url }}"></script>
+                {% endjavascripts %}
+                {% stylesheets '@highlight_textarea_css' %}
+                <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
+                {% endstylesheets %}
+            {% endif %}
+
             <span id="{{ id }}_counter" class="help-block"></span>
 
             <script type="text/javascript">
                 $(document).ready(function() {
-                    var text_max = {{ attr.maxlength }};
-                    var text_length = $('#{{ id }}').val().length;
-                    var text_remaining = text_max - text_length;
+                    remainingChars($('#{{ id }}').val(), {{ text_max }});
 
-                    $('#{{ id }}_counter').html(text_remaining + ' characters remaining');
-
-                    $('#{{ id }}').keyup(function(event) {
-                        text_length = $('#{{ id }}').val().length;
-                        text_remaining = text_max - text_length;
-
-                        $('#{{ id }}_counter').html(text_remaining + ' characters remaining');
+                    $('#{{ id }}').on('input', function() {
+                        remainingChars($('#{{ id }}').val(), {{ text_max }});
                     });
+
+                    function remainingChars(text, max)
+                    {
+                        var lengthWithShortUrls = twttr.txt.getTweetLength(text);
+                        var count = max - lengthWithShortUrls;
+                        $('#{{ id }}_counter').html('<span id="number_counter">' + count + '</span> characters remaining');
+
+                        if(count < 0) {
+                            // Change color of number.
+                            $('#{{ id }}_counter > #number_counter').addClass('bg-danger').addClass('text-danger');
+
+                            // Disable submit button.
+                            $('button[type="submit"]').prop('disabled', true);
+
+                            // Calculate text length with expanded URLs.
+                            var $urls = twttr.txt.extractUrls(text);
+                            var $lengthWithExpandedUrls = text.length;
+                            var $maxLengthExpandedUrls = $lengthWithExpandedUrls;
+                            var $allUrlsLength = 0;
+                            for (var i = 0; i < $urls.length; i++) {
+                                $allUrlsLength = $allUrlsLength + ($urls[i].length - 23);
+                            }
+
+                            $maxLengthExpandedUrls = max + $allUrlsLength;
+
+                            highlightOverflow($maxLengthExpandedUrls);
+                        } else {
+                            // Enable submit button.
+                            $('button[type="submit"]').prop('disabled', false);
+                        }
+                    }
+
+                    function highlightOverflow(start)
+                    {
+                        $('#{{ id }}').highlightTextarea({
+                            ranges: [{
+                                class: 'bg-danger',
+                                start: start
+                            }],
+                            resizable: false
+                        });
+
+                        $('.highlightTextarea-highlighter').css('width', $('#{{ id }}').width());
+                        $('.highlightTextarea-highlighter').css('height', $('#{{ id }}').height());
+                        $('.highlightTextarea-container').css('width', $('.highlightTextarea').width());
+                        $('.highlightTextarea-container').css('height', $('.highlightTextarea').height());
+                    }
                 });
             </script>
         {% elseif attr.count_chars is defined and attr.count_chars %}
@@ -304,7 +367,7 @@ file that was distributed with this source code.
 
     <div class="avatar-upload-container" id="{{ containerId }}">
         {% if data is not empty %}
-            <img class="avatar-image image-selected" src="{{ data|campaignchain_user_avatar|imagine_filter('avatar') }}" alt="">
+            <img class="avatar-image image-selected" src="{{ data|imagine_filter('avatar') }}" alt="">
         {% else %}
             <span class="avatar-image no-avatar"></span>
         {% endif %}

@@ -10,25 +10,32 @@
 
 namespace CampaignChain\CoreBundle\Controller;
 
-use CampaignChain\CoreBundle\Entity\User;
+use FOS\UserBundle\Event\UserEvent;
+use FOS\UserBundle\FOSUserEvents;
+use FOS\UserBundle\Model\UserInterface;
 use Liip\ImagineBundle\Exception\Binary\Loader\NotLoadableException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+/**
+ * Class ProfileController
+ * @package CampaignChain\CoreBundle\Controller
+ */
 class ProfileController extends Controller
 {
 
     /**
      * @param Request $request
-     * @param User $user
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function editAction(Request $request, User $user)
+    public function editAction(Request $request)
     {
-        if (!$this->isGranted('ROLE_SUPER_ADMIN') && $this->getUser() != $user) {
-            throw $this->createAccessDeniedException('Can\'t edit a user page');
+        $user = $this->getUser();
+
+        if (!is_object($user) || !$user instanceof UserInterface) {
+            throw $this->createAccessDeniedException('This user does not have access to this section.');
         }
 
         $form = $this->createForm('campaignchain_core_user', $user);
@@ -36,26 +43,25 @@ class ProfileController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            // Change new profile in user's session
-            $request->getSession()->set('campaignchain.locale', $user->getLocale());
-            $request->getSession()->set('campaignchain.timezone', $user->getTimezone());
-            $request->getSession()->set('campaignchain.dateFormat', $user->getDateFormat());
-            $request->getSession()->set('campaignchain.timeFormat', $user->getTimeFormat());
+            /** @var $userManager \FOS\UserBundle\Model\UserManagerInterface */
+            $userManager = $this->get('fos_user.user_manager');
+            $userManager->updateUser($user);
 
-            $repository = $this->getDoctrine()->getManager();
-            $repository->persist($user);
-            $repository->flush();
+            /** @var $dispatcher \Symfony\Component\EventDispatcher\EventDispatcherInterface */
+            $dispatcher = $this->get('event_dispatcher');
+            $event = new UserEvent($user, $request);
+            $dispatcher->dispatch(FOSUserEvents::PROFILE_EDIT_SUCCESS, $event);
 
-            $this->get('session')->getFlashBag()->add(
+            $this->addFlash(
                 'success',
                 'Your profile was edited successfully.'
             );
 
-            return $this->redirect($this->generateUrl('campaignchain_core_profile_edit', ['id' => $user->getId()]));
+            return $this->redirectToRoute('campaignchain_core_profile_edit');
         }
 
         return $this->render(
-            'CampaignChainCoreBundle:Profile:new.html.twig',
+            'CampaignChainCoreBundle:Profile:edit.html.twig',
             array(
                 'page_title' => 'Profile',
                 'form' => $form->createView(),
@@ -64,12 +70,20 @@ class ProfileController extends Controller
             ));
     }
 
+    /**
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
     public function previewGravatarAction(Request $request)
     {
         $email = $request->query->get('email');
         return $this->redirect($this->get('campaignchain.core.user')->generateGravatarUrl($email));
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function grabGravatarAction(Request $request)
     {
         $email = $request->request->get('email');
@@ -81,16 +95,20 @@ class ProfileController extends Controller
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function cropAvatarAction(Request $request)
     {
         $lastUpload = $request->getSession()->get('campaignchain_last_uploaded_avatar');
-        $imageLoader = $this->get('liip_imagine.binary.loader.uploads');
+        $dataManager = $this->get('liip_imagine.data.manager');
         $filterManager = $this->get('liip_imagine.filter.manager');
         $userService = $this->get('campaignchain.core.user');
         $fileUploadService = $this->get('campaignchain.core.service.file_upload');
 
         try {
-            $image = $imageLoader->find($lastUpload);
+            $image = $dataManager->find("auto_rotate", $lastUpload);
         } catch (NotLoadableException $e) {
             throw new NotFoundHttpException("No pending avatar upload found", $e);
         }
@@ -112,7 +130,7 @@ class ProfileController extends Controller
         $newPath = $userService->storeImageAsAvatar($croppedImage);
         $fileUploadService->deleteFile($lastUpload);
 
-        $imageUrl = $this->get('liip_imagine.cache.manager')->getBrowserPath($fileUploadService->getPublicUrl($newPath), 'avatar');
+        $imageUrl = $fileUploadService->getPublicUrl($newPath, 'avatar');
 
         return new JsonResponse(array(
             'path' => $newPath,
@@ -120,14 +138,15 @@ class ProfileController extends Controller
         ));
     }
 
-    public function changePasswordAction(Request $request, $id)
+    /**
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     */
+    public function changePasswordAction(Request $request)
     {
-        $user = $this->getDoctrine()
-            ->getRepository('CampaignChainCoreBundle:User')
-            ->find($id);
-
-        if (!$user) {
-            return $this->createNotFoundException('No user found');
+        $user = $this->getUser();
+        if (!is_object($user) || !$user instanceof UserInterface) {
+            throw $this->createAccessDeniedException('This user does not have access to this section.');
         }
 
         /** @var $formFactory \FOS\UserBundle\Form\Factory\FactoryInterface */
@@ -135,10 +154,6 @@ class ProfileController extends Controller
 
         $form = $formFactory->createForm();
         $form->setData($user);
-
-        if ($this->isGranted('ROLE_SUPER_ADMIN')) {
-            $form->remove('current_password');
-        }
 
         $form->handleRequest($request);
 
@@ -149,7 +164,7 @@ class ProfileController extends Controller
 
             $this->addFlash('success', 'Your password was successfully changed!');
 
-            return $this->redirectToRoute('campaignchain_core_user');
+            return $this->redirectToRoute('campaignchain_core_profile_edit');
         }
 
         return $this->render('CampaignChainCoreBundle:Profile:changePassword.html.twig', array(
@@ -157,4 +172,5 @@ class ProfileController extends Controller
             'page_title' => 'Change Password',
         ));
     }
+
 }

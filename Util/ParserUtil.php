@@ -27,7 +27,11 @@ class ParserUtil
         // Grab the HTML
         $client = new Client($website);
         $request = $client->get($page);
-        $response = $request->send();
+        try {
+            $response = $request->send();
+        } catch (\Exception $e) {
+            return $website;
+        }
         // Crawl the DOM tree
         $crawler = new Crawler($response->getBody(true));
         return $crawler->filter('title')->first()->text();
@@ -225,7 +229,7 @@ class ParserUtil
     static function validateUrl($url)
     {
         if(!filter_var($url, FILTER_VALIDATE_URL)) {
-            throw new \Exception('Invalid URL');
+            return false;
         }
 
         return true;
@@ -252,5 +256,39 @@ class ParserUtil
         }
 
         return $subject;
+    }
+
+    /**
+     * Get length of a text which includes URLs that will be shortened.
+     *
+     * Basically, this function can be used to calculate the length of a Twitter
+     * message.
+     *
+     * @param $text
+     * @param int $shortUrlLength
+     * @return int
+     * @throws \Exception
+     */
+    static function getTextLengthWithShortUrls($text, $shortUrlLength = 23)
+    {
+        if($shortUrlLength < 7){
+            throw new \Exception('URL must be at least 7 characters long.');
+        }
+
+        // Create dummy short URL.
+        $shortUrl = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, $shortUrlLength - 7);
+        $shortUrl = 'http://'.$shortUrl;
+
+        return mb_strlen(preg_replace(self::REGEX_URL, $shortUrl, $text), 'UTF-8');
+    }
+
+    static function safeTruncateTextWithShortUrls($text, $max, $shortUrlLength = 23)
+    {
+        $textLengthWithShortUrls = self::getTextLengthWithShortUrls($text, $shortUrlLength);
+        if($textLengthWithShortUrls > $max){
+            $text = wordwrap($text, $textLengthWithShortUrls);
+        }
+
+        return $text;
     }
 }

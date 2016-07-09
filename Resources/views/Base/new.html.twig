@@ -23,6 +23,11 @@ file that was distributed with this source code.
     {% javascripts '@daterangepicker_js' combine=false %}
         <script src="{{ asset_url }}"></script>
     {% endjavascripts %}
+    {% if blockui is defined %}
+        {% javascripts '@blockui_js' combine=true %}
+        <script src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+    {% endif %}
 {% endblock %}
 
 {% block stylesheets %}
@@ -68,5 +73,9 @@ file that was distributed with this source code.
     {% endblock %}
 
     {% block form_footer %}{% endblock %}
+
+    {% if blockui is defined %}
+        {% include 'CampaignChainCoreBundle:Base:blockui_wait.html.twig' %}
+    {% endif %}
 
 {% endblock %}

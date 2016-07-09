@@ -7,7 +7,9 @@ For the full copyright and license information, please view the LICENSE
 file that was distributed with this source code.
 #}
 
-{#{% extends "FOSUserBundle::layout.html.twig" %}#}
+{#
+This file is used to override the FOSUserBundle default template
+#}
 
 {% set page_title = 'Login' %}
 
@@ -19,76 +21,78 @@ file that was distributed with this source code.
     {{ parent() }}
 
     {% stylesheets '@campaignchain_login_css' filter="cssrewrite"
-    'bundles/campaignchaincore/css/*'%}
-    <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
+    'bundles/campaignchaincore/css/*' %}
+    <link href="{{ asset_url }}" type="text/css" rel="stylesheet"/>
     {% endstylesheets %}
 {% endblock %}
 
 {% block body %}
     <!-- Modal -->
-    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="Login" aria-hidden="true">
     <div class="modal-dialog">
-    <div class="modal-content">
-        <div class="modal-header">
-            <img src="/logo.png" height="24">
-        </div>
-        <div class="modal-body">
-            {% block fos_user_content %}
-                {% if error %}
-                <div class="alert alert-warning alert-dismissable">
-                    <p><span class="fa fa-exclamation-triangle"></span> {{ error.messageKey|trans(error.messageData, 'security') }}</p>
-                </div>
-                {% endif %}
+        <div class="modal-content">
+            <div class="modal-header">
+                <img src="/logo.png" height="24"><br/>
+                <h4 class="modal-title">Login</h4>
+            </div>
+            <div class="modal-body">
+                {% block fos_user_content %}
+                    <form action="{{ path("fos_user_security_check") }}" method="post" class="form-horizontal"
+                          id="fos_user_security_check"
+                          role="form">
+                        {% if error %}
+                            <div class="alert alert-warning alert-dismissable">
+                                <p>
+                                    <span class="fa fa-exclamation-triangle"></span> {{ error.messageKey|trans(error.messageData, 'security') }}
+                                </p>
+                            </div>
+                        {% endif %}
 
-            <form action="{{ path("fos_user_security_check") }}" method="post" class="form-horizontal" role="form">
-                <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
-            <div class="form-group">
-                <label for="username" class="control-label col-lg-2 required">{{ 'security.login.username'|trans }}</label>
-                <div class="col-lg-6">
-                    <input type="text" id="username" name="_username" value="{{ last_username }}" required="required" class="form-control" />
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="password" class="control-label col-lg-2 required">{{ 'security.login.password'|trans }}</label>
-                <div class="col-lg-6">
-                    <input type="password" id="password" name="_password" required="required"class="form-control" />
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-lg-6 col-lg-offset-2">
-                    <div class="checkbox">
-                        <label for="remember_me">
-                <input type="checkbox" id="remember_me" name="_remember_me" value="on" align_with_widget="1" />
-                {{ 'security.login.remember_me'|trans }}</label>
-                </div>
-                    </div>
-            </div>
-                <div class="form-group">
-                    <div class="col-lg-offset-2 col-lg-6">
-                <button type="submit" id="_submit" class="btn btn-primary" name="_submit">{{ 'security.login.submit'|trans }}</button>
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token }}"/>
+                        <div class="form-group">
+                            {#<label for="username"#}
+                                   {#class="col-sm-3 control-label required">{{ 'security.login.username'|trans }}</label>#}
+                            <div class="col-sm-offset-2 col-sm-8">
+                                <input type="text" id="username" name="_username" value="{{ last_username }}"
+                                       placeholder="Username"
+                                       required="required" class="form-control"/>
+                            </div>
                         </div>
+                        <div class="form-group">
+                            {#<label for="password"#}
+                                   {#class="control-label col-sm-3 required">{{ 'security.login.password'|trans }}</label>#}
+                            <div class="col-sm-offset-2 col-sm-8">
+                                <input type="password" id="password" name="_password" required="required"
+                                       placeholder="Password"
+                                       class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-8 col-sm-offset-3">
+                                <div class="checkbox">
+                                    <label for="remember_me">
+                                        <input type="checkbox" id="remember_me" name="_remember_me" value="on"
+                                               align_with_widget="1"/>
+                                        {{ 'security.login.remember_me'|trans }}</label>
+                                    <a class="btn btn-link" href="{{ path('fos_user_resetting_request') }}" role="button">Forgot your password?</a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                {% endblock fos_user_content %}
             </div>
-            </form>
-            {% endblock fos_user_content %}
-        </div>
-        <div class="modal-footer">
-            <p class="text-muted">Powered by <a href="{% if (campaignchain_system is not null) and (campaignchain_system.homepage is not null)   %}
-                            {{ campaignchain_system.homepage }}
-                        {% else %}
-                            http://www.campaignchain.com
-                        {% endif %}" rel="external">
-                    {% if (campaignchain_system is not null) and (campaignchain_system.name is not null) %}
-                        {{ campaignchain_system.name }}
-                    {% else %}
-                        CampaignChain
-                    {% endif %}</a>
-                {% if (campaignchain_system is not null) and (campaignchain_system.version is not null) %}
-                &nbsp;({{ campaignchain_system.version }})
-                {% endif %}</p>
+            <div class="modal-footer">
+                <button type="submit" id="_submit" class="btn btn-primary" form="fos_user_security_check"
+                        name="_submit">{{ 'security.login.submit'|trans }}</button>
+
+            </div>
         </div>
     </div>
-    </div>
-<script type="text/javascript">
-    $('#loginModal').modal('show');
-</script>
+    <script type="text/javascript">
+        $('#loginModal').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+        $('#loginModal').modal('show');
+    </script>
 {% endblock %}

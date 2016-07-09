@@ -16,8 +16,45 @@ use CampaignChain\CoreBundle\Entity\Job;
 use DateTime;
 use Doctrine\ORM\EntityRepository;
 
+/**
+ * Class CampaignRepository
+ * @package CampaignChain\CoreBundle\Repository
+ */
 class CampaignRepository extends EntityRepository
 {
+
+    /**
+     * get a list of all campaigns
+     *
+     * @return array
+     */
+    public function getCampaigns() {
+
+        return $this->createQueryBuilder('campaign')
+            ->where('campaign.status != :statusBackgroundProcess')
+            ->setParameter('statusBackgroundProcess', Action::STATUS_BACKGROUND_PROCESS)
+            ->orderBy('campaign.startDate', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @param $moduleIdentifier
+     * @param $bundleName
+     * @return array
+     */
+    public function getCampaignsByModule($moduleIdentifier, $bundleName) {
+
+        return $this->createQueryBuilder('campaign')
+            ->select('campaign')
+            ->Join('campaign.campaignModule', 'module', 'WITH', 'module.identifier = :moduleIdentifier')
+            ->Join('module.bundle', 'bundle', 'WITH', 'bundle.name = :bundleName')
+            ->setParameter('moduleIdentifier', $moduleIdentifier)
+            ->setParameter('bundleName', $bundleName)
+            ->orderBy('campaign.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 
     /**
      * @param DateTime $periodStart
@@ -41,13 +78,11 @@ class CampaignRepository extends EntityRepository
                 ' OR '.
                 '(c.endDate IS NOT NULL AND c.startDate <= :periodStart AND c.endDate >= :periodStart AND c.endDate <= :periodEnd)'.
                 ' OR '.
-                '('.
-                '(c.intervalStartDate IS NULL OR c.intervalStartDate <= :periodEnd)'.
-                ' AND '.
-                '(c.intervalEndDate IS NULL OR c.intervalEndDate <= :periodEnd)'.
-                ' AND '.
-                'c.intervalNextRun IS NOT NULL AND c.intervalNextRun >= :periodStart AND c.intervalNextRun <= :periodEnd'.
-                ')'
+                '(c.intervalStartDate IS NOT NULL AND c.intervalStartDate >= :periodStart AND c.intervalStartDate <= :periodEnd)'.
+                ' OR '.
+                '(c.intervalEndDate IS NOT NULL AND c.intervalEndDate >= :periodStart AND c.intervalEndDate <= :periodEnd)'.
+                ' OR '.
+                '(c.intervalNextRun IS NOT NULL AND c.intervalNextRun >= :periodStart AND c.intervalNextRun <= :periodEnd)'
             )
             ->setParameter('status', ACTION::STATUS_CLOSED)
             ->setParameter('jobStatus', JOB::STATUS_OPEN)

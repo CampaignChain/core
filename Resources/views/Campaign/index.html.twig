@@ -9,6 +9,43 @@ file that was distributed with this source code.
 
 {% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
 
+{% block javascripts %}
+    {{ parent() }}
+
+    {% javascripts '@blockui_js' combine=true %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#campaign_new').on('click', function () {
+
+                var modal = new CampaignChain.Modal();
+
+                modal.init({
+                    spinner_start: $.blockUI,
+                    spinner_stop: $.unblockUI
+                });
+
+                modal.showForm('campaignchain_core_campaign_new');
+
+                $(document).on('campaignchain:form:submit:success', function (e, data) {
+                    // if step 1 goto step 2
+                    if (data.step === 1) {
+                        modal.showForm(data.next_step);
+
+                        // if step 2 reload current page
+                    } else if (data.step === 2) {
+                        location.reload();
+                    }
+                });
+
+                // TODO: when there is proper validation in the controller implemented, show error messages here
+            });
+        });
+    </script>
+{% endblock %}
+
 {% block bodytabs %}
     {{ knp_menu_render('CampaignChainCoreBundle:Builder:executeListTab', { 'style': 'tabs' }) }}
 {% endblock %}
@@ -16,10 +53,19 @@ file that was distributed with this source code.
 {% block body %}
     {% include 'CampaignChainCoreBundle:Base:datatable.html.twig' %}
 
+    <div class="row">
+        <div class="col-sm-12 secondary-nav">
+            <button class="btn btn-primary" id="campaign_new">
+                <span class="fa fa-plus"></span> Add new campaign
+            </button>
+        </div>
+    </div>
+
     <!--<div class="table-responsive">-->
         <table id="example" class="table table-striped table-bordered dataTable">
             <thead>
                 <tr>
+                    <th></th>
                     <th>Name</th>
                     <th>Execution</th>
                     <th></th>
@@ -28,10 +74,19 @@ file that was distributed with this source code.
             <tbody>
                 {% for campaign in repository_campaigns%}
                     <tr class="
-                            {% if campaign.status == "paused" %}text-muted {% endif %}
+                            {% if campaign.status == "paused" or campaign.status == "closed" %}text-muted {% endif %}
                             ">
+                        <td align="center">
+                            {% if campaign.status == "open" %}
+                                <i class="fa fa-clock-o"></i>
+                            {% elseif campaign.status == "paused" %}
+                                <i class="fa fa-pause-circle-o"></i>
+                            {% elseif campaign.status == "closed" %}
+                                <i class="fa fa-check-circle"></i>
+                            {% endif %}
+                        </td>
                         <td>{{ campaign|campaignchain_tpl_teaser }}</td>
-                        <td>{{ campaign|campaignchain_tpl_trigger_hook_inline }}</td>
+                        <td>{{ campaign|campaignchain_tpl_trigger_hook }}</td>
                         <td align="center">
                             <a class="btn btn-primary"
                                role="button"

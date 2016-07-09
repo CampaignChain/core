@@ -5,6 +5,7 @@
 # For the full copyright and license information, please view the LICENSE
 # file that was distributed with this source code.
 
+# installation wizard routes
 campaignchain_core_install:
     pattern: /install/
     defaults: { _controller: CampaignChainCoreBundle:Install:check }
@@ -13,6 +14,7 @@ campaignchain_core_install_step:
     pattern: /install/step/{index}
     defaults: { _controller: CampaignChainCoreBundle:Install:step }
 
+# main routes
 campaignchain_core_homepage:
     pattern:  /
     defaults: { _controller: CampaignChainCoreBundle:About:index }
@@ -49,6 +51,7 @@ campaignchain_core_execute:
             rest:
                 expose: true
 
+# campaign routes
 campaignchain_core_campaign:
     pattern:  /campaigns/
     defaults: { _controller: CampaignChainCoreBundle:Campaign:index }
@@ -57,6 +60,7 @@ campaignchain_core_campaign_new:
     pattern:  /campaign/new/
     defaults: { _controller: CampaignChainCoreBundle:Campaign:new }
     options:
+        expose: true
         campaignchain:
             description: Create a new campaign
             rest:
@@ -85,6 +89,7 @@ campaignchain_core_campaign_move_api:
     options:
         expose: true
 
+# activity routes
 campaignchain_core_activities:
     pattern:  /activities/
     defaults: { _controller: CampaignChainCoreBundle:Activity:index }
@@ -103,11 +108,9 @@ campaignchain_core_activities_new:
             rest:
                 expose: true
 
-
 campaignchain_core_activity_remove:
     pattern:  /activity/{id}/remove
     defaults: { _controller: CampaignChainCoreBundle:Activity:remove }
-
 
 campaignchain_core_activity_edit:
     pattern:  /activity/{id}/edit
@@ -136,6 +139,7 @@ campaignchain_core_activity_read:
     pattern:  /activity/{id}
     defaults: { _controller: CampaignChainCoreBundle:Activity:read }
 
+# milestone routes
 campaignchain_core_milestone:
     pattern:  /milestones/
     defaults: { _controller: CampaignChainCoreBundle:Milestone:index }
@@ -181,15 +185,27 @@ campaignchain_core_milestone_remove:
     pattern:  /milestone/{id}/remove
     defaults: { _controller: CampaignChainCoreBundle:Milestone:remove }
 
+# report routes
 campaignchain_core_report:
-    pattern:  /reports/{id}
-    defaults: { _controller: CampaignChainCoreBundle:Report:index, id: 0 }
+    pattern:  /reports
+    defaults: { _controller: CampaignChainCoreBundle:Report:index }
     options:
         campaignchain:
             description: View all reports
             rest:
                 expose: true
 
+campaignchain_core_report_show:
+    pattern:  /report/{id}
+    defaults: { _controller: CampaignChainCoreBundle:Report:show }
+
+campaignchain_core_report_list_cta_locations_per_campaign_api:
+    pattern:  /api/private/report/cta/campaign/{id}/locations
+    defaults: { _controller: CampaignChainCoreBundle:Report:apiListCtaLocationsPerCampaign }
+    options:
+        expose: true
+
+# module routes
 campaignchain_core_module:
     pattern:  /modules/
     defaults: { _controller: CampaignChainCoreBundle:Module:index }
@@ -208,6 +224,7 @@ campaignchain_core_module_new:
             rest:
                 expose: true
 
+# channel routes
 campaignchain_core_channel:
     pattern:  /channels/
     defaults: { _controller: CampaignChainCoreBundle:Channel:index }
@@ -242,12 +259,7 @@ campaignchain_core_channel_toggle_status:
     pattern:  /channel/{id}/toggleStatus
     defaults: { _controller: CampaignChainCoreBundle:Channel:toggleStatus }
 
-campaignchain_core_report_list_cta_locations_per_campaign_api:
-    pattern:  /api/private/report/cta/campaign/{id}/locations
-    defaults: { _controller: CampaignChainCoreBundle:Report:apiListCtaLocationsPerCampaign }
-    options:
-        expose: true
-
+# location routes
 campaignchain_core_location:
     pattern:  /locations/
     defaults: { _controller: CampaignChainCoreBundle:Location:index }
@@ -271,13 +283,13 @@ campaignchain_core_location_toggle_status:
     pattern:  /location/{id}/toggleDisabling
     defaults: { _controller: CampaignChainCoreBundle:Location:toggleStatus }
 
+# tracking routes
 campaignchain_core_tracking_new_api:
     pattern:  /api/v1/report/cta/new/{channel}
     defaults: { _controller: CampaignChainCoreBundle:Tracking:newApi }
 #    methods:  [POST]
 
-# Developer Tools
-
+# developer tools
 campaignchain_development_sample_data:
     pattern:  /development/sample-data
     defaults: { _controller: CampaignChainCoreBundle:Development:sampleData }
@@ -286,10 +298,10 @@ campaignchain_development_reset_system:
     pattern:  /development/reset-system
     defaults: { _controller: CampaignChainCoreBundle:Development:resetSystem }
 
-# User management
 
+# user management routes
 campaignchain_core_user:
-    pattern:  /users/
+    pattern:  /user/list
     defaults: { _controller: CampaignChainCoreBundle:User:index }
     options:
         campaignchain:
@@ -297,12 +309,39 @@ campaignchain_core_user:
             rest:
                 expose: true
 
+campaignchain_core_user_new:
+    path: /user/new
+    defaults: { _controller: CampaignChainCoreBundle:User:new }
+    options:
+        campaignchain:
+            description: Create a new user
+            rest:
+                expose: true
+
+campaignchain_core_user_edit:
+    pattern:  /user/edit/{id}
+    defaults: { _controller: CampaignChainCoreBundle:User:edit }
+
+campaignchain_core_user_change_password:
+    pattern:  /user/change_password/{id}
+    defaults: { _controller: CampaignChainCoreBundle:User:changePassword }
+
+campaignchain_core_user_toggle_enabling:
+    pattern:  /user/toggle_enable/{id}
+    defaults: { _controller: CampaignChainCoreBundle:User:toggleEnabling }
+    options:
+        campaignchain:
+            description: Deactivate a user
+            rest:
+                expose: true
+
+# profile routes
 campaignchain_core_profile_edit:
-    pattern:  /profile/edit/{id}
+    pattern:  /profile/edit
     defaults: { _controller: CampaignChainCoreBundle:Profile:edit }
 
 campaignchain_core_profile_change_password:
-    pattern:  /profile/change_password/{id}
+    pattern:  /profile/change_password
     defaults: { _controller: CampaignChainCoreBundle:Profile:changePassword }
 
 campaignchain_core_profile_grab_gavatar:
@@ -319,58 +358,31 @@ campaignchain_core_profile_crop_avatar:
     defaults: { _controller: CampaignChainCoreBundle:Profile:cropAvatar }
     methods: [POST]
 
-campaignchain_core_user_new:
-    path: /users/new
-    defaults: { _controller: CampaignChainCoreBundle:User:new }
-    options:
-        campaignchain:
-            description: Create a new user
-            rest:
-                expose: true
 
-campaignchain_core_user_toggle_enabling:
-    pattern:  /user/toggle_enable/{id}
-    defaults: { _controller: CampaignChainCoreBundle:User:toggleEnabling }
-    options:
-        campaignchain:
-            description: Deactivate a user
-            rest:
-                expose: true
-
-# FOS User
-
+# User / security routes
 fos_user_security:
     resource: "@FOSUserBundle/Resources/config/routing/security.xml"
-
-fos_user_security_login:
-    path: /login
-    defaults: { _controller: CampaignChainCoreBundle:User:login }
-
-#fos_user_profile:
-#    resource: "@FOSUserBundle/Resources/config/routing/profile.xml"
-#    prefix: /user/profile
-
-fos_user_register:
-    resource: "@FOSUserBundle/Resources/config/routing/registration.xml"
-    prefix: /user/register
 
 fos_user_resetting:
     resource: "@FOSUserBundle/Resources/config/routing/resetting.xml"
     prefix: /user/resetting
 
-fos_user_group:
-    resource: "@FOSUserBundle/Resources/config/routing/group.xml"
-    prefix: /group
+campaignchain_core_security_resume:
+    pattern:  /resume
+    defaults: { _controller: CampaignChainCoreBundle:Security:resume }
+    options:
+        expose: true
 
-# FOS JavaScript routing
-
+# FOSJsRoutingBundle routes
 fos_js_routing:
     resource: "@FOSJsRoutingBundle/Resources/config/routing/routing.xml"
 
+# OneupUploaderBundle routes
 oneup_uploader:
-    resource: .
+    resource: "@OneupUploaderBundle/Resources/config/uploader.xml"
     type: uploader
 
+# LiipImagineBundle routes
 _liip_imagine:
     resource: "@LiipImagineBundle/Resources/config/routing.xml"
 
@@ -379,6 +391,7 @@ campaignchain_core_rest:
     resource: "@CampaignChainCoreBundle/Resources/config/routing_rest.yml"
     prefix: /api/v1
 
+# NelmioApiDocBundle routes
 NelmioApiDocBundle:
     resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
     prefix:   /api/doc

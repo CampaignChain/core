@@ -11,7 +11,6 @@
 namespace CampaignChain\CoreBundle\Composer;
 
 use CampaignChain\CoreBundle\Util\SystemUtil;
-use Symfony\Component\Filesystem\Filesystem;
 use Composer\Script\CommandEvent;
 use Sensio\Bundle\DistributionBundle\Composer\ScriptHandler as SensioScriptHandler;
 
@@ -21,7 +20,7 @@ class ScriptHandler extends SensioScriptHandler
     {
         SystemUtil::enableInstallMode();
 
-        $event->getIO()->write('Enabled CampaignChain install mode.');
+        $event->getIO()->write('CampaignChain: Enabled install mode.');
     }
 
     /**
@@ -29,32 +28,11 @@ class ScriptHandler extends SensioScriptHandler
      *
      * @param CommandEvent $event
      */
-    public static function initApp(CommandEvent $event)
+    public static function initConfig(CommandEvent $event)
     {
-        $campaignchainBundlesKernel = 'app'.DIRECTORY_SEPARATOR.'campaignchain_bundles.php';
-        $symfonyConfigDir = 'app'.DIRECTORY_SEPARATOR.'config';
-        $campaignchainBundlesConfig = $symfonyConfigDir.
-            DIRECTORY_SEPARATOR.'campaignchain'.
-            DIRECTORY_SEPARATOR.'config_bundles.yml';
-        $routingFile = $symfonyConfigDir.DIRECTORY_SEPARATOR.'routing.yml';
-        $campaignchainBundlesSecurity = $symfonyConfigDir.
-            DIRECTORY_SEPARATOR.'campaignchain'.
-            DIRECTORY_SEPARATOR.'security.yml';
+        SystemUtil::initConfig();
 
-        $fs = new Filesystem();
-
-        if(!$fs->exists($campaignchainBundlesKernel)){
-            $fs->copy($campaignchainBundlesKernel.'.dist', $campaignchainBundlesKernel, true);
-        }
-        if(!$fs->exists($campaignchainBundlesConfig)){
-            $fs->copy($campaignchainBundlesConfig.'.dist', $campaignchainBundlesConfig, true);
-        }
-        if(!$fs->exists($routingFile)){
-            $fs->copy($routingFile.'.dist', $routingFile, true);
-        }
-        if(!$fs->exists($campaignchainBundlesSecurity)){
-            $fs->copy($campaignchainBundlesSecurity.'.dist', $campaignchainBundlesSecurity, true);
-        }
+        $event->getIO()->write('CampaignChain: Created configuration files.');
     }
 
     public static function registerModules(CommandEvent $event)
@@ -66,8 +44,7 @@ class ScriptHandler extends SensioScriptHandler
             return;
         }
 
-        self::executeCommand($event, $consoleDir, 'campaignchain:module:update --class-only', $options['process-timeout']);
-        self::executeCommand($event, $consoleDir, 'campaignchain:module:update --config-only', $options['process-timeout']);
-        self::executeCommand($event, $consoleDir, 'campaignchain:module:update --routing-only', $options['process-timeout']);
+        self::executeCommand($event, $consoleDir, 'campaignchain:kernel:update --class-only --config-only --routing-only', $options['process-timeout']);
+        $event->getIO()->write('CampaignChain: Registered modules.');
     }
 }

@@ -10,6 +10,7 @@
 
 namespace CampaignChain\CoreBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -18,13 +19,17 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Campaign extends Action implements AssignableInterface
 {
-
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    protected $description;
 
     /**
      * @ORM\OneToMany(targetEntity="Activity", mappedBy="campaign", cascade={"persist"})
@@ -35,11 +40,6 @@ class Campaign extends Action implements AssignableInterface
      * @ORM\OneToMany(targetEntity="ReportAnalyticsActivityFact", mappedBy="campaign")
      */
     protected $activityFacts;
-
-    /**
-     * @ORM\OneToMany(targetEntity="ReportAnalyticsChannelFact", mappedBy="campaign")
-     */
-    protected $channelFacts;
 
     /**
      * @ORM\OneToMany(targetEntity="Milestone", mappedBy="campaign", cascade={"persist"})
@@ -69,13 +69,13 @@ class Campaign extends Action implements AssignableInterface
     protected $assignee;
 
     /**
-     * Get id
-     *
-     * @return integer
+     * Constructor.
      */
-    public function getId()
+    public function __construct()
     {
-        return $this->id;
+        $this->activities = new ArrayCollection();
+        $this->activityFacts = new ArrayCollection();
+        $this->milestones = new ArrayCollection();
     }
 
     public function __toString()
@@ -84,32 +84,67 @@ class Campaign extends Action implements AssignableInterface
     }
 
     /**
-     * Add activities
+     * Get id.
      *
-     * @param \CampaignChain\CoreBundle\Entity\Activity $activities
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Get description.
+     *
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * Set description.
+     *
+     * @param string $description
+     *
      * @return Campaign
      */
-    public function addActivity(\CampaignChain\CoreBundle\Entity\Activity $activities)
+    public function setDescription($description)
     {
-        $this->activities[] = $activities;
+        $this->description = $description;
 
         return $this;
     }
 
     /**
-     * Remove activities
+     * Add activity.
      *
-     * @param \CampaignChain\CoreBundle\Entity\Activity $activities
+     * @param Activity $activity
+     *
+     * @return Campaign
      */
-    public function removeActivity(\CampaignChain\CoreBundle\Entity\Activity $activities)
+    public function addActivity(Activity $activity)
     {
-        $this->activities->removeElement($activities);
+        $this->activities->add($activity);
+
+        return $this;
     }
 
     /**
-     * Get activities
+     * Remove activity.
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @param Activity $activity
+     */
+    public function removeActivity(Activity $activity)
+    {
+        $this->activities->removeElement($activity);
+    }
+
+    /**
+     * Get activities.
+     *
+     * @return ArrayCollection
      */
     public function getActivities()
     {
@@ -117,43 +152,33 @@ class Campaign extends Action implements AssignableInterface
     }
 
     /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->activities = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->activityFacts = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->channelFacts = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->milestones = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
-    /**
-     * Add activityFacts
+     * Add activityFact.
      *
-     * @param \CampaignChain\CoreBundle\Entity\ReportAnalyticsActivityFact $activityFacts
+     * @param ReportAnalyticsActivityFact $activityFact
+     *
      * @return Campaign
      */
-    public function addActivityFact(\CampaignChain\CoreBundle\Entity\ReportAnalyticsActivityFact $activityFacts)
+    public function addActivityFact(ReportAnalyticsActivityFact $activityFact)
     {
-        $this->activityFacts[] = $activityFacts;
+        $this->activityFacts->add($activityFact);
 
         return $this;
     }
 
     /**
-     * Remove activityFacts
+     * Remove activityFact.
      *
-     * @param \CampaignChain\CoreBundle\Entity\ReportAnalyticsActivityFact $activityFacts
+     * @param ReportAnalyticsActivityFact $activityFact
      */
-    public function removeActivityFact(\CampaignChain\CoreBundle\Entity\ReportAnalyticsActivityFact $activityFacts)
+    public function removeActivityFact(ReportAnalyticsActivityFact $activityFact)
     {
-        $this->activityFacts->removeElement($activityFacts);
+        $this->activityFacts->removeElement($activityFact);
     }
 
     /**
-     * Get activityFacts
+     * Get activityFacts.
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return ArrayCollection
      */
     public function getActivityFacts()
     {
@@ -161,65 +186,33 @@ class Campaign extends Action implements AssignableInterface
     }
 
     /**
-     * Add channelFacts
+     * Add milestone.
      *
-     * @param \CampaignChain\CoreBundle\Entity\ReportAnalyticsChannelFact $channelFacts
+     * @param Milestone $milestone
+     *
      * @return Campaign
      */
-    public function addChannelFact(\CampaignChain\CoreBundle\Entity\ReportAnalyticsChannelFact $channelFacts)
+    public function addMilestone(Milestone $milestone)
     {
-        $this->channelFacts[] = $channelFacts;
+        $this->milestones->add($milestone);
 
         return $this;
     }
 
     /**
-     * Remove channelFacts
+     * Remove milestone.
      *
-     * @param \CampaignChain\CoreBundle\Entity\ReportAnalyticsChannelFact $channelFacts
+     * @param Milestone $milestone
      */
-    public function removeChannelFact(\CampaignChain\CoreBundle\Entity\ReportAnalyticsChannelFact $channelFacts)
+    public function removeMilestone(Milestone $milestone)
     {
-        $this->channelFacts->removeElement($channelFacts);
+        $this->milestones->removeElement($milestone);
     }
 
     /**
-     * Get channelFacts
+     * Get milestones.
      *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getChannelFacts()
-    {
-        return $this->channelFacts;
-    }
-
-    /**
-     * Add milestones
-     *
-     * @param \CampaignChain\CoreBundle\Entity\Milestone $milestones
-     * @return Campaign
-     */
-    public function addMilestone(\CampaignChain\CoreBundle\Entity\Milestone $milestones)
-    {
-        $this->milestones[] = $milestones;
-
-        return $this;
-    }
-
-    /**
-     * Remove milestones
-     *
-     * @param \CampaignChain\CoreBundle\Entity\Milestone $milestones
-     */
-    public function removeMilestone(\CampaignChain\CoreBundle\Entity\Milestone $milestones)
-    {
-        $this->milestones->removeElement($milestones);
-    }
-
-    /**
-     * Get milestones
-     *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return ArrayCollection
      */
     public function getMilestones()
     {
@@ -227,9 +220,20 @@ class Campaign extends Action implements AssignableInterface
     }
 
     /**
-     * Set timezone
+     * Get timezone.
+     *
+     * @return string
+     */
+    public function getTimezone()
+    {
+        return $this->timezone;
+    }
+
+    /**
+     * Set timezone.
      *
      * @param string $timezone
+     *
      * @return Campaign
      */
     public function setTimezone($timezone)
@@ -240,32 +244,19 @@ class Campaign extends Action implements AssignableInterface
     }
 
     /**
-     * Get timezone
+     * Convenience method that masquerades getCampaignModule().
      *
-     * @return string 
+     * @return CampaignModule
      */
-    public function getTimezone()
+    public function getModule()
     {
-        return $this->timezone;
+        return $this->getCampaignModule();
     }
 
     /**
-     * Set campaignModule
+     * Get campaignModule.
      *
-     * @param \CampaignChain\CoreBundle\Entity\CampaignModule $campaignModule
-     * @return Campaign
-     */
-    public function setCampaignModule(\CampaignChain\CoreBundle\Entity\CampaignModule $campaignModule = null)
-    {
-        $this->campaignModule = $campaignModule;
-
-        return $this;
-    }
-
-    /**
-     * Get campaignModule
-     *
-     * @return \CampaignChain\CoreBundle\Entity\CampaignModule
+     * @return CampaignModule
      */
     public function getCampaignModule()
     {
@@ -273,19 +264,34 @@ class Campaign extends Action implements AssignableInterface
     }
 
     /**
-     * Convenience method that masquerades getCampaignModule()
+     * Set campaignModule.
      *
-     * @return \CampaignChain\CoreBundle\Entity\CampaignModule
+     * @param CampaignModule $campaignModule
+     *
+     * @return Campaign
      */
-    public function getModule()
+    public function setCampaignModule(CampaignModule $campaignModule = null)
     {
-        return $this->campaignModule;
+        $this->campaignModule = $campaignModule;
+
+        return $this;
     }
 
     /**
-     * Set hasRelativeDates
+     * Get hasRelativeDates.
      *
-     * @param boolean $hasRelativeDates
+     * @return bool
+     */
+    public function getHasRelativeDates()
+    {
+        return $this->hasRelativeDates;
+    }
+
+    /**
+     * Set hasRelativeDates.
+     *
+     * @param bool $hasRelativeDates
+     *
      * @return Activity
      */
     public function setHasRelativeDates($hasRelativeDates)
@@ -293,16 +299,6 @@ class Campaign extends Action implements AssignableInterface
         $this->hasRelativeDates = $hasRelativeDates;
 
         return $this;
-    }
-
-    /**
-     * Get hasRelativeDates
-     *
-     * @return boolean
-     */
-    public function getHasRelativeDates()
-    {
-        return $this->hasRelativeDates;
     }
 
     /**

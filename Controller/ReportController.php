@@ -10,50 +10,43 @@
 
 namespace CampaignChain\CoreBundle\Controller;
 
+use CampaignChain\CoreBundle\Entity\ReportModule;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use CampaignChain\CoreBundle\Entity\Report;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Class ReportController.
+ */
 class ReportController extends Controller
 {
-    public function indexAction(Request $request, $id){
-        $repository = $this->getDoctrine()
-            ->getRepository('CampaignChainCoreBundle:ReportModule');
+    /**
+     * @return Response
+     */
+    public function indexAction()
+    {
+        $reports = $this->getDoctrine()->getRepository('CampaignChainCoreBundle:ReportModule')->findAll();
 
-        if(!$id){
-            $reports = $repository->findAll();
-            return $this->render(
-                'CampaignChainCoreBundle:Report:index.html.twig',
-                array(
-                    'page_title' => 'Reports',
-                    'reports' => $reports,
-                ));
-        } else {
-            $report = $repository->find($id);
-
-            if (!$report) {
-                throw new \Exception(
-                    'No report found for id '.$id
-                );
-            }
-
-            return $this->redirect(
-                $this->generateUrl(
-                    $report->getRoutes()['index']
-                )
-            );
-        }
-//
-//        }
-
-
+        return $this->render(
+            'CampaignChainCoreBundle:Report:index.html.twig',
+            [
+                'page_title' => 'Reports',
+                'reports' => $reports,
+            ]
+        );
     }
 
-    public function apiListCtaLocationsPerCampaignAction(Request $request, $id){
+    /**
+     * @param ReportModule|null $reportModule
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function showAction(ReportModule $reportModule = null)
+    {
+        return $this->redirectToRoute($reportModule->getRoutes()['index']);
+    }
+
+    public function apiListCtaLocationsPerCampaignAction($id)
+    {
         $repository = $this->getDoctrine()
             ->getRepository('CampaignChainCoreBundle:ReportCTA');
         $qb = $repository->createQueryBuilder('r');
@@ -67,18 +60,15 @@ class ReportController extends Controller
         $query = $qb->getQuery();
         $locations = $query->getResult();
 
-        foreach($locations as $location){
-            $response[] = array(
+        foreach ($locations as $location) {
+            $response[] = [
                 'id' => $location->getTargetLocation()->getId(),
                 'display_name' => $location->getTargetName()
-                                    .' ('.$location->getTargetUrl().')',
-            );
+                    .' ('.$location->getTargetUrl().')',
+            ];
         }
 
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new GetSetMethodNormalizer());
-
-        $serializer = new Serializer($normalizers, $encoders);
+        $serializer = $this->get('campaignchain.core.serializer.default');
 
         return new Response($serializer->serialize($response, 'json'));
     }

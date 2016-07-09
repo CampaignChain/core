@@ -10,6 +10,7 @@
 
 namespace CampaignChain\CoreBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -18,7 +19,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class ReportAnalyticsActivityMetric
 {
-
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id
@@ -27,9 +27,9 @@ class ReportAnalyticsActivityMetric
     protected $id;
 
     /**
-     * @ORM\OneToMany(targetEntity="ReportAnalyticsActivityMetric", mappedBy="metric")
+     * @ORM\OneToMany(targetEntity="ReportAnalyticsActivityFact", mappedBy="metric")
      */
-    protected $fact;
+    protected $facts;
 
     /**
      * @ORM\Column(type="string")
@@ -42,9 +42,17 @@ class ReportAnalyticsActivityMetric
     protected $bundle;
 
     /**
-     * Get id
+     * Constructor.
+     */
+    public function __construct()
+    {
+        $this->facts = new ArrayCollection();
+    }
+
+    /**
+     * Get id.
      *
-     * @return integer 
+     * @return int
      */
     public function getId()
     {
@@ -52,9 +60,20 @@ class ReportAnalyticsActivityMetric
     }
 
     /**
-     * Set name
+     * Get name.
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Set name.
      *
      * @param string $name
+     *
      * @return ReportAnalyticsActivityMetric
      */
     public function setName($name)
@@ -65,60 +84,54 @@ class ReportAnalyticsActivityMetric
     }
 
     /**
-     * Get name
+     * Add fact.
      *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->reportData = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
-    /**
-     * Add fact
+     * @param ReportAnalyticsActivityMetric $fact
      *
-     * @param \CampaignChain\CoreBundle\Entity\ReportAnalyticsActivityMetric $fact
      * @return ReportAnalyticsActivityMetric
      */
-    public function addFact(\CampaignChain\CoreBundle\Entity\ReportAnalyticsActivityMetric $fact)
+    public function addFact(ReportAnalyticsActivityMetric $fact)
     {
-        $this->fact[] = $fact;
+        $this->facts->add($fact);
 
         return $this;
     }
 
     /**
-     * Remove fact
+     * Remove fact.
      *
-     * @param \CampaignChain\CoreBundle\Entity\ReportAnalyticsActivityMetric $fact
+     * @param ReportAnalyticsActivityFact $fact
      */
-    public function removeFact(\CampaignChain\CoreBundle\Entity\ReportAnalyticsActivityMetric $fact)
+    public function removeFact(ReportAnalyticsActivityFact $fact)
     {
-        $this->fact->removeElement($fact);
+        $this->facts->removeElement($fact);
     }
 
     /**
-     * Get fact
+     * Get Facts.
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return ArrayCollection
      */
-    public function getFact()
+    public function getFacts()
     {
-        return $this->fact;
+        return $this->facts;
     }
 
     /**
-     * Set bundle
+     * Get bundle.
+     *
+     * @return string
+     */
+    public function getBundle()
+    {
+        return $this->bundle;
+    }
+
+    /**
+     * Set bundle.
      *
      * @param string $bundle
+     *
      * @return ReportAnalyticsActivityMetric
      */
     public function setBundle($bundle)
@@ -126,15 +139,5 @@ class ReportAnalyticsActivityMetric
         $this->bundle = $bundle;
 
         return $this;
-    }
-
-    /**
-     * Get bundle
-     *
-     * @return string
-     */
-    public function getBundle()
-    {
-        return $this->bundle;
     }
 }

@@ -15,9 +15,6 @@ use CampaignChain\CoreBundle\Entity\Channel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityRepository;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 
 class ChannelController extends Controller
 {
@@ -36,9 +33,7 @@ class ChannelController extends Controller
         $repository_channels = $query->getResult();
 
         if(!count($repository_channels)){
-            $system = $this->getDoctrine()
-                ->getRepository('CampaignChainCoreBundle:System')
-                ->find(1);
+            $system = $this->get('campaignchain.core.system')->getActiveSystem();
             $this->get('session')->getFlashBag()->add(
                 'warning',
                 'No channels defined yet. To learn how to create one, please <a href="#" onclick="popupwindow(\''.
@@ -125,10 +120,7 @@ class ChannelController extends Controller
             }
 //        }
 
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new GetSetMethodNormalizer());
-
-        $serializer = new Serializer($normalizers, $encoders);
+        $serializer = $this->get('campaignchain.core.serializer.default');
 
         return new Response($serializer->serialize($response, 'json'));
     }
@@ -180,10 +172,7 @@ class ChannelController extends Controller
 
         $response['ok'] = $trackingStatus;
 
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new GetSetMethodNormalizer());
-
-        $serializer = new Serializer($normalizers, $encoders);
+        $serializer = $this->get('campaignchain.core.serializer.default');
 
         return new Response($serializer->serialize($response, 'json'));
     }

@@ -11,32 +11,21 @@
 namespace CampaignChain\CoreBundle\Controller;
 
 use CampaignChain\CoreBundle\Util\DateTimeUtil;
-use CampaignChain\CoreBundle\Form\Type\CampaignType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use CampaignChain\CoreBundle\Entity\Campaign;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 use Doctrine\ORM\EntityRepository;
-use CampaignChain\CoreBundle\Entity\Action;
 
 class CampaignController extends Controller
 {
     const FORMAT_DATEINTERVAL = 'Years: %Y, months: %m, days: %d, hours: %h, minutes: %i, seconds: %s';
 
-    public function indexAction(){
-        $repository = $this->getDoctrine()
-            ->getRepository('CampaignChainCoreBundle:Campaign');
+    public function indexAction()
+    {
 
-        $query = $repository->createQueryBuilder('campaign')
-            ->where('campaign.status != :statusBackgroundProcess')
-            ->setParameter('statusBackgroundProcess', Action::STATUS_BACKGROUND_PROCESS)
-            ->orderBy('campaign.startDate', 'DESC')
-            ->getQuery();
-
-        $repository_campaigns = $query->getResult();
+        $repository_campaigns = $this->getDoctrine()->getRepository('CampaignChainCoreBundle:Campaign')->getCampaigns();
 
         return $this->render(
             'CampaignChainCoreBundle:Campaign:index.html.twig',
@@ -52,10 +41,10 @@ class CampaignController extends Controller
             ->add('campaign_module', 'entity', array(
                 'label' => 'Type',
                 'class' => 'CampaignChainCoreBundle:CampaignModule',
-                'query_builder' => function(EntityRepository $er) {
-                        return $er->createQueryBuilder('cm')
-                            ->orderBy('cm.displayName', 'ASC');
-                    },
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('cm')
+                        ->orderBy('cm.displayName', 'ASC');
+                },
                 'property' => 'displayName',
                 'empty_value' => 'Select the type of campaign',
                 'empty_data' => null,
@@ -70,13 +59,19 @@ class CampaignController extends Controller
             $campaignModule = $campaignService->getCampaignModule($form->get('campaign_module')->getData());
 
             $routes = $campaignModule->getRoutes();
-            return $this->redirect(
-                $this->generateUrl($routes['new'])
-            );
+
+            if ($this->getRequest()->isXmlHttpRequest()) {
+                return new JsonResponse(array(
+                    'step' => 1,
+                    'next_step' => $routes['new'],
+                ));
+            } else {
+                return $this->redirectToRoute($routes['new']);
+            }
         }
 
         return $this->render(
-            'CampaignChainCoreBundle:Base:new.html.twig',
+            $this->getRequest()->isXmlHttpRequest() ? 'CampaignChainCoreBundle:Base:new_modal.html.twig' : 'CampaignChainCoreBundle:Base:new.html.twig',
             array(
                 'page_title' => 'Create New Campaign',
                 'form' => $form->createView(),
@@ -92,14 +87,7 @@ class CampaignController extends Controller
         $campaignModule = $campaignService->getCampaignModuleByCampaign($id);
         $routes = $campaignModule->getRoutes();
 
-        return $this->redirect(
-            $this->generateUrl(
-                $routes['edit'],
-                array(
-                    'id' => $id,
-                )
-            )
-        );
+        return $this->redirectToRoute($routes['edit'], array('id' => $id));
     }
 
     public function editModalAction(Request $request, $id)
@@ -110,21 +98,13 @@ class CampaignController extends Controller
         $campaignModule = $campaignService->getCampaignModuleByCampaign($id);
         $routes = $campaignModule->getRoutes();
 
-        return $this->redirect(
-            $this->generateUrl(
-                $routes['edit_modal'],
-                array(
-                    'id' => $id,
-                )
-            )
-        );
+        return $this->redirectToRoute($routes['edit_modal'], array('id' => $id));
+
     }
 
     public function moveApiAction(Request $request)
     {
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new GetSetMethodNormalizer());
-        $serializer = new Serializer($normalizers, $encoders);
+        $serializer = $this->get('campaignchain.core.serializer.default');
 
         $responseData = array();
 
@@ -148,7 +128,6 @@ class CampaignController extends Controller
         $responseData['campaign']['new_start_date'] = $campaign->getStartDate()->format(\DateTime::ISO8601);
         $responseData['campaign']['new_end_date'] = $campaign->getEndDate()->format(\DateTime::ISO8601);
 
-        $response = new Response($serializer->serialize($responseData, 'json'));
-        return $response->setStatusCode(Response::HTTP_OK);
+        return new Response($serializer->serialize($responseData, 'json'));
     }
 }

@@ -19,9 +19,15 @@
         {% javascripts '@campaignchain_base_js' combine=true %}
         <script src="{{ asset_url }}"></script>
         {% endjavascripts %}
+        {% javascripts '@select2_js' %}
+        <script src="{{ asset_url }}"></script>
+        {% endjavascripts %}
     {% endblock %}
 
     {% block stylesheets %}
+        {% stylesheets '@select2_css' combine=true %}
+        <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
+        {% endstylesheets %}
         {% stylesheets '@bootstrap_less' combine=true %}
         <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
         {% endstylesheets %}

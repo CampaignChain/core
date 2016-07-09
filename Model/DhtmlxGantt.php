@@ -11,10 +11,8 @@
 namespace CampaignChain\CoreBundle\Model;
 
 use Doctrine\ORM\EntityManager;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class DhtmlxGantt
 {
@@ -22,11 +20,13 @@ class DhtmlxGantt
 
     protected $em;
     protected $container;
+    protected $serializer;
 
-    public function __construct(EntityManager $em, ContainerInterface $container)
+    public function __construct(EntityManager $em, ContainerInterface $container, SerializerInterface $serializer)
     {
         $this->em = $em;
         $this->container = $container;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -246,11 +246,6 @@ class DhtmlxGantt
             exit;
         }
 
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new GetSetMethodNormalizer());
-
-        $serializer = new Serializer($normalizers, $encoders);
-
-        return $serializer->serialize($ganttTasks, 'json');
+        return $this->serializer->serialize($ganttTasks, 'json');
     }
 }

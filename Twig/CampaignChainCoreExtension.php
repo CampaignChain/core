@@ -48,7 +48,8 @@ class CampaignChainCoreExtension extends \Twig_Extension
             new \Twig_SimpleFilter('campaignchain_timezone', array($this, 'timezone')),
             new \Twig_SimpleFilter('campaignchain_data_trigger_hook', array($this, 'dataTriggerHook')),
             new \Twig_SimpleFilter('campaignchain_tpl_teaser', array($this, 'tplTeaser'), array('is_safe' => array('html'))),
-            new \Twig_SimpleFilter('campaignchain_tpl_trigger_hook_inline', array($this, 'tplTriggerHookInline'), array('is_safe' => array('html'))),
+            new \Twig_SimpleFilter('campaignchain_tpl_trigger_hook', array($this, 'tplTriggerHook'), array('is_safe' => array('html'))),
+            new \Twig_SimpleFilter('campaignchain_tpl_delete_activity', array($this, 'tplDeleteActivity'), array('is_safe' => array('html'))),
             new \Twig_SimpleFilter('campaignchain_channel_root_locations', array($this, 'channelRootLocations')),
             new \Twig_SimpleFilter('campaignchain_remaining_time', array($this, 'remainingTime')),
             new \Twig_SimpleFilter('campaignchain_remaining_time_badge', array($this, 'remainingTimeBadge')),
@@ -56,7 +57,6 @@ class CampaignChainCoreExtension extends \Twig_Extension
             new \Twig_SimpleFilter('campaignchain_ltrim', array($this, 'ltrim')),
             new \Twig_SimpleFilter('campaignchain_make_links', array($this, 'makeLinks')),
             new \Twig_SimpleFilter('campaignchain_btn_copy_campaign', array($this, 'btnCopyCampaign'), array('is_safe' => array('html'))),
-            new \Twig_SimpleFilter('campaignchain_user_avatar', array($this, 'userAvatar')),
             new \Twig_SimpleFilter('campaignchain_is_removable', array($this, 'isRemovable')),
         );
     }
@@ -72,7 +72,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
         if(strpos($class, 'CoreBundle\Entity\Location') !== false) {
             return $object->getImage();
         } elseif(strpos($class, 'CoreBundle\Entity\User') !== false){
-            return $this->userAvatar($object);
+            return $this->container->get('liip_imagine.cache.manager')->getBrowserPath($object->getAvatarImage(), 'navbar_avatar');
         } else {
             return $this->channelAssetPath($object).'/images/icons/32x32/'.$this->channelIconName($object);
         }
@@ -202,7 +202,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
                 $tplVars['name'] = $object->getLocation()->getName();
             }
             if($teaserOptions['show_trigger'] == true){
-                $tplVars['trigger'] = $this->tplTriggerHookInline($object);
+                $tplVars['trigger'] = $this->tplTriggerHook($object);
             }
         } elseif(strpos($class, 'CoreBundle\Entity\CampaignModule') !== false){
             $tplVars['url'] = $this->container->get('router')->generate(
@@ -362,12 +362,20 @@ class CampaignChainCoreExtension extends \Twig_Extension
         return $hookData;
     }
 
-    public function tplTriggerHookInline($object)
+    public function tplTriggerHook($object)
     {
         // TODO: Store already retrieved service string in a property of this class for performance reasons.
         $hookConfig = $this->em->getRepository('CampaignChainCoreBundle:Hook')->find($object->getTriggerHook());
         $hookService = $this->container->get($hookConfig->getServices()['entity']);
         return $hookService->tplInline($object);
+    }
+
+    public function tplDeleteActivity($object)
+    {
+        return $this->container->get('templating')->render(
+            'CampaignChainCoreBundle:Activity:widget_delete.html.twig',
+            array('activity' => $object)
+        );
     }
 
     public function channelRootLocations($object)
@@ -473,15 +481,6 @@ class CampaignChainCoreExtension extends \Twig_Extension
         } else {
             return 'UTC';
         }
-    }
-
-    public function userAvatar($val)
-    {
-        if ($val instanceof User) {
-            $val = $val->getAvatarImage();
-        }
-
-        return $this->container->get('campaignchain.core.service.file_upload')->getPublicUrl($val);
     }
 
     public function getName()

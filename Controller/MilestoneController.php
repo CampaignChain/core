@@ -10,15 +10,10 @@
 
 namespace CampaignChain\CoreBundle\Controller;
 
-use CampaignChain\CoreBundle\Form\Type\MilestoneType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use CampaignChain\CoreBundle\Entity\Milestone;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityRepository;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 use CampaignChain\CoreBundle\Entity\Action;
 
 class MilestoneController extends Controller
@@ -134,9 +129,7 @@ class MilestoneController extends Controller
 
     public function moveApiAction(Request $request)
     {
-        $encoders = array(new JsonEncoder());
-        $normalizers = array(new GetSetMethodNormalizer());
-        $serializer = new Serializer($normalizers, $encoders);
+        $serializer = $this->get('campaignchain.core.serializer.default');
 
         $responseData = array();
 
@@ -160,11 +153,10 @@ class MilestoneController extends Controller
         $milestone = $milestoneService->moveMilestone($milestone, $interval);
         $responseData['new_due_date'] = $milestone->getStartDate()->format(\DateTime::ISO8601);
 
-        $repository = $this->getDoctrine()->getManager();
-        $repository->flush();
+        $em = $this->getDoctrine()->getManager();
+        $em->flush();
 
-        $response = new Response($serializer->serialize($responseData, 'json'));
-        return $response->setStatusCode(Response::HTTP_OK);
+        return new Response($serializer->serialize($responseData, 'json'));
     }
     public function  removeAction(Request $request, $id)
     {

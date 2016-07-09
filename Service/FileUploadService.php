@@ -2,6 +2,9 @@
 
 namespace CampaignChain\CoreBundle\Service;
 
+use Gaufrette\Filesystem;
+use Liip\ImagineBundle\Imagine\Cache\CacheManager;
+
 class FileUploadService
 {
     /** @var string */
@@ -10,50 +13,42 @@ class FileUploadService
     /** @var string */
     private $uploadDirectoryUrlPrefix;
 
-    public function __construct($uploadDirectory, $uploadDirectoryUrlPrefix)
+    /** @var Filesystem  */
+    private $filesystem;
+
+    /** @var CacheManager  */
+    private $cacheManager;
+
+    public function __construct($uploadDirectory, $uploadDirectoryUrlPrefix, Filesystem $filesystem, CacheManager $cacheManager)
     {
         $this->uploadDirectory = $uploadDirectory;
         $this->uploadDirectoryUrlPrefix = $uploadDirectoryUrlPrefix;
-    }
-
-    /**
-     * Get the physical path to the given file
-     *
-     * @param string $file
-     * @return string
-     */
-    public function getFilesystemPath($file)
-    {
-        return $this->uploadDirectory . DIRECTORY_SEPARATOR . $file;
+        $this->filesystem = $filesystem;
+        $this->cacheManager = $cacheManager;
     }
 
     /**
      * Get the URL where the given file can be reached
      *
+     * We are using the imagine bundle to create a public
+     * url for the images, independent where are they stored
+     *
      * @param string $file
+     * @param string $filter
      * @return string
      */
-    public function getPublicUrl($file)
+    public function getPublicUrl($file, $filter = "auto_rotate")
     {
-        return $this->uploadDirectoryUrlPrefix . "/" . $file;
+        return $this->cacheManager->getBrowserPath($file, $filter);
     }
 
     /**
-     * Open a file handle to the given file. Don't forget to close it
-     * when you're done
-     *
-     * @param string $file
-     * @param string $mode
-     * @return resource
+     * @param $path
+     * @param $content
      */
-    public function openFile($file, $mode)
+    public function storeImage($path, $content)
     {
-        $filesystemPath = $this->getFilesystemPath($file);
-        $directory = dirname($filesystemPath);
-        if (!file_exists($directory)) {
-            mkdir($directory, 0755, true);
-        }
-        return fopen($filesystemPath, $mode);
+        $this->filesystem->write($path, $content);
     }
 
     /**
@@ -63,10 +58,11 @@ class FileUploadService
      */
     public function deleteFile($file)
     {
-        $filesystemPath = $this->getFilesystemPath($file);
-        if (file_exists($filesystemPath)) {
-            unlink($filesystemPath);
+        if (!$this->filesystem->has($file)) {
+            return;
         }
+
+        $this->filesystem->delete($file);
     }
 
     /**
@@ -81,46 +77,4 @@ class FileUploadService
     {
         return $prefix . bin2hex(openssl_random_pseudo_bytes(8)) . $suffix;
     }
-
-    /**
-     * Get the relative path to the upload directory of the given absolute path
-     *
-     * @param $path
-     *
-     * @return string
-     */
-    public function getRelativePath($path)
-    {
-        $from = realpath($this->uploadDirectory);
-        $to = realpath($path);
-
-        // some compatibility fixes for Windows paths
-        $from = is_dir($from) ? rtrim($from, '\/') . '/' : $from;
-        $to   = is_dir($to)   ? rtrim($to, '\/') . '/'   : $to;
-        $from = str_replace('\\', '/', $from);
-        $to   = str_replace('\\', '/', $to);
-
-        $from     = explode('/', $from);
-        $to       = explode('/', $to);
-        $relPath  = $to;
-
-        foreach($from as $depth => $dir) {
-            // find first non-matching dir
-            if($dir === $to[$depth]) {
-                // ignore this directory
-                array_shift($relPath);
-            } else {
-                // get number of remaining dirs to $from
-                $remaining = count($from) - $depth;
-                if($remaining > 1) {
-                    // add traversals up to first matching dir
-                    $padLength = (count($relPath) + $remaining - 1) * -1;
-                    $relPath = array_pad($relPath, $padLength, '..');
-                    break;
-                }
-            }
-        }
-        return implode('/', $relPath);
-    }
-
 }

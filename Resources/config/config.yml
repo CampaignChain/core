@@ -7,6 +7,8 @@ assetic:
         campaignchain_base_js:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/base.js"
+                - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/exception.js"
+                - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/modal.js"
                 - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/sidemenu.js"
                 - "@CampaignChainCoreBundle/Resources/public/components/ScrollToFixed/jquery-scrolltofixed.js"
         campaignchain_login_css:
@@ -215,6 +217,20 @@ assetic:
         intro_css:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/components/intro.js/minified/introjs.min.css"
+        require_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/requirejs/require.js"
+        twitter_text_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/twitter-text/js/twitter-text.js"
+        highlight_textarea_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/jquery-ui/jquery-ui.min.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/jquery-highlighttextarea/jquery.highlighttextarea.min.js"
+        highlight_textarea_css:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/jquery-ui/themes/base/jquery-ui.min.css"
+                - "@CampaignChainCoreBundle/Resources/public/components/jquery-highlighttextarea/jquery.highlighttextarea.min.css"
     bundles:
         - "CampaignChainCoreBundle"
         - "FOSUserBundle"
@@ -240,12 +256,18 @@ fos_user:
     user_class: "CampaignChain\\CoreBundle\\Entity\\User"
     group:
         group_class: "CampaignChain\\CoreBundle\\Entity\\Group"
+    from_email:
+            address:        "%mailer_sender_address%"
+            sender_name:    "%mailer_sender_name%"
+
 sp_bower:
     allow_root: true
     assetic:
         enabled: false
     bundles:
-        CampaignChainCoreBundle: null
+        CampaignChainCoreBundle:
+            cache: %kernel.cache_dir%/../bower
+
 sonata_block:
     default_contexts:
         - "sonata_page_bundle"
@@ -256,20 +278,46 @@ sonata_block:
         campaignchain.block.milestone.upcoming.listgroup: null
         campaignchain.block.campaign.ongoing.listgroup: null
         campaignchain.block.rss: null
+
+knp_gaufrette:
+    stream_wrapper: ~
+    adapters:
+        images:
+            local:
+                directory: '%campaignchain.core.upload_storage.path%'
+                create: true
+    filesystems:
+        images:
+            adapter: images
+
 oneup_uploader:
     mappings:
         avatar:
             frontend: blueimp
             storage:
-                directory: %campaignchain.core.upload_storage.path%/avatar
+                type: gaufrette
+                filesystem: gaufrette.images_filesystem
+                stream_wrapper: gaufrette://images/
+            allowed_mimetypes:
+                - image/jpeg
+                - image/png
+                - image/gif
+        hook_image:
+            frontend: blueimp
+            storage:
+                type: gaufrette
+                filesystem: gaufrette.images_filesystem
+                stream_wrapper: gaufrette://images/
             allowed_mimetypes:
                 - image/jpeg
                 - image/png
                 - image/gif
 liip_imagine:
     loaders:
-        uploads:
-            filesystem: {data_root: %campaignchain.core.upload_storage.path%}
+        stream_loader:
+            stream:
+                wrapper: gaufrette://images/
+    data_loader: stream_loader
     filter_sets:
         auto_rotate:
             filters:
@@ -317,7 +365,7 @@ fos_rest:
             html: false
     format_listener:
         rules:
-            - { path: '^/api/{version}', priorities: ['json'], fallback_format: json, exception_fallback_format: json, prefer_extension: true }
+            - { path: '^/api/{version}', priorities: ['json'], fallback_format: json, attributes: { _controller: FOS\RestBundle\Controller\ExceptionController }, prefer_extension: true }
             - { path: '^/', stop: true } # Turn off format listener
     access_denied_listener:
         json: true
@@ -329,3 +377,7 @@ nelmio_api_doc:
     name: CampaignChain API v1 (beta)
     motd:
         template: 'CampaignChainCoreBundle:REST:motd.html.twig'
+    sandbox:
+        request_format:
+            formats:
+                json: application/json
