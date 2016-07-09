@@ -79,7 +79,7 @@ file that was distributed with this source code.
             {% endif %}
 
             <!-- Developer Tools -->
-            {% if campaignchain_dev and is_granted('ROLE_USER') %}
+            {% if campaignchain_env == 'dev' and is_granted('ROLE_USER') %}
             <ul class="nav navbar-nav navbar-right">
                 <li data-step="7"><a href="#" onclick="popupwindow('{{ campaignchain_system.getDocsURL() }}/user/index.html','',900,600)"><i class="fa fa-book"></i> <span class="visible-md-inline visible-lg-inline visible-sm-inline">Help</span></a></li>
                 <li class="dropdown">

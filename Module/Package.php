@@ -14,7 +14,7 @@ class Package
 {
     private $packages;
 
-    public function __construct($root, $dev = false)
+    public function __construct($root, $env = 'prod')
     {
         $composerLock = json_decode(file_get_contents(
                 $root.
@@ -24,7 +24,7 @@ class Package
         $this->packages = $composerLock->packages;
 
         // Also get required dev packages if in dev mode
-        if($dev){
+        if($env == 'dev'){
             $this->packages = array_merge($this->packages, $composerLock->{'packages-dev'});
         }
     }

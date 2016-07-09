@@ -18,11 +18,11 @@ class DevVoter implements VoterInterface
 {
     const CAMPAIGNCHAIN_DEV = 'CAMPAIGNCHAIN_DEV';
 
-    private $dev;
+    private $env;
 
-    public function __construct($dev)
+    public function __construct($env)
     {
-        $this->dev = $dev;
+        $this->env = $env;
     }
 
     public function supportsAttribute($attribute)
@@ -58,9 +58,9 @@ class DevVoter implements VoterInterface
         }
 
         /*
-         * If campaignchain_dev is true, then we grant access.
+         * If campaignchain.env is 'dev', then we grant access.
          */
-        if($this->dev){
+        if($this->env == 'dev'){
             return VoterInterface::ACCESS_GRANTED;
         }
 

@@ -26,7 +26,7 @@ class Repository
     /**
      * @var bool
      */
-    private $devMode;
+    private $env;
 
     private $repositories;
 
@@ -37,9 +37,9 @@ class Repository
      */
     private $systemService;
 
-    public function __construct(SystemService $systemService, $devMode = false)
+    public function __construct(SystemService $systemService, $env = 'prod')
     {
-        $this->devMode = $devMode;
+        $this->env = $env;
         $this->systemService = $systemService;
     }
 
@@ -47,7 +47,7 @@ class Repository
     {
         $system = $this->systemService->getActiveSystem();
 
-        if($this->devMode){
+        if($this->env == 'dev'){
             if(isset($system->getModules()['repositories-dev'])){
                 $this->repositories = $system->getModules()['repositories-dev'];
             } else {

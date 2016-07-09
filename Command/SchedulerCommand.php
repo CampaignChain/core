@@ -191,7 +191,7 @@ class SchedulerCommand extends ContainerAwareCommand
         $this->stopwatchScheduler->start('scheduler');
 
         // If in dev mode, use a long interval to make testing the scheduler easier.
-        if ($this->getContainer()->getParameter('campaignchain_dev')) {
+        if ($this->getContainer()->getParameter('campaignchain.env') == 'dev') {
             $this->interval = 9600;
         }
 
@@ -587,7 +587,7 @@ class SchedulerCommand extends ContainerAwareCommand
                 .$module->getBundle()->getName().'".';
 
             $this->logger->error($msg);
-            if ($this->getContainer()->getParameter('campaignchain_dev')) {
+            if ($this->getContainer()->getParameter('campaignchain.env') == 'dev') {
                 throw new \Exception($msg);
             }
             $this->logger->error($msg);
