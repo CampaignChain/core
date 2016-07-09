@@ -29,8 +29,8 @@ class TrackingController extends Controller
             'CampaignChainCoreBundle:Tracking:tracking.js.twig',$optionalParams
         );
 
-//        $packer = new Packer($trackingJs);
-//        $trackingJs = $packer->pack();
+        $packer = new Packer($trackingJs);
+        $trackingJs = $packer->pack();
 
         $response = new Response($trackingJs);
         $response->headers->set('Content-Type','text/javascript');
