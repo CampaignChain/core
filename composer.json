@@ -58,7 +58,8 @@
         "friendsofsymfony/rest-bundle": "dev-master",
         "jms/serializer-bundle": "dev-master",
         "mremi/url-shortener": "dev-master",
-        "knplabs/knp-gaufrette-bundle": "^0.3.0"
+        "knplabs/knp-gaufrette-bundle": "^0.3.0",
+        "tholu/php-packer": "dev-master"
     },
     "autoload": {
         "psr-4": { "CampaignChain\\CoreBundle\\": "" }
