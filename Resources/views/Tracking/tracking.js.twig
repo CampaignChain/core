@@ -24,7 +24,7 @@
  <script type="text/javascript">
  var campaignchainChannel = '[CAMPAIGNCHAIN CHANNEL TRACKING ID]';
  </script>
- <script type="text/javascript" src="[CAMPAIGNCHAIN INSTALLATION]/bundles/campaignchaincore/js/campaignchain/campaignchain_tracking.js"></script>
+ <script type="text/javascript" src="[CAMPAIGNCHAIN INSTALLATION]/tracking.js"></script>
  */
 (function(){
 
@@ -94,6 +94,21 @@
          * @type {string} prod|dev|dev-stay
          */
         this.mode = 'prod';
+
+        /**
+         * The path to the tracking JavaScript relative to the domain of the
+         * CampaignChain instance.
+         *
+         * @type {string}
+         */
+        this.trackingJsUri = 'tracking.js';
+
+        /**
+         * The path to the REST API taking information from the tracking JS.
+         *
+         * @type {string}
+         */
+        this.reportApiUri = 'api/v1/report/cta/new/';
     }
 
     /**
@@ -118,10 +133,10 @@
                 var ajaxUrlMode = '';
             }
             // Compose the API URL.
-            var ajaxUrl = jQuery('script[src$="campaignchain_tracking.js"]').
+            var ajaxUrl = jQuery('script[src$="tracking.js"]').
                 attr('src').replace(
-                    'bundles/campaignchaincore/js/campaignchain/campaignchain_tracking.js',
-                    ajaxUrlMode + 'api/v1/report/cta/new/' + this.channel);
+                    this.trackingJsUri,
+                    ajaxUrlMode + this.reportApiUri + this.channel);
 
             if(this.mode == 'dev' || this.mode == 'dev-stay'){
                 console.log('API URL: ' + ajaxUrl);

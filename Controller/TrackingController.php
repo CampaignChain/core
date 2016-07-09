@@ -18,10 +18,25 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints\Url;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Tholu\Packer\Packer;
 
 class TrackingController extends Controller
 {
+    public function trackingJsAction(Request $request)
+    {
+        $optionalParams = array();
+        $trackingJs = $this->renderView(
+            'CampaignChainCoreBundle:Tracking:tracking.js.twig',$optionalParams
+        );
+
+//        $packer = new Packer($trackingJs);
+//        $trackingJs = $packer->pack();
+
+        $response = new Response($trackingJs);
+        $response->headers->set('Content-Type','text/javascript');
+        return $response;
+    }
+
     public function newApiAction(Request $request, $channel)
     {
         $hasError = false;

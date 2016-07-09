@@ -284,6 +284,14 @@ campaignchain_core_location_toggle_status:
     defaults: { _controller: CampaignChainCoreBundle:Location:toggleStatus }
 
 # tracking routes
+campaignchain_core_tracking_js:
+    pattern:  /tracking.js
+    defaults: { _controller: CampaignChainCoreBundle:Tracking:trackingJs }
+
+campaignchain_core_tracking_js_old:
+    pattern:  /bundles/campaignchaincore/js/campaignchain/campaignchain_tracking.js
+    defaults: { _controller: CampaignChainCoreBundle:Tracking:trackingJs }
+
 campaignchain_core_tracking_new_api:
     pattern:  /api/v1/report/cta/new/{channel}
     defaults: { _controller: CampaignChainCoreBundle:Tracking:newApi }
