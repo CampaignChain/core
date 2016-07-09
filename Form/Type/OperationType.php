@@ -23,6 +23,7 @@ abstract class OperationType extends AbstractType
     protected $em;
     protected $container;
     protected $location;
+    protected $activityModule;
 
     public function __construct(EntityManager $em, ContainerInterface $container)
     {
@@ -42,6 +43,11 @@ abstract class OperationType extends AbstractType
         $this->location = $location;
     }
 
+    public function setActivityModule($activityModule)
+    {
+        $this->activityModule = $activityModule;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -49,8 +55,11 @@ abstract class OperationType extends AbstractType
     {
         if($this->location){
             $view->vars['location'] = $this->location;
-        } else {
+        } elseif(isset($options['data'])) {
             $view->vars['location'] = $options['data']->getOperation()->getActivity()->getLocation();
+        }
+        if(!isset($options['data']) || !$view->vars['location']){
+            $view->vars['activity_module'] = $this->activityModule;
         }
     }
 }

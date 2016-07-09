@@ -46,13 +46,13 @@ class Activity extends Action implements AssignableInterface
 
     /**
      * @ORM\ManyToOne(targetEntity="Channel", inversedBy="activities")
-     * @ORM\JoinColumn(name="channel_id", referencedColumnName="id", nullable=false)
+     * @ORM\JoinColumn(name="channel_id", referencedColumnName="id", nullable=true)
      */
     protected $channel;
 
     /**
      * @ORM\ManyToOne(targetEntity="Location", inversedBy="activities")
-     * @ORM\JoinColumn(name="location_id", referencedColumnName="id", nullable=false)
+     * @ORM\JoinColumn(name="location_id", referencedColumnName="id", nullable=true)
      */
     protected $location;
 

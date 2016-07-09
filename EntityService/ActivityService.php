@@ -21,6 +21,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+
 class ActivityService
 {
     protected $em;
@@ -38,7 +39,8 @@ class ActivityService
         $qb->select('a', 'l')
             ->from('CampaignChain\CoreBundle\Entity\Activity', 'a')
             ->join('a.location', 'l')
-            ->where('a.parent IS NULL')
+            ->where('((a.location IS NOT NULL AND a.location = l.id AND l.status = ?1) OR a.location IS NULL)')
+            ->andWhere('a.parent IS NULL')
             ->andWhere('l.status = ?1')
             ->orderBy('a.startDate')
             ->setParameters([1 => Location::STATUS_ACTIVE]);
@@ -49,6 +51,7 @@ class ActivityService
 
         return $query->getResult();
     }
+
     public function getAllActivities($options = [])
     {
         $qb = $this->em->createQueryBuilder();
@@ -118,7 +121,7 @@ class ActivityService
             ->getRepository('CampaignChainCoreBundle:Activity')
             ->createQueryBuilder('a')
             ->select('a, f, o, sr, cta')
-            ->leftJoin('a.fact', 'f')
+            ->leftJoin('a.facts', 'f')
             ->leftJoin('a.operations', 'o')
             ->leftJoin('o.scheduledReports', 'sr')
             ->leftJoin('o.outboundCTAs', 'cta')
@@ -169,6 +172,7 @@ class ActivityService
      */
     public function removeActivity($id)
     {
+        /** @var Activity $activity */
         $activity = $this->em
             ->getRepository('CampaignChainCoreBundle:Activity')
             ->find($id);
@@ -257,6 +261,7 @@ class ActivityService
             $hook->setEndDate(new \DateTime($hook->getEndDate()->add($interval)->format(\DateTime::ISO8601)));
         }
 
+        /** @var Activity $activity */
         $activity = $hookService->processHook($activity, $hook);
 
         $this->em->persist($activity);
@@ -301,6 +306,7 @@ class ActivityService
 
     public function cloneActivity(Campaign $campaign, Activity $activity, $status = null)
     {
+        /** @var Activity $clonedActivity */
         $clonedActivity = clone $activity;
         $clonedActivity->setCampaign($campaign);
         $campaign->addActivity($clonedActivity);

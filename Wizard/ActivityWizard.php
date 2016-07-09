@@ -48,7 +48,11 @@ class ActivityWizard
 
     public function getLocation(){
         $this->session->resume();
-        return $this->session->get('campaignchain_location');
+        if($this->session->has('campaignchain_location')) {
+            return $this->session->get('campaignchain_location');
+        }
+
+        return null;
     }
 
     public function getChannel(){
@@ -74,6 +78,12 @@ class ActivityWizard
     public function getActivity(){
         $this->session->resume();
         return $this->session->get('campaignchain_activity');
+    }
+
+    public function getActivityModule()
+    {
+        $this->session->resume();
+        return $this->session->get('campaignchain_activityModule');
     }
 
     public function setName($name){

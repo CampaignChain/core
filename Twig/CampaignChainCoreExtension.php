@@ -102,7 +102,12 @@ class CampaignChainCoreExtension extends \Twig_Extension
         } elseif(strpos($class, 'CoreBundle\Entity\Channel') !== false){
             $bundlePath = $object->getChannelModule()->getBundle()->getWebAssetsPath();
         } elseif(strpos($class, 'CoreBundle\Entity\Activity') !== false){
-            $bundlePath = $object->getChannel()->getChannelModule()->getBundle()->getWebAssetsPath();
+            if(!$object->getChannel()){
+                // Activity is not related to a Channel.
+                $bundlePath = $object->getActivityModule()->getBundle()->getWebAssetsPath();
+            } else {
+                $bundlePath = $object->getChannel()->getChannelModule()->getBundle()->getWebAssetsPath();
+            }
         } else {
             return false;
         }
@@ -124,7 +129,11 @@ class CampaignChainCoreExtension extends \Twig_Extension
         } elseif(strpos($class, 'CoreBundle\Entity\Channel') !== false){
             $channelModule = $object->getChannelModule();
         } elseif(strpos($class, 'CoreBundle\Entity\Activity') !== false){
-            $channelModule = $object->getChannel()->getChannelModule();
+            if(!$object->getChannel()){
+                $channelModule = $object->getActivityModule();
+            } else {
+                $channelModule = $object->getChannel()->getChannelModule();
+            }
         } else {
             return false;
         }
@@ -175,16 +184,21 @@ class CampaignChainCoreExtension extends \Twig_Extension
                 array('id' => $object->getId()),
                 true
             );
-            $tplVars['icon_path'] = $this->mediumIcon($object->getLocation());
-            $tplVars['context_icon_path'] = $this->mediumContext($object->getLocation());
+            if(!$object->getLocation()){
+                $bundleWithImages = $object;
+            } else {
+                $bundleWithImages = $object->getLocation();
+            }
+            $tplVars['icon_path'] = $this->mediumIcon($bundleWithImages);
+            $tplVars['context_icon_path'] = $this->mediumContext($bundleWithImages);
             if(!$tplVars['icon_path']){
                 $tplVars['icon_size'] = 32;
-                $tplVars['icon_path'] = $this->mediumContext($object->getLocation(), $tplVars['icon_size']);
+                $tplVars['icon_path'] = $this->mediumContext($bundleWithImages, $tplVars['icon_size']);
                 $tplVars['context_icon_path'] = null;
             }
             if($teaserOptions['activity_name'] == 'activity'){
                 $tplVars['name'] = $object->getName();
-            } else {
+            } elseif($object->getLocation()) {
                 $tplVars['name'] = $object->getLocation()->getName();
             }
             if($teaserOptions['show_trigger'] == true){
