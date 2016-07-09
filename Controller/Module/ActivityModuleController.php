@@ -12,9 +12,11 @@ namespace CampaignChain\CoreBundle\Controller\Module;
 
 use CampaignChain\CoreBundle\Entity\Activity;
 use CampaignChain\CoreBundle\Entity\Campaign;
+use CampaignChain\CoreBundle\Entity\Channel;
 use CampaignChain\CoreBundle\Entity\Location;
 use CampaignChain\CoreBundle\Entity\Medium;
 use CampaignChain\CoreBundle\Entity\Module;
+use CampaignChain\CoreBundle\EntityService\ActivityService;
 use CampaignChain\CoreBundle\Exception\ExternalApiException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Form;
@@ -26,14 +28,29 @@ class ActivityModuleController extends Controller
 {
     protected $parameters;
 
+    /**
+     * @var AbstractActivityHandler
+     */
     protected $handler;
 
+    /**
+     * @var Campaign
+     */
     protected $campaign;
 
+    /**
+     * @var Activity
+     */
     protected $activity;
 
+    /**
+     * @var Location
+     */
     protected $location;
 
+    /**
+     * @var Channel
+     */
     protected $channel;
 
     protected $operations = array();
@@ -47,6 +64,7 @@ class ActivityModuleController extends Controller
     private $contentBundleName;
     private $contentModuleIdentifier;
     private $contentFormType;
+    private $contentModuleFormName;
 
     public function setParameters($parameters){
         $this->parameters = $parameters;
@@ -54,6 +72,8 @@ class ActivityModuleController extends Controller
         if(!isset($this->parameters['handler'])){
             throw new \Exception('No Activity handler defined in services.yml.');
         }
+
+        /** @var AbstractActivityHandler handler */
         $this->handler = $this->get($this->parameters['handler']);
 
         $this->activityBundleName = $this->parameters['bundle_name'];
@@ -82,6 +102,7 @@ class ActivityModuleController extends Controller
         $this->campaign = $campaign;
         $this->location = $location;
 
+        /** @var AbstractActivityHandler location */
         $this->location = $this->handler->processActivityLocation($this->location);
 
         if($this->location) {
@@ -118,6 +139,7 @@ class ActivityModuleController extends Controller
         }
         $this->setActivityContext($campaign, $location);
 
+        /** @var Activity $activity */
         $activity = $wizard->getActivity();
         $activity->setActivityModule($wizard->getActivityModule());
         $activity->setEqualsOperation($this->parameters['equals_operation']);
@@ -160,8 +182,8 @@ class ActivityModuleController extends Controller
                 'activity' => $activity,
                 'campaign' => $this->campaign,
                 'campaign_module' => $this->campaign->getCampaignModule(),
-                'channel_module' => $wizard->getChannelModule(),
-                'channel_module_bundle' => $wizard->getChannelModuleBundle(),
+                'channel_module' => $channelModule,
+                'channel_module_bundle' => $channelModuleBundle,
                 'location' => $this->location,
                 'form' => $form->createView(),
                 'form_submit_label' => 'Save',
@@ -254,21 +276,9 @@ class ActivityModuleController extends Controller
                 $this->contentModuleIdentifier
             );
 
-        if($this->parameters['equals_operation']) {
-            // The activity equals the operation. Thus, we create a new operation with the same data.
-            $operation = new Operation();
-            $operation->setName($activity->getName());
-            $operation->setStartDate($activity->getStartDate());
-            $operation->setEndDate($activity->getEndDate());
-            $operation->setTriggerHook($activity->getTriggerHook());
-            $operation->setActivity($activity);
-            $activity->addOperation($operation);
-            $operationModule->addOperation($operation);
-            $operation->setOperationModule($operationModule);
-
             // Will the Operation create a Location, i.e. the Operation
             // will be accessible through a URL after publishing?
-            if($operationModule->ownsLocation()) {
+            if($operation->getOperationModule()->ownsLocation()) {
                 // Get the location module.
                 $locationService = $this->get('campaignchain.core.location');
                 $locationModule = $locationService->getLocationModule(
@@ -443,7 +453,9 @@ class ActivityModuleController extends Controller
 
     public function editActivity(Activity $activity, Form $form)
     {
+        /** @var ActivityService $activityService */
         $activityService = $this->get('campaignchain.core.activity');
+        /** @var Operation $operation */
         $operation = $activityService->getOperation($activity->getId());
 
         $em = $this->getDoctrine()->getManager();
@@ -565,7 +577,7 @@ class ActivityModuleController extends Controller
         $this->activity->setName($data['name']);
 
         if($this->parameters['equals_operation']) {
-            // Get the one operation.
+            /** @var Operation $operation */
             $operation = $activityService->getOperation($id);
             // The activity equals the operation. Thus, we update the operation
             // with the same data.
