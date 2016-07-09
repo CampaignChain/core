@@ -80,8 +80,11 @@ class FileLoader
             $this->em->getConnection()->beginTransaction();
 
             $userProcessor = new UserProcessor(
-                realpath(SystemUtil::getRootDir()), $this->userService,
-                $this->mimeTypeGuesser, $this->extensionGuesser
+                realpath(
+                    SystemUtil::getRootDir().DIRECTORY_SEPARATOR.
+                    'vendor'.DIRECTORY_SEPARATOR
+                ),
+                $this->userService, $this->mimeTypeGuesser, $this->extensionGuesser
             );
 
             // Create Alice manager and fixture set
