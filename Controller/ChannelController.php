@@ -156,7 +156,7 @@ class ChannelController extends Controller
         $locations = $channelService->getRootLocations($channel);
 
         if(count($locations)){
-            $trackingFileCode = 'src="'.$request->getSchemeAndHttpHost().$this->getParameter('campaignchain.tracking.js_route').'"';
+            $trackingFileCode = 'src="//'.$request->getHttpHost().$this->getParameter('campaignchain.tracking.js_route').'"';
             $trackingIdCode = 'cc(\''.$channel->getTrackingId().'\');';
             $trackingStatus = true;
 
