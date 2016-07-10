@@ -34,7 +34,7 @@ class TrackingController extends Controller
                 'tracking_js_class' => 'CampaignChain',
                 'tracking_js_init' => 'init',
                 'tracking_init_with_old_channel_var' =><<<EOT
-if(window.campaignchainChannel) {
+if (typeof window.campaignchainChannel !== 'undefined') {
         init(window.campaignchainChannel);
     }
 EOT
