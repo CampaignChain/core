@@ -22,39 +22,36 @@ use Symfony\Component\Validator\Constraints\Url;
 
 class TrackingController extends Controller
 {
-    const TRACKING_JS_URI_OLD = '/bundles/campaignchaincore/js/campaignchain/campaignchain_tracking.js';
+    const TRACKING_JS_URI_OLD = 'bundles/campaignchaincore/js/campaignchain/campaignchain_tracking.js';
 
     public function trackingJsAction(Request $request)
     {
         // Take care of old path to tracking.js
-        if($request->getPathInfo() == self::TRACKING_JS_URI_OLD){
+        if($request->getPathInfo() == '/'.self::TRACKING_JS_URI_OLD){
             $trackingIdName = <<<EOT
-function(){
-            if (window.location.href.toLowerCase().indexOf('campaignchain-id') >= 0) {
-                return 'campaignchain-id';
-            } else {
-                return '
+if(window.location.href.toLowerCase().indexOf("campaignchain-id") >= 0) {
+            this.idName = "campaignchain-id";
+        } else {
+            this.idName = "
 EOT;
             $trackingIdName .= $this->getParameter('campaignchain.tracking.id_name');
             $trackingIdName .= <<<EOT
-';
-            }
+";
         }
+        
 EOT;
             $twigParams = array(
                 'tracking_id_name' => $trackingIdName,
-                'tracking_js_route' => ltrim(self::TRACKING_JS_URI_OLD, '/'),
+                'tracking_js_route' => self::TRACKING_JS_URI_OLD,
                 'tracking_js_class' => 'CampaignChain',
                 'tracking_js_init' => 'init',
                 'tracking_init_compatibility' =><<<EOT
-if (typeof window.campaignchainChannel !== 'undefined') {
-        init(window.campaignchainChannel);
-    }
+window["init"](window.campaignchainChannel);
 EOT
             );
         } else {
             $twigParams = array(
-                'tracking_id_name' => "'".$this->getParameter('campaignchain.tracking.id_name')."'",
+                'tracking_id_name' => 'this.idName = "'.$this->getParameter('campaignchain.tracking.id_name').'";',
                 'tracking_js_route' => $this->getParameter('campaignchain.tracking.js_route'),
                 'tracking_js_class' => $this->getParameter('campaignchain.tracking.js_class'),
                 'tracking_js_init' => $this->getParameter('campaignchain.tracking.js_init'),
@@ -79,6 +76,31 @@ EOT
         return $response;
     }
 
+    public function testTrackingJsAction(Request $request, $channel, $dev, $old)
+    {
+        if($dev) {
+            $trackingJsRoute = '/app_dev.php';
+        } else {
+            $trackingJsRoute = '/app.php';
+        }
+
+        if($old){
+            $trackingJsRoute .= '/'.self::TRACKING_JS_URI_OLD;
+        } else {
+            $trackingJsRoute .= '/'.$this->getParameter('campaignchain.tracking.js_route');
+        }
+
+        return $this->render(
+            'CampaignChainCoreBundle:Tracking:test_tracking.js.html.twig',
+            array(
+                'page_title' => 'Test Tracking JS',
+                'channel' => $channel,
+                'tracking_js_init' => $this->getParameter('campaignchain.tracking.js_init'),
+                'tracking_js_route' => $trackingJsRoute,
+                'is_old_tracking_js_route' => $old,
+            ));
+    }
+    
     public function newApiAction(Request $request, $channel)
     {
         $hasError = false;
@@ -182,11 +204,16 @@ EOT
         }
 
         // Check whether the Tracking ID name is correct.
-        if($request->get('id_name') != CTAService::TRACKING_ID_NAME){
-            $msg = 'Provided Tracking ID name ("'.$request->get('id_name').'") does not match, should be "'.CTAService::TRACKING_ID_NAME.'".';
+        if(
+            $request->get('id_name') != $this->getParameter('campaignchain.tracking.id_name') &&
+            $request->get('id_name') != 'campaignchain-id'
+        ){
+            $msg = 'Provided Tracking ID name ("'.$request->get('id_name').'") does not match, should be "'.$this->getParameter('campaignchain.tracking.id_name').'".';
             $logger->error($msg);
             return $this->errorResponse($msg, $request);
         }
+
+        $idName = $request->get('id_name');
 
         if($request->get('id_value') != null){
             $trackingId = $request->get('id_value');
@@ -219,11 +246,11 @@ EOT
                 $sourceUrl = $referrerLocation->getUrl();
                 $sourceLocation = $referrerLocation;
                 // Remove the Tracking ID from the URL.
-                $targetUrl = ParserUtil::removeUrlParam($target, CTAService::TRACKING_ID_NAME);
+                $targetUrl = ParserUtil::removeUrlParam($target, $idName);
 
             } else {
                 // Remove the Tracking ID from the URL.
-                $sourceUrl = ParserUtil::removeUrlParam($request->get('source'), CTAService::TRACKING_ID_NAME);
+                $sourceUrl = ParserUtil::removeUrlParam($request->get('source'), $idName);
                 $sourceLocation = $cta->getLocation();
                 $targetUrl = $target;
             }

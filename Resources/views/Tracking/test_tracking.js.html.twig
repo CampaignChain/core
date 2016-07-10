@@ -1,0 +1,24 @@
+{#
+This file is part of the CampaignChain package.
+
+(c) CampaignChain, Inc. <info@campaignchain.com>
+
+For the full copyright and license information, please view the LICENSE
+file that was distributed with this source code.
+#}
+
+{% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
+
+{% block body %}
+    {% if is_old_tracking_js_route == 1 %}
+    <script type="text/javascript">
+        var campaignchainChannel = '{{ channel }}';
+    </script>
+    {% endif %}
+    <script type="text/javascript" src="//{{ app.request.httpHost() }}{{ tracking_js_route|raw }}"></script>
+    {% if is_old_tracking_js_route == 0 %}
+    <script type="text/javascript">
+            {{ tracking_js_init|raw }}('{{ channel }}');
+    </script>
+    {% endif %}
+{% endblock %}

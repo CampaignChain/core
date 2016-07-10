@@ -295,17 +295,22 @@ campaignchain_core_tracking_js_old:
 campaignchain_core_tracking_new_api:
     pattern:  /api/v1/report/cta/new/{channel}
     defaults: { _controller: CampaignChainCoreBundle:Tracking:newApi }
-#    methods:  [POST]
+
+campaignchain_core_tracking_js_test:
+    path:     /test/trackingjs/{channel}/{dev}/{old}
+    defaults: { _controller: CampaignChainCoreBundle:Tracking:testTrackingJs, dev: 1, old: 0 }
+    condition: "request.getScriptName() == '/app_dev.php'"
 
 # developer tools
 campaignchain_development_sample_data:
     pattern:  /development/sample-data
     defaults: { _controller: CampaignChainCoreBundle:Development:sampleData }
+    condition: "request.getScriptName() == '/app_dev.php'"
 
 campaignchain_development_reset_system:
     pattern:  /development/reset-system
     defaults: { _controller: CampaignChainCoreBundle:Development:resetSystem }
-
+    condition: "request.getScriptName() == '/app_dev.php'"
 
 # user management routes
 campaignchain_core_user:
