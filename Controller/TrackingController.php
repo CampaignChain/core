@@ -30,7 +30,7 @@ class TrackingController extends Controller
         if($request->getPathInfo() == self::TRACKING_JS_URI_OLD){
             $twigParams = array(
                 'tracking_id_name' => 'campaignchain-id',
-                'tracking_js_name' => ltrim(self::TRACKING_JS_URI_OLD, '/'),
+                'tracking_js_route' => ltrim(self::TRACKING_JS_URI_OLD, '/'),
                 'tracking_js_class' => 'CampaignChain',
                 'tracking_js_init' => 'init',
                 'tracking_init_with_old_channel_var' =><<<EOT
@@ -42,7 +42,7 @@ EOT
         } else {
             $twigParams = array(
                 'tracking_id_name' => $this->getParameter('campaignchain.tracking.id_name'),
-                'tracking_js_name' => $this->getParameter('campaignchain.tracking.js_route'),
+                'tracking_js_route' => $this->getParameter('campaignchain.tracking.js_route'),
                 'tracking_js_class' => $this->getParameter('campaignchain.tracking.js_class'),
                 'tracking_js_init' => $this->getParameter('campaignchain.tracking.js_init'),
                 'tracking_init_with_old_channel_var' => '',

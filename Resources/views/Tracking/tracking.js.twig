@@ -103,7 +103,7 @@
          *
          * @type {string}
          */
-        this.trackingJsName = '{{ tracking_js_name|raw }}';
+        this.trackingJsName = '{{ tracking_js_route|raw }}';
 
         /**
          * The path to the REST API taking information from the tracking JS.
@@ -135,7 +135,7 @@
                 var ajaxUrlMode = '';
             }
             // Compose the API URL.
-            var ajaxUrl = jQuery('script[src$="{{ tracking_js_name }}"]').
+            var ajaxUrl = jQuery('script[src$="{{ tracking_js_route }}"]').
                 attr('src').replace(
                     this.trackingJsName,
                     ajaxUrlMode + this.reportApiUri + this.channel);

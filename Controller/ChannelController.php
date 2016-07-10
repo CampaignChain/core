@@ -134,6 +134,8 @@ class ChannelController extends Controller
             array(
                 'page_title' => 'Enable CTA Tracking',
                 'channel' => $channel,
+                'tracking_js_init' => $this->getParameter('campaignchain.tracking.js_init'),
+                'tracking_js_route' => $this->getParameter('campaignchain.tracking.js_route'),
             ));
     }
 
