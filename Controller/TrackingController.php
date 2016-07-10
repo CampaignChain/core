@@ -22,12 +22,12 @@ use Symfony\Component\Validator\Constraints\Url;
 
 class TrackingController extends Controller
 {
-    const TRACKING_JS_URI_OLD = 'bundles/campaignchaincore/js/campaignchain/campaignchain_tracking.js';
+    const TRACKING_JS_URI_OLD = '/bundles/campaignchaincore/js/campaignchain/campaignchain_tracking.js';
 
     public function trackingJsAction(Request $request)
     {
         // Take care of old path to tracking.js
-        if($request->getPathInfo() == '/'.self::TRACKING_JS_URI_OLD){
+        if($request->getPathInfo() == self::TRACKING_JS_URI_OLD){
             $trackingIdName = <<<EOT
 if(window.location.href.toLowerCase().indexOf("campaignchain-id") >= 0) {
             this.idName = "campaignchain-id";
@@ -42,7 +42,6 @@ EOT;
 EOT;
             $twigParams = array(
                 'tracking_id_name' => $trackingIdName,
-                'tracking_js_route' => self::TRACKING_JS_URI_OLD,
                 'tracking_js_class' => 'CampaignChain',
                 'tracking_js_init' => 'init',
                 'tracking_init_compatibility' =><<<EOT
@@ -52,7 +51,6 @@ EOT
         } else {
             $twigParams = array(
                 'tracking_id_name' => 'this.idName = "'.$this->getParameter('campaignchain.tracking.id_name').'";',
-                'tracking_js_route' => $this->getParameter('campaignchain.tracking.js_route'),
                 'tracking_js_class' => $this->getParameter('campaignchain.tracking.js_class'),
                 'tracking_js_init' => $this->getParameter('campaignchain.tracking.js_init'),
                 'tracking_init_compatibility' => '',
@@ -85,9 +83,9 @@ EOT
         }
 
         if($old){
-            $trackingJsRoute .= '/'.self::TRACKING_JS_URI_OLD;
+            $trackingJsRoute .= self::TRACKING_JS_URI_OLD;
         } else {
-            $trackingJsRoute .= '/'.$this->getParameter('campaignchain.tracking.js_route');
+            $trackingJsRoute .= $this->getParameter('campaignchain.tracking.js_route');
         }
 
         return $this->render(

@@ -35,12 +35,11 @@ class TrackingJsLoader extends Loader
         $routes = new RouteCollection();
 
         // prepare a new route
-        $path = '/'.$this->fileName;
         $defaults = array(
             '_controller' => 'CampaignChainCoreBundle:Tracking:trackingJs',
         );
 
-        $route = new Route($path, $defaults);
+        $route = new Route($this->fileName, $defaults);
 
         // add the new route to the route collection
         $routeName = 'campaignchain_core_tracking_js_custom';
