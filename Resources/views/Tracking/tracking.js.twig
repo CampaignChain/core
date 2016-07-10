@@ -183,7 +183,7 @@
             }
             window.location.href = this.target;
         }
-    }
+    };
 
     /**
      * Checks whether Tracking ID exists as parameter in URL of this page.
@@ -216,7 +216,7 @@
         }
 
         return this.idValue;
-    }
+    };
 
     /**
      * Appends the Tracking ID to the target URL.
@@ -250,7 +250,7 @@
                     console.log('Stored in cookie: Tracking ID with affiliation "' + affiliation + '", name "' + this.idName + '" and value "' + this.idValue + '".' );
                 }
 
-                break
+                break;
             case 'connected':
                 if (this.target.indexOf(this.idName + "=") >= 0)
                 {
@@ -280,7 +280,7 @@
 
                 break;
         }
-    }
+    };
 
     /**
      * Returns the Tracking ID value from the Cookie.
@@ -289,7 +289,7 @@
      */
     CampaignChain.prototype.getCookie = function() {
         return Cookies.get(this.idName);
-    }
+    };
 
     /**
      * Is this a new visit to this page from the Activity with the CTA?
@@ -318,7 +318,7 @@
         }
 
         return false;
-    }
+    };
 
     function init() {
         if (window.jQuery && window.Cookies){
@@ -346,7 +346,7 @@
             jQuery('a').click(function(){
                 campaignchain.sendUrlReport(jQuery(this).attr("href"));
                 return false;
-            })
+            });
             // TODO: Has a form been submitted?
         } else {
             setTimeout(function () {
