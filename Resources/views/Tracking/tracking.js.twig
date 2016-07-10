@@ -62,7 +62,7 @@
          *
          * @type {string}
          */
-        this.idName = '{{ tracking_id_name|raw }}';
+        this.idName = {{ tracking_id_name|raw }};
 
         /**
          * Value of the Tracking ID.
@@ -360,6 +360,6 @@
         }
     }
 
-    {{ tracking_init_with_old_channel_var|raw }}
+    {{ tracking_init_compatibility|raw }}
 
 })();

@@ -28,12 +28,25 @@ class TrackingController extends Controller
     {
         // Take care of old path to tracking.js
         if($request->getPathInfo() == self::TRACKING_JS_URI_OLD){
+            $trackingIdName = <<<EOT
+function(){
+            if (window.location.href.toLowerCase().indexOf('campaignchain-id') >= 0) {
+                return 'campaignchain-id';
+            } else {
+                return '
+EOT;
+            $trackingIdName .= $this->getParameter('campaignchain.tracking.id_name');
+            $trackingIdName .= <<<EOT
+';
+            }
+        }
+EOT;
             $twigParams = array(
-                'tracking_id_name' => 'campaignchain-id',
+                'tracking_id_name' => $trackingIdName,
                 'tracking_js_route' => ltrim(self::TRACKING_JS_URI_OLD, '/'),
                 'tracking_js_class' => 'CampaignChain',
                 'tracking_js_init' => 'init',
-                'tracking_init_with_old_channel_var' =><<<EOT
+                'tracking_init_compatibility' =><<<EOT
 if (typeof window.campaignchainChannel !== 'undefined') {
         init(window.campaignchainChannel);
     }
@@ -41,11 +54,11 @@ EOT
             );
         } else {
             $twigParams = array(
-                'tracking_id_name' => $this->getParameter('campaignchain.tracking.id_name'),
+                'tracking_id_name' => "'".$this->getParameter('campaignchain.tracking.id_name')."'",
                 'tracking_js_route' => $this->getParameter('campaignchain.tracking.js_route'),
                 'tracking_js_class' => $this->getParameter('campaignchain.tracking.js_class'),
                 'tracking_js_init' => $this->getParameter('campaignchain.tracking.js_init'),
-                'tracking_init_with_old_channel_var' => '',
+                'tracking_init_compatibility' => '',
             );
         }
 
