@@ -29,6 +29,7 @@ class TrackingController extends Controller
             'CampaignChainCoreBundle:Tracking:tracking.js.twig',$optionalParams
         );
 
+        // Uglify tracking JavaScript.
         $packer = new JavascriptPacker($trackingJs);
         $trackingJs = $packer->pack();
 
