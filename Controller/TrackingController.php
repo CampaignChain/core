@@ -13,6 +13,7 @@ namespace CampaignChain\CoreBundle\Controller;
 use CampaignChain\CoreBundle\Entity\ReportCTA;
 use CampaignChain\CoreBundle\EntityService\CTAService;
 use CampaignChain\CoreBundle\Util\ParserUtil;
+use GK\JavascriptPacker;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,7 +30,7 @@ class TrackingController extends Controller
             'CampaignChainCoreBundle:Tracking:tracking.js.twig',$optionalParams
         );
 
-        $packer = new Packer($trackingJs);
+        $packer = new JavascriptPacker($trackingJs);
         $trackingJs = $packer->pack();
 
         $response = new Response($trackingJs);
