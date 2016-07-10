@@ -1,3 +1,6 @@
+parameters:
+    campaignchain.bower.cache_dir: %kernel.root_dir%/../app/cache/bower
+
 assetic:
     assets:
         campaignchain_base_css:

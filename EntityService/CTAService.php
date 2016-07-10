@@ -22,8 +22,8 @@ class CTAService
 {
     const FORMAT_HTML = 'html';
     const FORMAT_TXT = 'txt';
-    const TRACKING_ID_NAME = 'campaignchain-id';
 
+    protected $trackingIdName;
     protected $em;
     protected $urlShortener;
     protected $locationService;
@@ -36,10 +36,12 @@ class CTAService
      * @param LocationService $locationService
      */
     public function __construct(
+        $trackingIdName,
         EntityManager $em,
         UrlShortenerServiceInterface $urlShortener,
         LocationService $locationService
     ) {
+        $this->trackingIdName = $trackingIdName;
         $this->em = $em;
         $this->urlShortener = $urlShortener;
         $this->locationService = $locationService;
@@ -160,7 +162,7 @@ class CTAService
      */
     protected function generateTrackingUrl($url, $trackingId)
     {
-        return ParserUtil::addUrlParam($url, self::TRACKING_ID_NAME, $trackingId);
+        return ParserUtil::addUrlParam($url, $this->trackingIdName, $trackingId);
     }
 
     /**

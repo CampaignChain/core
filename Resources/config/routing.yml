@@ -285,8 +285,8 @@ campaignchain_core_location_toggle_status:
 
 # tracking routes
 campaignchain_core_tracking_js:
-    pattern:  /tracking.js
-    defaults: { _controller: CampaignChainCoreBundle:Tracking:trackingJs }
+    resource: .
+    type: trackingjs
 
 campaignchain_core_tracking_js_old:
     pattern:  /bundles/campaignchaincore/js/campaignchain/campaignchain_tracking.js

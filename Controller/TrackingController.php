@@ -22,16 +22,44 @@ use Symfony\Component\Validator\Constraints\Url;
 
 class TrackingController extends Controller
 {
+    const TRACKING_JS_URI_OLD = '/bundles/campaignchaincore/js/campaignchain/campaignchain_tracking.js';
+
     public function trackingJsAction(Request $request)
     {
-        $optionalParams = array();
+        // Take care of old path to tracking.js
+        if($request->getPathInfo() == self::TRACKING_JS_URI_OLD){
+            $twigParams = array(
+                'tracking_id_name' => 'campaignchain-id',
+                'tracking_js_name' => ltrim(self::TRACKING_JS_URI_OLD, '/'),
+                'tracking_js_class' => 'CampaignChain',
+                'tracking_js_init' => 'init',
+                'tracking_init_with_old_channel_var' =><<<EOT
+if(window.campaignchainChannel) {
+        init(window.campaignchainChannel);
+    }
+EOT
+            );
+        } else {
+            $twigParams = array(
+                'tracking_id_name' => $this->getParameter('campaignchain.tracking.id_name'),
+                'tracking_js_name' => $this->getParameter('campaignchain.tracking.js_route'),
+                'tracking_js_class' => $this->getParameter('campaignchain.tracking.js_class'),
+                'tracking_js_init' => $this->getParameter('campaignchain.tracking.js_init'),
+                'tracking_init_with_old_channel_var' => '',
+            );
+        }
+
+        $twigParams['tracking_js_mode'] = $this->getParameter('campaignchain.tracking.js_mode');
+
         $trackingJs = $this->renderView(
-            'CampaignChainCoreBundle:Tracking:tracking.js.twig',$optionalParams
+            'CampaignChainCoreBundle:Tracking:tracking.js.twig', $twigParams
         );
 
-        // Uglify tracking JavaScript.
-        $packer = new JavascriptPacker($trackingJs);
-        $trackingJs = $packer->pack();
+        // Uglify tracking JavaScript if in prod environment.
+        if($this->get( 'kernel' )->getEnvironment() == 'prod') {
+            $packer = new JavascriptPacker($trackingJs);
+            $trackingJs = $packer->pack();
+        }
 
         $response = new Response($trackingJs);
         $response->headers->set('Content-Type','text/javascript');
