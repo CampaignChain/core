@@ -111,6 +111,10 @@
          * @type {string}
          */
         this.reportApiUri = 'api/v1/report/cta/new/';
+
+        if(this.mode == 'dev' || this.mode == 'dev-stay'){
+            console.log(this.idName);
+        }
     }
 
     /**
