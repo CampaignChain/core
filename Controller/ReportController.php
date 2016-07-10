@@ -60,6 +60,7 @@ class ReportController extends Controller
         $query = $qb->getQuery();
         $locations = $query->getResult();
 
+        $response = array();
         foreach ($locations as $location) {
             $response[] = [
                 'id' => $location->getTargetLocation()->getId(),
