@@ -19,7 +19,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints\Url;
-use Tholu\Packer\Packer;
 
 class TrackingController extends Controller
 {
