@@ -324,24 +324,24 @@
 
     function {{ tracking_js_init|raw }}(channelId) {
         if (window.jQuery && window.Cookies){
-            var {{ tracking_js_class|raw }} = new {{ tracking_js_class|raw }}();
+            var tracker = new {{ tracking_js_class|raw }}();
 
             // Assign the channel ID.
-            {{ tracking_js_class|raw }}.channel = channelId;
+            tracker.channel = channelId;
 
             // If Tracking ID is not in cookie, then this is a first-time visit and
             // we want to report that.
-            if({{ tracking_js_class|raw }}.newVisit() == true){
+            if(tracker.newVisit() == true){
                 /*
                  We pass this page as the target. The tracking API will then
                  detect that the source equals the target and will understand
                  that the CTA is the actual source.
                  */
-                {{ tracking_js_class|raw }}.sendUrlReport(window.location.href);
+                tracker.sendUrlReport(window.location.href);
             }
 
             // Disable clicks if dev-stay mode.
-            if({{ tracking_js_class|raw }}.mode == 'dev-stay'){
+            if(tracker.mode == 'dev-stay'){
                 jQuery('a').on('click', function(event) {
                     event.preventDefault();
                 });
@@ -349,7 +349,7 @@
 
             // Has a link been clicked?
             jQuery('a').click(function(){
-                {{ tracking_js_class|raw }}.sendUrlReport(jQuery(this).attr("href"));
+                tracker.sendUrlReport(jQuery(this).attr("href"));
                 return false;
             });
             // TODO: Has a form been submitted?
