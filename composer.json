@@ -88,9 +88,6 @@
                     "Knp\\Bundle\\GaufretteBundle\\KnpGaufretteBundle"
                 ]
             }
-        },
-        "branch-alias": {
-            "dev-campaignchain-148": "dev-master"
         }
     }
 }
