@@ -114,7 +114,7 @@
      *
      * @param target
      */
-    {{ tracking_js_class|raw }}.prototype.sendUrlReport = function(target)
+    {{ tracking_js_class|raw }}.prototype.sendUrlReport = function(target, alias)
     {
         this.target = target;
 
@@ -140,7 +140,7 @@
             // Pass the tracking data to the CampaignChain API.
             jQuery.ajax({
                 url: ajaxUrl,
-                data: { id_name: this.idName, id_value: this.idValue, source: this.source, target: this.target },
+                data: { id_name: this.idName, id_value: this.idValue, source: this.source, target: this.target, alias: alias },
                 dataType: "jsonp",
                 cache: false,
                 context: this,
@@ -334,7 +334,7 @@
                  detect that the source equals the target and will understand
                  that the CTA is the actual source.
                  */
-                tracker.sendUrlReport(window.location.href);
+                tracker.sendUrlReport(window.location.href, null);
             }
 
             // Disable clicks if dev-stay mode.
@@ -344,12 +344,62 @@
                 });
             }
 
+            /*
+            Below sections capture calls to action on a Location (e.g. a Website
+            page). A Location can provide custom Location Identifiers that match
+            Locations as defined in CampaignChain.
+
+            The name of the Location Identifier variable is always
+            ``data-location-alias``.
+
+            For example:
+
+            A form would include a hidden field with the name
+            ``data-location-alias`` and the value ``lead-capture``. Once the
+            submit button was clicked, the tracking script will send tracking
+            information to CampaignChain, including the Location Identifier
+            value.
+
+            CampaignChain would process the received data and map the value
+            ``lead-capture`` to the Location Module named
+            ``campaignchain-location-salesforce``. The mapping is defined in the
+            ``campaignchain.yml`` configuration file of said module.
+
+            Why is the ``data-identifier-value`` not identical with the module's
+            name? Reason being that some users of CampaignChain might want to
+            use it as a white-labeled or custom branded solution and want to
+            avoid that ``campaignchain`` is being displayed anywhere in the
+            source code displayed in a browser.
+
+            Hence, we refer to ``data-identifier-value`` as the tracking alias
+            of a Location module.
+
+            A tracking alias must be unique within a Channel and two Locations
+            within the same Channel cannot have the same alias.
+             */
+
             // Has a link been clicked?
             jQuery("a").click(function(){
-                tracker.sendUrlReport(jQuery(this).attr("href"));
+                if(jQuery(this).is("data-location-alias")){
+                    var alias = jQuery(this).attr("data-location-alias");
+                } else {
+                    var alias = "a";
+                }
+                tracker.sendUrlReport(jQuery(this).attr("href"), alias);
                 return false;
             });
-            // TODO: Has a form been submitted?
+            // Has a form been submitted?
+            jQuery("form").submit(function (e) {
+                if(jQuery(this).find("input:hidden").is("data-location-alias")){
+                    var alias = jQuery(this).find("input:hidden").attr("data-location-alias");
+                } else {
+                    var alias = "form";
+                }
+                if(jQuery(this).is("action")) {
+                    tracker.sendUrlReport(jQuery(this).attr("action"), alias);
+                }
+                return false;
+            });
         } else {
             setTimeout(function () {
                 window["{{ tracking_js_init|raw }}"](channelId);

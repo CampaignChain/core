@@ -59,7 +59,8 @@
         "jms/serializer-bundle": "dev-master",
         "mremi/url-shortener": "dev-master",
         "knplabs/knp-gaufrette-bundle": "^0.3.0",
-        "gkralik/php-uglifyjs": "dev-master"
+        "gkralik/php-uglifyjs": "dev-master",
+        "campaignchain/location-website": "dev-master"
     },
     "autoload": {
         "psr-4": { "CampaignChain\\CoreBundle\\": "" }

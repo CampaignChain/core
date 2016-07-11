@@ -23,11 +23,21 @@ class LocationModule extends Module
     protected $locations;
 
     /**
+     * @ORM\ManyToMany(targetEntity="ChannelModule", inversedBy="locationModules")
+     * @ORM\JoinTable(name="campaignchain_module_location_channel",
+     *   joinColumns={@ORM\JoinColumn(name="locationmodule_id", referencedColumnName="id")},
+     *   inverseJoinColumns={@ORM\JoinColumn(name="channelmodule_id", referencedColumnName="id")}
+     *   )
+     **/
+    protected $channelModules;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
         $this->locations = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->channelModules = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -61,5 +71,38 @@ class LocationModule extends Module
     public function getLocations()
     {
         return $this->locations;
+    }
+
+    /**
+     * Add channels
+     *
+     * @param \CampaignChain\CoreBundle\Entity\ChannelModule $channels
+     * @return ActivityModule
+     */
+    public function addChannelModule(\CampaignChain\CoreBundle\Entity\ChannelModule $channelModule)
+    {
+        $this->channelModules[] = $channelModule;
+
+        return $this;
+    }
+
+    /**
+     * Remove channels
+     *
+     * @param \CampaignChain\CoreBundle\Entity\ChannelModule $channels
+     */
+    public function removeChannelModule(\CampaignChain\CoreBundle\Entity\ChannelModule $channelModule)
+    {
+        $this->channelModules->removeElement($channelModule);
+    }
+
+    /**
+     * Get channels
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getChannelModules()
+    {
+        return $this->channelModules;
     }
 }

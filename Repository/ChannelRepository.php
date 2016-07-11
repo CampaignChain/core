@@ -10,6 +10,7 @@
 namespace CampaignChain\CoreBundle\Repository;
 
 use CampaignChain\CoreBundle\Entity\ActivityModule;
+use CampaignChain\CoreBundle\Entity\LocationModule;
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -27,6 +28,17 @@ class ChannelRepository extends EntityRepository
             ->join('channelRepository.activityModules', 'activityModule')
             ->where('activityModule = :activityModule')
             ->setParameter('activityModule', $activityModule)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findRegisteredModulesByLocationModule(LocationModule $locationModule)
+    {
+        return $this->createQueryBuilder('channelRepository')
+            ->select('channelRepository')
+            ->join('channelRepository.locationModules', 'locationModule')
+            ->where('locationModule = :locationModule')
+            ->setParameter('locationModule', $locationModule)
             ->getQuery()
             ->getResult();
     }

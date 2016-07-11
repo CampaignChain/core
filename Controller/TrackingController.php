@@ -10,8 +10,10 @@
 
 namespace CampaignChain\CoreBundle\Controller;
 
+use CampaignChain\CoreBundle\Entity\CTA;
 use CampaignChain\CoreBundle\Entity\ReportCTA;
 use CampaignChain\CoreBundle\EntityService\CTAService;
+use CampaignChain\CoreBundle\EntityService\LocationService;
 use CampaignChain\CoreBundle\Util\ParserUtil;
 use GK\JavascriptPacker;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -217,6 +219,7 @@ EOT
             $trackingId = $request->get('id_value');
 
             // Does the CTA for the provided Tracking ID exist?
+            /** @var CTA $cta */
             $cta = $this->getDoctrine()
                 ->getRepository('CampaignChainCoreBundle:CTA')
                 ->findOneByTrackingId($trackingId);
@@ -228,7 +231,13 @@ EOT
             }
 
             // TODO: Set Referer info by going CTA -> Operation -> Location.
-            $referrerLocation = $cta->getOperation()->getLocations()[0];
+            if($cta->getOperation()->getLocations()->count() === 1) {
+                $referrerLocation = $cta->getOperation()->getLocations()[0];
+            } else {
+                $msg = Response::HTTP_INTERNAL_SERVER_ERROR.': Multiple Locations not implemented yet.';
+                $logger->error($msg);
+                return $this->errorResponse($msg, $request);
+            }
 
             if(!$referrerLocation){
                 $msg = Response::HTTP_INTERNAL_SERVER_ERROR.': No referrer Location.';
@@ -278,8 +287,9 @@ EOT
              * Check if the target URL is in a connected Channel. If yes, add
              * as new Location if supported by module.
              */
+            /** @var LocationService $locationService */
             $locationService = $this->container->get('campaignchain.core.location');
-            $targetLocation = $locationService->findLocationByUrl($targetUrl, $cta->getOperation());
+            $targetLocation = $locationService->findLocationByUrl($targetUrl, $cta->getOperation(), $request->get('location'));
 
             // Add new CTA to report.
             $reportCTA = new ReportCTA();

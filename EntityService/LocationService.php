@@ -10,6 +10,8 @@
 
 namespace CampaignChain\CoreBundle\EntityService;
 
+use CampaignChain\CoreBundle\Entity\ChannelModule;
+use CampaignChain\CoreBundle\Entity\LocationModule;
 use Doctrine\ORM\EntityManager;
 use CampaignChain\CoreBundle\Entity\Channel;
 use CampaignChain\CoreBundle\Entity\Location;
@@ -24,6 +26,9 @@ use CampaignChain\CoreBundle\EntityService\ChannelService;
 
 class LocationService
 {
+    const DEFAULT_LOCATION_BUNDLE_NAME = 'campaignchain/location-website';
+    const DEFAULT_LOCATION_MODULE_IDENTIFIER = 'campaignchain-website-page';
+
     protected $em;
     protected $container;
     protected $activityService;
@@ -66,6 +71,30 @@ class LocationService
         return $locationModule;
     }
 
+    public function getLocationModuleByTrackingAlias(ChannelModule $channelModule, $alias)
+    {
+        /** @var LocationModule $locationModule */
+        $qb = $this->em->createQueryBuilder();
+        $qb->select('lm')
+            ->from('CampaignChain\CoreBundle\Entity\LocationModule', 'lm')
+            ->join('lm.channelModules', 'cm')
+            ->where('lm.trackingAlias = :trackingAlias')
+            ->andWhere('cm.channelModule = :channelModule')
+            ->setParameter('trackingAlias', $alias)
+            ->setParameter('channelModule', $channelModule)
+            ->orderBy('a.startDate', 'ASC');
+        $query = $qb->getQuery();
+        $locationModule = $query->getResult();
+
+        if (!$locationModule) {
+            throw new \Exception(
+                'No location module found for tracking alias "'.$alias.'"'
+            );
+        }
+
+        return $locationModule;
+    }
+
     /**
      * Finds a Location by the URL and automatically creates the Location if it
      * does not exist and if the respective Location module supports auto
@@ -77,7 +106,7 @@ class LocationService
      * @param $operation Operation
      * @return bool|Location|null|object
      */
-    public function findLocationByUrl($url, $operation)
+    public function findLocationByUrl($url, $operation, $alias = null)
     {
         $url = ParserUtil::sanitizeUrl($url);
 
@@ -133,9 +162,31 @@ class LocationService
                 if($matchingLocations){
                     $location = null;
 
+                    /** @var Location $matchingLocation */
                     foreach($matchingLocations as $matchingLocation){
-                        $ctaServiceName = $matchingLocation->getLocationModule()
-                            ->getServices()['job_cta'];
+                        /*
+                         * Create a new Location based on the tracking alias
+                         * within the matching Location's Channel.
+                         *
+                         * If no tracking alias was provided, we take the
+                         * default LocationModule to create a new Location.
+                         */
+
+                        if(!$alias){
+                            $locationService = $this->container->get('campaignchain.core.location');
+                            /** @var LocationModule $locationModule */
+                            $locationModule = $locationService->getLocationModule(
+                                self::DEFAULT_LOCATION_BUNDLE_NAME,
+                                self::DEFAULT_LOCATION_MODULE_IDENTIFIER
+                            );
+                        } else {
+                            $locationModule = $this->getLocationModuleByTrackingAlias(
+                                $matchingLocation->getChannel()->getChannelModule(),
+                                $alias
+                            );
+                        }
+
+                        $ctaServiceName = $locationModule->getServices()['job_cta'];
                         if($ctaServiceName){
                             // Create the new Location if that
                             // has not been done yet.
@@ -149,7 +200,7 @@ class LocationService
                             // Update the Location module to be the current
                             // one.
                             $location->setLocationModule(
-                                $matchingLocation->getLocationModule()
+                                $locationModule
                             );
 
                             // Let the module's service process the new
@@ -167,6 +218,12 @@ class LocationService
                             if($location){
                                 return $location;
                             }
+                        } else {
+                            throw new \Exception(
+                                'No CTA Job service defined for Location module '.
+                                'of bundle "'.$locationModule->getBundle()->getName().'" '.
+                                'and module "'.$locationModule->getIdentifier().'"'
+                            );
                         }
                     }
                 }
