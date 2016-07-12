@@ -72,7 +72,7 @@ EOT
         }
 
         $response = new Response($trackingJs);
-        $response->headers->set('Content-Type','text/javascript');
+        $response->headers->set('Content-Type','application/javascript');
         return $response;
     }
 
