@@ -104,6 +104,17 @@
          */
         this.reportApiUri = "/api/v1/report/cta/new";
 
+        /**
+         * If this script is in dev or dev-stay mode, then a base URL will be
+         * passed to it, which points at the right server to call the tracking
+         * API. The rationale is that different development instances (e.g.
+         * one per Git branch) might point to the same Website while testing the
+         * tracking code.
+         *
+         * @type {null}
+         */
+        this.reportDevBaseUrlName = 'cctapi';
+
         if(this.mode == "dev" || this.mode == "dev-stay"){
             console.log("this.idName = " + this.idName);
         }
@@ -124,14 +135,20 @@
                 console.log("Tracking ID is in URL.");
             }
 
+            var ajaxBaseUrl = "{{ app.request.getSchemeAndHttpHost()|raw }}";
+
             // Use Symfony dev environment if dev mode for API URL.
             if(this.mode == "dev" || this.mode == "dev-stay"){
+                if(this.source.toLowerCase().indexOf(this.reportDevBaseUrlName) >= 0){
+                    ajaxBaseUrl = decodeURIComponent((new RegExp("[?|&]" + this.reportDevBaseUrlName + "=" + "([^&;]+?)(&|#|;|$)").exec(this.source)||[,""])[1].replace(/\+/g, "%20"))||null;
+                    console.log("Base URL of tracking REST API for development is: " + ajaxBaseUrl);
+                }
                 var ajaxUrlMode = "/app_dev.php";
             } else {
                 var ajaxUrlMode = "";
             }
             // Compose the API URL.
-            var ajaxUrl = "{{ app.request.getSchemeAndHttpHost()|raw }}" + ajaxUrlMode + this.reportApiUri + "/" + this.channel;
+            var ajaxUrl = ajaxBaseUrl + ajaxUrlMode + this.reportApiUri + "/" + this.channel;
 
             if(this.mode == "dev" || this.mode == "dev-stay"){
                 console.log("API URL: " + ajaxUrl);
