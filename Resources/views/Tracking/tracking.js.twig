@@ -407,13 +407,14 @@
             });
             // Has a form been submitted?
             jQuery("form").submit(function (e) {
-                if(jQuery(this).find("input:hidden").is("data-location-alias")){
-                    var alias = jQuery(this).find("input:hidden").attr("data-location-alias");
-                } else {
-                    var alias = "form";
-                }
                 if(jQuery(this).is("action")) {
+                    if(jQuery(this).find("input:hidden").is("data-location-alias")){
+                        var alias = jQuery(this).find("input:hidden").attr("data-location-alias");
+                    } else {
+                        var alias = "form";
+                    }
                     tracker.sendUrlReport(jQuery(this).attr("action"), alias);
+                    jQuery(this).submit();
                 }
                 return false;
             });
