@@ -117,7 +117,7 @@ class Bundle extends Meta
     protected $homepage;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, unique=true)
      */
     protected $path;
 

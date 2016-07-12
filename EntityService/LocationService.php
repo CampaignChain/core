@@ -73,22 +73,23 @@ class LocationService
 
     public function getLocationModuleByTrackingAlias(ChannelModule $channelModule, $alias)
     {
-        /** @var LocationModule $locationModule */
         $qb = $this->em->createQueryBuilder();
         $qb->select('lm')
             ->from('CampaignChain\CoreBundle\Entity\LocationModule', 'lm')
             ->join('lm.channelModules', 'cm')
             ->where('lm.trackingAlias = :trackingAlias')
-            ->andWhere('cm.channelModule = :channelModule')
+            ->andWhere('cm.id = :channelModule')
             ->setParameter('trackingAlias', $alias)
-            ->setParameter('channelModule', $channelModule)
-            ->orderBy('a.startDate', 'ASC');
+            ->setParameter('channelModule', $channelModule->getId());
         $query = $qb->getQuery();
-        $locationModule = $query->getResult();
+        /** @var LocationModule $locationModule */
+        $locationModule = $query->getSingleResult();
 
         if (!$locationModule) {
             throw new \Exception(
-                'No location module found for tracking alias "'.$alias.'"'
+                'No location module found for tracking alias "'.$alias.'" '.
+                'in Channel "'.$channelModule->getBundle()->getName().'/'.
+                $channelModule->getIdentifier().'"."'
             );
         }
 
@@ -171,7 +172,6 @@ class LocationService
                          * If no tracking alias was provided, we take the
                          * default LocationModule to create a new Location.
                          */
-
                         if(!$alias){
                             $locationService = $this->container->get('campaignchain.core.location');
                             /** @var LocationModule $locationModule */
@@ -180,9 +180,19 @@ class LocationService
                                 self::DEFAULT_LOCATION_MODULE_IDENTIFIER
                             );
                         } else {
+                            /** @var LocationModule $locationModule */
                             $locationModule = $this->getLocationModuleByTrackingAlias(
                                 $matchingLocation->getChannel()->getChannelModule(),
                                 $alias
+                            );
+                        }
+
+                        if(!$locationModule){
+                            throw new \Exception(
+                                'Cannot map tracking alias "'.$alias.'" to a "'.
+                                'Location module that belongs to Channel module "'.
+                                $matchingLocation->getChannel()->getBundle()->getName().'/'.
+                                $matchingLocation->getChannel()->getChannelModule()->getIdentifier().'"'
                             );
                         }
 

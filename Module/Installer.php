@@ -726,7 +726,7 @@ class Installer
 
             // If an activity or Location module, remember the related channels.
             if (
-                isset($moduleParams['channels']) && is_array($moduleParams['channels'])
+                isset($moduleParams['channels']) && is_array($moduleParams['channels']) && count($moduleParams['channels'])
             ) {
                 $this->channelRelationships[$moduleEntity][$bundle->getName()][$module->getIdentifier()] = $moduleParams['channels'];
             }

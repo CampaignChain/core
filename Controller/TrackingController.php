@@ -289,7 +289,13 @@ EOT
              */
             /** @var LocationService $locationService */
             $locationService = $this->container->get('campaignchain.core.location');
-            $targetLocation = $locationService->findLocationByUrl($targetUrl, $cta->getOperation(), $request->get('location'));
+            try {
+                $targetLocation = $locationService->findLocationByUrl($targetUrl, $cta->getOperation(), $request->get('alias'));
+            } catch (\Exception $e) {
+                $msg = Response::HTTP_INTERNAL_SERVER_ERROR.': '.$e->getMessage();
+                $logger->error($msg);
+                return $this->errorResponse($msg, $request);
+            }
 
             // Add new CTA to report.
             $reportCTA = new ReportCTA();
