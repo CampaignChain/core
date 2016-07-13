@@ -113,7 +113,7 @@
          *
          * @type {null}
          */
-        this.reportDevBaseUrlName = "cctapi";
+        this.reportBaseUrlName = "cctapi";
 
         this.ctaEvent = null;
 
@@ -163,8 +163,8 @@
 
             // Use Symfony dev environment if dev mode for API URL.
             if(this.mode == "dev" || this.mode == "dev-stay"){
-                if(this.source.toLowerCase().indexOf(this.reportDevBaseUrlName) >= 0){
-                    ajaxBaseUrl = decodeURIComponent((new RegExp("[?|&]" + this.reportDevBaseUrlName + "=" + "([^&;]+?)(&|#|;|$)").exec(this.source)||[,""])[1].replace(/\+/g, "%20"))||null;
+                if(this.source.toLowerCase().indexOf(this.reportBaseUrlName) >= 0){
+                    ajaxBaseUrl = decodeURIComponent((new RegExp("[?|&]" + this.reportBaseUrlName + "=" + "([^&;]+?)(&|#|;|$)").exec(this.source)||[,""])[1].replace(/\+/g, "%20"))||null;
                     console.log("Base URL of tracking REST API for development is: " + ajaxBaseUrl);
                 }
                 var ajaxUrlMode = "/app_dev.php";
@@ -355,21 +355,34 @@
         return false;
     };
 
-    {{ tracking_js_class|raw }}.prototype.removeUrlParam = function(url, key)
+    /*
+     If the URL of the tracking REST API has been set dynamically
+     for development/testing purposes, then remove it from the target
+     URL.
+     */
+    {{ tracking_js_class|raw }}.prototype.removeReportDevBaseUrl = function(url)
     {
-        if (url.indexOf("#") != -1) {
-            var hash = url.split('#')[1];
-        }
+        if(this.mode == "dev" || this.mode == "dev-stay") {
+            if (url.toLowerCase().indexOf(this.reportBaseUrlName) >= 0) {
+                console.log("Removing " + this.reportBaseUrlName + " parameter from " + url);
 
-        var regex = new RegExp( "\\?" + key + "=[^&]*&?", "gi");
-        url = url.replace(regex,'?');
-        regex = new RegExp( "\\&" + key + "=[^&]*&?", "gi");
-        url = url.replace(regex,'&');
-        url = url.replace(/(\?|&)$/,'');
-        regex = null;
+                if (url.indexOf("#") != -1) {
+                    var hash = url.split('#')[1];
+                }
 
-        if(hash){
-            url = url + "#" + hash;
+                var key = this.reportBaseUrlName;
+
+                var regex = new RegExp("\\?" + key + "=[^&]*&?", "gi");
+                url = url.replace(regex, '?');
+                regex = new RegExp("\\&" + key + "=[^&]*&?", "gi");
+                url = url.replace(regex, '&');
+                url = url.replace(/(\?|&)$/, '');
+                regex = null;
+
+                if (hash) {
+                    url = url + "#" + hash;
+                }
+            }
         }
 
         return url;
@@ -391,19 +404,8 @@
             we want to report that.
              */
             if(tracker.newVisit() === true){
-                /*
-                If the URL of the tracking REST API has been set dynamically
-                for development/testing purposes, then remove it from the target
-                URL.
-                 */
-                var target= window.location.href;
+                target = tracker.removeReportDevBaseUrl(window.location.href);
 
-                if(tracker.mode == "dev" || tracker.mode == "dev-stay"){
-                    if(target.toLowerCase().indexOf(tracker.reportDevBaseUrlName) >= 0){
-                        console.log("Removing " + tracker.reportDevBaseUrlName + " parameter from " + target);
-                        target = tracker.removeUrlParam(target, tracker.reportDevBaseUrlName);
-                    }
-                }
                 /*
                  We pass this page as the target. The tracking API will then
                  detect that the source equals the target and will understand
