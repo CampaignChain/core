@@ -247,7 +247,7 @@ EOT
             $query = $qb->getQuery();
             $referrerLocation = $query->getResult();
 
-            if(count($referrerLocation) !== 1) {
+            if(count($referrerLocation) > 1) {
                 $msg = Response::HTTP_INTERNAL_SERVER_ERROR.': Multiple referrers are not possible.';
                 $logger->error($msg);
                 return $this->errorResponse($msg, $request);
