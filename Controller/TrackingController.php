@@ -245,9 +245,10 @@ EOT
                 ->setParameter('operation', $cta->getOperation())
                 ->setParameter('status', Medium::STATUS_ACTIVE);
             $query = $qb->getQuery();
-            $referrerLocation = $query->getResult();
 
-            if(count($referrerLocation) > 1) {
+            try {
+                $referrerLocation = $query->getSingleResult();
+            } catch(\Exception $e) {
                 $msg = Response::HTTP_INTERNAL_SERVER_ERROR.': Multiple referrers are not possible.';
                 $logger->error($msg);
                 return $this->errorResponse($msg, $request);
