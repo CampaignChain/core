@@ -10,6 +10,10 @@ file that was distributed with this source code.
 {% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
 
 {% block body %}
+    <form novalidate="" class="comment-form" id="commentform" method="post" action="http://wordpress.amariki.com">
+        <input type="submit" value="Test Form Submit" class="3" id="1" name="2">
+    </form>
+
     {% if is_old_tracking_js_route == 1 %}
     <script type="text/javascript">
         var campaignchainChannel = '{{ channel }}';

@@ -115,17 +115,38 @@
          */
         this.reportDevBaseUrlName = "cctapi";
 
+        this.ctaEvent = null;
+
         if(this.mode == "dev" || this.mode == "dev-stay"){
             console.log("this.idName = " + this.idName);
         }
     }
+
+    {{ tracking_js_class|raw }}.prototype.postDispatch = function(targetSelector, success)
+    {
+        switch(targetSelector){
+            case 'a[href]':
+                if(this.mode == "dev" || this.mode == "dev-stay"){
+                    console.log("Redirect to: " + this.target);
+                }
+                if(this.mode != "dev-stay"){
+                    window.location.href = this.target;
+                }
+                break;
+            case 'form > input[submit]':
+                if(this.mode == "dev" || this.mode == "dev-stay"){
+                    console.log("Post form data to: " + this.target);
+                }
+                break;
+        }
+    };
 
     /**
      * Sends a CTA report to CampaignChain.
      *
      * @param target
      */
-    {{ tracking_js_class|raw }}.prototype.sendUrlReport = function(target, alias)
+    {{ tracking_js_class|raw }}.prototype.sendUrlReport = function(target, alias, targetSelector)
     {
         this.target = target;
 
@@ -171,21 +192,20 @@
                         this.continueTracking(data.target_affiliation);
                     }
 
-                    if(this.mode != "dev-stay"){
-                        window.location.href = this.target;
-                    } else {
+                    if(this.mode == "dev" || this.mode == "dev-stay"){
                         console.log("AJAX success: " + status);
-                        console.log("Would redirect to: " + this.target);
                     }
+
+                    this.postDispatch(targetSelector, true);
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
-                    if(this.mode == "dev-stay"){
+                    if(this.mode == "dev" || this.mode == "dev-stay"){
                         console.log(
                             "AJAX error: URL: " + ajaxUrl + ", status: " + xhr.status +
                                 ", message: " +thrownError
                         );
                     } else {
-                        window.location.href = this.target;
+                        this.postDispatch(targetSelector, false);
                     }
                 }
             });
@@ -193,7 +213,7 @@
             if(this.mode == "dev" || this.mode == "dev-stay"){
                 console.log("No Tracking ID exists.");
             }
-            window.location.href = this.target;
+            this.postDispatch(targetSelector, false);
         }
     };
 
@@ -351,7 +371,7 @@
                  detect that the source equals the target and will understand
                  that the CTA is the actual source.
                  */
-                tracker.sendUrlReport(window.location.href, null);
+                tracker.sendUrlReport(window.location.href, null, "a[href]");
             }
 
             // Disable clicks if dev-stay mode.
@@ -396,26 +416,59 @@
              */
 
             // Has a link been clicked?
-            jQuery("a").click(function(){
+            jQuery("a").click(function(e){
+                if(tracker.mode == "dev-stay") {
+                    e.preventDefault();
+                }
+
+                if(tracker.mode == "dev" || tracker.mode == "dev-stay") {
+                    console.log('a[href]: Link was clicked.');
+                }
+
                 if(jQuery(this).is("data-location-alias")){
                     var alias = jQuery(this).attr("data-location-alias");
                 } else {
                     var alias = "a";
                 }
-                tracker.sendUrlReport(jQuery(this).attr("href"), alias);
+                tracker.sendUrlReport(jQuery(this).attr("href"), alias, "a[href]");
+
                 return false;
             });
+
             // Has a form been submitted?
             jQuery("form").submit(function (e) {
-                if(jQuery(this).is("action")) {
-                    if(jQuery(this).find("input:hidden").is("data-location-alias")){
-                        var alias = jQuery(this).find("input:hidden").attr("data-location-alias");
-                    } else {
-                        var alias = "form";
-                    }
-                    tracker.sendUrlReport(jQuery(this).attr("action"), alias);
-                    jQuery(this).submit();
+                if(tracker.mode == "dev-stay") {
+                    e.preventDefault();
                 }
+
+                if(tracker.mode == "dev" || tracker.mode == "dev-stay") {
+                    console.log('form > input[submit]: Submit button was clicked.');
+                }
+
+                var formAction = "";
+                if(jQuery(this).attr("action")) {
+                    formAction = jQuery(this).attr("action");
+                }
+                if(formAction === ""){
+                    formAction = window.location.href;
+                }
+
+                jQuery(this).attr('action', formAction);
+
+                if(tracker.mode == "dev" || tracker.mode == "dev-stay") {
+                    console.log("Form action: " + jQuery(this).attr('action'));
+                }
+
+                if(jQuery(this).find("input:hidden").is("data-location-alias")){
+                    var alias = jQuery(this).find("input:hidden").attr("data-location-alias");
+                } else {
+                    var alias = "form";
+                }
+
+                tracker.ctaEvent = jQuery(this);
+
+                tracker.sendUrlReport(jQuery(this).attr('action'), alias, "form > input[submit]");
+
                 return false;
             });
         } else {
