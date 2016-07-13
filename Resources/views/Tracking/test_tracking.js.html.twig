@@ -10,8 +10,9 @@ file that was distributed with this source code.
 {% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
 
 {% block body %}
-    <form novalidate="" class="comment-form" id="commentform" method="post" action="http://wordpress.amariki.com">
-        <input type="submit" value="Test Form Submit" class="3" id="1" name="2">
+    <form id="target" action="http://wordpress.amariki.com">
+        <input type="text" value="Hello there">
+        <input type="submit" value="Go">
     </form>
 
     {% if is_old_tracking_js_route == 1 %}

@@ -137,6 +137,9 @@
                 if(this.mode == "dev" || this.mode == "dev-stay"){
                     console.log("Post form data to: " + this.target);
                 }
+                if(this.mode != "dev-stay") {
+                    this.ctaEvent.submit();
+                }
                 break;
         }
     };
@@ -469,7 +472,7 @@
 
                 tracker.sendUrlReport(jQuery(this).attr('action'), alias, "form > input[submit]");
 
-                return false;
+                return true;
             });
         } else {
             setTimeout(function () {
