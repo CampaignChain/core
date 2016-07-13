@@ -291,4 +291,32 @@ class ParserUtil
 
         return $text;
     }
+
+    static function urlExists($url)
+    {
+        // If not a valid URL, return false.
+        if(!self::validateUrl($url)){
+            return false;
+        }
+
+        // Avoid loop of get_headers() requests if same host.
+        $urlParts = parse_url($url);
+        if($_SERVER['SERVER_NAME'] == $urlParts['host']){
+            return true;
+        }
+
+        try {
+            $expandedUrlHeaders = get_headers($url);
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        $status = $expandedUrlHeaders[0];
+
+        if(strpos($status,"200")) {
+            return true;
+        }
+
+        return false;
+    }
 }

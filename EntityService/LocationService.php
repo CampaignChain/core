@@ -126,16 +126,8 @@ class LocationService
          */
         if(!$location){
             // Check if URL exists.
-
-            try {
-                // TODO: This is a performance bottleneck!
-                $expandedUrlHeaders = get_headers($url);
-            } catch (\Exception $e) {
-                return false;
-            }
-            $status = $expandedUrlHeaders[0];
-
-            if(strpos($status,"200")) {
+            $urlExists = ParserUtil::urlExists($url);
+            if($urlExists) {
                 $urlParts = parse_url($url);
 
                 $repository = $this->em
