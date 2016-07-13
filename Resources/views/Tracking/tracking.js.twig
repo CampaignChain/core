@@ -355,17 +355,24 @@
         return false;
     };
 
-    {{ tracking_js_class|raw }}.prototype.removeUrlParam = function(url_string, variable_name)
+    {{ tracking_js_class|raw }}.prototype.removeUrlParam = function(url, key)
     {
-        var URL = String(url_string);
-        var regex = new RegExp( "\\?" + variable_name + "=[^&]*&?", "gi");
-        URL = URL.replace(regex,'?');
-        regex = new RegExp( "\\&" + variable_name + "=[^&]*&?", "gi");
-        URL = URL.replace(regex,'&');
-        URL = URL.replace(/(\?|&)$/,'');
+        if (url.indexOf("#") != -1) {
+            var hash = url.split('#')[1];
+        }
+
+        var regex = new RegExp( "\\?" + key + "=[^&]*&?", "gi");
+        url = url.replace(regex,'?');
+        regex = new RegExp( "\\&" + key + "=[^&]*&?", "gi");
+        url = url.replace(regex,'&');
+        url = url.replace(/(\?|&)$/,'');
         regex = null;
 
-        return URL;
+        if(hash){
+            url = url + "#" + hash;
+        }
+
+        return url;
     };
 
     window["{{ tracking_js_init|raw }}"] = window["{{ tracking_js_init|raw }}"] || function(channelId) {
