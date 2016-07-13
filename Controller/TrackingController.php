@@ -11,10 +11,12 @@
 namespace CampaignChain\CoreBundle\Controller;
 
 use CampaignChain\CoreBundle\Entity\CTA;
+use CampaignChain\CoreBundle\Entity\Medium;
 use CampaignChain\CoreBundle\Entity\ReportCTA;
 use CampaignChain\CoreBundle\EntityService\CTAService;
 use CampaignChain\CoreBundle\EntityService\LocationService;
 use CampaignChain\CoreBundle\Util\ParserUtil;
+use Doctrine\DBAL\Query\QueryBuilder;
 use GK\JavascriptPacker;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -230,11 +232,23 @@ EOT
                 return $this->errorResponse($msg, $request);
             }
 
-            // TODO: Set Referer info by going CTA -> Operation -> Location.
-            if($cta->getOperation()->getLocations()->count() === 1) {
-                $referrerLocation = $cta->getOperation()->getLocations()[0];
-            } else {
-                $msg = Response::HTTP_INTERNAL_SERVER_ERROR.': Multiple Locations not implemented yet.';
+            // Get the referrer Location.
+            $em = $this->getDoctrine()->getManager();
+            /** @var QueryBuilder $qb */
+            $qb = $em->createQueryBuilder();
+            $qb->select('l')
+                ->from('CampaignChain\CoreBundle\Entity\Location', 'l')
+                ->from('CampaignChain\CoreBundle\Entity\CTA', 'cta')
+                ->where('l.operation = :operation')
+                ->andWhere('l.id != cta.location')
+                ->andWhere('l.status = :status')
+                ->setParameter('operation', $cta->getOperation())
+                ->setParameter('status', Medium::STATUS_ACTIVE);
+            $query = $qb->getQuery();
+            $referrerLocation = $query->getResult();
+
+            if(count($referrerLocation) !== 1) {
+                $msg = Response::HTTP_INTERNAL_SERVER_ERROR.': Multiple referrers are not possible.';
                 $logger->error($msg);
                 return $this->errorResponse($msg, $request);
             }
