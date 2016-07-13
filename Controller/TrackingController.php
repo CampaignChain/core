@@ -263,19 +263,21 @@ EOT
                 return $this->errorResponse($msg, $request);
             }
 
-            // Remove the Tracking ID from the URL.
-            $targetUrl = ParserUtil::removeUrlParam($target, $idName);
-
-            /*
-             * If the source equals the target, then the source is actually
-             * an Activity's CTA.
-             */
             if($request->get('source') == $target){
+                /*
+                 * If the source equals the target, then the source is actually
+                 * an Activity's CTA.
+                 */
                 $sourceUrl = $referrerLocation->getUrl();
                 $sourceLocation = $referrerLocation;
+                // Remove the Tracking ID from the URL.
+                $targetUrl = ParserUtil::removeUrlParam($target, $idName);
+
             } else {
+                // Remove the Tracking ID from the URL.
                 $sourceUrl = ParserUtil::removeUrlParam($request->get('source'), $idName);
                 $sourceLocation = $cta->getLocation();
+                $targetUrl = $target;
             }
 
 //            /*
