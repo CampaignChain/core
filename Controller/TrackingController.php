@@ -241,6 +241,7 @@ EOT
                 ->from('CampaignChain\CoreBundle\Entity\CTA', 'cta')
                 ->where('l.operation = :operation')
                 ->andWhere('l.id != cta.location')
+                ->andWhere('cta.operation = l.operation')
                 ->andWhere('l.status = :status')
                 ->setParameter('operation', $cta->getOperation())
                 ->setParameter('status', Medium::STATUS_ACTIVE);
