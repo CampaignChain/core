@@ -79,7 +79,20 @@ class ParserUtil
      */
     static function removeUrlParam($url, $key)
     {
-        return preg_replace('/[\?|&]'.$key.'=[a-zA-Z0-9]*$|'.$key.'=[a-zA-Z0-9]*[&]/', '', $url);
+        // If not a valid URL, return false.
+        if(!self::validateUrl($url)){
+            throw new \Exception('Invalid URL '.$url);
+        }
+
+        $urlParts = parse_url($url);
+
+        $url = preg_replace('/[\?|&]'.$key.'=[a-zA-Z0-9]*$|'.$key.'=[a-zA-Z0-9]*[&]/', '', $url);
+
+        if(isset($urlParts['fragment'])){
+            $url = $url.'#'.$urlParts['fragment'];
+        }
+
+        return $url;
     }
 
     /*
