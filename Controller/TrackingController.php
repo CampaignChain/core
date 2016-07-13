@@ -242,8 +242,10 @@ EOT
                 ->where('l.operation = :operation')
                 ->andWhere('l.id != cta.location')
                 ->andWhere('cta.operation = l.operation')
+                ->andWhere('(l.id = :activityLocation OR l.parent = :activityLocation)')
                 ->andWhere('l.status = :status')
                 ->setParameter('operation', $cta->getOperation())
+                ->setParameter('activityLocation', $cta->getOperation()->getActivity()->getLocation())
                 ->setParameter('status', Medium::STATUS_ACTIVE);
             $query = $qb->getQuery();
 
