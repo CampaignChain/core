@@ -114,6 +114,8 @@ EOT
         } else {
             $logger = $this->get('logger');
         }
+
+        $logger->info('-------');
         $logger->info('Start tracking');
 
         // Check whether the channel has access to tracking.
@@ -146,10 +148,16 @@ EOT
             $hasError = true;
             $msg = 'URL of target Location missing.';
         }
+        if($hasError){
+            $logger->error($msg);
+            return $this->errorResponse($msg, $request);
+        }
 
         $source = $request->get('source');
         $target = $request->get('target');
         $idName = $request->get('id_name');
+        $trackingId = $request->get('id_name');
+        $trackingAlias = $request->get('alias');
 
         if(
             $this->getParameter('campaignchain.tracking.js_mode') == 'dev' ||
@@ -162,10 +170,8 @@ EOT
         $sourceUrl = ParserUtil::removeUrlParam($source, $idName);
         $targetUrl = ParserUtil::removeUrlParam($target, $idName);
 
-        if($hasError){
-            $logger->error($msg);
-            return $this->errorResponse($msg, $request);
-        }
+        $logger->info('Source: '.$sourceUrl);
+        $logger->info('Target: '.$targetUrl);
 
         // Check if URLs are valid.
         $constraint = new Url();
@@ -207,14 +213,13 @@ EOT
             $msg = 'Mailto links are not tracked';
         }
 
-
         if($hasError){
             $logger->error($msg);
             return $this->errorResponse($msg, $request);
         }
 
         // Check whether the Tracking ID name has been provided.
-        if($request->get('id_name') == null){
+        if($trackingId == null){
             $msg = 'No Tracking ID name provided.';
             $logger->error($msg);
             return $this->errorResponse($msg, $request);
@@ -222,13 +227,15 @@ EOT
 
         // Check whether the Tracking ID name is correct.
         if(
-            $request->get('id_name') != $this->getParameter('campaignchain.tracking.id_name') &&
-            $request->get('id_name') != 'campaignchain-id'
+            $trackingId != $this->getParameter('campaignchain.tracking.id_name') &&
+            $trackingId != 'campaignchain-id'
         ){
-            $msg = 'Provided Tracking ID name ("'.$request->get('id_name').'") does not match, should be "'.$this->getParameter('campaignchain.tracking.id_name').'".';
+            $msg = 'Provided Tracking ID name ("'.$trackingId.'") does not match, should be "'.$this->getParameter('campaignchain.tracking.id_name').'".';
             $logger->error($msg);
             return $this->errorResponse($msg, $request);
         }
+
+        $logger->info('Tracking ID: '.$trackingId);
 
         if($request->get('id_value') != null){
             $trackingId = $request->get('id_value');
@@ -317,7 +324,8 @@ EOT
             /** @var LocationService $locationService */
             $locationService = $this->container->get('campaignchain.core.location');
             try {
-                $targetLocation = $locationService->findLocationByUrl($targetUrl, $cta->getOperation(), $request->get('alias'));
+                $logger->info('Tracking Alias: '.$trackingAlias);
+                $targetLocation = $locationService->findLocationByUrl($targetUrl, $cta->getOperation(), $trackingAlias);
             } catch (\Exception $e) {
                 $msg = Response::HTTP_INTERNAL_SERVER_ERROR.': '.$e->getMessage();
                 $logger->error($msg);
@@ -350,13 +358,8 @@ EOT
             $em->persist($reportCTA);
             $em->flush();
 
-            $logger->info('-------');
-            $logger->info('Tracking data:');
-            $logger->info('Tracking ID: '.$trackingId);
-            $logger->info('Source: '.$sourceUrl);
-            $logger->info('Target: '.$targetUrl);
-            $logger->info('-------');
             $logger->info('Done tracking');
+            $logger->info('-------');
 
             /*
              * Set the target's affiliation with CampaignChain in the

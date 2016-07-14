@@ -52,10 +52,10 @@ class ReportController extends Controller
         $qb = $repository->createQueryBuilder('r');
         $qb->select('r')
             ->where('r.campaign = :campaignId')
-            ->andWhere('r.sourceLocation = r.referrerLocation')
-            ->andWhere('r.targetLocation is not NULL')
-            ->groupBy('r.targetLocation')
-            ->orderBy('r.targetName', 'ASC')
+            ->andWhere('r.sourceLocation = r.targetLocation')
+            ->andWhere('r.targetLocation IS NOT NULL')
+            ->groupBy('r.sourceLocation')
+            ->orderBy('r.sourceName', 'ASC')
             ->setParameter('campaignId', $id);
         $query = $qb->getQuery();
         $locations = $query->getResult();
