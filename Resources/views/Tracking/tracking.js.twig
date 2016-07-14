@@ -138,6 +138,7 @@
                     console.log("Post form data to: " + this.target);
                 }
                 if(this.mode != "dev-stay") {
+                    this.ctaEvent.unbind('submit');
                     this.ctaEvent.submit();
                 }
                 break;
