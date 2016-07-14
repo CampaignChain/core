@@ -22,7 +22,7 @@ class ParserUtil
     static function getHTMLTitle($website, $page = null)
     {
         if(self::isSameHost($website)){
-            return 'Page on same host.';
+            return $website;
         }
 
         if($page == null){

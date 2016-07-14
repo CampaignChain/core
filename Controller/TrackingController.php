@@ -285,7 +285,7 @@ EOT
 
             $sourceLocation = null;
 
-            if($request->get('source') == $target){
+            if($sourceUrl == $targetUrl){
                 /*
                  * If the source equals the target, then the source is actually
                  * an Activity's CTA.
