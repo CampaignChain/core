@@ -21,6 +21,10 @@ class ParserUtil
 
     static function getHTMLTitle($website, $page = null)
     {
+        if(self::isSameHost($website)){
+            return 'Page on same host.';
+        }
+
         if($page == null){
             $page = $website;
         }
@@ -85,6 +89,10 @@ class ParserUtil
         }
 
         $urlParts = parse_url($url);
+        // Remove hash before we parse for the parameter.
+        if(isset($urlParts['fragment'])) {
+            $url = str_replace('#'.$urlParts['fragment'], '', $url);
+        }
 
         $url = preg_replace('/[\?|&]'.$key.'=[a-zA-Z0-9]*$|'.$key.'=[a-zA-Z0-9]*[&]/', '', $url);
 
@@ -313,8 +321,7 @@ class ParserUtil
         }
 
         // Avoid loop of get_headers() requests if same host.
-        $urlParts = parse_url($url);
-        if($_SERVER['SERVER_NAME'] == $urlParts['host']){
+        if(self::isSameHost($url)){
             return true;
         }
 
@@ -327,6 +334,22 @@ class ParserUtil
         $status = $expandedUrlHeaders[0];
 
         if(strpos($status,"200")) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Avoid loop of get_headers() requests if same host.
+     *
+     * @param $url
+     * @return bool
+     */
+    static function isSameHost($url)
+    {
+        $urlParts = parse_url($url);
+        if($_SERVER['SERVER_NAME'] == $urlParts['host']){
             return true;
         }
 
