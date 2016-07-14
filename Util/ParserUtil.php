@@ -96,15 +96,36 @@ class ParserUtil
         }
 
         $urlParts = parse_url($url);
+
+        // If the URL has no query string, we're done.
+        if(!isset($urlParts['query'])){
+            return $url;
+        } else {
+            $url = str_replace('?'.$urlParts['query'], '', $url);
+        }
+
         // Remove hash before we parse for the parameter.
         if(isset($urlParts['fragment'])) {
             $url = str_replace('#'.$urlParts['fragment'], '', $url);
         }
 
-        $url = preg_replace('/[\?|&]'.$key.'=[a-zA-Z0-9]*$|'.$key.'=[a-zA-Z0-9]*[&]/', '', $url);
+        parse_str( $urlParts['query'], $queryParts );
+        if(isset($queryParts[$key])) {
+            unset($queryParts[$key]);
+        }
+
+        $urlParts['query'] = '';
+
+        if(is_array($queryParts) && count($queryParts)) {
+            foreach ($queryParts as $paramKey => $paramVal) {
+                $urlParts['query'] .= $paramKey . '=' . $paramVal . '&';
+            }
+            $urlParts['query'] = '?'.rtrim($urlParts['query'], '&');
+            $url = $url.$urlParts['query'];
+        }
 
         if(isset($urlParts['fragment'])){
-            $url = $url.'#'.$urlParts['fragment'];
+            $url .= '#'.$urlParts['fragment'];
         }
 
         return $url;
