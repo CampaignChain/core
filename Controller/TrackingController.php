@@ -155,9 +155,12 @@ EOT
 
         $source = $request->get('source');
         $target = $request->get('target');
-        $idName = $request->get('id_name');
-        $trackingId = $request->get('id_name');
+        $trackingIdName = $request->get('id_name');
+        $logger->info('Tracking ID name: '.$trackingIdName);
+        $trackingIdValue = $request->get('id_value');
+        $logger->info('Tracking ID value: '.$trackingIdValue);
         $trackingAlias = $request->get('alias');
+        $logger->info('Tracking Alias: '.$trackingAlias);
 
         if(
             $this->getParameter('campaignchain.tracking.js_mode') == 'dev' ||
@@ -167,8 +170,8 @@ EOT
             $target = ParserUtil::removeUrlParam($target, self::TRACKING_REPORT_BASE_URL_NAME);
         }
 
-        $sourceUrl = ParserUtil::removeUrlParam($source, $idName);
-        $targetUrl = ParserUtil::removeUrlParam($target, $idName);
+        $sourceUrl = ParserUtil::removeUrlParam($source, $trackingIdName);
+        $targetUrl = ParserUtil::removeUrlParam($target, $trackingIdName);
 
         $logger->info('Source: '.$sourceUrl);
         $logger->info('Target: '.$targetUrl);
@@ -219,7 +222,7 @@ EOT
         }
 
         // Check whether the Tracking ID name has been provided.
-        if($trackingId == null){
+        if($trackingIdName == null){
             $msg = 'No Tracking ID name provided.';
             $logger->error($msg);
             return $this->errorResponse($msg, $request);
@@ -227,27 +230,24 @@ EOT
 
         // Check whether the Tracking ID name is correct.
         if(
-            $trackingId != $this->getParameter('campaignchain.tracking.id_name') &&
-            $trackingId != 'campaignchain-id'
+            $trackingIdName != $this->getParameter('campaignchain.tracking.id_name') &&
+            $trackingIdName != 'campaignchain-id'
         ){
-            $msg = 'Provided Tracking ID name ("'.$trackingId.'") does not match, should be "'.$this->getParameter('campaignchain.tracking.id_name').'".';
+            $msg = 'Provided Tracking ID name ("'.$trackingIdName.'") does not match, should be "'.$this->getParameter('campaignchain.tracking.id_name').'".';
             $logger->error($msg);
             return $this->errorResponse($msg, $request);
         }
 
-        $logger->info('Tracking ID: '.$trackingId);
-
-        if($request->get('id_value') != null){
-            $trackingId = $request->get('id_value');
+        if($trackingIdValue != null){
 
             // Does the CTA for the provided Tracking ID exist?
             /** @var CTA $cta */
             $cta = $this->getDoctrine()
                 ->getRepository('CampaignChainCoreBundle:CTA')
-                ->findOneByTrackingId($trackingId);
+                ->findOneByTrackingId($trackingIdValue);
 
             if (!$cta) {
-                $msg = 'Unknown CTA Tracking ID "'.$trackingId.'".';
+                $msg = 'Unknown CTA Tracking ID "'.$trackingIdValue.'".';
                 $logger->error($msg);
                 return $this->errorResponse($msg, $request);
             }
@@ -302,8 +302,17 @@ EOT
                 /** @var LocationService $locationService */
                 $locationService = $this->container->get('campaignchain.core.location');
                 try {
-                    $logger->info('Tracking Alias: '.$trackingAlias);
+                    $logger->info('Searching for parent Location.');
                     $targetLocation = $locationService->findLocationByUrl($targetUrl, $cta->getOperation(), $trackingAlias);
+                    if($targetLocation){
+                        $logger->info(
+                            'Found target Location with bundle '.
+                            $targetLocation->getLocationModule()->getBundle()->getName().
+                            ' and module '.
+                            $targetLocation->getLocationModule()->getIdentifier().
+                            '.'
+                        );
+                    }
                 } catch (\Exception $e) {
                     $msg = Response::HTTP_INTERNAL_SERVER_ERROR.': '.$e->getMessage();
                     $logger->error($msg);
@@ -316,7 +325,7 @@ EOT
 //             * the one passed to this API.
 //             */
 //            if($cta->getUrl() != $sourceUrl){
-//                $msg = Response::HTTP_BAD_REQUEST.': Provided source URL "'.$sourceUrl.'" does not match URL for Tracking ID "'.$trackingId.'".';
+//                $msg = Response::HTTP_BAD_REQUEST.': Provided source URL "'.$sourceUrl.'" does not match URL for Tracking ID "'.$trackingIdName.'".';
 //                $logger->error($msg);
 //                $response = new Response($msg);
 //                return $response->setStatusCode(Response::HTTP_BAD_REQUEST);
