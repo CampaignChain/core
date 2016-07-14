@@ -117,10 +117,7 @@ class LocationService
          * - The Location identifier is included in the CTA URL as well
          *   as the domain
          */
-        // Check if URL exists.
-        $urlExists = ParserUtil::urlExists($url);
-
-        if($urlExists) {
+        if(ParserUtil::urlExists($url)) {
             $urlParts = parse_url($url);
 
             $repository = $this->em
@@ -148,8 +145,6 @@ class LocationService
              * then let's create a new child Location.
              */
             if($matchingLocation){
-                $location = null;
-
                 /*
                  * Create a new Location based on the tracking alias
                  * within the matching Location's Channel.
@@ -202,15 +197,13 @@ class LocationService
 
                 $ctaServiceName = $locationModule->getServices()['job_cta'];
                 if($ctaServiceName){
-                    // Create the new Location if that
-                    // has not been done yet.
-                    if(!$location){
-                        $location = new Location();
-                        $location->setUrl($url);
-                        $location->setOperation($operation);
-                        $location->setChannel($matchingLocation->getChannel());
-                        $location->setParent($matchingLocation);
-                    }
+                    // Create the new Location
+                    $location = new Location();
+                    $location->setUrl($url);
+                    $location->setOperation($operation);
+                    $location->setChannel($matchingLocation->getChannel());
+                    $location->setParent($matchingLocation);
+
                     // Update the Location module to be the current
                     // one.
                     $location->setLocationModule(
@@ -220,18 +213,7 @@ class LocationService
                     // Let the module's service process the new
                     // Location.
                     $ctaService = $this->container->get($ctaServiceName);
-                    $location = $ctaService->execute($location);
-
-
-                    // If the service does not return false, this
-                    // means that the URL qualified to be handled by
-                    // this module and we can exit the loop,
-                    // because there's no need to try with the other
-                    // main locations that might have been matching
-                    // the URL.
-                    if($location){
-                        return $location;
-                    }
+                    return $ctaService->execute($location);
                 } else {
                     throw new \Exception(
                         'No CTA Job service defined for Location module '.
@@ -242,7 +224,9 @@ class LocationService
             }
         }
 
-        return false;
+        throw new \Exception(
+            'The URL '.$url.' does not exist.'
+        );
     }
 
     public function existsInCampaign(

@@ -286,6 +286,7 @@ EOT
             $sourceLocation = null;
 
             if($sourceUrl == $targetUrl){
+                $logger->info('Source URL == target URL.');
                 /*
                  * If the source equals the target, then the source is actually
                  * an Activity's CTA.
@@ -294,6 +295,8 @@ EOT
                 $sourceLocation = $referrerLocation;
                 $targetLocation = null;
             } else {
+                $logger->info('Source URL != target URL.');
+
                 $sourceLocation = $cta->getLocation();
                 /*
                  * Check if the target URL is in a connected Channel. If yes, add
@@ -302,8 +305,9 @@ EOT
                 /** @var LocationService $locationService */
                 $locationService = $this->container->get('campaignchain.core.location');
                 try {
-                    $logger->info('Searching for parent Location.');
+                    $logger->info('Searching for matching Location or creating new one.');
                     $targetLocation = $locationService->findLocationByUrl($targetUrl, $cta->getOperation(), $trackingAlias);
+                    
                     if($targetLocation){
                         $logger->info(
                             'Found target Location with bundle '.
@@ -312,6 +316,8 @@ EOT
                             $targetLocation->getLocationModule()->getIdentifier().
                             '.'
                         );
+                    } else {
+                        $logger->info('No matching Location found, nor a new one created.');
                     }
                 } catch (\Exception $e) {
                     $msg = Response::HTTP_INTERNAL_SERVER_ERROR.': '.$e->getMessage();
