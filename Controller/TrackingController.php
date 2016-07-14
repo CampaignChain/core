@@ -245,6 +245,8 @@ EOT
                 return $this->errorResponse($msg, $request);
             }
 
+            $sourceLocation = null;
+
             if($source == $target){
                 /*
                  * If the source equals the target, then the source is actually
