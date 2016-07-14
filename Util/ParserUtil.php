@@ -83,6 +83,8 @@ class ParserUtil
      */
     static function removeUrlParam($url, $key)
     {
+        $url = self::completeLocalPath($url);
+
         // If not a valid URL, return false.
         if(!self::validateUrl($url)){
             throw new \Exception('Invalid URL '.$url);
@@ -354,5 +356,23 @@ class ParserUtil
         }
 
         return false;
+    }
+
+    static function completeLocalPath($url)
+    {
+        // If no scheme and host included, then it's a URL on the same host.
+        $urlParts = parse_url($url);
+
+        if(!isset($urlParts['host'])){
+            if(isset($_SERVER['HTTPS']) && 'on' === $_SERVER['HTTPS']){
+                $scheme = 'https';
+            } else {
+                $scheme = 'http';
+            }
+
+            $url = $scheme.'://'.$_SERVER['HTTP_HOST'].$url;
+        }
+
+        return $url;
     }
 }

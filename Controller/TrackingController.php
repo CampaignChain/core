@@ -245,14 +245,47 @@ EOT
                 return $this->errorResponse($msg, $request);
             }
 
+            // Get the referrer Location.
+            $em = $this->getDoctrine()->getManager();
+            /** @var QueryBuilder $qb */
+            $qb = $em->createQueryBuilder();
+            $qb->select('l')
+                ->from('CampaignChain\CoreBundle\Entity\Location', 'l')
+                ->from('CampaignChain\CoreBundle\Entity\CTA', 'cta')
+                ->where('l.operation = :operation')
+                ->andWhere('l.id != cta.location')
+                ->andWhere('cta.operation = l.operation')
+                ->andWhere('(l.id = :activityLocation OR l.parent = :activityLocation)')
+                ->andWhere('l.status = :status')
+                ->setParameter('operation', $cta->getOperation())
+                ->setParameter('activityLocation', $cta->getOperation()->getActivity()->getLocation())
+                ->setParameter('status', Medium::STATUS_ACTIVE);
+            $query = $qb->getQuery();
+
+            try {
+                $referrerLocation = $query->getSingleResult();
+            } catch(\Exception $e) {
+                $msg = Response::HTTP_INTERNAL_SERVER_ERROR.': Multiple referrers are not possible.';
+                $logger->error($msg);
+                return $this->errorResponse($msg, $request);
+            }
+
+            if(!$referrerLocation){
+                $msg = Response::HTTP_INTERNAL_SERVER_ERROR.': No referrer Location.';
+                $logger->error($msg);
+                return $this->errorResponse($msg, $request);
+            }
+
             $sourceLocation = null;
 
-            if($source == $target){
+            if($request->get('source') == $target){
                 /*
                  * If the source equals the target, then the source is actually
                  * an Activity's CTA.
                  */
-                $sourceUrl = $cta->getLocation()->getUrl();
+                $sourceUrl = $referrerLocation->getUrl();
+                $sourceLocation = $referrerLocation;
+            } else {
                 $sourceLocation = $cta->getLocation();
             }
 
@@ -285,43 +318,8 @@ EOT
             $locationService = $this->container->get('campaignchain.core.location');
             try {
                 $targetLocation = $locationService->findLocationByUrl($targetUrl, $cta->getOperation(), $request->get('alias'));
-                // Map the source URL to a Location.
-                if(!$sourceLocation) {
-                    $sourceLocation = $locationService->findLocationByUrl($sourceUrl, $cta->getOperation());
-                }
             } catch (\Exception $e) {
                 $msg = Response::HTTP_INTERNAL_SERVER_ERROR.': '.$e->getMessage();
-                $logger->error($msg);
-                return $this->errorResponse($msg, $request);
-            }
-
-            // Get the referrer Location.
-            $em = $this->getDoctrine()->getManager();
-            /** @var QueryBuilder $qb */
-            $qb = $em->createQueryBuilder();
-            $qb->select('l')
-                ->from('CampaignChain\CoreBundle\Entity\Location', 'l')
-                ->from('CampaignChain\CoreBundle\Entity\CTA', 'cta')
-                ->where('l.operation = :operation')
-                ->andWhere('l.id != cta.location')
-                ->andWhere('cta.operation = l.operation')
-                ->andWhere('(l.id = :activityLocation OR l.parent = :activityLocation)')
-                ->andWhere('l.status = :status')
-                ->setParameter('operation', $cta->getOperation())
-                ->setParameter('activityLocation', $cta->getOperation()->getActivity()->getLocation())
-                ->setParameter('status', Medium::STATUS_ACTIVE);
-            $query = $qb->getQuery();
-
-            try {
-                $referrerLocation = $query->getSingleResult();
-            } catch(\Exception $e) {
-                $msg = Response::HTTP_INTERNAL_SERVER_ERROR.': Multiple referrers are not possible.';
-                $logger->error($msg);
-                return $this->errorResponse($msg, $request);
-            }
-
-            if(!$referrerLocation){
-                $msg = Response::HTTP_INTERNAL_SERVER_ERROR.': No referrer Location.';
                 $logger->error($msg);
                 return $this->errorResponse($msg, $request);
             }
