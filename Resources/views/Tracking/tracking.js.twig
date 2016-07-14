@@ -460,9 +460,7 @@
 
             // Has a link been clicked?
             jQuery("a").click(function(e){
-                if(tracker.mode == "dev-stay") {
-                    e.preventDefault();
-                }
+                e.preventDefault();
 
                 if(tracker.mode == "dev" || tracker.mode == "dev-stay") {
                     console.log('a[href]: Link was clicked.');
@@ -480,9 +478,7 @@
 
             // Has a form been submitted?
             jQuery("form").submit(function (e) {
-                if(tracker.mode == "dev-stay") {
-                    e.preventDefault();
-                }
+                e.preventDefault();
 
                 if(tracker.mode == "dev" || tracker.mode == "dev-stay") {
                     console.log('form > input[submit]: Submit button was clicked.');
@@ -512,7 +508,7 @@
 
                 tracker.sendUrlReport(jQuery(this).attr('action'), alias, "form > input[submit]");
 
-                return true;
+                return false;
             });
         } else {
             setTimeout(function () {
