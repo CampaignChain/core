@@ -21,6 +21,15 @@ class ParserUtil
 
     static function getHTMLTitle($website, $page = null)
     {
+        if(self::isSameHost($website)){
+            $urlParts = parse_url($website);
+            if(isset($urlParts['path'])){
+                return $urlParts['path'];
+            } else {
+                return '/';
+            }
+        }
+
         if($page == null){
             $page = $website;
         }
@@ -79,7 +88,26 @@ class ParserUtil
      */
     static function removeUrlParam($url, $key)
     {
-        return preg_replace('/[\?|&]'.$key.'=[a-zA-Z0-9]*$|'.$key.'=[a-zA-Z0-9]*[&]/', '', $url);
+        $url = self::completeLocalPath($url);
+
+        // If not a valid URL, return false.
+        if(!self::validateUrl($url)){
+            throw new \Exception('Invalid URL '.$url);
+        }
+
+        $urlParts = parse_url($url);
+        // Remove hash before we parse for the parameter.
+        if(isset($urlParts['fragment'])) {
+            $url = str_replace('#'.$urlParts['fragment'], '', $url);
+        }
+
+        $url = preg_replace('/[\?|&]'.$key.'=[a-zA-Z0-9]*$|'.$key.'=[a-zA-Z0-9]*[&]/', '', $url);
+
+        if(isset($urlParts['fragment'])){
+            $url = $url.'#'.$urlParts['fragment'];
+        }
+
+        return $url;
     }
 
     /*
@@ -290,5 +318,66 @@ class ParserUtil
         }
 
         return $text;
+    }
+
+    static function urlExists($url)
+    {
+        // If not a valid URL, return false.
+        if(!self::validateUrl($url)){
+            return false;
+        }
+
+        // Avoid loop of get_headers() requests if same host.
+        if(self::isSameHost($url)){
+            return true;
+        }
+
+        try {
+            $expandedUrlHeaders = get_headers($url);
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        $status = $expandedUrlHeaders[0];
+
+        if(strpos($status,"404")) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Avoid loop of get_headers() requests if same host.
+     *
+     * @param $url
+     * @return bool
+     */
+    static function isSameHost($url)
+    {
+        $urlParts = parse_url($url);
+        if($_SERVER['SERVER_NAME'] == $urlParts['host']){
+            return true;
+        }
+
+        return false;
+    }
+
+    static function completeLocalPath($url)
+    {
+        // If no scheme and host included, then it's a URL on the same host.
+        $urlParts = parse_url($url);
+
+        if(!isset($urlParts['host'])){
+            if(isset($_SERVER['HTTPS']) && 'on' === $_SERVER['HTTPS']){
+                $scheme = 'https';
+            } else {
+                $scheme = 'http';
+            }
+
+            $url = $scheme.'://'.$_SERVER['HTTP_HOST'].$url;
+        }
+
+        return $url;
     }
 }

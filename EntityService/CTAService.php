@@ -27,7 +27,8 @@ class CTAService
     protected $em;
     protected $urlShortener;
     protected $locationService;
-
+    protected $trackingJsMode;
+    protected $baseUrl;
 
     /**
      * CTAService constructor.
@@ -39,12 +40,16 @@ class CTAService
         $trackingIdName,
         EntityManager $em,
         UrlShortenerServiceInterface $urlShortener,
-        LocationService $locationService
+        LocationService $locationService,
+        $trackingJsMode,
+        $baseUrl
     ) {
         $this->trackingIdName = $trackingIdName;
         $this->em = $em;
         $this->urlShortener = $urlShortener;
         $this->locationService = $locationService;
+        $this->trackingJsMode = $trackingJsMode;
+        $this->baseUrl = $baseUrl;
     }
 
     /**
@@ -162,7 +167,14 @@ class CTAService
      */
     protected function generateTrackingUrl($url, $trackingId)
     {
-        return ParserUtil::addUrlParam($url, $this->trackingIdName, $trackingId);
+        $trackingUrl = ParserUtil::addUrlParam($url, $this->trackingIdName, $trackingId);
+        
+        // Pass the base URL if tracking script runs in dev or dev-stay mode.
+        if($this->trackingJsMode == 'dev' || $this->trackingJsMode == 'dev-stay'){
+            $trackingUrl = ParserUtil::addUrlParam($trackingUrl, 'cctapi', urlencode($this->baseUrl));
+        }
+
+        return $trackingUrl;
     }
 
     /**

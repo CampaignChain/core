@@ -10,6 +10,11 @@ file that was distributed with this source code.
 {% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
 
 {% block body %}
+    <form id="target" action="http://wordpress.amariki.com">
+        <input type="text" value="Hello there">
+        <input type="submit" value="Go">
+    </form>
+
     {% if is_old_tracking_js_route == 1 %}
     <script type="text/javascript">
         var campaignchainChannel = '{{ channel }}';

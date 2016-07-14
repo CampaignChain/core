@@ -32,6 +32,15 @@ class ActivityModule extends Module
     protected $channelModules;
 
     /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->activities = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->channelModules = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+    
+    /**
      * Add activities
      *
      * @param \CampaignChain\CoreBundle\Entity\Activity $activities
@@ -95,14 +104,5 @@ class ActivityModule extends Module
     public function getChannelModules()
     {
         return $this->channelModules;
-    }
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->activities = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->channelModules = new \Doctrine\Common\Collections\ArrayCollection();
     }
 }

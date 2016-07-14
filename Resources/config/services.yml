@@ -191,6 +191,8 @@ services:
             - '@doctrine.orm.entity_manager'
             - '@campaignchain.core.service.url_shortener'
             - '@campaignchain.core.location'
+            - %campaignchain.tracking.js_mode%
+            - %router.request_context.scheme%://%router.request_context.host%
 
     campaignchain.core.user:
         class: CampaignChain\CoreBundle\EntityService\UserService

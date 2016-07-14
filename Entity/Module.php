@@ -49,6 +49,11 @@ abstract class Module extends Meta
     protected $identifier;
 
     /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    protected $trackingAlias;
+
+    /**
      * @ORM\Column(type="string", length=255)
      */
     protected $displayName;
@@ -109,6 +114,29 @@ abstract class Module extends Meta
     public function getIdentifier()
     {
         return $this->identifier;
+    }
+
+    /**
+     * Set trackingAlias
+     *
+     * @param string $trackingAlias
+     * @return Module
+     */
+    public function setTrackingAlias($trackingAlias)
+    {
+        $this->trackingAlias = $trackingAlias;
+
+        return $this;
+    }
+
+    /**
+     * Get trackingAlias
+     *
+     * @return string
+     */
+    public function getTrackingAlias()
+    {
+        return $this->trackingAlias;
     }
 
     /**

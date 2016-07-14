@@ -28,6 +28,20 @@ class ChannelModule extends Module
     protected $activityModules;
 
     /**
+     * @ORM\ManyToMany(targetEntity="LocationModule", mappedBy="channelModules")
+     **/
+    protected $locationModules;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->channels = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->activityModules = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
      * Add channels
      *
      * @param \CampaignChain\CoreBundle\Entity\Channel $channels
@@ -61,15 +75,6 @@ class ChannelModule extends Module
     }
 
     /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->channels = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->activityModules = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
-    /**
      * Add activityModules
      *
      * @param \CampaignChain\CoreBundle\Entity\ActivityModule $activityModules
@@ -100,5 +105,39 @@ class ChannelModule extends Module
     public function getActivityModules()
     {
         return $this->activityModules;
+    }
+
+
+    /**
+     * Add locationModules
+     *
+     * @param \CampaignChain\CoreBundle\Entity\LocationModule $locationModules
+     * @return ChannelModule
+     */
+    public function addLocationModule(\CampaignChain\CoreBundle\Entity\LocationModule $locationModules)
+    {
+        $this->locationModules[] = $locationModules;
+
+        return $this;
+    }
+
+    /**
+     * Remove locationModules
+     *
+     * @param \CampaignChain\CoreBundle\Entity\LocationModule $locationModules
+     */
+    public function removeLocationModule(\CampaignChain\CoreBundle\Entity\LocationModule $locationModules)
+    {
+        $this->locationModules->removeElement($locationModules);
+    }
+
+    /**
+     * Get locationModules
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getLocationModules()
+    {
+        return $this->locationModules;
     }
 }
