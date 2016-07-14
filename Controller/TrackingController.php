@@ -292,8 +292,23 @@ EOT
                  */
                 $sourceUrl = $referrerLocation->getUrl();
                 $sourceLocation = $referrerLocation;
+                $targetLocation = null;
             } else {
                 $sourceLocation = $cta->getLocation();
+                /*
+                 * Check if the target URL is in a connected Channel. If yes, add
+                 * as new Location if supported by module.
+                 */
+                /** @var LocationService $locationService */
+                $locationService = $this->container->get('campaignchain.core.location');
+                try {
+                    $logger->info('Tracking Alias: '.$trackingAlias);
+                    $targetLocation = $locationService->findLocationByUrl($targetUrl, $cta->getOperation(), $trackingAlias);
+                } catch (\Exception $e) {
+                    $msg = Response::HTTP_INTERNAL_SERVER_ERROR.': '.$e->getMessage();
+                    $logger->error($msg);
+                    return $this->errorResponse($msg, $request);
+                }
             }
 
 //            /*
@@ -316,21 +331,6 @@ EOT
 //                $response = new Response('A Location does not exist for URL "'.$sourceUrl.'".');
 //                return $response->setStatusCode(Response::HTTP_BAD_REQUEST);
 //            }
-
-            /*
-             * Check if the target URL is in a connected Channel. If yes, add
-             * as new Location if supported by module.
-             */
-            /** @var LocationService $locationService */
-            $locationService = $this->container->get('campaignchain.core.location');
-            try {
-                $logger->info('Tracking Alias: '.$trackingAlias);
-                $targetLocation = $locationService->findLocationByUrl($targetUrl, $cta->getOperation(), $trackingAlias);
-            } catch (\Exception $e) {
-                $msg = Response::HTTP_INTERNAL_SERVER_ERROR.': '.$e->getMessage();
-                $logger->error($msg);
-                return $this->errorResponse($msg, $request);
-            }
 
             // Add new CTA to report.
             $reportCTA = new ReportCTA();
