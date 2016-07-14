@@ -340,11 +340,11 @@ class ParserUtil
 
         $status = $expandedUrlHeaders[0];
 
-        if(strpos($status,"200")) {
-            return true;
+        if(strpos($status,"404")) {
+            return false;
         }
 
-        return false;
+        return true;
     }
 
     /**
