@@ -22,7 +22,12 @@ class ParserUtil
     static function getHTMLTitle($website, $page = null)
     {
         if(self::isSameHost($website)){
-            return $website;
+            $urlParts = parse_url($website);
+            if(isset($urlParts['path'])){
+                return $urlParts['path'];
+            } else {
+                return '/';
+            }
         }
 
         if($page == null){
