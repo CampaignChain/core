@@ -291,9 +291,9 @@ EOT
                  * If the source equals the target, then the source is actually
                  * an Activity's CTA.
                  */
-                $sourceUrl = $referrerLocation->getUrl();
-                $sourceLocation = $referrerLocation;
-                $targetLocation = null;
+                $sourceUrl = $cta->getLocation()->getUrl();
+                $sourceLocation = $cta->getLocation();
+                $targetLocation = $cta->getLocation();
             } else {
                 $logger->info('Source URL != target URL.');
 
