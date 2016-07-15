@@ -140,10 +140,6 @@ class LocationService
             /** @var Location $matchingLocation */
             $matchingLocation = $query->getSingleResult();
 
-            /*
-             * If the matching Location provides auto-generation of Locations,
-             * then let's create a new child Location.
-             */
             if($matchingLocation){
                 /*
                  * Create a new Location based on the tracking alias
@@ -174,15 +170,38 @@ class LocationService
                         );
                     }
                 } else {
+                    /*
+                     * Get the Location module within the matching Location's
+                     * Channel and with the given tracking alias.
+                     */
                     /** @var LocationModule $locationModule */
                     $locationModule = $this->getLocationModuleByTrackingAlias(
                         $matchingLocation->getChannel()->getChannelModule(),
                         $alias
                     );
 
-                    // Done if the matching Location also matches the alias.
-                    if($matchingLocation->getLocationModule() == $locationModule){
+                    // Done if the matching Location also matches the alias and URL.
+                    if(
+                        $matchingLocation->getLocationModule() == $locationModule &&
+                        $matchingLocation->getUrl() == $url
+                    ){
                         return $matchingLocation;
+                    }
+
+                    /*
+                     * See if there is already another Location that matches the
+                     * aliase's Location module and the URL.
+                     */
+                    $location = $this->em
+                        ->getRepository('CampaignChainCoreBundle:Location')
+                        ->findOneBy(array(
+                            'locationModule' => $locationModule,
+                            'url' => $url,
+                        ));
+
+                    // We found an existing Location, we're done.
+                    if($location){
+                        return $location;
                     }
 
                     if(!$locationModule){
@@ -195,6 +214,10 @@ class LocationService
                     }
                 }
 
+                /*
+                 * If the matching Location provides auto-generation of Locations,
+                 * then let's create a new child Location.
+                 */
                 $ctaServiceName = $locationModule->getServices()['job_cta'];
                 if($ctaServiceName){
                     // Create the new Location
