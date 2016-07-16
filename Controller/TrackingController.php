@@ -98,7 +98,7 @@ EOT
         if($old){
             $trackingJsRoute .= self::TRACKING_JS_URI_OLD;
         } else {
-            $trackingJsRoute .= $this->getParameter('campaignchain_core.tracking.js_route');
+            $trackingJsRoute .= $this->getParameter('campaignchain.tracking.js_route');
         }
 
         return $this->render(

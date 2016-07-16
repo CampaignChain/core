@@ -521,6 +521,6 @@ services:
     campaignchain.core.tracking.js.routing_loader:
         class: CampaignChain\CoreBundle\Routing\TrackingJsLoader
         arguments:
-            - '%campaignchain_core.tracking.js_route%'
+            - '%campaignchain.tracking.js_route%'
         tags:
             - { name: routing.loader }
