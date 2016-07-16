@@ -103,9 +103,9 @@ class SystemUtil
             'AppKernel.php';
         
         $configFiles['config_dist'] = $symfonyConfigDir.DIRECTORY_SEPARATOR.
-            'config_campaignchain_bundles.yml.dist';
+            'config_campaignchain_imports.yml.dist';
         $configFiles['config'] = $campaignchainConfigDir.DIRECTORY_SEPARATOR.
-            'bundles.yml';
+            'imports.yml';
         
         $configFiles['routing_dist'] = $symfonyConfigDir.DIRECTORY_SEPARATOR.
             'routing_campaignchain.yml.dist';
