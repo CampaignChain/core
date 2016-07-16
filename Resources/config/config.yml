@@ -12,6 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+campaignchain_core:
+    tracking:
+        id_name: cctid
+        js_mode: prod
+        js_class: CCTracking
+        js_init: cc
+    upload_storage:
+        path: '%kernel.root_dir%/../web/storage'
+        url_prefix: /storage
+
 assetic:
     assets:
         campaignchain_base_css:
