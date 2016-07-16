@@ -451,7 +451,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
             "campaignchain_user_timezone_offset" => $this->getGlobalTimezoneOffset(),
             "campaignchain_user_timezone_abbreviation" => $this->getGlobalTimezoneAbbreviation(),
             'campaignchain_system' => $this->system(),
-            'campaignchain_env' => $this->container->getParameter('campaignchain_core.env'),
+            'campaignchain_env' => $this->container->getParameter('campaignchain.env'),
         );
     }
 

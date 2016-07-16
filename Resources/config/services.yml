@@ -371,7 +371,7 @@ services:
         class: CampaignChain\CoreBundle\Security\Authorization\Voter\DevVoter
         public: false
         arguments:
-            - '%campaignchain_core.env%'
+            - '%campaignchain.env%'
         tags:
             - { name: security.voter }
 
@@ -405,13 +405,13 @@ services:
         class: CampaignChain\CoreBundle\Module\Package
         arguments:
             - '%kernel.root_dir%'
-            - '%campaignchain_core.env%'
+            - '%campaignchain.env%'
 
     campaignchain.core.module.repository:
         class: CampaignChain\CoreBundle\Module\Repository
         arguments:
             - '@campaignchain.core.system'
-            - '%campaignchain_core.env%'
+            - '%campaignchain.env%'
 
     campaignchain.core.module.composer:
         class: CampaignChain\CoreBundle\Module\Composer

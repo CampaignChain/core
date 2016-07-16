@@ -37,11 +37,6 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->enumNode('env')
-                    ->isRequired()
-                    ->cannotBeEmpty()
-                    ->values(array('prod', 'dev', 'demo', 'test'))
-                ->end()
                 ->arrayNode('tracking')
                     ->children()
                         ->scalarNode('id_name')
