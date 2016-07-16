@@ -65,7 +65,7 @@ class DevVoter implements VoterInterface
         }
 
         /*
-         * If campaignchain.env is 'dev', then we grant access.
+         * If campaignchain_core.env is 'dev', then we grant access.
          */
         if($this->env == 'dev'){
             return VoterInterface::ACCESS_GRANTED;

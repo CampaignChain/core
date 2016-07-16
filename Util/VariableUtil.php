@@ -56,4 +56,21 @@ class VariableUtil
 
         return $flattened_array;
     }
+
+    static function arrayConcatenate($array, $glue = '.', $prefix = '')
+    {
+        $result = array();
+
+        foreach ($array as $key => $value) {
+            $new_key = $prefix . (empty($prefix) ? '' : $glue) . $key;
+
+            if (is_array($value)) {
+                $result = array_merge($result, self::arrayConcatenate($value, $glue, $new_key));
+            } else {
+                $result[$new_key] = $value;
+            }
+        }
+
+        return $result;
+    }
 }

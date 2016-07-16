@@ -141,8 +141,8 @@ class ChannelController extends Controller
             array(
                 'page_title' => 'Enable CTA Tracking',
                 'channel' => $channel,
-                'tracking_js_init' => $this->getParameter('campaignchain.tracking.js_init'),
-                'tracking_js_route' => $this->getParameter('campaignchain.tracking.js_route'),
+                'tracking_js_init' => $this->getParameter('campaignchain_core.tracking.js_init'),
+                'tracking_js_route' => $this->getParameter('campaignchain_core.tracking.js_route'),
             ));
     }
 
@@ -163,7 +163,7 @@ class ChannelController extends Controller
         $locations = $channelService->getRootLocations($channel);
 
         if(count($locations)){
-            $trackingFileCode = 'src="//'.$request->getHttpHost().$this->getParameter('campaignchain.tracking.js_route').'"';
+            $trackingFileCode = 'src="//'.$request->getHttpHost().$this->getParameter('campaignchain_core.tracking.js_route').'"';
             $trackingIdCode = 'cc(\''.$channel->getTrackingId().'\');';
             $trackingStatus = true;
 

@@ -17,6 +17,7 @@
 
 namespace CampaignChain\CoreBundle\DependencyInjection;
 
+use CampaignChain\CoreBundle\Util\VariableUtil;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
@@ -40,7 +41,14 @@ class CampaignChainCoreExtension extends Extension
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
 
-        $container->setParameter('campaignchain.core.upload_storage.path', $config['upload_storage']['path']);
-        $container->setParameter('campaignchain.core.upload_storage.url_prefix', $config['upload_storage']['url_prefix']);
+        $configStrings = VariableUtil::arrayConcatenate($config);
+        foreach ($config as $name => $node) {
+            $container->setParameter($this->getAlias().'.'.$name, $node);
+        }
+    }
+
+    public function getAlias()
+    {
+        return 'campaignchain_core';
     }
 }

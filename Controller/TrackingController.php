@@ -46,7 +46,7 @@ if(window.location.href.toLowerCase().indexOf("campaignchain-id") >= 0) {
         } else {
             this.idName = "
 EOT;
-            $trackingIdName .= $this->getParameter('campaignchain.tracking.id_name');
+            $trackingIdName .= $this->getParameter('campaignchain_core.tracking.id_name');
             $trackingIdName .= <<<EOT
 ";
         }
@@ -62,14 +62,14 @@ EOT
             );
         } else {
             $twigParams = array(
-                'tracking_id_name' => 'this.idName = "'.$this->getParameter('campaignchain.tracking.id_name').'";',
-                'tracking_js_class' => $this->getParameter('campaignchain.tracking.js_class'),
-                'tracking_js_init' => $this->getParameter('campaignchain.tracking.js_init'),
+                'tracking_id_name' => 'this.idName = "'.$this->getParameter('campaignchain_core.tracking.id_name').'";',
+                'tracking_js_class' => $this->getParameter('campaignchain_core.tracking.js_class'),
+                'tracking_js_init' => $this->getParameter('campaignchain_core.tracking.js_init'),
                 'tracking_init_compatibility' => '',
             );
         }
 
-        $twigParams['tracking_js_mode'] = $this->getParameter('campaignchain.tracking.js_mode');
+        $twigParams['tracking_js_mode'] = $this->getParameter('campaignchain_core.tracking.js_mode');
         $twigParams['tracking_report_base_url_name'] = self::TRACKING_REPORT_BASE_URL_NAME;
 
         $trackingJs = $this->renderView(
@@ -98,7 +98,7 @@ EOT
         if($old){
             $trackingJsRoute .= self::TRACKING_JS_URI_OLD;
         } else {
-            $trackingJsRoute .= $this->getParameter('campaignchain.tracking.js_route');
+            $trackingJsRoute .= $this->getParameter('campaignchain_core.tracking.js_route');
         }
 
         return $this->render(
@@ -106,7 +106,7 @@ EOT
             array(
                 'page_title' => 'Test Tracking JS',
                 'channel' => $channel,
-                'tracking_js_init' => $this->getParameter('campaignchain.tracking.js_init'),
+                'tracking_js_init' => $this->getParameter('campaignchain_core.tracking.js_init'),
                 'tracking_js_route' => $trackingJsRoute,
                 'is_old_tracking_js_route' => $old,
             ));
@@ -170,8 +170,8 @@ EOT
         $logger->info('Tracking Alias: '.$trackingAlias);
 
         if(
-            $this->getParameter('campaignchain.tracking.js_mode') == 'dev' ||
-            $this->getParameter('campaignchain.tracking.js_mode') == 'dev-stay'
+            $this->getParameter('campaignchain_core.tracking.js_mode') == 'dev' ||
+            $this->getParameter('campaignchain_core.tracking.js_mode') == 'dev-stay'
         ){
             $source = ParserUtil::removeUrlParam($source, self::TRACKING_REPORT_BASE_URL_NAME);
             $target = ParserUtil::removeUrlParam($target, self::TRACKING_REPORT_BASE_URL_NAME);
@@ -237,10 +237,10 @@ EOT
 
         // Check whether the Tracking ID name is correct.
         if(
-            $trackingIdName != $this->getParameter('campaignchain.tracking.id_name') &&
+            $trackingIdName != $this->getParameter('campaignchain_core.tracking.id_name') &&
             $trackingIdName != 'campaignchain-id'
         ){
-            $msg = 'Provided Tracking ID name ("'.$trackingIdName.'") does not match, should be "'.$this->getParameter('campaignchain.tracking.id_name').'".';
+            $msg = 'Provided Tracking ID name ("'.$trackingIdName.'") does not match, should be "'.$this->getParameter('campaignchain_core.tracking.id_name').'".';
             $logger->error($msg);
             return $this->errorResponse($msg, $request);
         }

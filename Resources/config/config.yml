@@ -301,7 +301,7 @@ knp_gaufrette:
     adapters:
         images:
             local:
-                directory: '%campaignchain.core.upload_storage.path%'
+                directory: '%campaignchain_core.upload_storage.path%'
                 create: true
     filesystems:
         images:
