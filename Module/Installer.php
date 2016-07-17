@@ -311,6 +311,9 @@ class Installer
                         // TODO: new vs. update
                         $this->registerHook($newBundle);
                         break;
+                    case 'campaignchain-symfony':
+                        $this->registerSymfonyBundle($newBundle);
+                        break;
                     default:
                         $this->registerModule($newBundle);
                         break;
@@ -492,6 +495,19 @@ class Installer
         $moduleConfigContent = file_get_contents($moduleConfig);
 
         return Yaml::parse($moduleConfigContent);
+    }
+
+    private function registerSymfonyBundle(Bundle $bundle)
+    {
+        $extra = $bundle->getExtra();
+
+        if (
+            $extra && isset($extra['campaignchain']) &&
+            isset($extra['campaignchain']['kernel'])
+        ) {
+            $kernelConfig = $this->kernelService->getKernelConfig();
+            $kernelConfig->addClasses($extra['campaignchain']['kernel']['classes']);
+        }
     }
 
     /**

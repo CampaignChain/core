@@ -51,6 +51,11 @@ class Kernel
         $this->kernelConfig = new KernelConfig();
     }
 
+    public function getKernelConfig()
+    {
+        return $this->kernelConfig;
+    }
+
     public function register(
         array $types = [
             'classes' => true,

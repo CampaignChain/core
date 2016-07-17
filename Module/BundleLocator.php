@@ -65,13 +65,13 @@ class BundleLocator
 
         $finder = new Finder();
         // Find all the CampaignChain module configuration files.
-        $finder->files()
+        $finder->files()->contains('"type": "campaignchain-')
             ->in($this->rootDir.DIRECTORY_SEPARATOR)
             ->exclude('app')
             ->exclude('bin')
             ->exclude('component')
             ->exclude('web')
-            ->name('campaignchain.yml');
+            ->name('composer.json');
 
         $bundles = [];
 
