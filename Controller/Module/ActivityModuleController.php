@@ -73,6 +73,13 @@ class ActivityModuleController extends Controller
     private $contentFormType;
     private $contentModuleFormName;
 
+    private $logger;
+
+    public function getLogger()
+    {
+        return $this->has('monolog.logger.external') ? $this->get('monolog.logger.external') : $this->get('monolog.logger');
+    }
+
     public function setParameters($parameters){
         $this->parameters = $parameters;
 
@@ -160,14 +167,23 @@ class ActivityModuleController extends Controller
         if ($form->isValid()) {
             $activity = $wizard->end();
 
-            $activity = $this->createActivity($activity, $form);
+            try {
+                $activity = $this->createActivity($activity, $form);
 
-            $this->addFlash(
-                'success',
-                'Your new activity <a href="'.$this->generateUrl('campaignchain_core_activity_edit', array('id' => $activity->getId())).'">'.$activity->getName().'</a> was created successfully.'
-            );
+                $this->addFlash(
+                    'success',
+                    'Your new activity <a href="' . $this->generateUrl('campaignchain_core_activity_edit', array('id' => $activity->getId())) . '">' . $activity->getName() . '</a> was created successfully.'
+                );
 
-            return $this->redirect($this->generateUrl('campaignchain_core_activities'));
+                return $this->redirect($this->generateUrl('campaignchain_core_activities'));
+            } catch(\Exception $e) {
+                $this->addFlash(
+                    'warning',
+                    $e->getMessage()
+                );
+
+                $this->getLogger()->error($e->getMessage());
+            }
         }
 
         if($location){
@@ -366,17 +382,8 @@ class ActivityModuleController extends Controller
             throw $e;
         }
 
-        // if the module tries to execute the job immediately, catch url shortener api exceptions
-        try {
-            $this->handler->postPersistNewEvent($operation, $form, $content);
-        } catch (ExternalApiException $e) {
-            $this->addFlash(
-                'warning',
-                'The Activity could not be published. Please try again later.'
-            );
-            $logger = $this->has('monolog.logger.external') ? $this->get('monolog.logger.external') : $this->get('monolog.logger');
-            $logger->error($e->getMessage());
-        }
+        // The module tries to execute the job immediately.
+        $this->handler->postPersistNewEvent($operation, $form, $content);
 
         return $activity;
     }
@@ -414,26 +421,24 @@ class ActivityModuleController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $this->activity = $this->editActivity($this->activity, $form);
 
-            $this->addFlash(
-                'success',
-                'Your activity <a href="'.$this->generateUrl('campaignchain_core_activity_edit', array('id' => $this->activity->getId())).'">'.$this->activity->getName().'</a> was edited successfully.'
-            );
-
-            // if the module tries to execute the job immediately, catch url shortener api exceptions
             try {
-                $this->handler->postPersistEditEvent($this->operations[0], $form, $content);
-            } catch (ExternalApiException $e) {
+                $this->activity = $this->editActivity($this->activity, $form, $content);
+
+                $this->addFlash(
+                    'success',
+                    'Your activity <a href="'.$this->generateUrl('campaignchain_core_activity_edit', array('id' => $this->activity->getId())).'">'.$this->activity->getName().'</a> was edited successfully.'
+                );
+
+                return $this->redirect($this->generateUrl('campaignchain_core_activities'));
+            } catch(\Exception $e) {
                 $this->addFlash(
                     'warning',
-                    'The Activity could not be published. Please try again later.'
+                    $e->getMessage()
                 );
-                $logger = $this->has('monolog.logger.external') ? $this->get('monolog.logger.external') : $this->get('monolog.logger');
-                $logger->error($e->getMessage());
-            }
 
-            return $this->redirect($this->generateUrl('campaignchain_core_activities'));
+                $this->getLogger()->error($e->getMessage());
+            }
         }
 
         /*
@@ -458,7 +463,7 @@ class ActivityModuleController extends Controller
         return $this->renderWithHandlerOptions($defaultRenderOptions, $handlerRenderOptions);
     }
 
-    public function editActivity(Activity $activity, Form $form)
+    public function editActivity(Activity $activity, Form $form, $content)
     {
         /** @var ActivityService $activityService */
         $activityService = $this->get('campaignchain.core.activity');
@@ -501,6 +506,9 @@ class ActivityModuleController extends Controller
             $em->persist($activity);
 
             $em->flush();
+
+            // The module tries to execute the job immediately.
+            $this->handler->postPersistEditEvent($this->operations[0], $form, $content);
 
             $em->getConnection()->commit();
 
