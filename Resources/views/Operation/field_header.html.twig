@@ -15,7 +15,7 @@ limitations under the License.
 #}
 {% if form is defined and form.vars is defined and form.vars.location is defined %}
     {% set location = form.vars.location %}
-{% elseif location is defined %}
+{% elseif location is not defined %}
     {% set location = activity.getLocation() %}
 {% endif %}
 
@@ -23,11 +23,7 @@ limitations under the License.
     <div id="campaignchain-operation-field">
         <div class="panel panel-default">
             <div class="panel-heading">
-                {% if location is defined and location is not null %}
                 {{ location|campaignchain_tpl_teaser }}
-                {% else  %}
-                {{ form.vars.activity_module.getDisplayName() }}
-                {% endif %}
             </div>
             <div class="panel-body">
 {% endspaceless %}
