@@ -182,7 +182,11 @@ class ActivityModuleController extends Controller
                     $e->getMessage()
                 );
 
-                $this->getLogger()->error($e->getMessage());
+                $this->getLogger()->error($e->getMessage(), array(
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => $e->getTrace(),
+                ));
             }
         }
 
@@ -437,7 +441,11 @@ class ActivityModuleController extends Controller
                     $e->getMessage()
                 );
 
-                $this->getLogger()->error($e->getMessage());
+                $this->getLogger()->error($e->getMessage(), array(
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => $e->getTrace(),
+                ));
             }
         }
 

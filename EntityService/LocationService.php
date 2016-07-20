@@ -145,7 +145,7 @@ class LocationService
                 ->getQuery();
 
             /** @var Location $matchingLocation */
-            $matchingLocation = $query->getSingleResult();
+            $matchingLocation = $query->getOneOrNullResult();
 
             if($matchingLocation){
                 /*
@@ -251,6 +251,8 @@ class LocationService
                         'and module "'.$locationModule->getIdentifier().'"'
                     );
                 }
+            } else {
+                return false;
             }
         }
 
