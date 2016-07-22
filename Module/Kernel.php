@@ -121,7 +121,7 @@ class Kernel
      * @param string $configFile
      * @param string $type
      */
-    private function registerConfigurationFile($configFile, $type = 'config')
+    public function registerConfigurationFile($configFile, $type = 'config')
     {
         if (!file_exists($configFile)) {
             return;

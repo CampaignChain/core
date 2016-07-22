@@ -500,14 +500,34 @@ class Installer
     private function registerSymfonyBundle(Bundle $bundle)
     {
         $extra = $bundle->getExtra();
+        $kernelConfig = $this->kernelService->getKernelConfig();
 
         if (
             $extra && isset($extra['campaignchain']) &&
             isset($extra['campaignchain']['kernel'])
         ) {
-            $kernelConfig = $this->kernelService->getKernelConfig();
             $kernelConfig->addClasses($extra['campaignchain']['kernel']['classes']);
         }
+
+        if (
+            $extra && isset($extra['campaignchain']) &&
+            isset($extra['campaignchain']['kernel']) &&
+            isset($extra['campaignchain']['kernel']['routing'])
+        ) {
+            $kernelConfig->addRouting($extra['campaignchain']['kernel']['routing']);
+        }
+
+        // Register the bundle's config.yml file.
+        $configFile = $this->rootDir.$bundle->getPath().DIRECTORY_SEPARATOR.
+            'Resources'.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.
+            'config.yml';
+        $this->kernelService->registerConfigurationFile($configFile);
+
+        // Register the bundle's security.yml file.
+        $securityFile = $this->rootDir.$bundle->getPath().DIRECTORY_SEPARATOR.
+            'Resources'.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.
+            'security.yml';
+        $this->kernelService->registerConfigurationFile($securityFile, 'security');
     }
 
     /**
