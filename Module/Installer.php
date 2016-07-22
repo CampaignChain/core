@@ -102,6 +102,11 @@ class Installer
     private $channelRelationships = [];
 
     /**
+     * @var
+     */
+    private $appComposerJson;
+
+    /**
      * Specifies which routes must be defined by which type of module.
      *
      * @var array
@@ -420,19 +425,19 @@ class Installer
 
         $config = $this->rootDir.'composer.json';
         $configContent = file_get_contents($config);
-        $params = json_decode($configContent, true);
+        $this->appComposerJson = json_decode($configContent, true);
 
-        $system->setPackage($params['name']);
-        $system->setName($params['description']);
-        $system->setVersion($params['version']);
-        $system->setHomepage($params['homepage']);
-        $system->setModules($params['extra']['campaignchain']['distribution']['modules']);
+        $system->setPackage($this->appComposerJson['name']);
+        $system->setName($this->appComposerJson['description']);
+        $system->setVersion($this->appComposerJson['version']);
+        $system->setHomepage($this->appComposerJson['homepage']);
+        $system->setModules($this->appComposerJson['extra']['campaignchain']['distribution']['modules']);
 
         if (
-            isset($params['extra']['campaignchain']['distribution']['terms-url']) &&
-            !empty($params['extra']['campaignchain']['distribution']['terms-url'])
+            isset($this->appComposerJson['extra']['campaignchain']['distribution']['terms-url']) &&
+            !empty($this->appComposerJson['extra']['campaignchain']['distribution']['terms-url'])
         ) {
-            $system->setTermsUrl($params['extra']['campaignchain']['distribution']['terms-url']);
+            $system->setTermsUrl($this->appComposerJson['extra']['campaignchain']['distribution']['terms-url']);
         }
 
         $this->em->persist($system);
@@ -926,10 +931,19 @@ class Installer
             foreach ($moduleParams as $key => $params) {
                 switch ($key) {
                     case 'navigation':
-                        // Merge existing navigations.
-                        $navigation = array_merge_recursive($system->getNavigation(), $params);
+                        // Does the app override the modules' navigation?
+                        if(
+                            isset($this->appComposerJson['extra']) &&
+                            isset($this->appComposerJson['extra']['campaignchain']) &&
+                            isset($this->appComposerJson['extra']['campaignchain']['navigation'])
+                        ) {
+                            $system->setNavigation($this->appComposerJson['extra']['campaignchain']['navigation']);
+                        } else {
+                            // Merge existing navigations with new modules' navigation.
+                            $navigation = array_merge_recursive($system->getNavigation(), $params);
 
-                        $system->setNavigation($navigation);
+                            $system->setNavigation($navigation);
+                        }
                         break;
                 }
             }
