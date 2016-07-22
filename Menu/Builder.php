@@ -91,28 +91,37 @@ class Builder extends ContainerAware
 
     public function settingsMenu(FactoryInterface $factory, array $options)
     {
+        $system = $this->container->get('campaignchain.core.system')->getActiveSystem();
+        $systemNavigation = $system->getNavigation();
+
         $menu = $factory->createItem('root');
 
-        $securityContext = $this->container->get('security.authorization_checker');
-        if ($securityContext->isGranted('ROLE_SUPER_ADMIN')) {
-            $menu->addChild('Users', [
-                'route' => 'campaignchain_core_user',
+        if(!isset($systemNavigation['users']) || $systemNavigation['users']) {
+            $securityContext = $this->container->get('security.authorization_checker');
+            if ($securityContext->isGranted('ROLE_SUPER_ADMIN')) {
+                $menu->addChild('Users', [
+                    'route' => 'campaignchain_core_user',
+                ]);
+            }
+        }
+
+        if(!isset($systemNavigation['channels']) || $systemNavigation['channels']) {
+            $menu->addChild('Channels', [
+                'route' => 'campaignchain_core_channel',
             ]);
         }
 
-        $menu->addChild('Channels', [
-            'route' => 'campaignchain_core_channel',
-        ]);
-        $menu->addChild('Locations', [
-            'route' => 'campaignchain_core_location',
-        ]);
+        if(!isset($systemNavigation['locations']) || $systemNavigation['locations']) {
+            $menu->addChild('Locations', [
+                'route' => 'campaignchain_core_location',
+            ]);
+        }
 
-        $menu->addChild('Modules', [
-            'route' => 'campaignchain_core_module',
-        ]);
-
-        $system = $this->container->get('campaignchain.core.system')->getActiveSystem();
-        $systemNavigation = $system->getNavigation();
+        if(!isset($systemNavigation['modules']) || $systemNavigation['modules']) {
+            $menu->addChild('Modules', [
+                'route' => 'campaignchain_core_module',
+            ]);
+        }
 
         if ($systemNavigation) {
             foreach ($systemNavigation['settings'] as $systemSetting) {
