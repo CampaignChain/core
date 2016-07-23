@@ -115,6 +115,9 @@ class ModuleController extends Controller
             $moduleInstaller = $this->get('campaignchain.core.module.installer');
             $moduleInstaller->install();
 
+            // Run the update routines which might come with modified or new modules.
+
+
             /*
              * This is a hack to avoid that an error about a missing bundle for a
              * route will be shown after installing the modules.

@@ -29,29 +29,4 @@ class ScriptHandler extends SensioScriptHandler
 
         $event->getIO()->write('CampaignChain: Enabled install mode.');
     }
-
-    /**
-     * Asks if the new directory structure should be used, installs the structure if needed.
-     *
-     * @param CommandEvent $event
-     */
-    public static function initKernel(CommandEvent $event)
-    {
-        SystemUtil::initKernel();
-
-        $event->getIO()->write('CampaignChain: Created configuration files.');
-    }
-
-    public static function registerModules(CommandEvent $event)
-    {
-        $options = self::getOptions($event);
-        $consoleDir = self::getConsoleDir($event, 'register modules');
-
-        if (null === $consoleDir) {
-            return;
-        }
-
-        self::executeCommand($event, $consoleDir, 'campaignchain:kernel:update --class-only --config-only --routing-only', $options['process-timeout']);
-        $event->getIO()->write('CampaignChain: Registered modules.');
-    }
 }
