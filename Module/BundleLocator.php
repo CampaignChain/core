@@ -71,7 +71,8 @@ class BundleLocator
             ->exclude('bin')
             ->exclude('component')
             ->exclude('web')
-            ->name('composer.json');
+            ->name('composer.json')
+            ->ignoreUnreadableDirs(true);
 
         $bundles = [];
 
