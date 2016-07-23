@@ -35,9 +35,9 @@ class ScriptHandler extends SensioScriptHandler
      *
      * @param CommandEvent $event
      */
-    public static function initConfig(CommandEvent $event)
+    public static function initKernel(CommandEvent $event)
     {
-        SystemUtil::initConfig();
+        SystemUtil::initKernel();
 
         $event->getIO()->write('CampaignChain: Created configuration files.');
     }

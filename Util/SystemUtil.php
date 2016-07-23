@@ -124,7 +124,7 @@ class SystemUtil
      * Creates the CampaignChain app configuration files based on the default
      * files or overwrites existing ones with the default.
      */
-    public static function initConfig()
+    public static function initKernel()
     {
         $configFiles = self::getConfigFiles();
 
