@@ -37,19 +37,13 @@ class ModuleUpdateCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('campaignchain:module:update')
+            ->setName('campaignchain:update:module')
             ->setDescription('Updates modules.')
             ->setHelp(<<<EOT
 The <info>campaignchain:module:update</info> command updates CampaignChain modules:
 
   <info>php app/console campaignchain:module:update</info>
 EOT
-            )
-            ->addOption(
-                'schema-update',
-                null,
-                InputOption::VALUE_OPTIONAL,
-                'During install should a doctrine schema update run.'
             );
     }
 
@@ -57,13 +51,10 @@ EOT
     {
         $io = new SymfonyStyle($input, $output);
 
-        $withSchemaUpdate = $input->getOption('schema-update') != 'false';
-        $io->text(sprintf('Updating CampaignChain system registry for all modules <comment>%s</comment> Schema update', $withSchemaUpdate ? 'with' : 'without'));
-
         $installer = $this->getContainer()->get('campaignchain.core.module.installer');
-        $installer->install($io, $withSchemaUpdate);
+        $installer->install($io);
 
-        $io->success('CampaignChain modules configuration files & database tables are updated');
+        $io->success('CampaignChain modules database tables are updated');
 
         return;
     }

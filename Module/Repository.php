@@ -40,14 +40,25 @@ class Repository
     private $distributionVersion;
 
     /**
+     * @var Package
+     */
+    private $packageService;
+
+    /**
+     * @param Package $packageService
      * @var SystemService
      */
     private $systemService;
 
-    public function __construct(SystemService $systemService, $env = 'prod')
+    public function __construct(
+        SystemService $systemService,
+        Package $packageService,
+        $env = 'prod'
+    )
     {
-        $this->env = $env;
         $this->systemService = $systemService;
+        $this->packageService = $packageService;
+        $this->env = $env;
     }
 
     public function loadRepositories()
@@ -76,7 +87,7 @@ class Repository
      *
      * @return array
      */
-    public function getModules()
+    public function getModulesFromRepository()
     {
         $modules = array();
 
@@ -99,8 +110,93 @@ class Repository
         return $modules;
     }
 
-    public function isModule($name, $repository)
+    /**
+     * Get module versions from CampaignChain.
+     *
+     * @return array|string
+     */
+    public function getAll()
     {
+        if (!$this->loadRepositories()) {
+            return Repository::STATUS_NO_REPOSITORIES;
+        }
 
+        $modules = $this->getModulesFromRepository();
+
+        // Is a higher version of an already installed package available?
+        foreach ($modules as $key => $module) {
+            $version = $this->packageService->getVersion($module->name);
+
+            if (!$version) {
+                // Not installed at all.
+                unset($modules[$key]);
+            } elseif (version_compare($version, $module->version, '<')) {
+                // Older version installed.
+                $modules[$key]->hasUpdate = true;
+                $modules[$key]->versionInstalled = $version;
+            } else {
+                $modules[$key]->hasUpdate = false;
+                $modules[$key]->versionInstalled = $version;
+            }
+        }
+
+        return $modules;
+    }
+
+    /**
+     * Get modules that needs to be installed.
+     *
+     * @return array|string
+     */
+    public function getInstalls()
+    {
+        if (!$this->loadRepositories()) {
+            return Repository::STATUS_NO_REPOSITORIES;
+        }
+
+        $modules = $this->getModulesFromRepository();
+
+        // Is the package already installed? If yes, is a higher version available?
+        foreach ($modules as $key => $module) {
+            $version = $this->packageService->getVersion($module->name);
+            // Not installed yet.
+            if ($version) {
+                // Older version installed.
+                unset($modules[$key]);
+            }
+        }
+
+        return $modules;
+    }
+
+    /**
+     * Get updates from CampaignChain.
+     *
+     * @return array|string
+     */
+    public function getUpdates()
+    {
+        if (!$this->loadRepositories()) {
+            return Repository::STATUS_NO_REPOSITORIES;
+        }
+
+        $modules = $this->getModulesFromRepository();
+
+        // Is a higher version of an already installed package available?
+        foreach ($modules as $key => $module) {
+            $version = $this->packageService->getVersion($module->name);
+
+            if (!$version) {
+                // Not installed at all.
+                unset($modules[$key]);
+            } elseif (version_compare($version, $module->version, '<')) {
+                // Older version installed.
+                $modules[$key]->versionInstalled = $version;
+            } else {
+                unset($modules[$key]);
+            }
+        }
+
+        return $modules;
     }
 }

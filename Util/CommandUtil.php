@@ -78,6 +78,19 @@ class CommandUtil
         return ob_get_clean();
     }
 
+    public function schemaUpdate()
+    {
+        /*
+         * Temporary hack, because above code does not reliably update
+         * the database scheme.
+         *
+         * TODO: Fix this.
+         */
+        $command = 'php app/console campaignchain:schema:update';
+
+        return $this->shell($command);
+    }
+
     public function doctrineSchemaUpdate()
     {
 //        $this->application->add(new UpdateSchemaDoctrineCommand());

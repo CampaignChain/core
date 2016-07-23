@@ -31,7 +31,7 @@ class KernelUpdateCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('campaignchain:kernel:update')
+            ->setName('campaignchain:update:kernel')
             ->setDescription('Updates modules.')
             ->setHelp(<<<EOT
 The <info>%command.full_name%</info> command updates CampaignChain kernel

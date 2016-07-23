@@ -18,6 +18,8 @@
 namespace CampaignChain\CoreBundle\Controller;
 
 use CampaignChain\CoreBundle\Module\Repository;
+use CampaignChain\CoreBundle\Util\CommandUtil;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -30,8 +32,8 @@ class ModuleController extends Controller
     {
         $this->processSelectedModules($request);
 
-        $installerService = $this->get('campaignchain.core.module.installer');
-        $modules = $installerService->getAll();
+        $moduleRepositoryService = $this->get('campaignchain.core.module.repository');
+        $modules = $moduleRepositoryService->getAll();
 
         if(
             $modules == Repository::STATUS_NO_REPOSITORIES ||
@@ -46,8 +48,8 @@ class ModuleController extends Controller
                 );
             }
         } else {
-            $updates = count($installerService->getUpdates());
-            $installs = count($installerService->getInstalls());
+            $updates = count($moduleRepositoryService->getUpdates());
+            $installs = count($moduleRepositoryService->getInstalls());
         }
 
         if($updates == 0) {
@@ -71,8 +73,8 @@ class ModuleController extends Controller
     {
         $this->processSelectedModules($request);
 
-        $installerService = $this->get('campaignchain.core.module.installer');
-        $modules = $installerService->getInstalls();
+        $moduleRepositoryService = $this->get('campaignchain.core.module.repository');
+        $modules = $moduleRepositoryService->getInstalls();
 
         if(
             $modules == Repository::STATUS_NO_REPOSITORIES ||
@@ -81,7 +83,7 @@ class ModuleController extends Controller
             $updates = 0;
             $installs = 0;
         } else {
-            $updates = count($installerService->getUpdates());
+            $updates = count($moduleRepositoryService->getUpdates());
             $installs = count($modules);
         }
 
@@ -108,12 +110,51 @@ class ModuleController extends Controller
                 );
             }
 
+            /** @var LoggerInterface $logger */
+            $logger = $this->get('logger');
+
+            /** @var CommandUtil $command */
+            $command = $this->get('campaignchain.core.util.command');
+            
             // Have composer download the required packages including the modules.
             $composerService->installPackages($requiredPackages);
+
+            $logger->info('Installed new packages', $requiredPackages);
+
+            // Load schemas of entities into database
+            $output = $command->schemaUpdate();
+
+            $logger->info('Output of campaignchain:schema:update');
+            $logger->info($output);
 
             // Register the modules with CampaignChain.
             $moduleInstaller = $this->get('campaignchain.core.module.installer');
             $moduleInstaller->install();
+
+            // Load schemas of entities into database
+            $output = $command->clearCache(false);
+            $logger->info('Output of cache:clear --no-warmup');
+            $logger->info($output);
+
+            // Install assets to web/ directory and dump assetic files.
+            $output = $command->assetsInstallWeb();
+            $logger->info('Output of assets:install web');
+            $logger->info($output);
+
+            // app/console assetic:dump --no-debug
+            $output = $command->asseticDump();
+            $logger->info('Output of assetic:dump --no-debug');
+            $logger->info($output);
+
+            // Load schemas of entities into database
+            $output = $command->schemaUpdate();
+            $logger->info('Output of campaignchain:schema:update');
+            $logger->info($output);
+
+            // Install or update bower JavaScript libraries.
+            $output = $command->bowerInstall();
+            $logger->info('Output of sp:bower:install');
+            $logger->info($output);
 
             // Run the update routines which might come with modified or new modules.
 

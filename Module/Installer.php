@@ -26,7 +26,6 @@ use CampaignChain\CoreBundle\Entity\Hook;
 use CampaignChain\CoreBundle\Entity\Module;
 use CampaignChain\CoreBundle\Entity\System;
 use CampaignChain\CoreBundle\EntityService\SystemService;
-use CampaignChain\CoreBundle\Util\CommandUtil;
 use Doctrine\ORM\EntityManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -70,16 +69,6 @@ class Installer
      * @var Kernel
      */
     private $kernelService;
-
-    /**
-     * @var Package
-     */
-    private $packageService;
-
-    /**
-     * @var CommandUtil
-     */
-    private $command;
 
     /**
      * @var Repository
@@ -146,8 +135,6 @@ class Installer
      * @param string          $rootDir
      * @param SystemService   $systemService
      * @param Kernel          $kernel
-     * @param Package         $packageService
-     * @param CommandUtil     $commandUtil
      * @param Repository      $repository
      * @param LoggerInterface $logger
      */
@@ -157,8 +144,6 @@ class Installer
         $rootDir,
         SystemService $systemService,
         Kernel $kernel,
-        Package $packageService,
-        CommandUtil $commandUtil,
         Repository $repository,
         LoggerInterface $logger
     ) {
@@ -167,100 +152,8 @@ class Installer
         $this->rootDir = $rootDir.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR;
         $this->systemService = $systemService;
         $this->kernelService = $kernel;
-        $this->packageService = $packageService;
-        $this->command = $commandUtil;
         $this->logger = $logger;
         $this->repositoryService = $repository;
-    }
-
-    /**
-     * Get module versions from CampaignChain.
-     *
-     * @return array|string
-     */
-    public function getAll()
-    {
-        if (!$this->repositoryService->loadRepositories()) {
-            return Repository::STATUS_NO_REPOSITORIES;
-        }
-
-        $modules = $this->repositoryService->getModules();
-
-        // Is a higher version of an already installed package available?
-        foreach ($modules as $key => $module) {
-            $version = $this->packageService->getVersion($module->name);
-
-            if (!$version) {
-                // Not installed at all.
-                unset($modules[$key]);
-            } elseif (version_compare($version, $module->version, '<')) {
-                // Older version installed.
-                $modules[$key]->hasUpdate = true;
-                $modules[$key]->versionInstalled = $version;
-            } else {
-                $modules[$key]->hasUpdate = false;
-                $modules[$key]->versionInstalled = $version;
-            }
-        }
-
-        return $modules;
-    }
-
-    /**
-     * Get updates from CampaignChain.
-     *
-     * @return array|string
-     */
-    public function getUpdates()
-    {
-        if (!$this->repositoryService->loadRepositories()) {
-            return Repository::STATUS_NO_REPOSITORIES;
-        }
-
-        $modules = $this->repositoryService->getModules();
-
-        // Is a higher version of an already installed package available?
-        foreach ($modules as $key => $module) {
-            $version = $this->packageService->getVersion($module->name);
-
-            if (!$version) {
-                // Not installed at all.
-                unset($modules[$key]);
-            } elseif (version_compare($version, $module->version, '<')) {
-                // Older version installed.
-                $modules[$key]->versionInstalled = $version;
-            } else {
-                unset($modules[$key]);
-            }
-        }
-
-        return $modules;
-    }
-
-    /**
-     * Get modules that needs to be installed.
-     *
-     * @return array|string
-     */
-    public function getInstalls()
-    {
-        if (!$this->repositoryService->loadRepositories()) {
-            return Repository::STATUS_NO_REPOSITORIES;
-        }
-
-        $modules = $this->repositoryService->getModules();
-
-        // Is the package already installed? If yes, is a higher version available?
-        foreach ($modules as $key => $module) {
-            $version = $this->packageService->getVersion($module->name);
-            // Not installed yet.
-            if ($version) {
-                // Older version installed.
-                unset($modules[$key]);
-            }
-        }
-
-        return $modules;
     }
 
     /**
@@ -272,17 +165,9 @@ class Installer
      * @throws \Doctrine\DBAL\ConnectionException
      * @throws \Exception
      */
-    public function install(SymfonyStyle $io = null, $updateDatabase = true)
+    public function install(SymfonyStyle $io = null)
     {
         $this->logger->info('START: MODULES INSTALLER');
-
-        // Load schemas of entities into database
-        if ($updateDatabase) {
-            $output = $this->command->doctrineSchemaUpdate();
-
-            $this->logger->info('Output of doctrine:schema:update --force');
-            $this->logger->info($output);
-        }
 
         $newBundles = $this->bundleConfigService->getNewBundles();
 
@@ -360,48 +245,6 @@ class Installer
             $io->section('Installed/updated modules:');
             $io->listing(explode(', ', rtrim($loggerResult, ', ')));
         }
-
-        if ($io) {
-            $io->listing(['Clearing the cache']);
-        }
-        // Load schemas of entities into database
-        $output = $this->command->clearCache(false);
-        $this->logger->info('Output of cache:clear --no-warmup');
-        $this->logger->info($output);
-
-        if ($io) {
-            $io->listing(['Installing assets']);
-        }
-        // Install assets to web/ directory and dump assetic files.
-        $output = $this->command->assetsInstallWeb();
-        $this->logger->info('Output of assets:install web');
-        $this->logger->info($output);
-
-        if ($io) {
-            $io->listing(['Dumping assets']);
-        }
-        // app/console assetic:dump --no-debug
-        $output = $this->command->asseticDump();
-        $this->logger->info('Output of assetic:dump --no-debug');
-        $this->logger->info($output);
-
-        if ($updateDatabase) {
-            if ($io) {
-                $io->listing(['Update DB']);
-            }
-            // Load schemas of entities into database
-            $output = $this->command->doctrineSchemaUpdate();
-            $this->logger->info('Output of doctrine:schema:update --force');
-            $this->logger->info($output);
-        }
-
-        if ($io) {
-            $io->listing(['Installing bower']);
-        }
-        // Install or update bower JavaScript libraries.
-        $output = $this->command->bowerInstall();
-        $this->logger->info('Output of sp:bower:install');
-        $this->logger->info($output);
 
         $this->logger->info('END: MODULES INSTALLER');
 

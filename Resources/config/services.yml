@@ -396,8 +396,6 @@ services:
             - '%kernel.root_dir%'
             - '@campaignchain.core.system'
             - '@campaignchain.core.module.kernel'
-            - '@campaignchain.core.module.package'
-            - '@campaignchain.core.util.command'
             - '@campaignchain.core.module.repository'
             - '@logger'
 
@@ -411,6 +409,7 @@ services:
         class: CampaignChain\CoreBundle\Module\Repository
         arguments:
             - '@campaignchain.core.system'
+            - '@campaignchain.core.module.package'
             - '%campaignchain.env%'
 
     campaignchain.core.module.composer:
