@@ -328,19 +328,11 @@ services:
         arguments:
             - '%kernel.root_dir%'
 
-    campaignchain.core.install.wizard.step.system_modules:
-        class: CampaignChain\CoreBundle\Wizard\Install\Step\SystemModulesStep
-        public: false
-        calls:
-            - [setServices, ['@campaignchain.core.util.command', '@campaignchain.core.module.installer']]
-        tags:
-            - { name: campaignchain.install.step, priority: 0 }
-
     campaignchain.core.install.wizard.step.sfsecret:
         class: CampaignChain\CoreBundle\Wizard\Install\Step\SfSecretStep
         public: false
         tags:
-            - { name: campaignchain.install.step, priority: 100 }
+            - { name: campaignchain.install.step, priority: 0 }
 
     campaignchain.core.install.wizard.step.bitly:
         class: CampaignChain\CoreBundle\Wizard\Install\Step\BitlyStep
@@ -348,7 +340,7 @@ services:
         calls:
             - [setServices, ['@campaignchain.core.util.command']]
         tags:
-            - { name: campaignchain.install.step, priority: 200 }
+            - { name: campaignchain.install.step, priority: 100 }
 
     campaignchain.core.install.wizard.step.admin:
         class: CampaignChain\CoreBundle\Wizard\Install\Step\AdminStep
@@ -356,7 +348,7 @@ services:
         calls:
             - [setServices, ['@campaignchain.core.util.command']]
         tags:
-            - { name: campaignchain.install.step, priority: 300 }
+            - { name: campaignchain.install.step, priority: 200 }
 
     # Voter
     campaignchain.core.voter.install:
