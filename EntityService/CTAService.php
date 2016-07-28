@@ -1,11 +1,18 @@
 <?php
 /*
- * This file is part of the CampaignChain package.
+ * Copyright 2016 CampaignChain, Inc. <info@campaignchain.com>
  *
- * (c) CampaignChain, Inc. <info@campaignchain.com>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 namespace CampaignChain\CoreBundle\EntityService;
@@ -22,12 +29,13 @@ class CTAService
 {
     const FORMAT_HTML = 'html';
     const FORMAT_TXT = 'txt';
-    const TRACKING_ID_NAME = 'campaignchain-id';
 
+    protected $trackingIdName;
     protected $em;
     protected $urlShortener;
     protected $locationService;
-
+    protected $trackingJsMode;
+    protected $baseUrl;
 
     /**
      * CTAService constructor.
@@ -36,13 +44,19 @@ class CTAService
      * @param LocationService $locationService
      */
     public function __construct(
+        $trackingIdName,
         EntityManager $em,
         UrlShortenerServiceInterface $urlShortener,
-        LocationService $locationService
+        LocationService $locationService,
+        $trackingJsMode,
+        $baseUrl
     ) {
+        $this->trackingIdName = $trackingIdName;
         $this->em = $em;
         $this->urlShortener = $urlShortener;
         $this->locationService = $locationService;
+        $this->trackingJsMode = $trackingJsMode;
+        $this->baseUrl = $baseUrl;
     }
 
     /**
@@ -160,7 +174,14 @@ class CTAService
      */
     protected function generateTrackingUrl($url, $trackingId)
     {
-        return ParserUtil::addUrlParam($url, self::TRACKING_ID_NAME, $trackingId);
+        $trackingUrl = ParserUtil::addUrlParam($url, $this->trackingIdName, $trackingId);
+        
+        // Pass the base URL if tracking script runs in dev or dev-stay mode.
+        if($this->trackingJsMode == 'dev' || $this->trackingJsMode == 'dev-stay'){
+            $trackingUrl = ParserUtil::addUrlParam($trackingUrl, 'cctapi', urlencode($this->baseUrl));
+        }
+
+        return $trackingUrl;
     }
 
     /**

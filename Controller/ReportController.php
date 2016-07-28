@@ -1,75 +1,79 @@
 <?php
 /*
- * This file is part of the CampaignChain package.
+ * Copyright 2016 CampaignChain, Inc. <info@campaignchain.com>
  *
- * (c) CampaignChain, Inc. <info@campaignchain.com>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 namespace CampaignChain\CoreBundle\Controller;
 
+use CampaignChain\CoreBundle\Entity\ReportModule;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use CampaignChain\CoreBundle\Entity\Report;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Class ReportController.
+ */
 class ReportController extends Controller
 {
-    public function indexAction(Request $request, $id){
-        $repository = $this->getDoctrine()
-            ->getRepository('CampaignChainCoreBundle:ReportModule');
+    /**
+     * @return Response
+     */
+    public function indexAction()
+    {
+        $reports = $this->getDoctrine()->getRepository('CampaignChainCoreBundle:ReportModule')->findAll();
 
-        if(!$id){
-            $reports = $repository->findAll();
-            return $this->render(
-                'CampaignChainCoreBundle:Report:index.html.twig',
-                array(
-                    'page_title' => 'Reports',
-                    'reports' => $reports,
-                ));
-        } else {
-            $report = $repository->find($id);
-
-            if (!$report) {
-                throw new \Exception(
-                    'No report found for id '.$id
-                );
-            }
-
-            return $this->redirect(
-                $this->generateUrl(
-                    $report->getRoutes()['index']
-                )
-            );
-        }
-//
-//        }
-
-
+        return $this->render(
+            'CampaignChainCoreBundle:Report:index.html.twig',
+            [
+                'page_title' => 'Reports',
+                'reports' => $reports,
+            ]
+        );
     }
 
-    public function apiListCtaLocationsPerCampaignAction(Request $request, $id){
+    /**
+     * @param ReportModule|null $reportModule
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function showAction(ReportModule $reportModule = null)
+    {
+        return $this->redirectToRoute($reportModule->getRoutes()['index']);
+    }
+
+    public function apiListCtaLocationsPerCampaignAction($id)
+    {
         $repository = $this->getDoctrine()
             ->getRepository('CampaignChainCoreBundle:ReportCTA');
         $qb = $repository->createQueryBuilder('r');
         $qb->select('r')
             ->where('r.campaign = :campaignId')
-            ->andWhere('r.sourceLocation = r.referrerLocation')
-            ->andWhere('r.targetLocation is not NULL')
-            ->groupBy('r.targetLocation')
-            ->orderBy('r.targetName', 'ASC')
+            ->andWhere('r.sourceLocation = r.targetLocation')
+            ->andWhere('r.targetLocation IS NOT NULL')
+            ->groupBy('r.sourceLocation')
+            ->orderBy('r.sourceName', 'ASC')
             ->setParameter('campaignId', $id);
         $query = $qb->getQuery();
         $locations = $query->getResult();
 
-        foreach($locations as $location){
-            $response[] = array(
+        $response = array();
+        foreach ($locations as $location) {
+            $response[] = [
                 'id' => $location->getTargetLocation()->getId(),
                 'display_name' => $location->getTargetName()
-                                    .' ('.$location->getTargetUrl().')',
-            );
+                    .' ('.$location->getTargetUrl().')',
+            ];
         }
 
         $serializer = $this->get('campaignchain.core.serializer.default');

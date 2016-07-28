@@ -1,27 +1,117 @@
 <?php
 /*
- * This file is part of the CampaignChain package.
+ * Copyright 2016 CampaignChain, Inc. <info@campaignchain.com>
  *
- * (c) CampaignChain, Inc. <info@campaignchain.com>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 namespace CampaignChain\CoreBundle\Controller;
 
+use CampaignChain\CoreBundle\Entity\CTA;
+use CampaignChain\CoreBundle\Entity\Medium;
 use CampaignChain\CoreBundle\Entity\ReportCTA;
 use CampaignChain\CoreBundle\EntityService\CTAService;
+use CampaignChain\CoreBundle\EntityService\LocationService;
 use CampaignChain\CoreBundle\Util\ParserUtil;
+use Doctrine\DBAL\Query\QueryBuilder;
+use GK\JavascriptPacker;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints\Url;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class TrackingController extends Controller
 {
+    const TRACKING_REPORT_BASE_URL_NAME = 'cctapi';
+    const TRACKING_JS_URI_OLD = '/bundles/campaignchaincore/js/campaignchain/campaignchain_tracking.js';
+
+    public function trackingJsAction(Request $request)
+    {
+        // Take care of old path to tracking.js
+        if($request->getPathInfo() == self::TRACKING_JS_URI_OLD){
+            $trackingIdName = <<<EOT
+if(window.location.href.toLowerCase().indexOf("campaignchain-id") >= 0) {
+            this.idName = "campaignchain-id";
+        } else {
+            this.idName = "
+EOT;
+            $trackingIdName .= $this->getParameter('campaignchain_core.tracking.id_name');
+            $trackingIdName .= <<<EOT
+";
+        }
+        
+EOT;
+            $twigParams = array(
+                'tracking_id_name' => $trackingIdName,
+                'tracking_js_class' => 'CampaignChain',
+                'tracking_js_init' => 'init',
+                'tracking_init_compatibility' =><<<EOT
+window["init"](window.campaignchainChannel);
+EOT
+            );
+        } else {
+            $twigParams = array(
+                'tracking_id_name' => 'this.idName = "'.$this->getParameter('campaignchain_core.tracking.id_name').'";',
+                'tracking_js_class' => $this->getParameter('campaignchain_core.tracking.js_class'),
+                'tracking_js_init' => $this->getParameter('campaignchain_core.tracking.js_init'),
+                'tracking_init_compatibility' => '',
+            );
+        }
+
+        $twigParams['tracking_js_mode'] = $this->getParameter('campaignchain_core.tracking.js_mode');
+        $twigParams['tracking_report_base_url_name'] = self::TRACKING_REPORT_BASE_URL_NAME;
+
+        $trackingJs = $this->renderView(
+            'CampaignChainCoreBundle:Tracking:tracking.js.twig', $twigParams
+        );
+
+        // Uglify tracking JavaScript if in prod environment.
+        if($this->get( 'kernel' )->getEnvironment() == 'prod') {
+            $packer = new JavascriptPacker($trackingJs);
+            $trackingJs = $packer->pack();
+        }
+
+        $response = new Response($trackingJs);
+        $response->headers->set('Content-Type','application/javascript');
+        return $response;
+    }
+
+    public function testTrackingJsAction(Request $request, $channel, $dev, $old)
+    {
+        if($dev) {
+            $trackingJsRoute = '/app_dev.php';
+        } else {
+            $trackingJsRoute = '/app.php';
+        }
+
+        if($old){
+            $trackingJsRoute .= self::TRACKING_JS_URI_OLD;
+        } else {
+            $trackingJsRoute .= $this->getParameter('campaignchain.tracking.js_route');
+        }
+
+        return $this->render(
+            'CampaignChainCoreBundle:Tracking:test_tracking.js.html.twig',
+            array(
+                'page_title' => 'Test Tracking JS',
+                'channel' => $channel,
+                'tracking_js_init' => $this->getParameter('campaignchain_core.tracking.js_init'),
+                'tracking_js_route' => $trackingJsRoute,
+                'is_old_tracking_js_route' => $old,
+            ));
+    }
+    
     public function newApiAction(Request $request, $channel)
     {
         $hasError = false;
@@ -31,6 +121,8 @@ class TrackingController extends Controller
         } else {
             $logger = $this->get('logger');
         }
+
+        $logger->info('-------');
         $logger->info('Start tracking');
 
         // Check whether the channel has access to tracking.
@@ -56,25 +148,45 @@ class TrackingController extends Controller
         }
 
         // Check whether required parameters have been provided.
-        $target = $request->get('target');
         if(!$request->get('source')){
             $hasError = true;
             $msg = 'URL of source Location missing.';
-        } elseif(!$target){
+        } elseif(!$request->get('target')){
             $hasError = true;
             $msg = 'URL of target Location missing.';
         }
-
         if($hasError){
             $logger->error($msg);
             return $this->errorResponse($msg, $request);
         }
 
+        $source = $request->get('source');
+        $target = $request->get('target');
+        $trackingIdName = $request->get('id_name');
+        $logger->info('Tracking ID name: '.$trackingIdName);
+        $trackingIdValue = $request->get('id_value');
+        $logger->info('Tracking ID value: '.$trackingIdValue);
+        $trackingAlias = $request->get('alias');
+        $logger->info('Tracking Alias: '.$trackingAlias);
+
+        if(
+            $this->getParameter('campaignchain_core.tracking.js_mode') == 'dev' ||
+            $this->getParameter('campaignchain_core.tracking.js_mode') == 'dev-stay'
+        ){
+            $source = ParserUtil::removeUrlParam($source, self::TRACKING_REPORT_BASE_URL_NAME);
+            $target = ParserUtil::removeUrlParam($target, self::TRACKING_REPORT_BASE_URL_NAME);
+        }
+
+        $sourceUrl = ParserUtil::removeUrlParam($source, $trackingIdName);
+        $targetUrl = ParserUtil::removeUrlParam($target, $trackingIdName);
+
+        $logger->info('Source: '.$sourceUrl);
+        $logger->info('Target: '.$targetUrl);
+
         // Check if URLs are valid.
         $constraint = new Url();
 
-        $constraint->message = "Source Location '".$request->get('source')."' is not a valid URL.";
-        $source = $request->get('source');
+        $constraint->message = "Source Location '".$source."' is not a valid URL.";
         $errors = $this->get('validator')->validateValue(
             $source,
             $constraint
@@ -111,42 +223,66 @@ class TrackingController extends Controller
             $msg = 'Mailto links are not tracked';
         }
 
-
         if($hasError){
             $logger->error($msg);
             return $this->errorResponse($msg, $request);
         }
 
         // Check whether the Tracking ID name has been provided.
-        if($request->get('id_name') == null){
+        if($trackingIdName == null){
             $msg = 'No Tracking ID name provided.';
             $logger->error($msg);
             return $this->errorResponse($msg, $request);
         }
 
         // Check whether the Tracking ID name is correct.
-        if($request->get('id_name') != CTAService::TRACKING_ID_NAME){
-            $msg = 'Provided Tracking ID name ("'.$request->get('id_name').'") does not match, should be "'.CTAService::TRACKING_ID_NAME.'".';
+        if(
+            $trackingIdName != $this->getParameter('campaignchain_core.tracking.id_name') &&
+            $trackingIdName != 'campaignchain-id'
+        ){
+            $msg = 'Provided Tracking ID name ("'.$trackingIdName.'") does not match, should be "'.$this->getParameter('campaignchain_core.tracking.id_name').'".';
             $logger->error($msg);
             return $this->errorResponse($msg, $request);
         }
 
-        if($request->get('id_value') != null){
-            $trackingId = $request->get('id_value');
+        if($trackingIdValue != null){
 
             // Does the CTA for the provided Tracking ID exist?
+            /** @var CTA $cta */
             $cta = $this->getDoctrine()
                 ->getRepository('CampaignChainCoreBundle:CTA')
-                ->findOneByTrackingId($trackingId);
+                ->findOneByTrackingId($trackingIdValue);
 
             if (!$cta) {
-                $msg = 'Unknown CTA Tracking ID "'.$trackingId.'".';
+                $msg = 'Unknown CTA Tracking ID "'.$trackingIdValue.'".';
                 $logger->error($msg);
                 return $this->errorResponse($msg, $request);
             }
 
-            // TODO: Set Referer info by going CTA -> Operation -> Location.
-            $referrerLocation = $cta->getOperation()->getLocations()[0];
+            // Get the referrer Location.
+            $em = $this->getDoctrine()->getManager();
+            /** @var QueryBuilder $qb */
+            $qb = $em->createQueryBuilder();
+            $qb->select('l')
+                ->from('CampaignChain\CoreBundle\Entity\Location', 'l')
+                ->from('CampaignChain\CoreBundle\Entity\CTA', 'cta')
+                ->where('l.operation = :operation')
+                ->andWhere('l.id != cta.location')
+                ->andWhere('cta.operation = l.operation')
+                ->andWhere('(l.id = :activityLocation OR l.parent = :activityLocation)')
+                ->andWhere('l.status = :status')
+                ->setParameter('operation', $cta->getOperation())
+                ->setParameter('activityLocation', $cta->getOperation()->getActivity()->getLocation())
+                ->setParameter('status', Medium::STATUS_ACTIVE);
+            $query = $qb->getQuery();
+
+            try {
+                $referrerLocation = $query->getSingleResult();
+            } catch(\Exception $e) {
+                $msg = Response::HTTP_INTERNAL_SERVER_ERROR.': Multiple referrers are not possible.';
+                $logger->error($msg);
+                return $this->errorResponse($msg, $request);
+            }
 
             if(!$referrerLocation){
                 $msg = Response::HTTP_INTERNAL_SERVER_ERROR.': No referrer Location.';
@@ -154,21 +290,47 @@ class TrackingController extends Controller
                 return $this->errorResponse($msg, $request);
             }
 
-            if($request->get('source') == $target){
+            $sourceLocation = null;
+
+            if($sourceUrl == $targetUrl){
+                $logger->info('Source URL == target URL.');
                 /*
                  * If the source equals the target, then the source is actually
                  * an Activity's CTA.
                  */
-                $sourceUrl = $referrerLocation->getUrl();
-                $sourceLocation = $referrerLocation;
-                // Remove the Tracking ID from the URL.
-                $targetUrl = ParserUtil::removeUrlParam($target, CTAService::TRACKING_ID_NAME);
-
-            } else {
-                // Remove the Tracking ID from the URL.
-                $sourceUrl = ParserUtil::removeUrlParam($request->get('source'), CTAService::TRACKING_ID_NAME);
+                $sourceUrl = $cta->getLocation()->getUrl();
                 $sourceLocation = $cta->getLocation();
-                $targetUrl = $target;
+                $targetLocation = $cta->getLocation();
+            } else {
+                $logger->info('Source URL != target URL.');
+
+                $sourceLocation = $cta->getLocation();
+                /*
+                 * Check if the target URL is in a connected Channel. If yes, add
+                 * as new Location if supported by module.
+                 */
+                /** @var LocationService $locationService */
+                $locationService = $this->container->get('campaignchain.core.location');
+                try {
+                    $logger->info('Searching for matching Location or creating new one.');
+                    $targetLocation = $locationService->findLocationByUrl($targetUrl, $cta->getOperation(), $trackingAlias);
+                    
+                    if($targetLocation){
+                        $logger->info(
+                            'Found target Location with bundle '.
+                            $targetLocation->getLocationModule()->getBundle()->getName().
+                            ' and module '.
+                            $targetLocation->getLocationModule()->getIdentifier().
+                            '.'
+                        );
+                    } else {
+                        $logger->info('No matching Location found, nor a new one created.');
+                    }
+                } catch (\Exception $e) {
+                    $msg = Response::HTTP_INTERNAL_SERVER_ERROR.': '.$e->getMessage();
+                    $logger->error($msg);
+                    return $this->errorResponse($msg, $request);
+                }
             }
 
 //            /*
@@ -176,7 +338,7 @@ class TrackingController extends Controller
 //             * the one passed to this API.
 //             */
 //            if($cta->getUrl() != $sourceUrl){
-//                $msg = Response::HTTP_BAD_REQUEST.': Provided source URL "'.$sourceUrl.'" does not match URL for Tracking ID "'.$trackingId.'".';
+//                $msg = Response::HTTP_BAD_REQUEST.': Provided source URL "'.$sourceUrl.'" does not match URL for Tracking ID "'.$trackingIdName.'".';
 //                $logger->error($msg);
 //                $response = new Response($msg);
 //                return $response->setStatusCode(Response::HTTP_BAD_REQUEST);
@@ -191,13 +353,6 @@ class TrackingController extends Controller
 //                $response = new Response('A Location does not exist for URL "'.$sourceUrl.'".');
 //                return $response->setStatusCode(Response::HTTP_BAD_REQUEST);
 //            }
-
-            /*
-             * Check if the target URL is in a connected Channel. If yes, add
-             * as new Location if supported by module.
-             */
-            $locationService = $this->container->get('campaignchain.core.location');
-            $targetLocation = $locationService->findLocationByUrl($targetUrl, $cta->getOperation());
 
             // Add new CTA to report.
             $reportCTA = new ReportCTA();
@@ -216,6 +371,8 @@ class TrackingController extends Controller
             if($targetLocation){
                 $reportCTA->setTargetName($targetLocation->getName());
                 $reportCTA->setTargetLocation($targetLocation);
+            } else {
+                $reportCTA->setTargetName(ParserUtil::getHTMLTitle($targetUrl));
             }
             $reportCTA->setTime();
 
@@ -223,13 +380,8 @@ class TrackingController extends Controller
             $em->persist($reportCTA);
             $em->flush();
 
-            $logger->info('-------');
-            $logger->info('Tracking data:');
-            $logger->info('Tracking ID: '.$trackingId);
-            $logger->info('Source: '.$sourceUrl);
-            $logger->info('Target: '.$targetUrl);
-            $logger->info('-------');
             $logger->info('Done tracking');
+            $logger->info('-------');
 
             /*
              * Set the target's affiliation with CampaignChain in the
@@ -244,7 +396,7 @@ class TrackingController extends Controller
              *              Location which is _not_ connected with
              *              CampaignChain.
              */
-            if($request->get('source') == $target){
+            if($source == $target){
                 $targetAffiliation = 'connected';
             } elseif($reportCTA->getTargetLocation()){
                 if($reportCTA->getTargetLocation()->getChannel()->getTrackingId()

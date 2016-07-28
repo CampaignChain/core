@@ -1,11 +1,18 @@
 <?php
 /*
- * This file is part of the CampaignChain package.
+ * Copyright 2016 CampaignChain, Inc. <info@campaignchain.com>
  *
- * (c) CampaignChain, Inc. <info@campaignchain.com>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 namespace CampaignChain\CoreBundle\Command;
@@ -14,6 +21,7 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -29,79 +37,25 @@ class ModuleUpdateCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('campaignchain:module:update')
+            ->setName('campaignchain:update:module')
             ->setDescription('Updates modules.')
             ->setHelp(<<<EOT
 The <info>campaignchain:module:update</info> command updates CampaignChain modules:
 
   <info>php app/console campaignchain:module:update</info>
-
-To update only the configuration provided by the modules that have already been
-downloaded, then use the <comment>--config-only</comment> option.
 EOT
-            )
-            ->addOption(
-                'config-only',
-                null,
-                InputOption::VALUE_NONE,
-                'Register config.yml files of all modules.'
-            )
-            ->addOption(
-                'routing-only',
-                null,
-                InputOption::VALUE_NONE,
-                'Register routing.yml files of all modules.'
-            )
-            ->addOption(
-                'class-only',
-                null,
-                InputOption::VALUE_NONE,
-                'Register bundle classes of all modules in AppKernel.php.'
-            )
-            ->addOption(
-                'security-only',
-                null,
-                InputOption::VALUE_NONE,
-                'Register security.yml files of all modules.'
             );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if (
-            $input->getOption('config-only') ||
-            $input->getOption('routing-only') ||
-            $input->getOption('class-only') ||
-            $input->getOption('security-only')
-        ) {
-            $installer = $this->getContainer()->get('campaignchain.core.module.installer');
-            $installer->setSkipVersion(true);
-            $installer->getNewBundles();
+        $io = new SymfonyStyle($input, $output);
 
-            $kernel = $this->getContainer()->get('campaignchain.core.module.kernel');
-            if($input->getOption('config-only')){
-                $types = array('configs' => true);
-                $output->writeln('Registering config.yml files of all CampaignChain modules');
-            } elseif($input->getOption('routing-only')){
-                $types = array('routings' => true);
-                $output->writeln('Registering routing.yml files of all CampaignChain modules');
-            } elseif($input->getOption('class-only')){
-                $types = array('classes' => true);
-                $output->writeln('Registering bundle classes of all CampaignChain modules in AppKernel.php.');
-            } elseif($input->getOption('security-only')) {
-                $types = array('security' => true);
-                $output->writeln('Registering security.yml files of all CampaignChain modules');
-            }
-            $kernel->register($installer->getKernelConfig(), $types);
-            $output->writeln('Done');
-        } else {
-            $this->getContainer()->enterScope('request');
-            $this->getContainer()->set('request', new Request(), 'request');
-            $output->writeln('Updating CampaignChain system registry for all modules');
-            $installer = $this->getContainer()->get('campaignchain.core.module.installer');
-//            $installer->setSkipVersion(true);
-            $installer->install();
-            $output->writeln('Done');
-        }
+        $installer = $this->getContainer()->get('campaignchain.core.module.installer');
+        $installer->install($io);
+
+        $io->success('CampaignChain modules database tables are updated');
+
+        return;
     }
 }

@@ -1,11 +1,18 @@
 <?php
 /*
- * This file is part of the CampaignChain package.
+ * Copyright 2016 CampaignChain, Inc. <info@campaignchain.com>
  *
- * (c) CampaignChain, Inc. <info@campaignchain.com>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 namespace CampaignChain\CoreBundle\Util;
@@ -21,13 +28,26 @@ class ParserUtil
 
     static function getHTMLTitle($website, $page = null)
     {
+        if(self::isSameHost($website)){
+            $urlParts = parse_url($website);
+            if(isset($urlParts['path'])){
+                return $urlParts['path'];
+            } else {
+                return '/';
+            }
+        }
+
         if($page == null){
             $page = $website;
         }
         // Grab the HTML
         $client = new Client($website);
         $request = $client->get($page);
-        $response = $request->send();
+        try {
+            $response = $request->send();
+        } catch (\Exception $e) {
+            return $website;
+        }
         // Crawl the DOM tree
         $crawler = new Crawler($response->getBody(true));
         return $crawler->filter('title')->first()->text();
@@ -75,7 +95,47 @@ class ParserUtil
      */
     static function removeUrlParam($url, $key)
     {
-        return preg_replace('/[\?|&]'.$key.'=[a-zA-Z0-9]*$|'.$key.'=[a-zA-Z0-9]*[&]/', '', $url);
+        $url = self::completeLocalPath($url);
+
+        // If not a valid URL, return false.
+        if(!self::validateUrl($url)){
+            throw new \Exception('Invalid URL '.$url);
+        }
+
+        $urlParts = parse_url($url);
+
+        // If the URL has no query string, we're done.
+        if(!isset($urlParts['query'])){
+            return $url;
+        } else {
+            $url = str_replace('?'.$urlParts['query'], '', $url);
+        }
+
+        // Remove hash before we parse for the parameter.
+        if(isset($urlParts['fragment'])) {
+            $url = str_replace('#'.$urlParts['fragment'], '', $url);
+        }
+
+        parse_str( $urlParts['query'], $queryParts );
+        if(isset($queryParts[$key])) {
+            unset($queryParts[$key]);
+        }
+
+        $urlParts['query'] = '';
+
+        if(is_array($queryParts) && count($queryParts)) {
+            foreach ($queryParts as $paramKey => $paramVal) {
+                $urlParts['query'] .= $paramKey . '=' . $paramVal . '&';
+            }
+            $urlParts['query'] = '?'.rtrim($urlParts['query'], '&');
+            $url = $url.$urlParts['query'];
+        }
+
+        if(isset($urlParts['fragment'])){
+            $url .= '#'.$urlParts['fragment'];
+        }
+
+        return $url;
     }
 
     /*
@@ -225,7 +285,7 @@ class ParserUtil
     static function validateUrl($url)
     {
         if(!filter_var($url, FILTER_VALIDATE_URL)) {
-            throw new \Exception('Invalid URL');
+            return false;
         }
 
         return true;
@@ -286,5 +346,66 @@ class ParserUtil
         }
 
         return $text;
+    }
+
+    static function urlExists($url)
+    {
+        // If not a valid URL, return false.
+        if(!self::validateUrl($url)){
+            return false;
+        }
+
+        // Avoid loop of get_headers() requests if same host.
+        if(self::isSameHost($url)){
+            return true;
+        }
+
+        try {
+            $expandedUrlHeaders = get_headers($url);
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        $status = $expandedUrlHeaders[0];
+
+        if(strpos($status,"404")) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Avoid loop of get_headers() requests if same host.
+     *
+     * @param $url
+     * @return bool
+     */
+    static function isSameHost($url)
+    {
+        $urlParts = parse_url($url);
+        if($_SERVER['SERVER_NAME'] == $urlParts['host']){
+            return true;
+        }
+
+        return false;
+    }
+
+    static function completeLocalPath($url)
+    {
+        // If no scheme and host included, then it's a URL on the same host.
+        $urlParts = parse_url($url);
+
+        if(!isset($urlParts['host'])){
+            if(isset($_SERVER['HTTPS']) && 'on' === $_SERVER['HTTPS']){
+                $scheme = 'https';
+            } else {
+                $scheme = 'http';
+            }
+
+            $url = $scheme.'://'.$_SERVER['HTTP_HOST'].$url;
+        }
+
+        return $url;
     }
 }

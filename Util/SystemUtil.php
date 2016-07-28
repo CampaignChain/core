@@ -1,11 +1,18 @@
 <?php
 /*
- * This file is part of the CampaignChain package.
+ * Copyright 2016 CampaignChain, Inc. <info@campaignchain.com>
  *
- * (c) CampaignChain, Inc. <info@campaignchain.com>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 namespace CampaignChain\CoreBundle\Util;
@@ -21,7 +28,7 @@ class SystemUtil
 
     static function getInstallFilePath()
     {
-        return self::getRootDir().'app/config/campaignchain/.install';
+        return self::getRootDir().'app/campaignchain/.install';
     }
 
     /**
@@ -78,18 +85,36 @@ class SystemUtil
     public static function getConfigFiles()
     {
         $configFiles = array();
-        $symfonyConfigDir = self::getRootDir().'app'.DIRECTORY_SEPARATOR.
+        $symfonyConfigDir =
+            self::getRootDir().'app'.DIRECTORY_SEPARATOR.
+            'config';
+        $campaignchainConfigDir =
+            self::getRootDir().'app'.DIRECTORY_SEPARATOR.
+            'campaignchain'.DIRECTORY_SEPARATOR.
             'config';
 
+        $configFiles['kernel_symfony'] =
+            self::getRootDir().'app'.DIRECTORY_SEPARATOR.'AppKernel.php';
+        
+        $configFiles['bundles_dist'] = self::getRootDir().'app'.DIRECTORY_SEPARATOR.
+            'AppKernel_campaignchain.php';
         $configFiles['bundles'] = self::getRootDir().'app'.DIRECTORY_SEPARATOR.
-            'campaignchain_bundles.php';
-        $configFiles['config'] = $symfonyConfigDir.DIRECTORY_SEPARATOR.
             'campaignchain'.DIRECTORY_SEPARATOR.
-            'config_bundles.yml';
-        $configFiles['routing'] = $symfonyConfigDir.DIRECTORY_SEPARATOR.
+            'AppKernel.php';
+        
+        $configFiles['config_dist'] = $symfonyConfigDir.DIRECTORY_SEPARATOR.
+            'config_campaignchain_imports.yml.dist';
+        $configFiles['config'] = $campaignchainConfigDir.DIRECTORY_SEPARATOR.
+            'imports.yml';
+        
+        $configFiles['routing_dist'] = $symfonyConfigDir.DIRECTORY_SEPARATOR.
+            'routing_campaignchain.yml.dist';
+        $configFiles['routing'] = $campaignchainConfigDir.DIRECTORY_SEPARATOR.
             'routing.yml';
-        $configFiles['security'] = $symfonyConfigDir.DIRECTORY_SEPARATOR.
-            'campaignchain'.DIRECTORY_SEPARATOR.
+        
+        $configFiles['security_dist'] = $symfonyConfigDir.DIRECTORY_SEPARATOR.
+            'security_campaignchain.yml.dist';
+        $configFiles['security'] = $campaignchainConfigDir.DIRECTORY_SEPARATOR.
             'security.yml';
 
         return $configFiles;
@@ -99,23 +124,23 @@ class SystemUtil
      * Creates the CampaignChain app configuration files based on the default
      * files or overwrites existing ones with the default.
      */
-    public static function initApp()
+    public static function initKernel()
     {
         $configFiles = self::getConfigFiles();
 
         $fs = new Filesystem();
 
         if(!$fs->exists($configFiles['bundles'])){
-            $fs->copy($configFiles['bundles'].'.dist', $configFiles['bundles'], true);
+            $fs->copy($configFiles['bundles_dist'], $configFiles['bundles'], true);
         }
         if(!$fs->exists($configFiles['config'])){
-            $fs->copy($configFiles['config'].'.dist', $configFiles['config'], true);
+            $fs->copy($configFiles['config_dist'], $configFiles['config'], true);
         }
         if(!$fs->exists($configFiles['routing'])){
-            $fs->copy($configFiles['routing'].'.dist', $configFiles['routing'], true);
+            $fs->copy($configFiles['routing_dist'], $configFiles['routing'], true);
         }
         if(!$fs->exists($configFiles['security'])){
-            $fs->copy($configFiles['security'].'.dist', $configFiles['security'], true);
+            $fs->copy($configFiles['security_dist'], $configFiles['security'], true);
         }
     }
 

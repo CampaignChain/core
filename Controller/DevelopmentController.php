@@ -1,25 +1,27 @@
 <?php
 /*
- * This file is part of the CampaignChain package.
+ * Copyright 2016 CampaignChain, Inc. <info@campaignchain.com>
  *
- * (c) CampaignChain, Inc. <info@campaignchain.com>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 namespace CampaignChain\CoreBundle\Controller;
 
-use CampaignChain\CoreBundle\Fixture\UserProcessor;
+use CampaignChain\CoreBundle\Fixture\FileLoader;
 use CampaignChain\CoreBundle\Util\SystemUtil;
-use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Filesystem\Filesystem;
-use Sonata\AdminBundle\Command\SetupAclCommand;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Finder\Finder;
 
 class DevelopmentController extends Controller
@@ -65,36 +67,20 @@ class DevelopmentController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $userProcessor = new UserProcessor(
-                $dataRoot, $this->get('campaignchain.core.user'),
-                $this->get('liip_imagine.mime_type_guesser'), $this->get('liip_imagine.extension_guesser')
-            );
-            // Create Alice manager and fixture set
-            $dataFilePath = $form->get('dataFile')->getData();
-            $manager = $this->get('h4cc_alice_fixtures.manager');
-            $manager->addProcessor($userProcessor);
-            $set = $manager->createFixtureSet();
-
-            // Add the fixture files
-            $set->addFile($dataFilePath, 'yaml');
+            $files[] = $form->get('dataFile')->getData();
 
             // Include the credentials file provided by the user
             if($form['includeFile']->getData()){
                 $includeFileName = mt_rand().'.yml';
                 $form['includeFile']->getData()->move(sys_get_temp_dir(), $includeFileName);
-                $includeFile = sys_get_temp_dir().DIRECTORY_SEPARATOR.$includeFileName;
-                $set->addFile($includeFile, 'yaml');
+                $includeFile = $files[] =
+                    sys_get_temp_dir().DIRECTORY_SEPARATOR.$includeFileName;
             }
 
-            $set->setDoDrop($form->get('drop')->getData());
-            // TODO Keep Module data intact
-            $em = $this->getDoctrine()->getManager();
-            $bundles =   $em->getRepository("CampaignChain\CoreBundle\Entity\Bundle")->findAll();
-            $modules = $em->getRepository("CampaignChain\CoreBundle\Entity\Module")->findAll();
+            /** @var FileLoader $fixtureService */
+            $fixtureService = $this->get('campaignchain.core.fixture');
 
-            $set->setDoPersist(true);
-            $set->setSeed(1337 + 42);
-            if($manager->load($set)){
+            if($fixtureService->load($files, $form->get('drop')->getData())){
                 // Clean up include file
                 if($form['includeFile']->getData()){
                     $fs = new Filesystem();
@@ -105,15 +91,6 @@ class DevelopmentController extends Controller
                     'success',
                     'Sample data was loaded successfully.'
                 );
-
-                // TODO: Restore modules data
-                foreach($bundles as $bundle){
-                    $em->persist($bundle);
-                }
-                foreach($modules as $module){
-                    $em->persist($module);
-                }
-                $em->flush();
 
                 // Check if the current user has been overwritten by the
                 // sample data.
@@ -135,6 +112,11 @@ class DevelopmentController extends Controller
                     $this->get('session')->set('campaignchain.dateFormat', $user->getDateFormat());
                     $this->get('session')->set('campaignchain.timeFormat', $user->getTimeFormat());
                 }
+            } elseif($fixtureService->getException()){
+                $this->get('session')->getFlashBag()->add(
+                    'warning',
+                    $fixtureService->getException()->getMessage()
+                );
             }
         }
 

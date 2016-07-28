@@ -1,11 +1,18 @@
 <?php
 /*
- * This file is part of the CampaignChain package.
+ * Copyright 2016 CampaignChain, Inc. <info@campaignchain.com>
  *
- * (c) CampaignChain, Inc. <info@campaignchain.com>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 namespace CampaignChain\CoreBundle\Twig;
@@ -102,7 +109,12 @@ class CampaignChainCoreExtension extends \Twig_Extension
         } elseif(strpos($class, 'CoreBundle\Entity\Channel') !== false){
             $bundlePath = $object->getChannelModule()->getBundle()->getWebAssetsPath();
         } elseif(strpos($class, 'CoreBundle\Entity\Activity') !== false){
-            $bundlePath = $object->getChannel()->getChannelModule()->getBundle()->getWebAssetsPath();
+            if(!$object->getChannel()){
+                // Activity is not related to a Channel.
+                $bundlePath = $object->getActivityModule()->getBundle()->getWebAssetsPath();
+            } else {
+                $bundlePath = $object->getChannel()->getChannelModule()->getBundle()->getWebAssetsPath();
+            }
         } else {
             return false;
         }
@@ -124,7 +136,11 @@ class CampaignChainCoreExtension extends \Twig_Extension
         } elseif(strpos($class, 'CoreBundle\Entity\Channel') !== false){
             $channelModule = $object->getChannelModule();
         } elseif(strpos($class, 'CoreBundle\Entity\Activity') !== false){
-            $channelModule = $object->getChannel()->getChannelModule();
+            if(!$object->getChannel()){
+                $channelModule = $object->getActivityModule();
+            } else {
+                $channelModule = $object->getChannel()->getChannelModule();
+            }
         } else {
             return false;
         }
@@ -175,16 +191,21 @@ class CampaignChainCoreExtension extends \Twig_Extension
                 array('id' => $object->getId()),
                 true
             );
-            $tplVars['icon_path'] = $this->mediumIcon($object->getLocation());
-            $tplVars['context_icon_path'] = $this->mediumContext($object->getLocation());
+            if(!$object->getLocation()){
+                $bundleWithImages = $object;
+            } else {
+                $bundleWithImages = $object->getLocation();
+            }
+            $tplVars['icon_path'] = $this->mediumIcon($bundleWithImages);
+            $tplVars['context_icon_path'] = $this->mediumContext($bundleWithImages);
             if(!$tplVars['icon_path']){
                 $tplVars['icon_size'] = 32;
-                $tplVars['icon_path'] = $this->mediumContext($object->getLocation(), $tplVars['icon_size']);
+                $tplVars['icon_path'] = $this->mediumContext($bundleWithImages, $tplVars['icon_size']);
                 $tplVars['context_icon_path'] = null;
             }
             if($teaserOptions['activity_name'] == 'activity'){
                 $tplVars['name'] = $object->getName();
-            } else {
+            } elseif($object->getLocation()) {
                 $tplVars['name'] = $object->getLocation()->getName();
             }
             if($teaserOptions['show_trigger'] == true){
@@ -430,7 +451,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
             "campaignchain_user_timezone_offset" => $this->getGlobalTimezoneOffset(),
             "campaignchain_user_timezone_abbreviation" => $this->getGlobalTimezoneAbbreviation(),
             'campaignchain_system' => $this->system(),
-            'campaignchain_dev' => $this->container->getParameter('campaignchain.dev_mode'),
+            'campaignchain_env' => $this->container->getParameter('campaignchain.env'),
         );
     }
 

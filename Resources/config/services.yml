@@ -1,9 +1,16 @@
-# This file is part of the CampaignChain package.
+# Copyright 2016 CampaignChain, Inc. <info@campaignchain.com>
 #
-# (c) CampaignChain, Inc. <info@campaignchain.com>
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# For the full copyright and license information, please view the LICENSE
-# file that was distributed with this source code.
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 parameters:
 
@@ -25,8 +32,8 @@ parameters:
     twig.exception_listener.controller: 'campaignchain.core.controller.exception:showAction'
 
     # Defaults for these are set by CampaignChainCoreExtension
-    campaignchain.core.upload_storage.path: ~
-    campaignchain.core.upload_storage.url_prefix: ~
+    campaignchain_core.upload_storage.path: ~
+    campaignchain_core.upload_storage.url_prefix: ~
 
 services:
 
@@ -108,20 +115,20 @@ services:
         tags:
             - { name: kernel.event_listener, event: console.exception }
 
-    campaign_chain_core.listener.external_exception:
+    campaignchain.core.listener.external_exception:
         class: CampaignChain\CoreBundle\EventListener\ExternalExceptionListener
         arguments:
             - '@monolog.logger.external'
         tags:
             - { name: kernel.event_listener, event: kernel.exception }
 
-    campaign_chain_core.listener.password_reset:
+    campaignchain.core.listener.password_reset:
         class: CampaignChain\CoreBundle\EventListener\PasswordResetListener
         arguments: ['@router']
         tags:
             - { name: kernel.event_subscriber }
 
-    campaign_chain_core.listener.user_date_time:
+    campaignchain.core.listener.user_date_time:
         class: CampaignChain\CoreBundle\EventListener\UserDateTimeListener
         tags:
             - { name: kernel.event_subscriber }
@@ -187,9 +194,12 @@ services:
     campaignchain.core.cta:
         class: CampaignChain\CoreBundle\EntityService\CTAService
         arguments:
+            - '%campaignchain_core.tracking.id_name%'
             - '@doctrine.orm.entity_manager'
-            - '@campaign_chain_core.service.url_shortener'
+            - '@campaignchain.core.service.url_shortener'
             - '@campaignchain.core.location'
+            - %campaignchain_core.tracking.js_mode%
+            - %router.request_context.scheme%://%router.request_context.host%
 
     campaignchain.core.user:
         class: CampaignChain\CoreBundle\EntityService\UserService
@@ -202,7 +212,7 @@ services:
         arguments:
             - '@doctrine.orm.entity_manager'
 
-    campaign_chain_core.service.url_shortener:
+    campaignchain.core.service.url_shortener:
         class: CampaignChain\CoreBundle\Service\UrlShortener\UrlShortenerService
         arguments:
             - '@mremi.url_shortener.provider.bitly.bitly_provider'
@@ -318,19 +328,11 @@ services:
         arguments:
             - '%kernel.root_dir%'
 
-    campaignchain.core.install.wizard.step.system_modules:
-        class: CampaignChain\CoreBundle\Wizard\Install\Step\SystemModulesStep
-        public: false
-        calls:
-            - [setServices, ['@campaignchain.core.util.command', '@campaignchain.core.module.installer']]
-        tags:
-            - { name: campaignchain.install.step, priority: 0 }
-
     campaignchain.core.install.wizard.step.sfsecret:
         class: CampaignChain\CoreBundle\Wizard\Install\Step\SfSecretStep
         public: false
         tags:
-            - { name: campaignchain.install.step, priority: 100 }
+            - { name: campaignchain.install.step, priority: 0 }
 
     campaignchain.core.install.wizard.step.bitly:
         class: CampaignChain\CoreBundle\Wizard\Install\Step\BitlyStep
@@ -338,7 +340,7 @@ services:
         calls:
             - [setServices, ['@campaignchain.core.util.command']]
         tags:
-            - { name: campaignchain.install.step, priority: 200 }
+            - { name: campaignchain.install.step, priority: 100 }
 
     campaignchain.core.install.wizard.step.admin:
         class: CampaignChain\CoreBundle\Wizard\Install\Step\AdminStep
@@ -346,7 +348,7 @@ services:
         calls:
             - [setServices, ['@campaignchain.core.util.command']]
         tags:
-            - { name: campaignchain.install.step, priority: 300 }
+            - { name: campaignchain.install.step, priority: 200 }
 
     # Voter
     campaignchain.core.voter.install:
@@ -361,28 +363,46 @@ services:
         class: CampaignChain\CoreBundle\Security\Authorization\Voter\DevVoter
         public: false
         arguments:
-            - '%campaignchain.dev_mode%'
+            - '%campaignchain.env%'
         tags:
             - { name: security.voter }
 
     # Modules
+    campaignchain.core.module.bundle:
+            class: CampaignChain\CoreBundle\Module\BundleConfig
+            arguments:
+                - '@campaignchain.core.module.locator'
+                - '@doctrine.orm.default_entity_manager'
+
+    campaignchain.core.module.locator:
+        class: CampaignChain\CoreBundle\Module\BundleLocator
+        arguments:
+            - '%kernel.root_dir%'
+            - '@campaignchain.core.module.package'
+
     campaignchain.core.module.installer:
         class: CampaignChain\CoreBundle\Module\Installer
         arguments:
             - '@doctrine.orm.entity_manager'
-            - '@service_container'
+            - '@campaignchain.core.module.bundle'
+            - '%kernel.root_dir%'
+            - '@campaignchain.core.system'
+            - '@campaignchain.core.module.kernel'
+            - '@campaignchain.core.module.repository'
+            - '@logger'
 
     campaignchain.core.module.package:
         class: CampaignChain\CoreBundle\Module\Package
         arguments:
             - '%kernel.root_dir%'
-            - '%campaignchain.dev_mode%'
+            - '%campaignchain.env%'
 
     campaignchain.core.module.repository:
         class: CampaignChain\CoreBundle\Module\Repository
         arguments:
-            - '@doctrine.orm.entity_manager'
-            - '%campaignchain.dev_mode%'
+            - '@campaignchain.core.system'
+            - '@campaignchain.core.module.package'
+            - '%campaignchain.env%'
 
     campaignchain.core.module.composer:
         class: CampaignChain\CoreBundle\Module\Composer
@@ -395,8 +415,6 @@ services:
         class: CampaignChain\CoreBundle\Module\Kernel
         arguments:
             - '%kernel.root_dir%'
-            - '@campaignchain.core.util.command'
-            - '@logger'
 
     # Menu
     campaignchain.core.menu.list_group_renderer:
@@ -449,8 +467,8 @@ services:
     campaignchain.core.service.file_upload:
         class: CampaignChain\CoreBundle\Service\FileUploadService
         arguments:
-            - '%campaignchain.core.upload_storage.path%'
-            - '%campaignchain.core.upload_storage.url_prefix%'
+            - '%campaignchain_core.upload_storage.path%'
+            - '%campaignchain_core.upload_storage.url_prefix%'
             - '@gaufrette.images_filesystem'
             - '@liip_imagine.cache.manager'
 
@@ -463,6 +481,16 @@ services:
         class: CampaignChain\CoreBundle\Util\CommandUtil
         arguments:
             - '@kernel'
+
+    # Fixtures aka sample data
+    campaignchain.core.fixture:
+        class: CampaignChain\CoreBundle\Fixture\FileLoader
+        arguments:
+            - '@campaignchain.core.user'
+            - '@h4cc_alice_fixtures.manager'
+            - '@doctrine.orm.default_entity_manager'
+            - '@liip_imagine.mime_type_guesser'
+            - '@liip_imagine.extension_guesser'
 
     # External
     mremi.url_shortener.provider.bitly.bitly_provider:
@@ -480,3 +508,10 @@ services:
 
     campaignchain.core.http_client:
         class: GuzzleHttp\Client
+
+    campaignchain.core.tracking.js.routing_loader:
+        class: CampaignChain\CoreBundle\Routing\TrackingJsLoader
+        arguments:
+            - '%campaignchain.tracking.js_route%'
+        tags:
+            - { name: routing.loader }

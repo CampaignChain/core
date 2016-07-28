@@ -1,27 +1,30 @@
 {#
-This file is part of the CampaignChain package.
+Copyright 2016 CampaignChain, Inc. <info@campaignchain.com>
 
-(c) CampaignChain, Inc. <info@campaignchain.com>
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-For the full copyright and license information, please view the LICENSE
-file that was distributed with this source code.
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 #}
 
 {#
     When a new activity gets created, these variables must be provided by the
     controller:
 
-    - channel_module_bundle
-    - channel_module
     - location
     - campaign
 
     If the activity exists, then it suffices to provide the activity object as
     a variable.
 #}
-{% if channel_module_bundle is not defined %}
-    {% set channel_module_bundle = activity.getChannel().getChannelModule().getBundle() %}
-    {% set channel_module = activity.getChannel().getChannelModule() %}
+{% if campaign is not defined %}
     {% set campaign = activity.getCampaign() %}
     {% set location = activity.getLocation() %}
 {% endif %}
@@ -45,11 +48,13 @@ file that was distributed with this source code.
             <div class="campaignchain-sidebar-data">{{ activity|campaignchain_tpl_trigger_hook }}</div>
         </div>
     {% endif %}
-    {% if location.getUrl() != '' %}
-        <div class="campaignchain-sidebar-item">
-            <h5>Location</h5>
-            <div class="campaignchain-sidebar-icon"><i class="fa fa-globe"></i></div>
-            <div class="campaignchain-sidebar-data"><a href="{{ location.getUrl() }}">{{ location.getUrl() }}</a></div>
-        </div>
+    {% if location is defined and location is not null %}
+        {% if location.getUrl() != '' %}
+            <div class="campaignchain-sidebar-item">
+                <h5>Location</h5>
+                <div class="campaignchain-sidebar-icon"><i class="fa fa-globe"></i></div>
+                <div class="campaignchain-sidebar-data"><a href="{{ location.getUrl() }}">{{ location.getUrl() }}</a></div>
+            </div>
+        {% endif %}
     {% endif %}
 </div>

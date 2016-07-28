@@ -18,6 +18,7 @@
     },
     "require": {
         "php": ">=5.4",
+        "ext-intl": "*",
         "symfony/symfony": "~2.5",
         "doctrine/orm": "2.4.*@dev",
         "doctrine/doctrine-bundle": "~1.2",
@@ -57,7 +58,9 @@
         "friendsofsymfony/rest-bundle": "dev-master",
         "jms/serializer-bundle": "dev-master",
         "mremi/url-shortener": "dev-master",
-        "knplabs/knp-gaufrette-bundle": "^0.3.0"
+        "knplabs/knp-gaufrette-bundle": "^0.3.0",
+        "gkralik/php-uglifyjs": "dev-master",
+        "campaignchain/location-website": "dev-master"
     },
     "autoload": {
         "psr-4": { "CampaignChain\\CoreBundle\\": "" }

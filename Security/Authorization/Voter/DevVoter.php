@@ -1,11 +1,18 @@
 <?php
 /*
- * This file is part of the CampaignChain package.
+ * Copyright 2016 CampaignChain, Inc. <info@campaignchain.com>
  *
- * (c) CampaignChain, Inc. <info@campaignchain.com>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 namespace CampaignChain\CoreBundle\Security\Authorization\Voter;
@@ -18,11 +25,11 @@ class DevVoter implements VoterInterface
 {
     const CAMPAIGNCHAIN_DEV = 'CAMPAIGNCHAIN_DEV';
 
-    private $dev;
+    private $env;
 
-    public function __construct($dev)
+    public function __construct($env)
     {
-        $this->dev = $dev;
+        $this->env = $env;
     }
 
     public function supportsAttribute($attribute)
@@ -58,9 +65,9 @@ class DevVoter implements VoterInterface
         }
 
         /*
-         * If campaignchain.dev_mode is true, then we grant access.
+         * If campaignchain.env is 'dev', then we grant access.
          */
-        if($this->dev){
+        if($this->env == 'dev'){
             return VoterInterface::ACCESS_GRANTED;
         }
 

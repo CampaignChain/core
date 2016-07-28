@@ -1,11 +1,18 @@
 <?php
 /*
- * This file is part of the CampaignChain package.
+ * Copyright 2016 CampaignChain, Inc. <info@campaignchain.com>
  *
- * (c) CampaignChain, Inc. <info@campaignchain.com>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 namespace CampaignChain\CoreBundle\Entity;
@@ -23,14 +30,14 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\DiscriminatorMap( {
  *      "operation" = "SchedulerReportOperation",
  *      "activity" = "SchedulerReportActivity",
- *      "milestone" = "SchedulerReportMilestone"
+ *      "milestone" = "SchedulerReportMilestone",
+ *      "location" = "SchedulerReportLocation"
  * } )
  * @ORM\HasLifecycleCallbacks
  *
  * TODO: Ensure that minimum and only 1 Action is specified each for the start
  *       and end date.
  */
-
 abstract class SchedulerReport extends Meta
 {
     /**
@@ -141,9 +148,9 @@ abstract class SchedulerReport extends Meta
     protected $prolongationInterval;
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -151,32 +158,10 @@ abstract class SchedulerReport extends Meta
     }
 
     /**
-     * Set startDate
-     *
-     * @param \DateTime $startDate
-     * @return ReportOperation
-     */
-    public function setStartDate($startDate)
-    {
-        $this->startDate = $startDate;
-
-        return $this;
-    }
-
-    /**
-     * Get startDate
-     *
-     * @return \DateTime
-     */
-    public function getStartDate()
-    {
-        return $this->startDate;
-    }
-
-    /**
-     * Set prevRun
+     * Set prevRun.
      *
      * @param \DateTime $prevRun
+     *
      * @return SchedulerReport
      */
     public function setPrevRun($prevRun)
@@ -191,17 +176,28 @@ abstract class SchedulerReport extends Meta
      */
     public function persistNextRun()
     {
-        if($this->getInterval() != null){
-            $interval = \DateInterval::createfromdatestring($this->getInterval());
+        if ($this->getInterval() != null) {
+            $interval = \DateInterval::createFromDateString($this->getInterval());
             $nextRun = clone $this->getStartDate();
             $this->setNextRun($nextRun->add($interval));
         }
     }
 
     /**
-     * Set interval
+     * Get interval.
+     *
+     * @return string
+     */
+    public function getInterval()
+    {
+        return $this->interval;
+    }
+
+    /**
+     * Set interval.
      *
      * @param string $interval
+     *
      * @return SchedulerReport
      */
     public function setInterval($interval)
@@ -212,30 +208,31 @@ abstract class SchedulerReport extends Meta
     }
 
     /**
-     * Get interval
+     * Get startDate.
      *
-     * @return string
+     * @return \DateTime
      */
-    public function getInterval()
+    public function getStartDate()
     {
-        return $this->interval;
+        return $this->startDate;
     }
 
     /**
-     * Set nextRun
+     * Set startDate.
      *
-     * @param \DateTime $nextRun
-     * @return ReportOperation
+     * @param \DateTime $startDate
+     *
+     * @return $this
      */
-    public function setNextRun($nextRun)
+    public function setStartDate($startDate)
     {
-        $this->nextRun = $nextRun;
+        $this->startDate = $startDate;
 
         return $this;
     }
 
     /**
-     * Get nextRun
+     * Get nextRun.
      *
      * @return \DateTime
      */
@@ -245,123 +242,56 @@ abstract class SchedulerReport extends Meta
     }
 
     /**
-     * Set endCampaign
+     * Set nextRun.
      *
-     * @param \CampaignChain\CoreBundle\Entity\Campaign $endCampaign
-     * @return SchedulerReport
+     * @param \DateTime $nextRun
+     *
+     * @return $this
      */
-    protected function setEndCampaign(\CampaignChain\CoreBundle\Entity\Campaign $endCampaign = null)
+    public function setNextRun($nextRun)
     {
-        $this->endCampaign = $endCampaign;
+        $this->nextRun = $nextRun;
 
         return $this;
-    }
-
-    /**
-     * Get endCampaign
-     *
-     * @return \CampaignChain\CoreBundle\Entity\Campaign
-     */
-    protected function getEndCampaign()
-    {
-        return $this->endCampaign;
-    }
-
-    /**
-     * Set endMilestone
-     *
-     * @param \CampaignChain\CoreBundle\Entity\Milestone $endMilestone
-     * @return SchedulerReport
-     */
-    protected function setEndMilestone(\CampaignChain\CoreBundle\Entity\Milestone $endMilestone = null)
-    {
-        $this->endMilestone = $endMilestone;
-
-        return $this;
-    }
-
-    /**
-     * Get endMilestone
-     *
-     * @return \CampaignChain\CoreBundle\Entity\Milestone
-     */
-    protected function getEndMilestone()
-    {
-        return $this->endMilestone;
-    }
-
-    /**
-     * Set endActivity
-     *
-     * @param \CampaignChain\CoreBundle\Entity\Activity $endActivity
-     * @return SchedulerReport
-     */
-    protected function setEndActivity(\CampaignChain\CoreBundle\Entity\Activity $endActivity = null)
-    {
-        $this->endActivity = $endActivity;
-
-        return $this;
-    }
-
-    /**
-     * Get endActivity
-     *
-     * @return \CampaignChain\CoreBundle\Entity\Activity
-     */
-    protected function getEndActivity()
-    {
-        return $this->endActivity;
     }
 
     public function setEndAction($endAction)
     {
         $class = get_class($endAction);
 
-        if(strpos($class, 'CoreBundle\Entity\Activity') !== false){
+        if (strpos($class, 'CoreBundle\Entity\Activity') !== false) {
             $this->setEndActivity($endAction);
             $this->setEndDate($endAction->getEndDate());
-        } elseif(strpos($class, 'CoreBundle\Entity\Milestone') !== false){
+        } elseif (strpos($class, 'CoreBundle\Entity\Milestone') !== false) {
             $this->setEndMilestone($endAction);
             $this->setEndDate($endAction->getEndDate());
-        } elseif(strpos($class, 'CoreBundle\Entity\Campaign') !== false){
+        } elseif (strpos($class, 'CoreBundle\Entity\Campaign') !== false) {
             $this->setEndCampaign($endAction);
             $this->setEndDate($endAction->getEndDate());
+        } elseif (strpos($class, 'CoreBundle\Entity\Location') !== false) {
         } else {
-            throw \Exception(
+            throw new \Exception(
                 "End Action is instance of '".$class."'. Must be either instance of "
-                ."Campaign, Milestone or Activity."
+                .'Campaign, Milestone or Activity.'
             );
         }
     }
 
     public function getEndAction()
     {
-        if($this->endActivity != null){
+        if ($this->endActivity != null) {
             return $this->endActivity->getEndDate();
-        } elseif($this->endMilestone != null){
+        } elseif ($this->endMilestone != null) {
             return $this->endMilestone->getEndDate();
-        } elseif($this->endCampaign != null){
+        } elseif ($this->endCampaign != null) {
             return $this->endCampaign->getEndDate();
         }
 
-        throw \Exception('No end Action defined.');
+        throw new \Exception('No end Action defined.');
     }
 
     /**
-     * Set endDate
-     *
-     * @param \DateTime $endDate
-     * @return ReportOperation
-     */
-    public function setEndDate($endDate)
-    {
-        $this->endDate = $endDate;
-
-        return $this;
-    }
-
-    /**
-     * Get endDate
+     * Get endDate.
      *
      * @return \DateTime
      */
@@ -371,9 +301,34 @@ abstract class SchedulerReport extends Meta
     }
 
     /**
-     * Set prolongation
+     * Set endDate.
+     *
+     * @param \DateTime $endDate
+     *
+     * @return $this
+     */
+    public function setEndDate($endDate)
+    {
+        $this->endDate = $endDate;
+
+        return $this;
+    }
+
+    /**
+     * Get prolongation.
+     *
+     * @return string
+     */
+    public function getProlongation()
+    {
+        return $this->prolongation;
+    }
+
+    /**
+     * Set prolongation.
      *
      * @param string $prolongation
+     *
      * @return SchedulerReport
      */
     public function setProlongation($prolongation)
@@ -384,19 +339,20 @@ abstract class SchedulerReport extends Meta
     }
 
     /**
-     * Get prolongation
+     * Get prolongationInterval.
      *
      * @return string
      */
-    public function getProlongation()
+    public function getProlongationInterval()
     {
-        return $this->prolongation;
+        return $this->prolongationInterval;
     }
 
     /**
-     * Set prolongationInterval
+     * Set prolongationInterval.
      *
      * @param string $prolongationInterval
+     *
      * @return SchedulerReport
      */
     public function setProlongationInterval($prolongationInterval)
@@ -407,12 +363,74 @@ abstract class SchedulerReport extends Meta
     }
 
     /**
-     * Get prolongationInterval
+     * Get endCampaign.
      *
-     * @return string
+     * @return Campaign
      */
-    public function getProlongationInterval()
+    protected function getEndCampaign()
     {
-        return $this->prolongationInterval;
+        return $this->endCampaign;
+    }
+
+    /**
+     * Set endCampaign.
+     *
+     * @param Campaign $endCampaign
+     *
+     * @return SchedulerReport
+     */
+    protected function setEndCampaign(Campaign $endCampaign = null)
+    {
+        $this->endCampaign = $endCampaign;
+
+        return $this;
+    }
+
+    /**
+     * Get endMilestone.
+     *
+     * @return Milestone
+     */
+    protected function getEndMilestone()
+    {
+        return $this->endMilestone;
+    }
+
+    /**
+     * Set endMilestone.
+     *
+     * @param Milestone $endMilestone
+     *
+     * @return SchedulerReport
+     */
+    protected function setEndMilestone(Milestone $endMilestone = null)
+    {
+        $this->endMilestone = $endMilestone;
+
+        return $this;
+    }
+
+    /**
+     * Get endActivity.
+     *
+     * @return Activity
+     */
+    protected function getEndActivity()
+    {
+        return $this->endActivity;
+    }
+
+    /**
+     * Set endActivity.
+     *
+     * @param Activity $endActivity
+     *
+     * @return SchedulerReport
+     */
+    protected function setEndActivity(Activity $endActivity = null)
+    {
+        $this->endActivity = $endActivity;
+
+        return $this;
     }
 }

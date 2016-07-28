@@ -1,9 +1,16 @@
-# This file is part of the CampaignChain package.
+# Copyright 2016 CampaignChain, Inc. <info@campaignchain.com>
 #
-# (c) CampaignChain, Inc. <info@campaignchain.com>
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# For the full copyright and license information, please view the LICENSE
-# file that was distributed with this source code.
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 # installation wizard routes
 campaignchain_core_install:
@@ -205,13 +212,17 @@ campaignchain_core_milestone_remove:
 
 # report routes
 campaignchain_core_report:
-    pattern:  /reports/{id}
-    defaults: { _controller: CampaignChainCoreBundle:Report:index, id: 0 }
+    pattern:  /reports
+    defaults: { _controller: CampaignChainCoreBundle:Report:index }
     options:
         campaignchain:
             description: View all reports
             rest:
                 expose: true
+
+campaignchain_core_report_show:
+    pattern:  /report/{id}
+    defaults: { _controller: CampaignChainCoreBundle:Report:show }
 
 campaignchain_core_report_list_cta_locations_per_campaign_api:
     pattern:  /api/private/report/cta/campaign/{id}/locations
@@ -298,20 +309,33 @@ campaignchain_core_location_toggle_status:
     defaults: { _controller: CampaignChainCoreBundle:Location:toggleStatus }
 
 # tracking routes
+campaignchain_core_tracking_js:
+    resource: .
+    type: trackingjs
+
+campaignchain_core_tracking_js_old:
+    pattern:  /bundles/campaignchaincore/js/campaignchain/campaignchain_tracking.js
+    defaults: { _controller: CampaignChainCoreBundle:Tracking:trackingJs }
+
 campaignchain_core_tracking_new_api:
     pattern:  /api/v1/report/cta/new/{channel}
     defaults: { _controller: CampaignChainCoreBundle:Tracking:newApi }
-#    methods:  [POST]
+
+campaignchain_core_tracking_js_test:
+    path:     /test/trackingjs/{channel}/{dev}/{old}
+    defaults: { _controller: CampaignChainCoreBundle:Tracking:testTrackingJs, dev: 1, old: 0 }
+    condition: "request.getScriptName() == '/app_dev.php'"
 
 # developer tools
 campaignchain_development_sample_data:
     pattern:  /development/sample-data
     defaults: { _controller: CampaignChainCoreBundle:Development:sampleData }
+    condition: "request.getScriptName() == '/app_dev.php'"
 
 campaignchain_development_reset_system:
     pattern:  /development/reset-system
     defaults: { _controller: CampaignChainCoreBundle:Development:resetSystem }
-
+    condition: "request.getScriptName() == '/app_dev.php'"
 
 # user management routes
 campaignchain_core_user:
