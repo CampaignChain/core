@@ -38,7 +38,7 @@ class PlanController extends Controller
         $campaignModules = $query->getResult();
 
         return $this->render(
-            'CampaignChainCoreBundle:Plan:index.html.twig',
+            'CampaignChainCoreBundle:Plan/Timeline/Campaign:index.html.twig',
             array(
                 'page_title' => 'Plan Campaigns',
                 'gantt_tasks' => $this->get('campaignchain.core.model.dhtmlxgantt')->getOngoingUpcomingCampaigns(

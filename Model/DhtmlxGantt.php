@@ -110,6 +110,7 @@ class DhtmlxGantt
                 $maxTimelineDate->modify(
                     $this->container->getParameter('campaignchain.max_date_interval')
                 );
+                $parent = null;
 
                 /*
                  * Let's iterate through all the instances of a repeating
@@ -139,6 +140,18 @@ class DhtmlxGantt
                         $data['id'] = (string)$campaign->getId() . '_' . $i . '_campaign';
                         $data['start_date'] = $startDate->format(self::FORMAT_TIMELINE_DATE);
                         $data['end_date'] = $endDate->format(self::FORMAT_TIMELINE_DATE);
+                        /*
+                         * If this is not the first instance of a repeating
+                         * campaign in the timeline, then add the first instance
+                         * as the parent campaign.
+                         */
+                        if(!$parent) {
+                            $foundFirstInstance = true;
+                            $parent = $data['id'];
+
+                        } else {
+                            $data['parent'] = $parent;
+                        }
 
                         $ganttCampaignData[] = $data;
                     }

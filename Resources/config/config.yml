@@ -159,6 +159,12 @@ assetic:
         campaignchain_dhtmlxgantt_pre_init_global_js:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/pre_init_global.js"
+        campaignchain_dhtmlxgantt_pre_init_global_campaign_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/pre_init_global_campaign.js"
+        campaignchain_dhtmlxgantt_pre_init_global_activity_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/pre_init_global_activity.js"
         campaignchain_dhtmlxgantt_toolbar_absolute_dates_js:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/toolbar_absolute_dates.js"

@@ -143,23 +143,6 @@ gantt.templates.grid_row_class = function(start, end, task){
     return "campaignchain_gantt_" + task.type;
 };
 
-// Show the channel icon in the left column
-gantt.templates.grid_blank = function(item) {
-    switch(item.type){
-        case 'campaign':
-            return "<div class='gantt_tree_icon gantt_blank'><span class='fa fa-exclamation-triangle'></span></div>" + item.tpl_teaser;
-            break;
-        case 'milestone':
-            return "<img src='" + item.icon_path_16px + "' class='campaignchain_gantt_icon_column' />";
-            break;
-        case 'activity':
-            return item.tpl_teaser;
-            break;
-    }
-
-    return "<div class='gantt_tree_icon gantt_blank'><span class='fa fa-exclamation-triangle'></span></div>";
-};
-
 gantt.templates.grid_folder = function(item) {
     switch(item.type){
         case 'campaign':
