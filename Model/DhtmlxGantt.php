@@ -63,109 +63,11 @@ class DhtmlxGantt
         $query = $qb->getQuery();
         $campaigns = $query->getResult();
 
+        $ganttCampaignData = array();
+
         /** @var Campaign $campaign */
         foreach($campaigns as $campaign) {
-
-            $data['type'] = 'campaign';
-            $data['campaignchain_id'] = (string)$campaign->getId();
-            $data['text'] = $campaign->getName();
-            $data['route_edit_api'] = $campaign->getCampaignModule()->getRoutes()['edit_api'];
-            $campaignService = $this->container->get('campaignchain.core.campaign');
-            $data['tpl_teaser'] = $campaignService->tplTeaser(
-                $campaign->getCampaignModule(),
-                array(
-                    'only_icon' => true,
-                    'size' => 24,
-                )
-            );
-
-            // Define the trigger hook's identifier.
-            if (!$campaign->getInterval() && $campaign->getTriggerHook()) {
-                $data['id'] = (string) $campaign->getId().'_campaign';
-
-                $hookService = $this->container->get($campaign->getTriggerHook()->getServices()['entity']);
-                $hook = $hookService->getHook($campaign);
-                $data['start_date'] = $hook->getStartDate()->format(self::FORMAT_TIMELINE_DATE);
-                if ($hook->getEndDate()) {
-                    $data['end_date'] = $hook->getEndDate()->format(self::FORMAT_TIMELINE_DATE);
-                } else {
-                    $data['end_date'] = $data['start_date'];
-                }
-
-                $ganttCampaignData[] = $data;
-            } elseif($campaign->getInterval()) {
-                // Handle repeating campaigns.
-                if(!$campaign->getIntervalEndOccurrence()) {
-                    $occurrences = 1;
-                } else {
-                    $occurrences = $campaign->getIntervalEndOccurrence();
-                }
-
-                /** @var \DateTime $startDate */
-                $startDate = $campaign->getIntervalStartDate();
-                /** @var \DateInterval $duration */
-                $duration = $campaign->getStartDate()->diff($campaign->getEndDate());
-                $now = new \DateTime('now');
-                $maxTimelineDate = clone $now;
-                $maxTimelineDate->modify(
-                    $this->container->getParameter('campaignchain.max_date_interval')
-                );
-                $parent = null;
-
-                /*
-                 * Let's iterate through all the instances of a repeating
-                 * campaign.
-                 */
-                for($i = 0; $i < $occurrences; $i++){
-                    /*
-                     * Take the interval's start/end date for the first instance,
-                     * otherwise calculate the start/end date by adding the
-                     * campaign's interval to the start/end date of the
-                     * previous instance.
-                     */
-                    $startDate->modify($campaign->getInterval());
-                    $endDate = clone $startDate;
-                    $endDate->add($duration);
-
-                    $hasEnded = (
-                        $campaign->getIntervalEndDate() != NULL &&
-                        $endDate > $campaign->getIntervalEndDate()
-                    );
-
-                    /*
-                     * If the instance is in the past, skip it,
-                     * because we only want ongoing or upcoming ones.
-                     */
-                    if(!$hasEnded && ($startDate > $now || $endDate > $now)) {
-                        $data['id'] = (string)$campaign->getId() . '_' . $i . '_campaign';
-                        $data['start_date'] = $startDate->format(self::FORMAT_TIMELINE_DATE);
-                        $data['end_date'] = $endDate->format(self::FORMAT_TIMELINE_DATE);
-                        /*
-                         * If this is not the first instance of a repeating
-                         * campaign in the timeline, then add the first instance
-                         * as the parent campaign.
-                         */
-                        if(!$parent) {
-                            $foundFirstInstance = true;
-                            $parent = $data['id'];
-
-                        } else {
-                            $data['parent'] = $parent;
-                        }
-
-                        $ganttCampaignData[] = $data;
-                    }
-
-                    if (
-                        $campaign->getIntervalEndOccurrence() == NULL &&
-                        (!$hasEnded && $startDate < $maxTimelineDate)
-                    ) {
-                        $occurrences++;
-                    }
-                }
-            } else {
-                throw new \Exception('Unknown campaign type.');
-            }
+            $ganttCampaignData = array_merge($ganttCampaignData, $this->getCampaignWithChildren($campaign));
         }
 
         $ganttTasks = array();
@@ -185,6 +87,120 @@ class DhtmlxGantt
         }
 
         return $this->serializer->serialize($ganttTasks, 'json');
+    }
+
+    public function getCampaignWithChildren(Campaign $campaign)
+    {
+        $data['type'] = 'campaign';
+        $data['campaignchain_id'] = (string)$campaign->getId();
+        $data['text'] = $campaign->getName();
+        $data['route_edit_api'] = $campaign->getCampaignModule()->getRoutes()['edit_api'];
+        $campaignService = $this->container->get('campaignchain.core.campaign');
+        $data['tpl_teaser'] = $campaignService->tplTeaser(
+            $campaign->getCampaignModule(),
+            array(
+                'only_icon' => true,
+                'size' => 24,
+            )
+        );
+
+        // Define the trigger hook's identifier.
+        if (!$campaign->getInterval() && $campaign->getTriggerHook()) {
+            $data['id'] = (string) $campaign->getId().'_campaign';
+
+            $hookService = $this->container->get($campaign->getTriggerHook()->getServices()['entity']);
+            $hook = $hookService->getHook($campaign);
+            $data['start_date'] = $hook->getStartDate()->format(self::FORMAT_TIMELINE_DATE);
+            if ($hook->getEndDate()) {
+                $data['end_date'] = $hook->getEndDate()->format(self::FORMAT_TIMELINE_DATE);
+            } else {
+                $data['end_date'] = $data['start_date'];
+            }
+
+            $ganttCampaignData[] = $data;
+        } elseif($campaign->getInterval()) {
+            // Handle repeating campaigns.
+            if(!$campaign->getIntervalEndOccurrence()) {
+                $occurrences = 1;
+            } else {
+                $occurrences = $campaign->getIntervalEndOccurrence();
+            }
+
+            /** @var \DateTime $startDate */
+            $startDate = $campaign->getIntervalStartDate();
+            /** @var \DateInterval $duration */
+            $duration = $campaign->getStartDate()->diff($campaign->getEndDate());
+            $now = new \DateTime('now');
+            $maxTimelineDate = clone $now;
+            $maxTimelineDate->modify(
+                $this->container->getParameter('campaignchain.max_date_interval')
+            );
+            $firstInstanceId = null;
+            $repeatingCount = 0;
+
+            /*
+             * Let's iterate through all the instances of a repeating
+             * campaign.
+             */
+            for($i = 0; $i < $occurrences; $i++){
+                /*
+                 * Take the interval's start/end date for the first instance,
+                 * otherwise calculate the start/end date by adding the
+                 * campaign's interval to the start/end date of the
+                 * previous instance.
+                 */
+                $startDate->modify($campaign->getInterval());
+                $endDate = clone $startDate;
+                $endDate->add($duration);
+
+                $hasEnded = (
+                    $campaign->getIntervalEndDate() != NULL &&
+                    $endDate > $campaign->getIntervalEndDate()
+                );
+
+                /*
+                 * If the instance is in the past, skip it,
+                 * because we only want ongoing or upcoming ones.
+                 */
+                if(!$hasEnded && ($startDate > $now || $endDate > $now)) {
+                    /*
+                     * Is this the first repeating campaign instance?
+                     */
+                    if(!$firstInstanceId) {
+                        /*
+                         * This is the first instance, so we define it as
+                         * the parent of the other repeating campaign
+                         * instances.
+                         */
+                        $firstInstanceId = $data['id'] = (string)$campaign->getId() . '_campaign';
+                    } else {
+                        /*
+                         * This is not the first instance of a repeating
+                         * campaign in the timeline, so let's add the first instance
+                         * as the parent campaign.
+                         */
+                        $data['id'] = (string)$campaign->getId() . '_' . $repeatingCount . '_campaign';
+                        $data['parent'] = $firstInstanceId;
+                        $repeatingCount++;
+                    }
+                    $data['start_date'] = $startDate->format(self::FORMAT_TIMELINE_DATE);
+                    $data['end_date'] = $endDate->format(self::FORMAT_TIMELINE_DATE);
+
+                    $ganttCampaignData[] = $data;
+                }
+
+                if (
+                    $campaign->getIntervalEndOccurrence() == NULL &&
+                    (!$hasEnded && $startDate < $maxTimelineDate)
+                ) {
+                    $occurrences++;
+                }
+            }
+        } else {
+            throw new \Exception('Unknown campaign type.');
+        }
+
+        return $ganttCampaignData;
     }
 
     /**

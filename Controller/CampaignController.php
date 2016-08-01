@@ -17,6 +17,7 @@
 
 namespace CampaignChain\CoreBundle\Controller;
 
+use CampaignChain\CoreBundle\EntityService\CampaignService;
 use CampaignChain\CoreBundle\Util\DateTimeUtil;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use CampaignChain\CoreBundle\Entity\Campaign;
@@ -136,5 +137,22 @@ class CampaignController extends Controller
         $responseData['campaign']['new_end_date'] = $campaign->getEndDate()->format(\DateTime::ISO8601);
 
         return new Response($serializer->serialize($responseData, 'json'));
+    }
+
+    public function getCampaignWithChildrenForTimelineApiAction(Request $request, $id)
+    {
+        $responseData = array();
+
+        /** @var CampaignService $campaignService */
+        $campaignService = $this->get('campaignchain.core.campaign');
+        /** @var Campaign $campaign */
+        $campaign = $campaignService->getCampaign($id);
+
+        $ganttService = $this->get('campaignchain.core.model.dhtmlxgantt');
+        $serializer = $this->get('campaignchain.core.serializer.default');
+
+        return new Response($serializer->serialize(
+            $ganttService->getCampaignWithChildren($campaign),
+            'json'));
     }
 }

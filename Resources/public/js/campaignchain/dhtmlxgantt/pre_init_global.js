@@ -31,7 +31,7 @@ gantt.config.grid_width = 240;
 gantt.config.row_height = 40;
 //gantt.config.autosize = true;
 gantt.config.columns = [
-    {name:"text", label:"Campaigns, Activities, Milestones", tree:true, width:200 },
+    {name:"text", label:"Campaigns", tree:true, width:200 },
 //        {name:"start_date", label:"Start Date", align: "center", width:100 },
 //        {name:"end_date", label:"End Date", align: "center", width:100 },
 ];
@@ -146,7 +146,6 @@ gantt.templates.grid_row_class = function(start, end, task){
 gantt.templates.grid_folder = function(item) {
     switch(item.type){
         case 'campaign':
-            //return '<img src="/bundles/campaignchaincampaignscheduledcampaign/images/icons/24x24/scheduled_campaign.png" class="campaignchain_gantt_icon_column_campaign" />';
             return item.tpl_teaser;
             break;
     }
@@ -168,21 +167,39 @@ function campaignchainGanttTaskDblClickSuccess(task, data) {
 
     var taskId = task.campaignchain_id + '_' + task.type;
 
-    gantt.getTask(taskId).text =
-        $('input[name="' + form_root_name + '[name]"]').val();
+    // Does the Campaign have children?
+    if(task.type == 'campaign' && gantt.hasChild(taskId)){
+        // Get the data from the database.
+        var route = Routing.generate('campaignchain_core_plan_timeline_campaign_api', { id: task.campaignchain_id });
+        $.getJSON( route, function( data ) {
+            // Delete the existing task including its children.
+            gantt.deleteTask(taskId);
 
-    gantt.getTask(taskId).start_date = campaignchainGetUserDateTime(
-        moment(data.start_date, moment.ISO_8601)
-    );
-    gantt.getTask(taskId).end_date = campaignchainGetUserDateTime(
-        moment(data.end_date, moment.ISO_8601)
-    );
+            // Create the updated task along with its children from scratch.
+            var items = [];
+            $.each( data, function( key, taskData ) {
+                gantt.addTask(taskData);
+            });
+        });
+    } else {
+        // Update the task without children.
+        gantt.getTask(taskId).text =
+            $('input[name="' + form_root_name + '[name]"]').val();
 
-    if(gantt.getTask(taskId).type == 'campaign'){
-        campaign_end_date = gantt.getTask(taskId).end_date;
+        gantt.getTask(taskId).start_date = campaignchainGetUserDateTime(
+            moment(data.start_date, moment.ISO_8601)
+        );
+        gantt.getTask(taskId).end_date = campaignchainGetUserDateTime(
+            moment(data.end_date, moment.ISO_8601)
+        );
+
+        if (gantt.getTask(taskId).type == 'campaign') {
+            campaign_end_date = gantt.getTask(taskId).end_date;
+        }
+
+        gantt.updateTask(taskId);
     }
 
-    gantt.updateTask(taskId);
     gantt.render();
 }
 

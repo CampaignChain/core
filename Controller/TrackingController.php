@@ -111,7 +111,7 @@ EOT
                 'is_old_tracking_js_route' => $old,
             ));
     }
-    
+
     public function newApiAction(Request $request, $channel)
     {
         $hasError = false;
