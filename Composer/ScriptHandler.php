@@ -23,6 +23,18 @@ use Sensio\Bundle\DistributionBundle\Composer\ScriptHandler as SensioScriptHandl
 
 class ScriptHandler extends SensioScriptHandler
 {
+    /**
+     * Creates the configuration files for CampaignChain's kernel.
+     *
+     * @param CommandEvent $event
+     */
+    public static function initKernel(CommandEvent $event)
+    {
+        SystemUtil::initKernel();
+
+        $event->getIO()->write('CampaignChain: Created configuration files.');
+    }
+
     public static function enableInstallMode(CommandEvent $event)
     {
         SystemUtil::enableInstallMode();
