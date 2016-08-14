@@ -51,12 +51,12 @@ class DhtmlxGantt
             ->from('CampaignChain\CoreBundle\Entity\Campaign', 'c')
             ->where('c.status != :status')
             ->andWhere(
-                '(c.startDate > :fake_date AND c.interval IS NULL)'
+                '(c.startDate > :relative_start_date AND c.interval IS NULL)'
                 .'OR '
-                .'(c.startDate = :fake_date AND c.interval IS NOT NULL)'
+                .'(c.startDate = :relative_start_date AND c.interval IS NOT NULL)'
             )
             ->setParameter('status', Action::STATUS_CLOSED)
-            ->setParameter('fake_date', new \DateTime('2012-01-01 00:00:00'));
+            ->setParameter('relative_start_date', new \DateTime(Campaign::RELATIVE_START_DATE));
 
         $qb->orderBy('c.startDate', 'DESC');
 
@@ -184,6 +184,7 @@ class DhtmlxGantt
                         $repeatingCount++;
                     }
                     $data['start_date'] = $startDate->format(self::FORMAT_TIMELINE_DATE);
+                    $data['relative_start_date'] = $campaign->getStartDate()->format(self::FORMAT_TIMELINE_DATE);
                     $data['end_date'] = $endDate->format(self::FORMAT_TIMELINE_DATE);
 
                     $ganttCampaignData[] = $data;

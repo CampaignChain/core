@@ -16,9 +16,9 @@
 # Plan
 #
 
-campaignchain_core_plan_timeline_campaign_api:
+campaignchain_core_plan_timeline_nested_campaigns_api:
     pattern:  /plan/timeline/campaign/{id}
-    defaults: { _controller: CampaignChainCoreBundle:Campaign:getCampaignWithChildrenForTimelineApi }
+    defaults: { _controller: CampaignChainCoreBundle:Campaign:getNestedCampaignsForTimelineApi }
     options:
         expose: true
 

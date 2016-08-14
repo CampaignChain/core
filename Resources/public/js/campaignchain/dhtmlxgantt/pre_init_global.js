@@ -18,7 +18,11 @@ var today = campaignchainGetUserDateTime(moment());
 gantt.config.work_time = false;
 gantt.config.correct_work_time = false;
 gantt.config.duration_unit = 'minute'; // 5 minutes
-gantt.config.duration_step = 5;
+gantt.config.duration_step = window.campaignchainSchedulerInterval;
+// Allow to resize tasks?
+gantt.config.drag_resize = false;
+// Allow to create dependency links?
+gantt.config.drag_links = false;
 // Define task type for activity
 gantt.config.types["activity"] = "type_id";
 gantt.locale.labels['type_' + "activity"] = "Activity";
@@ -77,7 +81,6 @@ function campaignchainGanttNormalizeDate(date)
     date.utc()
     date.subtract(browserOffset, 'minutes');
     date.add(userTimezoneOffset, 'minutes');
-
     return date;
 }
 
@@ -151,29 +154,36 @@ gantt.templates.grid_folder = function(item) {
     }
 };
 
-function campaignchainGanttTaskDblClickSuccess(task, data) {
-    // Update changes in GANTT data as well.
-    switch(task.type){
-        case 'campaign':
-            var form_root_name = "campaignchain_core_campaign";
-            break;
-        case 'milestone':
-            var form_root_name = "campaignchain_core_milestone";
-            break;
-        case 'activity':
-            var form_root_name = "campaignchain_core_activity";
-            break;
+function campaignchainGetParent(task){
+    // Make sure that we operate on the parent task.
+    if(gantt.getParent(task.id) != 0){
+        task = gantt.getTask(gantt.getParent(task.id));
     }
 
-    var taskId = task.campaignchain_id + '_' + task.type;
+    return task;
+}
 
-    // Does the Campaign have children?
-    if(task.type == 'campaign' && gantt.hasChild(taskId)){
+/*
+ If the task is a Campaign and it does have task children, which are
+ campaigns as well, then we know this is a repeating campaign. In that case,
+ we dynamically load the data about the child campaigns from the server.
+ */
+function campaignchainNestedCampaigns(task) {
+    if(task.type != 'campaign'){
+        return false;
+    }
+
+    task = campaignchainGetParent(task);
+
+    if(
+        gantt.hasChild(task.id) &&
+        gantt.getTask(gantt.getChildren(task.id)[0]).type == 'campaign'
+    ){
         // Get the data from the database.
-        var route = Routing.generate('campaignchain_core_plan_timeline_campaign_api', { id: task.campaignchain_id });
+        var route = Routing.generate('campaignchain_core_plan_timeline_nested_campaigns_api', { id: task.campaignchain_id });
         $.getJSON( route, function( data ) {
             // Delete the existing task including its children.
-            gantt.deleteTask(taskId);
+            gantt.deleteTask(task.id);
 
             // Create the updated task along with its children from scratch.
             var items = [];
@@ -181,46 +191,85 @@ function campaignchainGanttTaskDblClickSuccess(task, data) {
                 gantt.addTask(taskData);
             });
         });
+
+        return true;
     } else {
-        // Update the task without children.
-        gantt.getTask(taskId).text =
+        return false;
+    }
+}
+
+function campaignchainGanttTaskDblClickSuccess(task, data) {
+    // Update changes in GANTT data as well.
+    if(!campaignchainNestedCampaigns(task)){
+        switch(task.type){
+            case 'campaign':
+                var form_root_name = "campaignchain_core_campaign";
+                break;
+            case 'milestone':
+                var form_root_name = "campaignchain_core_milestone";
+                break;
+            case 'activity':
+                var form_root_name = "campaignchain_core_activity";
+                break;
+        }
+
+        // Update the task without children of type "campaign".
+        gantt.getTask(task.id).text =
             $('input[name="' + form_root_name + '[name]"]').val();
 
-        gantt.getTask(taskId).start_date = campaignchainGetUserDateTime(
+        gantt.getTask(task.id).start_date = campaignchainGetUserDateTime(
             moment(data.start_date, moment.ISO_8601)
         );
-        gantt.getTask(taskId).end_date = campaignchainGetUserDateTime(
+        gantt.getTask(task.id).end_date = campaignchainGetUserDateTime(
             moment(data.end_date, moment.ISO_8601)
         );
 
-        if (gantt.getTask(taskId).type == 'campaign') {
-            campaign_end_date = gantt.getTask(taskId).end_date;
+        if (gantt.getTask(task.id).type == 'campaign') {
+            campaign_end_date = gantt.getTask(task.id).end_date;
         }
 
-        gantt.updateTask(taskId);
+        gantt.updateTask(task.id);
     }
 
     gantt.render();
+    gantt.showTask(task.id);
 }
 
 // Persist onTaskDrag changes.
+gantt.attachEvent("onBeforeTaskDrag", function(id, mode, e){
+    var task = gantt.getTask(id);
+    window.campaignchainGanttBeforeTaskDragStartDate = task.start_date;
+    return true;
+});
 
 // TODO: The end date after dragging is not the same as the last end date _while_ dragging.
 // TODO: Perhaps the task id should be part of the route to be consistent?
 gantt.attachEvent("onAfterTaskDrag", function(id, mode, e){
     var task = gantt.getTask(id);
-    var modes = gantt.config.drag_mode;
-    // Adjust to user timezone and ISO8601 format.
-    var start_date = campaignchainGanttNormalizeDate(task.start_date);
-//    console.log('End date after dragging: ' + task.end_date);
 
+    /*
+    If this is a campaign which is the child of another campaign (e.g. instances
+    of a repeating campaign), then calculate the start date of the parent
+    campaign.
+     */
+    if(task.type == 'campaign' && task.relative_start_date){
+        var old_start_date = window.campaignchainGanttBeforeTaskDragStartDate;
+        var start_date_diff = moment(old_start_date).diff(task.start_date);
+        var start_date = campaignchainGanttNormalizeDate(
+            moment(task.relative_start_date, "DD-MM-YYYY HH:mm ZZ").add(start_date_diff, 'ms')
+        );
+    } else {
+        var start_date = campaignchainGanttNormalizeDate(task.start_date);
+    }
+
+    var modes = gantt.config.drag_mode;
     if(mode == modes.move){
         campaignchainMoveAction(task.campaignchain_id, start_date, task.type, task, 'campaignchainOnAfterTaskDragSuccess');
     }
 });
 
 function campaignchainOnAfterTaskDragSuccess(task, data){
-    if(task.type == 'campaign'){
+    if(!campaignchainNestedCampaigns(task)){
         // Explicitly set end_date of task based on the response data,
         // because DHTMLXGantt seems to adjust the end_date in a strange way.
         var new_end_date = campaignchainGetUserDateTime(data.campaign.new_end_date);
@@ -228,6 +277,9 @@ function campaignchainOnAfterTaskDragSuccess(task, data){
         gantt.updateTask(task.id);
         // Overwrite tooltip's end date info, which is a hack :)
         $(".campaignchain_dhxmlxgantt_tooltip_end_date").html("<b>End:</b> " + new_end_date.format(window.campaignchainDatetimeFormat) + " (" + window.campaignchainTimezoneAbbreviation + ")");
+    } else {
+        gantt.render();
+        gantt.showTask(task.id);
     }
 }
 

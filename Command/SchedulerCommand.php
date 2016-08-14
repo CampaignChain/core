@@ -50,7 +50,6 @@ class SchedulerCommand extends ContainerAwareCommand
     const LOGGER_MSG_START = '----- START -----';
     const LOGGER_MSG_END = '----- END -----';
 
-    // TODO: Get this from the system settings.
     /**
      * @var int Interval in minutes.
      */
@@ -138,6 +137,8 @@ class SchedulerCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->initializeVariables();
+
         $this->io = new SymfonyStyle($input, $output);
         $this->io->title('CampaignChain Scheduler');
 
@@ -150,9 +151,7 @@ class SchedulerCommand extends ContainerAwareCommand
             return 0;
         }
 
-        $this->initializeVariables();
-
-        $this->scheduler = $this->startScheduler($this->interval);
+        $this->scheduler = $this->startScheduler();
 
         $this->logger->info(self::LOGGER_MSG_START);
         $this->logger->info('Scheduler with ID {id} started', ['id' => $this->scheduler->getId()]);
@@ -199,8 +198,12 @@ class SchedulerCommand extends ContainerAwareCommand
 
         // If in dev mode, use a long interval to make testing the scheduler easier.
         if ($this->getContainer()->getParameter('campaignchain.env') == 'dev') {
-            $this->interval = 9600;
+            $this->interval = $this->getContainer()->getParameter('campaignchain_core.scheduler.interval_dev');
+        } else {
+            $this->interval = $this->getContainer()->getParameter('campaignchain_core.scheduler.interval');
         }
+
+        $this->timeout = $this->getContainer()->getParameter('campaignchain_core.scheduler.timeout');;
 
         if ($this->getContainer()->has('monolog.logger.scheduler')) {
             $this->logger = $this->getContainer()->get('monolog.logger.scheduler');
@@ -214,23 +217,21 @@ class SchedulerCommand extends ContainerAwareCommand
     /**
      * Create a new scheduler instance.
      *
-     * @param $interval
-     *
      * @return Scheduler
      */
-    protected function startScheduler($interval)
+    protected function startScheduler()
     {
         $this->now = new \DateTime('now', new \DateTimeZone('UTC'));
 
         $periodStart = clone $this->now;
-        $periodStart->modify('-'.$interval.' minutes');
+        $periodStart->modify('-'.$this->interval.' minutes');
 
         $scheduler = new Scheduler();
         $scheduler->setStatus(Scheduler::STATUS_RUNNING);
         $scheduler->setExecutionStart($this->now);
         $scheduler->setPeriodStart($periodStart);
         $scheduler->setPeriodEnd($this->now);
-        $scheduler->setPeriodInterval($interval);
+        $scheduler->setPeriodInterval($this->interval);
 
         $this->em->persist($scheduler);
         $this->em->flush();

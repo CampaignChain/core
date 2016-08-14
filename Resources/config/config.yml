@@ -21,6 +21,14 @@ campaignchain_core:
     upload_storage:
         path: '%kernel.root_dir%/../web/storage'
         url_prefix: /storage
+    scheduler:
+        # Interval of Scheduler running in minutes, usually 5 mins.
+        interval: 5
+        # The interval while developing. Should be a high value so that actions
+        # which are further in the past also get executed by the Scheduler.
+        interval_dev: 9600
+        # Timeout of Scheduler in seconds. Default value is 600s.
+        timeout: 600
 
 assetic:
     assets:

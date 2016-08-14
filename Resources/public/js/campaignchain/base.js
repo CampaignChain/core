@@ -161,7 +161,7 @@ function campaignchainShowModal(type, id, api_route, action, successFunction){
     }
 }
 
-function campaignchainMoveAction(id, start, type, action, successFunction){
+function campaignchainMoveAction(id, start, type, task, successFunction){
     var postData = { id: id, start_date: start.format(), timezone: window.campaignchainTimezone };
 
     switch(type){
@@ -187,7 +187,7 @@ function campaignchainMoveAction(id, start, type, action, successFunction){
         success: function(data, status) {
             // TODO: Show success message in Browser.
             if(successFunction !== undefined){
-                window[successFunction](action, $.parseJSON(data));
+                window[successFunction](task, data);
             }
         },
         error: function (xhr, ajaxOptions, thrownError) {

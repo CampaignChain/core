@@ -169,12 +169,17 @@ class DateTimeUtil
         }
     }
 
-    static function roundMinutes($datetime){
+    static function roundMinutes($datetime, $mins = 5){
+        $mins = intval($mins);
+        if($mins < 0 || $mins > 60 ){
+            throw new \Exception('Minutes value must be between 0 and 60.');
+        }
+
         // 1) Set number of seconds to 0 (by rounding up to the nearest minute).
         $second = $datetime->format("s");
         $datetime->add(new \DateInterval("PT".(60-$second)."S"));
         // 2) Round to 5 minute increment.
-        $minutes = (round($datetime->format("i")/5) * 5) % 60;
+        $minutes = (round($datetime->format("i")/$mins) * $mins) % 60;
         // 3) Set rounded minutes.
         $datetime->setTime($datetime->format('H'), $minutes, 0);
 

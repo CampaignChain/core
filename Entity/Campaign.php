@@ -26,6 +26,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Campaign extends Action implements AssignableInterface
 {
+    const RELATIVE_START_DATE = '2012-01-01 00:00:00';
+
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id
