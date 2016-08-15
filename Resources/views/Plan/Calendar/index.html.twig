@@ -80,7 +80,8 @@ limitations under the License.
             },
             eventDrop: function(event, delta, revertFunc) {
                 var start_date = campaignchainCalendarNormalizeDate(event.start.format());
-                campaignchainMoveAction(event.campaignchain_id, start_date, event.type);
+                var requestData = { id: event.campaignchain_id, start_date: start_date.format() };
+                campaignchainMoveAction(event.type, requestData);
             },
             eventSources: [
                 {% if events and events is iterable %}

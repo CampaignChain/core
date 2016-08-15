@@ -133,11 +133,15 @@ gantt.templates.task_class = function(st,end,item){
 gantt.attachEvent("onBeforeTaskDrag", function(id, mode, e){
     var drag = gantt.config.drag_mode;
     var task = gantt.getTask(id);
-    if(mode == drag.resize){
-        if(task.type == 'activity' || task.type == 'milestone'){
-            return false;
-        }
-    }
+
+    window.campaignchainGanttBeforeTaskDragStartDate = task.start_date;
+
+    // if(mode == drag.resize){
+    //     if(task.type == 'activity' || task.type == 'milestone'){
+    //         return false;
+    //     }
+    // }
+
     return true;
 });
 
@@ -235,13 +239,6 @@ function campaignchainGanttTaskDblClickSuccess(task, data) {
     gantt.showTask(task.id);
 }
 
-// Persist onTaskDrag changes.
-gantt.attachEvent("onBeforeTaskDrag", function(id, mode, e){
-    var task = gantt.getTask(id);
-    window.campaignchainGanttBeforeTaskDragStartDate = task.start_date;
-    return true;
-});
-
 // TODO: The end date after dragging is not the same as the last end date _while_ dragging.
 // TODO: Perhaps the task id should be part of the route to be consistent?
 gantt.attachEvent("onAfterTaskDrag", function(id, mode, e){
@@ -252,19 +249,27 @@ gantt.attachEvent("onAfterTaskDrag", function(id, mode, e){
     of a repeating campaign), then calculate the start date of the parent
     campaign.
      */
-    if(task.type == 'campaign' && task.relative_start_date){
-        var old_start_date = window.campaignchainGanttBeforeTaskDragStartDate;
-        var start_date_diff = moment(old_start_date).diff(task.start_date);
-        var start_date = campaignchainGanttNormalizeDate(
-            moment(task.relative_start_date, "DD-MM-YYYY HH:mm ZZ").add(start_date_diff, 'ms')
-        );
+    if(task.type == 'campaign' && task.interval){
+        var parent = campaignchainGetParent(task);
+
+        if(parent.id != task.id) {
+            var start_date = campaignchainGanttNormalizeDate(
+                parent.start_date
+            );
+        } else {
+            var start_date = campaignchainGanttNormalizeDate(
+                task.start_date
+            );
+        }
     } else {
         var start_date = campaignchainGanttNormalizeDate(task.start_date);
     }
 
+    var requestData = { id: task.campaignchain_id, start_date: start_date.format() };
+
     var modes = gantt.config.drag_mode;
     if(mode == modes.move){
-        campaignchainMoveAction(task.campaignchain_id, start_date, task.type, task, 'campaignchainOnAfterTaskDragSuccess');
+        campaignchainMoveAction(task.type, requestData, task, 'campaignchainOnAfterTaskDragSuccess');
     }
 });
 

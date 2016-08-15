@@ -184,7 +184,7 @@ class DhtmlxGantt
                         $repeatingCount++;
                     }
                     $data['start_date'] = $startDate->format(self::FORMAT_TIMELINE_DATE);
-                    $data['relative_start_date'] = $campaign->getStartDate()->format(self::FORMAT_TIMELINE_DATE);
+                    $data['interval'] = $campaign->getIntervalHumanReadable();
                     $data['end_date'] = $endDate->format(self::FORMAT_TIMELINE_DATE);
 
                     $ganttCampaignData[] = $data;

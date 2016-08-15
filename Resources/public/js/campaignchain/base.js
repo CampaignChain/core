@@ -161,8 +161,9 @@ function campaignchainShowModal(type, id, api_route, action, successFunction){
     }
 }
 
-function campaignchainMoveAction(id, start, type, task, successFunction){
-    var postData = { id: id, start_date: start.format(), timezone: window.campaignchainTimezone };
+function campaignchainMoveAction(type, requestData, task, successFunction){
+
+    requestData['timezone'] = window.campaignchainTimezone;
 
     switch(type){
         case 'campaign':
@@ -181,13 +182,13 @@ function campaignchainMoveAction(id, start, type, task, successFunction){
     $.ajax({
         type: 'POST',
         url: apiUrl,
-        data: postData,
+        data: requestData,
         dataType: "json",
         cache: false,
-        success: function(data, status) {
+        success: function(responseData, status) {
             // TODO: Show success message in Browser.
             if(successFunction !== undefined){
-                window[successFunction](task, data);
+                window[successFunction](task, responseData);
             }
         },
         error: function (xhr, ajaxOptions, thrownError) {

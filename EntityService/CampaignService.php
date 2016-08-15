@@ -116,18 +116,18 @@ class CampaignService
         return $this->serializer->serialize($campaignsDates, 'json');
     }
 
-    public function moveCampaign(Campaign $campaign, $newStartDate, $status = null){
+    public function moveCampaign(Campaign $campaign, \DateTime $newStartDate, $status = null){
         // Make sure that data stays intact by using transactions.
         try {
             $this->em->getConnection()->beginTransaction();
-
-            // Calculate time difference.
-            $interval = $campaign->getStartDate()->diff($newStartDate);
 
             /** @var HookService $hookService */
             $hookService = $this->container->get($campaign->getTriggerHook()->getServices()['entity']);
             $hook = $hookService->getHook($campaign, Hook::MODE_MOVE);
             if(!$campaign->getInterval()) {
+                // Calculate time difference.
+                $interval = $campaign->getStartDate()->diff($newStartDate);
+
                 if ($hook->getStartDate() !== null) {
                     $hook->setStartDate(new \DateTime($hook->getStartDate()->add($interval)->format(\DateTime::ISO8601)));
                 }
@@ -135,9 +135,12 @@ class CampaignService
                     $hook->setEndDate(new \DateTime($hook->getEndDate()->add($interval)->format(\DateTime::ISO8601)));
                 }
             } else {
+                // Calculate time difference.
+                $interval = $campaign->getIntervalStartDate()->diff($newStartDate);
+
                 /** @var DateRepeat $hook */
                 $hook->setIntervalStartDate(new \DateTime($hook->getIntervalStartDate()->add($interval)->format(\DateTime::ISO8601)));
-                $hook->setIntervalNextRun(new \DateTime($hook->getIntervalNextRun()->add($interval)->format(\DateTime::ISO8601)));
+                $hook->setIntervalNextRun($hook->getIntervalStartDate());
                 if($hook->getIntervalEndDate()){
                     $hook->setIntervalEndDate(new \DateTime($hook->getIntervalEndDate()->add($interval)->format(\DateTime::ISO8601)));
                 }

@@ -19,14 +19,13 @@ namespace CampaignChain\CoreBundle\Controller;
 
 use CampaignChain\CoreBundle\EntityService\CampaignService;
 use CampaignChain\CoreBundle\Util\DateTimeUtil;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use CampaignChain\CoreBundle\Entity\Campaign;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityRepository;
 
-class CampaignController extends Controller
+class CampaignController extends BaseController
 {
     const FORMAT_DATEINTERVAL = 'Years: %Y, months: %m, days: %d, hours: %h, minutes: %i, seconds: %s';
 
@@ -117,7 +116,20 @@ class CampaignController extends Controller
         $responseData = array();
 
         $id = $request->request->get('id');
-        $newStartDate = new \DateTime($request->request->get('start_date'));
+
+        // Is this a campaign with interval?
+        if($request->request->has('start_date')) {
+            try {
+                $newStartDate = new \DateTime($request->request->get('start_date'));
+            } catch(\Exception $e){
+                return $this->apiErrorResponse($e->getMessage());
+            }
+        } else {
+            return $this->apiErrorResponse(
+                'Please provide a date time value for start_date'
+            );
+        }
+
         $newStartDate = DateTimeUtil::roundMinutes(
             $newStartDate,
             $this->getParameter('campaignchain_core.scheduler.interval')
