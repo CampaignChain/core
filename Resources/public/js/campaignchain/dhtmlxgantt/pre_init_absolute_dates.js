@@ -31,25 +31,19 @@ function limitResizeRight(task, limit){
 }
 
 // When dragging a campaign, move the activities and milestones with it.
-// TODO: When campaign hits today line several times, children move further to the right.
 gantt.attachEvent("onTaskDrag", function(id, mode, task, original, e){
     var parent = task.parent ? gantt.getTask(task.parent) : null,
         children = gantt.getChildren(id),
         modes = gantt.config.drag_mode;
     var diff = task.start_date - original.start_date;
 
-    // Don't move the task beyond today.
-    if(+task.start_date <= +today) {
-        return false;
-    }
-
     // If these are instances of a campaign with an interval, then don't move
     // the children if the parent campaign touches the today line.
-    if(parent && parent.type == task.type && +parent.start_date <= +today && +diff <= 0 ){
+    if(parent && parent.type == task.type && +parent.start_date <= +today.subtract(1, "minute") && +diff <= 0 ){
         task.start_date = original.start_date;
         task.end_date = original.end_date;
         gantt.refreshTask(task.id);
-        return false;
+        return true;
     }
 
     var limitLeft = null,
@@ -115,10 +109,10 @@ gantt.attachEvent("onTaskDrag", function(id, mode, task, original, e){
     var modes = gantt.config.drag_mode;
     if(mode == modes.move || mode == modes.resize){
 
-        if(+campaignchainGetUserDateTime(task.start_date) == +today || +campaignchainGetUserDateTime(task.start_date) < +today){
-            task.start_date = campaignchainGetUserDateTime(moment());
+        if(+campaignchainGetUserDateTime(task.start_date) <= +today){
+            task.start_date = original.start_date;
             if(mode == modes.move){
-                task.end_date = moment(new Date(+task.start_date + campaignchainGetUserDateTime(original.duration*(1000*60*60*24))));
+                task.end_date = original.end_date;
             }
         }
     }
