@@ -50,6 +50,7 @@ class DhtmlxGantt
         $qb->select('c')
             ->from('CampaignChain\CoreBundle\Entity\Campaign', 'c')
             ->where('c.status != :status')
+            ->andWhere('c.parent IS NULL')
             ->andWhere(
                 '(c.startDate > :relative_start_date AND c.interval IS NULL)'
                 .'OR '
@@ -228,6 +229,8 @@ class DhtmlxGantt
             $qb->andWhere('c.id = :campaignId')
                 ->setParameter('campaignId', $campaignId);
         }
+
+        $qb->andWhere('c.parent IS NULL');
 
         $qb->orderBy('c.startDate', 'DESC');
 
