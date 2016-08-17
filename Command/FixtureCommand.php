@@ -24,8 +24,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\HttpFoundation\Request;
-
+use Symfony\Component\Console\Input\ArrayInput;
 /**
  * Class FixtureCommand
  * @package CampaignChain\CoreBundle\Command
@@ -72,11 +71,33 @@ EOT
                 $input->getArgument('files'), $input->getOption('doDrop')
             )
         ){
+            // Load schema updates.
+            $this->loadSchemaUpdateVersions($input, $output);
+
             $io->success('Successfully loaded fixture files.');
         } elseif($fixtureService->getException()){
             $io->warning($fixtureService->getException()->getMessage());
         }
 
         return;
+    }
+
+    private function loadSchemaUpdateVersions(InputInterface $input, OutputInterface $output)
+    {
+        $app = $this->getApplication();
+        $input = new ArrayInput(
+            array(
+                'command' => 'doctrine:migrations:version',
+                '--add' => true, '--all' => true
+            )
+        );
+        $input->setInteractive(false);
+        $returnCode = $app->doRun($input, $output);
+
+        if($returnCode == 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
