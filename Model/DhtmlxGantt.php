@@ -139,8 +139,20 @@ class DhtmlxGantt
             $firstInstanceId = null;
             $repeatingCount = 0;
 
+            // If an actual instance exists as a child campaign, then add it.
+            /** @var Campaign $childCampaign */
+            $childCampaign =
+                $this->em->getRepository('CampaignChain\CoreBundle\Entity\Campaign')
+                    ->findOneByParent($campaign);
+            if($childCampaign){
+                $firstInstanceId = $data['id'] = (string)$campaign->getId() . '_campaign';
+                $data['start_date'] = $childCampaign->getStartDate()->format(self::FORMAT_TIMELINE_DATE);
+                $data['end_date'] = $childCampaign->getEndDate()->format(self::FORMAT_TIMELINE_DATE);
+                $ganttCampaignData[] = $data;
+            }
+
             /*
-             * Let's iterate through all the instances of a repeating
+             * Let's iterate through all the future instances of a repeating
              * campaign.
              */
             for($i = 0; $i < $occurrences; $i++){

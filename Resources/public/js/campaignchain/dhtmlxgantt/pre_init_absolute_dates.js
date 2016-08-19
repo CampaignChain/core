@@ -39,7 +39,7 @@ gantt.attachEvent("onTaskDrag", function(id, mode, task, original, e){
 
     // If these are instances of a campaign with an interval, then don't move
     // the children if the parent campaign touches the today line.
-    if(parent && parent.type == task.type && +parent.start_date <= +today.subtract(1, "minute") && +diff <= 0 ){
+    if(parent && parent.interval && parent.type == task.type && +parent.start_date <= +today.subtract(1, "minute") && +diff <= 0 ){
         task.start_date = original.start_date;
         task.end_date = original.end_date;
         gantt.refreshTask(task.id);
@@ -66,7 +66,7 @@ gantt.attachEvent("onTaskDrag", function(id, mode, task, original, e){
             limitRight = limitResizeRight;
         }
 
-        //check parents constraints
+        // Check parents constraints if child task is within parent duration
         if(parent && parent.type != task.type && +parent.end_date < +task.end_date){
             limitLeft(task, parent);
         }
@@ -75,21 +75,21 @@ gantt.attachEvent("onTaskDrag", function(id, mode, task, original, e){
         }
 
         if(mode == modes.move){
-            if(parent && parent.type == task.type){
+            if(parent && parent.interval && parent.type == task.type){
                 parent.start_date = new Date(+parent.start_date + diff);
                 parent.end_date = new Date(+parent.end_date + diff);
                 gantt.refreshTask(parent.id, true);
             }
-            gantt.eachTask(function(child){
+            gantt.eachTask(function (child) {
                 child.start_date = new Date(+child.start_date + diff);
                 child.end_date = new Date(+child.end_date + diff);
                 gantt.refreshTask(child.id, true);
-            }, parentId );
+            }, parentId);
         }
     }
 
     // If moving an activity or milestone, make sure it does not move beyond the campaign's start or end date.
-    if(parent && parent.type != task.type && mode == modes.move){
+    if(parent && parent.interval && parent.type != task.type && mode == modes.move){
         if(+task.start_date < +parent.start_date){
             task.start_date = parent.start_date;
         }

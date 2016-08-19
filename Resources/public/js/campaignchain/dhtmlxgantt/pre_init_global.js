@@ -252,7 +252,7 @@ gantt.attachEvent("onAfterTaskDrag", function(id, mode, e){
     if(task.type == 'campaign' && task.interval){
         var parent = campaignchainGetParent(task);
 
-        if(parent.id != task.id) {
+        if(parent.id != task.id && parent.interval) {
             var start_date = campaignchainGanttNormalizeDate(
                 parent.start_date
             );
@@ -282,10 +282,10 @@ function campaignchainOnAfterTaskDragSuccess(task, data){
         gantt.updateTask(task.id);
         // Overwrite tooltip's end date info, which is a hack :)
         $(".campaignchain_dhxmlxgantt_tooltip_end_date").html("<b>End:</b> " + new_end_date.format(window.campaignchainDatetimeFormat) + " (" + window.campaignchainTimezoneAbbreviation + ")");
-    } else {
-        gantt.render();
-        gantt.showTask(task.id);
     }
+
+    gantt.render();
+    gantt.showTask(task.id);
 }
 
 gantt.attachEvent("onTaskDrag", function (t) {
