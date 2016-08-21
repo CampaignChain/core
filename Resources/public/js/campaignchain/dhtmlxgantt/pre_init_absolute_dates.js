@@ -36,6 +36,9 @@ gantt.attachEvent("onTaskDrag", function(id, mode, task, original, e){
         children = gantt.getChildren(id),
         modes = gantt.config.drag_mode;
     var diff = task.start_date - original.start_date;
+    var limitLeft = null,
+        limitRight = null;
+    var moveParentId = task.id;
 
     // If these are instances of a campaign with an interval, then don't move
     // the children if the parent campaign touches the today line.
@@ -46,13 +49,19 @@ gantt.attachEvent("onTaskDrag", function(id, mode, task, original, e){
         return true;
     }
 
-    var limitLeft = null,
-        limitRight = null;
-
-    var parentId = task.id;
+    /*
+    If this is a parent task that is the running instance of a repeating
+    campaign, then show all children and move just them.
+     */
+    if(task.type == 'campaign' && !parent && !task.interval && children.length){
+        parent = task;
+        task = gantt.getTask(children[0]);
+        gantt.open(parent.id);
+        var moveParentId = task.id;
+    }
 
     if(parent && parent.type == task.type){
-        var parentId = parent.id;
+        var moveParentId = parent.id;
     }
 
     if(!(mode == modes.move || mode == modes.resize)) return;
@@ -84,7 +93,7 @@ gantt.attachEvent("onTaskDrag", function(id, mode, task, original, e){
                 child.start_date = new Date(+child.start_date + diff);
                 child.end_date = new Date(+child.end_date + diff);
                 gantt.refreshTask(child.id, true);
-            }, parentId);
+            }, moveParentId);
         }
     }
 
@@ -123,7 +132,21 @@ gantt.attachEvent("onTaskDrag", function(id, mode, task, original, e){
 gantt.attachEvent("onBeforeTaskDrag", function(id, mode, e){
     var task = gantt.getTask(id);
     if(+campaignchainGetUserDateTime(task.start_date) < +today){
-        return false;      //denies dragging
+        /*
+         If this is a parent task that is the running instance of a repeating
+         campaign, then allow dragging.
+         */
+        if(task.type == "campaign" && !task.interval){
+            if(gantt.getChildren(task.id).length){
+                if(gantt.getTask(gantt.getChildren(task.id)[0]).type == "campaign"){
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        } else {
+            return false;      //denies dragging
+        }
     }
     return true;           //allows dragging
 });

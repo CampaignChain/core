@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 #}
 
-{% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
+{% extends 'CampaignChainCoreBundle:Plan/Timeline:toolbar.html.twig' %}
 
 {% block javascripts %}
     {{ parent() }}
@@ -53,18 +53,8 @@ limitations under the License.
     </script>
 {% endblock %}
 
-{% block bodytabs %}
-    {{ knp_menu_render('CampaignChainCoreBundle:Builder:executeListTab', { 'style': 'tabs' }) }}
-{% endblock %}
-
-{% block body %}
-    <div class="row">
-        <div class="col-sm-12 secondary-nav">
-            <button class="btn btn-primary" id="campaign_new">
-                <span class="fa fa-plus"></span> Add new campaign
-            </button>
-        </div>
-    </div>
-
-    {% include 'CampaignChainCoreBundle:Campaign:table.html.twig' %}
+{% block header_toolbar_btn_group %}
+<button class="btn btn-primary" id="campaign_new">
+    <span class="fa fa-plus"></span> Campaign
+</button>
 {% endblock %}

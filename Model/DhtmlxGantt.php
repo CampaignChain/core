@@ -175,7 +175,10 @@ class DhtmlxGantt
                  * If the instance is in the past, skip it,
                  * because we only want ongoing or upcoming ones.
                  */
-                if(!$hasEnded && ($startDate > $now || $endDate > $now)) {
+                if(
+                    !$hasEnded && $startDate >=  $campaign->getIntervalNextRun() &&
+                    ($startDate > $now || $endDate > $now)
+                ) {
                     /*
                      * Is this the first repeating campaign instance?
                      */

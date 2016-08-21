@@ -16,47 +16,6 @@ limitations under the License.
 
 {% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
 
-{% block javascripts %}
-    {{ parent() }}
-
-    {% javascripts '@blockui_js' combine=true %}
-    <script src="{{ asset_url }}"></script>
-    {% endjavascripts %}
-
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $('#campaign_new').on('click', function () {
-
-                var modal = new CampaignChain.Modal();
-
-                modal.init({
-                    spinner_start: $.blockUI,
-                    spinner_stop: $.unblockUI
-                });
-
-                modal.showForm('campaignchain_campaign_scheduled_new');
-
-                $(document).on('campaignchain:form:submit:success', function (e, data) {
-                    location.reload();
-                });
-
-                // TODO: when there is proper validation in the controller implemented, show error messages here
-            });
-        });
-    </script>
-{% endblock %}
-
-{% block bodytabs %}
-    {{ knp_menu_render('CampaignChainCoreBundle:Builder:planTab', { 'style': 'tabs' }) }}
-{% endblock %}
-
 {% block body %}
-    <div class="row">
-        <div class="col-sm-12 secondary-nav">
-            <button class="btn btn-primary" id="campaign_new">
-                <span class="fa fa-plus"></span> Create new scheduled campaign
-            </button>
-        </div>
-    </div>
     {% include 'CampaignChainCoreBundle:Plan/Timeline/Campaign:inline.html.twig' %}
 {% endblock %}

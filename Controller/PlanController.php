@@ -26,7 +26,7 @@ class PlanController extends Controller
     const BUNDLE_NAME = 'campaignchain/campaign-scheduled';
     const MODULE_IDENTIFIER = 'campaignchain-scheduled';
 
-    public function indexAction(Request $request)
+    public function campaignsAction(Request $request)
     {
         $repository = $this->getDoctrine()
             ->getRepository('CampaignChainCoreBundle:CampaignModule');
@@ -48,6 +48,32 @@ class PlanController extends Controller
                 'path_embedded' => $this->generateUrl('campaignchain_campaign_scheduled_plan_timeline'),
                 'path_fullscreen' =>  $this->generateUrl('campaignchain_campaign_scheduled_plan_timeline_fullscreen'),
                 'gantt_toolbar_timescale_hours' => false,
+            ));
+    }
+
+    public function activitiesAction(){
+        return $this->render(
+            'CampaignChainCoreBundle:Plan/Calendar:index.html.twig',
+            array(
+                'page_title' => 'Plan Activities',
+                'events' => $this->get('campaignchain.core.model.fullcalendar')->getEvents(
+                    array(
+                        'only_activities' => true
+                    )
+                ),
+            ));
+    }
+
+    public function templatesAction()
+    {
+
+        $repository_campaigns = $this->getDoctrine()->getRepository('CampaignChainCoreBundle:Campaign')->getCampaignTemplates();
+
+        return $this->render(
+            'CampaignChainCoreBundle:Plan/Table/Campaign:index.html.twig',
+            array(
+                'page_title' => 'Plan Templates',
+                'repository_campaigns' => $repository_campaigns
             ));
     }
 }

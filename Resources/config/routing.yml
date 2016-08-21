@@ -41,29 +41,29 @@ campaignchain_core_about:
                 expose: true
 
 campaignchain_core_plan:
-    pattern:  /plan/
-    defaults: { _controller: CampaignChainCoreBundle:Plan:index }
+    pattern:  /plan/campaigns/
+    defaults: { _controller: CampaignChainCoreBundle:Plan:campaigns }
     options:
         campaignchain:
             description: Plan campaigns
             rest:
                 expose: true
 
-campaignchain_core_plan_closed:
-    pattern:  /plan/closed/
-    defaults: { _controller: CampaignChainCoreBundle:Plan:index }
+campaignchain_core_plan_activities:
+    pattern:  /plan/activities/
+    defaults: { _controller: CampaignChainCoreBundle:Plan:activities }
     options:
         campaignchain:
-            description: View closed campaigns
+            description: Plan activities
             rest:
                 expose: true
 
 campaignchain_core_plan_templates:
     pattern:  /plan/templates/
-    defaults: { _controller: CampaignChainCoreBundle:Plan:index }
+    defaults: { _controller: CampaignChainCoreBundle:Plan:templates }
     options:
         campaignchain:
-            description: Manage campaign templates
+            description: Plan templates
             rest:
                 expose: true
 

@@ -45,6 +45,21 @@ class CampaignRepository extends EntityRepository
             ->getResult();
     }
 
+    public function getCampaignTemplates() {
+
+        return $this->createQueryBuilder('campaign')
+            ->where('campaign.startDate = :relativeStartDate')
+            ->andWhere('campaign.interval IS NULL')
+            ->andWhere('campaign.status != :statusClosed')
+            ->andWhere('campaign.status != :statusBackgroundProcess')
+            ->setParameter('relativeStartDate', Campaign::RELATIVE_START_DATE)
+            ->setParameter('statusClosed', Action::STATUS_CLOSED)
+            ->setParameter('statusBackgroundProcess', Action::STATUS_BACKGROUND_PROCESS)
+            ->orderBy('campaign.name', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
     /**
      * @param $moduleIdentifier
      * @param $bundleName

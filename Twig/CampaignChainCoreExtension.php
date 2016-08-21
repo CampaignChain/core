@@ -17,6 +17,7 @@
 
 namespace CampaignChain\CoreBundle\Twig;
 
+use CampaignChain\CoreBundle\Entity\Campaign;
 use CampaignChain\CoreBundle\Entity\User;
 use CampaignChain\CoreBundle\Util\ParserUtil;
 use CampaignChain\CoreBundle\Util\SystemUtil;
@@ -453,6 +454,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
             'campaignchain_system' => $this->system(),
             'campaignchain_env' => $this->container->getParameter('campaignchain.env'),
             'campaignchain_core_scheduler_interval'  => $this->container->getParameter('campaignchain_core.scheduler.interval'),
+            'campaignchain_relative_start_date'  => new \DateTime(Campaign::RELATIVE_START_DATE),
         );
     }
 
