@@ -60,7 +60,8 @@
         "mremi/url-shortener": "dev-master",
         "knplabs/knp-gaufrette-bundle": "^0.3.0",
         "gkralik/php-uglifyjs": "dev-master",
-        "campaignchain/location-website": "dev-master"
+        "campaignchain/location-website": "dev-master",
+        "cnerta/breadcrumb-bundle": "2.1.*"
     },
     "autoload": {
         "psr-4": { "CampaignChain\\CoreBundle\\": "" }
