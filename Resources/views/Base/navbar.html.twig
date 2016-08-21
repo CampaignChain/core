@@ -36,20 +36,7 @@ limitations under the License.
             </a>
 
             {% if is_granted('ROLE_USER') -%}
-
                 {{ knp_menu_render('CampaignChainCoreBundle:Builder:mainNav', { 'style': 'navbar' }) }}
-
-                <ul class="navbar-nav nav campaignchain-navbar">
-                    <li class="dropdown" data-step="1">
-                        <a href="#" class="dropdown-toggle btn btn-default" data-toggle="dropdown" id="menu_new"><span class="fa fa-plus"></span> <span class="visible-md-inline visible-lg-inline visible-sm-inline">New </span><span class="caret visible-md-inline-block visible-lg-inline-block visible-sm-inline-block"></span></a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li  class="first" data-step="4"><a href="{{ path('campaignchain_core_activities_new') }}">Activity</a></li>
-                            <li><a href="{{ path('campaignchain_core_milestone_new') }}">Milestone</a></li>
-                            <li data-step="3"><a href="{{ path('campaignchain_core_campaign_new') }}">Campaign</a></li>
-                            <li data-step="2"><a href="{{ path('campaignchain_core_channel_new') }}">Location</a></li>
-                        </ul>
-                    </li>
-                </ul>
             {% endif %}
         </div>
 
@@ -102,13 +89,6 @@ limitations under the License.
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
 </nav>
-
-<ul class="breadcrumb">
-    {% for breadcrumb_item in knp_menu_get_breadcrumbs_array(knp_menu_get_current_item('CampaignChainCoreBundle:Builder:mainNav')) %}
-        {% if not loop.last %}
-            <li><a href="{{ breadcrumb_item.uri }}">{{ breadcrumb_item.label }}</a></li>
-        {% else %}
-            <li class="active">{{ breadcrumb_item.label }}</li>
-        {% endif %}
-    {% endfor %}
-</ul>
+<div class="breadcrumb">
+    {{ cnerta_breadcrumb_render('CampaignChainCoreBundle:Builder:mainNav') }}
+</div>
