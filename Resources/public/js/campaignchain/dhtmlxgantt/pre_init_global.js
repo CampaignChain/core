@@ -274,7 +274,7 @@ gantt.attachEvent("onAfterTaskDrag", function(id, mode, e){
 });
 
 function campaignchainOnAfterTaskDragSuccess(task, data){
-    if(!campaignchainNestedCampaigns(task)){
+    if(task.type == 'campaign' && !campaignchainNestedCampaigns(task)){
         // Explicitly set end_date of task based on the response data,
         // because DHTMLXGantt seems to adjust the end_date in a strange way.
         var new_end_date = campaignchainGetUserDateTime(data.campaign.new_end_date);

@@ -53,7 +53,7 @@ gantt.attachEvent("onTaskDrag", function(id, mode, task, original, e){
     If this is a parent task that is the running instance of a repeating
     campaign, then show all children and move just them.
      */
-    if(task.type == 'campaign' && !parent && !task.interval && children.length){
+    if(task.type == 'campaign' && !parent && !task.interval && children.length && gantt.getTask(children[0]).interval){
         parent = task;
         task = gantt.getTask(children[0]);
         gantt.open(parent.id);
