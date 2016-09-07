@@ -16,6 +16,13 @@ limitations under the License.
 
 {% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
 
+{% if gantt_show_buttons is not defined %}
+    {% set gantt_show_buttons = false %}
+{% endif %}
+
 {% block body %}
+    <script type="text/javascript">
+        var campaignchainGanttShowButtons = {{ gantt_show_buttons }};
+    </script>
     {% include 'CampaignChainCoreBundle:Plan/Timeline/Campaign:inline.html.twig' %}
 {% endblock %}

@@ -96,6 +96,7 @@ class DhtmlxGantt
         $data['campaignchain_id'] = (string)$campaign->getId();
         $data['text'] = $campaign->getName();
         $data['route_edit_api'] = $campaign->getCampaignModule()->getRoutes()['edit_api'];
+        $data['route_plan_detail'] = $campaign->getCampaignModule()->getRoutes()['plan_detail'];
         $campaignService = $this->container->get('campaignchain.core.campaign');
         $data['tpl_teaser'] = $campaignService->tplTeaser(
             $campaign->getCampaignModule(),
@@ -282,6 +283,7 @@ class DhtmlxGantt
             $campaign_data['campaignchain_id'] = (string) $campaign->getId();
             $campaign_data['type'] = 'campaign';
             $campaign_data['route_edit_api'] = $campaign->getCampaignModule()->getRoutes()['edit_api'];
+            $campaign_data['route_plan_detail'] = $campaign->getCampaignModule()->getRoutes()['plan_detail'];
             $campaignService = $this->container->get('campaignchain.core.campaign');
             $campaign_data['tpl_teaser'] = $campaignService->tplTeaser(
                 $campaign->getCampaignModule(),

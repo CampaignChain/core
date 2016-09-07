@@ -34,11 +34,35 @@ gantt.config.progress = false;
 gantt.config.grid_width = 240;
 gantt.config.row_height = 40;
 //gantt.config.autosize = true;
-gantt.config.columns = [
-    {name:"text", label:"Campaigns", tree:true, width:200 },
-//        {name:"start_date", label:"Start Date", align: "center", width:100 },
-//        {name:"end_date", label:"End Date", align: "center", width:100 },
-];
+
+if(window.campaignchainGanttShowButtons == true) {
+    console.log('show_buttons');
+    gantt.config.columns = [
+        {name: "text", label: "Campaigns", tree: true, width: 200},
+        {
+            name: "buttons",
+            label: "",
+            tree: false,
+            width: 80,
+            template: campaignchainGanttColButtons
+        }
+    ];
+} else {
+    gantt.config.columns = [
+        {name: "text", label: "Campaigns", tree: true, width: 200}
+    ];
+}
+
+function campaignchainGanttColButtons(task){
+    if(task.type == 'campaign' && gantt.getChildren(gantt.getParent(task)).length > 1) {
+        return '<a href="' + Routing.generate(task.route_plan_detail, { id: task.campaignchain_id }) + '" class="btn btn-primary btn-xs">'
+            + '<span class="fa fa-calendar"></span>'
+            + '</a>';
+    }
+
+    return "";
+};
+
 gantt.config.touch =  true;
 // Disable that dragged task snaps to grid.
 gantt.config.round_dnd_dates = false;

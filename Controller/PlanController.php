@@ -45,6 +45,7 @@ class PlanController extends Controller
                     self::BUNDLE_NAME, self::MODULE_IDENTIFIER
                 ),
                 'gantt_toolbar_status' => 'default',
+                'gantt_show_buttons' => true,
                 'path_embedded' => $this->generateUrl('campaignchain_campaign_scheduled_plan_timeline'),
                 'path_fullscreen' =>  $this->generateUrl('campaignchain_campaign_scheduled_plan_timeline_fullscreen'),
                 'gantt_toolbar_timescale_hours' => false,
