@@ -17,15 +17,15 @@
 
 namespace CampaignChain\CoreBundle\Controller;
 
+use CampaignChain\CoreBundle\EntityService\CampaignService;
 use CampaignChain\CoreBundle\Util\DateTimeUtil;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use CampaignChain\CoreBundle\Entity\Campaign;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityRepository;
 
-class CampaignController extends Controller
+class CampaignController extends BaseController
 {
     const FORMAT_DATEINTERVAL = 'Years: %Y, months: %m, days: %d, hours: %h, minutes: %i, seconds: %s';
 
@@ -116,25 +116,76 @@ class CampaignController extends Controller
         $responseData = array();
 
         $id = $request->request->get('id');
-        $newStartDate = new \DateTime($request->request->get('start_date'));
-        $newStartDate = DateTimeUtil::roundMinutes($newStartDate);
 
+        // Is this a campaign with interval?
+        if($request->request->has('start_date')) {
+            try {
+                $newStartDate = new \DateTime($request->request->get('start_date'));
+            } catch(\Exception $e){
+                return $this->apiErrorResponse($e->getMessage());
+            }
+        } else {
+            return $this->apiErrorResponse(
+                'Please provide a date time value for start_date'
+            );
+        }
+
+        $newStartDate = DateTimeUtil::roundMinutes(
+            $newStartDate,
+            $this->getParameter('campaignchain_core.scheduler.interval')
+        );
+
+        /** @var CampaignService $campaignService */
         $campaignService = $this->get('campaignchain.core.campaign');
+        /** @var Campaign $campaign */
         $campaign = $campaignService->getCampaign($id);
 
         // Preserve old campaign data for response.
         $responseData['campaign']['id'] = $campaign->getId();
-        $oldCampaignStartDate = clone $campaign->getStartDate();
-        $responseData['campaign']['old_start_date'] = $oldCampaignStartDate->format(\DateTime::ISO8601);
-        $responseData['campaign']['old_end_date'] = $campaign->getEndDate()->format(\DateTime::ISO8601);
+        if(!$campaign->getInterval()) {
+            $oldStartDate = clone $campaign->getStartDate();
+            $responseData['campaign']['old_start_date'] = $oldStartDate->format(\DateTime::ISO8601);
+            $responseData['campaign']['old_end_date'] = $campaign->getEndDate()->format(\DateTime::ISO8601);
+        } else {
+            $responseData['campaign']['old_interval_start_date'] = $campaign->getIntervalStartDate()->format(\DateTime::ISO8601);
+            $responseData['campaign']['old_interval_next_run'] = $campaign->getIntervalNextRun()->format(\DateTime::ISO8601);
+            if($campaign->getIntervalEndDate()){
+                $responseData['campaign']['old_interval_end_date'] = $campaign->getIntervalEndDate()->format(\DateTime::ISO8601);
+            }
+        }
 
         // Move campaign's start date.
         $campaign = $campaignService->moveCampaign($campaign, $newStartDate);
 
         // Add new campaign dates to response.
-        $responseData['campaign']['new_start_date'] = $campaign->getStartDate()->format(\DateTime::ISO8601);
-        $responseData['campaign']['new_end_date'] = $campaign->getEndDate()->format(\DateTime::ISO8601);
+        if(!$campaign->getInterval()) {
+            $responseData['campaign']['new_start_date'] = $campaign->getStartDate()->format(\DateTime::ISO8601);
+            $responseData['campaign']['new_end_date'] = $campaign->getEndDate()->format(\DateTime::ISO8601);
+        } else {
+            $responseData['campaign']['new_interval_start_date'] = $campaign->getIntervalStartDate()->format(\DateTime::ISO8601);
+            $responseData['campaign']['new_interval_next_run'] = $campaign->getIntervalNextRun()->format(\DateTime::ISO8601);
+            if($campaign->getIntervalEndDate()){
+                $responseData['campaign']['new_interval_end_date'] = $campaign->getIntervalEndDate()->format(\DateTime::ISO8601);
+            }
+        }
 
         return new Response($serializer->serialize($responseData, 'json'));
+    }
+
+    public function getNestedCampaignsForTimelineApiAction(Request $request, $id)
+    {
+        $responseData = array();
+
+        /** @var CampaignService $campaignService */
+        $campaignService = $this->get('campaignchain.core.campaign');
+        /** @var Campaign $campaign */
+        $campaign = $campaignService->getCampaign($id);
+
+        $ganttService = $this->get('campaignchain.core.model.dhtmlxgantt');
+        $serializer = $this->get('campaignchain.core.serializer.default');
+
+        return new Response($serializer->serialize(
+            $ganttService->getCampaignWithChildren($campaign),
+            'json'));
     }
 }

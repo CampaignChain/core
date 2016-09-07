@@ -12,6 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+#
+# Root
+#
+
 campaignchain_core_rest_root:
     type:     rest
     prefix:   /
@@ -91,3 +95,11 @@ campaignchain_core_rest_user_get_users_user:
     path: /users/{id}
     defaults: { _controller: CampaignChainCoreBundle:REST/User:getUsers }
     methods: [GET]
+
+#
+# Tracking
+#
+
+campaignchain_core_tracking_new_api:
+    pattern:  /report/cta/new/{channel}
+    defaults: { _controller: CampaignChainCoreBundle:Tracking:newApi }

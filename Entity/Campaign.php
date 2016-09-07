@@ -26,12 +26,25 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Campaign extends Action implements AssignableInterface
 {
+    const RELATIVE_START_DATE = '2012-01-01 00:00:00';
+
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Campaign", mappedBy="parent")
+     */
+    protected $children;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Campaign", inversedBy="children")
+     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id", nullable=true)
+     */
+    protected $parent;
 
     /**
      * @ORM\Column(type="text", nullable=true)
@@ -83,6 +96,7 @@ class Campaign extends Action implements AssignableInterface
         $this->activities = new ArrayCollection();
         $this->activityFacts = new ArrayCollection();
         $this->milestones = new ArrayCollection();
+        $this->children = new ArrayCollection();
     }
 
     public function __toString()
@@ -98,6 +112,62 @@ class Campaign extends Action implements AssignableInterface
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Add children
+     *
+     * @param \CampaignChain\CoreBundle\Entity\Campaign $children
+     * @return Campaign
+     */
+    public function addChild(Campaign $children)
+    {
+        $this->children[] = $children;
+
+        return $this;
+    }
+
+    /**
+     * Remove children
+     *
+     * @param \CampaignChain\CoreBundle\Entity\Campaign $children
+     */
+    public function removeChild(Campaign $children)
+    {
+        $this->children->removeElement($children);
+    }
+
+    /**
+     * Get children
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getChildren()
+    {
+        return $this->children;
+    }
+
+    /**
+     * Set parent
+     *
+     * @param \CampaignChain\CoreBundle\Entity\Campaign $parent
+     * @return Campaign
+     */
+    public function setParent(Campaign $parent = null)
+    {
+        $this->parent = $parent;
+
+        return $this;
+    }
+
+    /**
+     * Get parent
+     *
+     * @return \CampaignChain\CoreBundle\Entity\Campaign
+     */
+    public function getParent()
+    {
+        return $this->parent;
     }
 
     /**
@@ -299,7 +369,7 @@ class Campaign extends Action implements AssignableInterface
      *
      * @param bool $hasRelativeDates
      *
-     * @return Activity
+     * @return Campaign
      */
     public function setHasRelativeDates($hasRelativeDates)
     {

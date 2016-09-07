@@ -21,6 +21,14 @@ campaignchain_core:
     upload_storage:
         path: '%kernel.root_dir%/../web/storage'
         url_prefix: /storage
+    scheduler:
+        # Interval of Scheduler running in minutes, usually 5 mins.
+        interval: 5
+        # The interval while developing. Should be a high value so that actions
+        # which are further in the past also get executed by the Scheduler.
+        interval_dev: 9600
+        # Timeout of Scheduler in seconds. Default value is 600s.
+        timeout: 600
 
 assetic:
     assets:
@@ -159,6 +167,12 @@ assetic:
         campaignchain_dhtmlxgantt_pre_init_global_js:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/pre_init_global.js"
+        campaignchain_dhtmlxgantt_pre_init_global_campaign_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/pre_init_global_campaign.js"
+        campaignchain_dhtmlxgantt_pre_init_global_activity_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/pre_init_global_activity.js"
         campaignchain_dhtmlxgantt_toolbar_absolute_dates_js:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/js/campaignchain/dhtmlxgantt/toolbar_absolute_dates.js"

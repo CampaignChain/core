@@ -74,6 +74,7 @@
                     "Braincrafted\\Bundle\\BootstrapBundle\\BraincraftedBootstrapBundle",
                     "Knp\\Bundle\\MenuBundle\\KnpMenuBundle",
                     "Knp\\Bundle\\PaginatorBundle\\KnpPaginatorBundle",
+                    "Cnerta\\BreadcrumbBundle\\CnertaBreadcrumbBundle",
                     "SC\\DatetimepickerBundle\\SCDatetimepickerBundle",
                     "FOS\\UserBundle\\FOSUserBundle",
                     "Bmatzner\\FontAwesomeBundle\\BmatznerFontAwesomeBundle",

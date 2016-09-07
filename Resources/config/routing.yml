@@ -41,11 +41,29 @@ campaignchain_core_about:
                 expose: true
 
 campaignchain_core_plan:
-    pattern:  /plan/{id}
-    defaults: { _controller: CampaignChainCoreBundle:Plan:index, id: 0 }
+    pattern:  /plan/campaigns/
+    defaults: { _controller: CampaignChainCoreBundle:Plan:campaigns }
     options:
         campaignchain:
             description: Plan campaigns
+            rest:
+                expose: true
+
+campaignchain_core_plan_activities:
+    pattern:  /plan/activities/
+    defaults: { _controller: CampaignChainCoreBundle:Plan:activities }
+    options:
+        campaignchain:
+            description: Plan activities
+            rest:
+                expose: true
+
+campaignchain_core_plan_templates:
+    pattern:  /plan/templates/
+    defaults: { _controller: CampaignChainCoreBundle:Plan:templates }
+    options:
+        campaignchain:
+            description: Plan templates
             rest:
                 expose: true
 
@@ -83,19 +101,6 @@ campaignchain_core_campaign_edit_modal:
     options:
         expose: true
 
-campaignchain_core_campaign_edit_api:
-    pattern:  /api/private/campaign/{id}/edit
-    defaults: { _controller: CampaignChainCoreBundle:Campaign:editApi }
-    options:
-        expose: true
-
-campaignchain_core_campaign_move_api:
-    pattern:  /api/private/campaign/move
-    defaults: { _controller: CampaignChainCoreBundle:Campaign:moveApi }
-    methods:  [POST]
-    options:
-        expose: true
-
 # activity routes
 campaignchain_core_activities:
     pattern:  /activities/
@@ -126,19 +131,6 @@ campaignchain_core_activity_edit:
 campaignchain_core_activity_edit_modal:
     pattern:  /modal/activity/{id}/edit
     defaults: { _controller: CampaignChainCoreBundle:Activity:editModal }
-    options:
-        expose: true
-
-campaignchain_core_activity_edit_api:
-    pattern:  /api/private/activity/{id}/edit
-    defaults: { _controller: CampaignChainCoreBundle:Activity:editApi }
-    options:
-        expose: true
-
-campaignchain_core_activity_move_api:
-    pattern:  /api/private/activity/move
-    defaults: { _controller: CampaignChainCoreBundle:Activity:moveApi }
-    methods:  [POST]
     options:
         expose: true
 
@@ -175,19 +167,6 @@ campaignchain_core_milestone_edit_modal:
     options:
         expose: true
 
-campaignchain_core_milestone_edit_api:
-    pattern:  /api/private/milestone/{id}/edit
-    defaults: { _controller: CampaignChainCoreBundle:Milestone:editApi }
-    options:
-        expose: true
-
-campaignchain_core_milestone_move_api:
-    pattern:  /api/private/milestone/move
-    defaults: { _controller: CampaignChainCoreBundle:Milestone:moveApi }
-    methods:  [POST]
-    options:
-        expose: true
-
 campaignchain_core_milestone_remove:
     pattern:  /milestone/{id}/remove
     defaults: { _controller: CampaignChainCoreBundle:Milestone:remove }
@@ -205,12 +184,6 @@ campaignchain_core_report:
 campaignchain_core_report_show:
     pattern:  /report/{id}
     defaults: { _controller: CampaignChainCoreBundle:Report:show }
-
-campaignchain_core_report_list_cta_locations_per_campaign_api:
-    pattern:  /api/private/report/cta/campaign/{id}/locations
-    defaults: { _controller: CampaignChainCoreBundle:Report:apiListCtaLocationsPerCampaign }
-    options:
-        expose: true
 
 # module routes
 campaignchain_core_module:
@@ -254,10 +227,6 @@ campaignchain_core_channel_cta_test:
     pattern: channel/{id}/cta-tracking/
     defaults: { _controller: CampaignChainCoreBundle:Channel:ctaTracking, id: 0  }
 
-campaignchain_core_channel_cta_tracking_test:
-    pattern:  /api/private/channel/{id}/cta-tracking/test
-    defaults: { _controller: CampaignChainCoreBundle:Channel:apiTestCtaTracking, id: 0 }
-
 campaignchain_core_channel_remove:
     pattern:  /channel/{id}/remove
     defaults: { _controller: CampaignChainCoreBundle:Channel:remove }
@@ -276,12 +245,6 @@ campaignchain_core_location:
             rest:
                 expose: true
 
-campaignchain_core_location_list_activities_api:
-    pattern:  /api/private/location/{id}/activities
-    defaults: { _controller: CampaignChainCoreBundle:Location:apiListActivities }
-    options:
-        expose: true
-
 campaignchain_core_location_remove:
     pattern:  /location/{id}/remove
     defaults: { _controller: CampaignChainCoreBundle:Location:remove }
@@ -298,10 +261,6 @@ campaignchain_core_tracking_js:
 campaignchain_core_tracking_js_old:
     pattern:  /bundles/campaignchaincore/js/campaignchain/campaignchain_tracking.js
     defaults: { _controller: CampaignChainCoreBundle:Tracking:trackingJs }
-
-campaignchain_core_tracking_new_api:
-    pattern:  /api/v1/report/cta/new/{channel}
-    defaults: { _controller: CampaignChainCoreBundle:Tracking:newApi }
 
 campaignchain_core_tracking_js_test:
     path:     /test/trackingjs/{channel}/{dev}/{old}
@@ -406,9 +365,14 @@ oneup_uploader:
 _liip_imagine:
     resource: "@LiipImagineBundle/Resources/config/routing.xml"
 
-# REST routes are being created automatically via FOSRestBundle.
-campaignchain_core_rest:
-    resource: "@CampaignChainCoreBundle/Resources/config/routing_rest.yml"
+# Public REST routes are being created automatically via FOSRestBundle.
+campaignchain_core_rest_private:
+    resource: "@CampaignChainCoreBundle/Resources/config/routing_rest_private.yml"
+    prefix: /api/private
+
+# Public REST routes are being created automatically via FOSRestBundle.
+campaignchain_core_rest_public:
+    resource: "@CampaignChainCoreBundle/Resources/config/routing_rest_public.yml"
     prefix: /api/v1
 
 # NelmioApiDocBundle routes

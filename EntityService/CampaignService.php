@@ -18,6 +18,7 @@
 namespace CampaignChain\CoreBundle\EntityService;
 
 use CampaignChain\CoreBundle\Entity\Hook;
+use CampaignChain\Hook\DateRepeatBundle\Entity\DateRepeat;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use CampaignChain\CoreBundle\Entity\Action;
@@ -115,21 +116,34 @@ class CampaignService
         return $this->serializer->serialize($campaignsDates, 'json');
     }
 
-    public function moveCampaign(Campaign $campaign, $newStartDate, $status = null){
+    public function moveCampaign(Campaign $campaign, \DateTime $newStartDate, $status = null){
         // Make sure that data stays intact by using transactions.
         try {
             $this->em->getConnection()->beginTransaction();
 
-            // Calculate time difference.
-            $interval = $campaign->getStartDate()->diff($newStartDate);
-
+            /** @var HookService $hookService */
             $hookService = $this->container->get($campaign->getTriggerHook()->getServices()['entity']);
             $hook = $hookService->getHook($campaign, Hook::MODE_MOVE);
-            if($hook->getStartDate() !== null){
-                $hook->setStartDate(new \DateTime($hook->getStartDate()->add($interval)->format(\DateTime::ISO8601)));
-            }
-            if($hook->getEndDate() !== null){
-                $hook->setEndDate(new \DateTime($hook->getEndDate()->add($interval)->format(\DateTime::ISO8601)));
+            if(!$campaign->getInterval()) {
+                // Calculate time difference.
+                $interval = $campaign->getStartDate()->diff($newStartDate);
+
+                if ($hook->getStartDate() !== null) {
+                    $hook->setStartDate(new \DateTime($hook->getStartDate()->add($interval)->format(\DateTime::ISO8601)));
+                }
+                if ($hook->getEndDate() !== null) {
+                    $hook->setEndDate(new \DateTime($hook->getEndDate()->add($interval)->format(\DateTime::ISO8601)));
+                }
+            } else {
+                // Calculate time difference.
+                $interval = $campaign->getIntervalStartDate()->diff($newStartDate);
+
+                /** @var DateRepeat $hook */
+                $hook->setIntervalStartDate(new \DateTime($hook->getIntervalStartDate()->add($interval)->format(\DateTime::ISO8601)));
+                $hook->setIntervalNextRun($hook->getIntervalStartDate());
+                if($hook->getIntervalEndDate()){
+                    $hook->setIntervalEndDate(new \DateTime($hook->getIntervalEndDate()->add($interval)->format(\DateTime::ISO8601)));
+                }
             }
 
             $campaign = $hookService->processHook($campaign, $hook);
@@ -138,29 +152,31 @@ class CampaignService
                 $campaign->setStatus($status);
             }
 
-            // Change due date of all related milestones.
-            $milestones = $campaign->getMilestones();
-            if($milestones->count()){
-                $milestoneService = $this->container->get('campaignchain.core.milestone');
-                foreach($milestones as $milestone){
-                    if($status != null){
-                        $milestone->setStatus($status);
+            if(!$campaign->getInterval()) {
+                // Change due date of all related milestones.
+                $milestones = $campaign->getMilestones();
+                if ($milestones->count()) {
+                    $milestoneService = $this->container->get('campaignchain.core.milestone');
+                    foreach ($milestones as $milestone) {
+                        if ($status != null) {
+                            $milestone->setStatus($status);
+                        }
+                        $milestone = $milestoneService->moveMilestone($milestone, $interval);
+                        $campaign->addMilestone($milestone);
                     }
-                    $milestone = $milestoneService->moveMilestone($milestone, $interval);
-                    $campaign->addMilestone($milestone);
                 }
-            }
 
-            // Change due date of all related activities.
-            $activities = $campaign->getActivities();
-            if($activities->count()){
-                $activityService = $this->container->get('campaignchain.core.activity');
-                foreach($activities as $activity){
-                    if($status != null){
-                        $activity->setStatus($status);
+                // Change due date of all related activities.
+                $activities = $campaign->getActivities();
+                if ($activities->count()) {
+                    $activityService = $this->container->get('campaignchain.core.activity');
+                    foreach ($activities as $activity) {
+                        if ($status != null) {
+                            $activity->setStatus($status);
+                        }
+                        $activity = $activityService->moveActivity($activity, $interval);
+                        $campaign->addActivity($activity);
                     }
-                    $activity = $activityService->moveActivity($activity, $interval);
-                    $campaign->addActivity($activity);
                 }
             }
 

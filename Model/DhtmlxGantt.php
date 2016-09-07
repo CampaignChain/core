@@ -17,8 +17,11 @@
 
 namespace CampaignChain\CoreBundle\Model;
 
+use CampaignChain\CoreBundle\Entity\Action;
+use CampaignChain\CoreBundle\Entity\Campaign;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Security\Acl\Exception\Exception;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class DhtmlxGantt
@@ -29,11 +32,193 @@ class DhtmlxGantt
     protected $container;
     protected $serializer;
 
+    private $maxTimelineDate;
+
     public function __construct(EntityManager $em, ContainerInterface $container, SerializerInterface $serializer)
     {
         $this->em = $em;
         $this->container = $container;
         $this->serializer = $serializer;
+
+        $now = new \DateTime('now');
+        $this->maxTimelineDate = $now->modify($this->container->getParameter('campaignchain.max_date_interval'));
+    }
+
+    public function getOngoingUpcomingCampaigns()
+    {
+        $qb = $this->em->createQueryBuilder();
+        $qb->select('c')
+            ->from('CampaignChain\CoreBundle\Entity\Campaign', 'c')
+            ->where('c.status != :status')
+            ->andWhere('c.parent IS NULL')
+            ->andWhere(
+                '(c.startDate > :relative_start_date AND c.interval IS NULL)'
+                .'OR '
+                .'(c.startDate = :relative_start_date AND c.interval IS NOT NULL)'
+            )
+            ->setParameter('status', Action::STATUS_CLOSED)
+            ->setParameter('relative_start_date', new \DateTime(Campaign::RELATIVE_START_DATE));
+
+        $qb->orderBy('c.startDate', 'DESC');
+
+        $query = $qb->getQuery();
+        $campaigns = $query->getResult();
+
+        $ganttCampaignData = array();
+
+        /** @var Campaign $campaign */
+        foreach($campaigns as $campaign) {
+            $ganttCampaignData = array_merge($ganttCampaignData, $this->getCampaignWithChildren($campaign));
+        }
+
+        $ganttTasks = array();
+
+        if(isset($ganttCampaignData) && is_array($ganttCampaignData)){
+            $ganttTasks['data'] = $ganttCampaignData;
+        } else {
+            $this->container->get('session')->getFlashBag()->add(
+                'warning',
+                'No campaigns available yet. Please create one.'
+            );
+
+            header('Location: '.
+                $this->container->get('router')->generate('campaignchain_core_campaign_new')
+            );
+            exit;
+        }
+
+        return $this->serializer->serialize($ganttTasks, 'json');
+    }
+
+    public function getCampaignWithChildren(Campaign $campaign)
+    {
+        $data['type'] = 'campaign';
+        $data['campaignchain_id'] = (string)$campaign->getId();
+        $data['text'] = $campaign->getName();
+        $data['route_edit_api'] = $campaign->getCampaignModule()->getRoutes()['edit_api'];
+        $data['route_plan_detail'] = $campaign->getCampaignModule()->getRoutes()['plan_detail'];
+        $campaignService = $this->container->get('campaignchain.core.campaign');
+        $data['tpl_teaser'] = $campaignService->tplTeaser(
+            $campaign->getCampaignModule(),
+            array(
+                'only_icon' => true,
+                'size' => 24,
+            )
+        );
+
+        // Define the trigger hook's identifier.
+        if (!$campaign->getInterval() && $campaign->getTriggerHook()) {
+            $data['id'] = (string) $campaign->getId().'_campaign';
+
+            $hookService = $this->container->get($campaign->getTriggerHook()->getServices()['entity']);
+            $hook = $hookService->getHook($campaign);
+            $data['start_date'] = $hook->getStartDate()->format(self::FORMAT_TIMELINE_DATE);
+            if ($hook->getEndDate()) {
+                $data['end_date'] = $hook->getEndDate()->format(self::FORMAT_TIMELINE_DATE);
+            } else {
+                $data['end_date'] = $data['start_date'];
+            }
+
+            $ganttCampaignData[] = $data;
+        } elseif($campaign->getInterval()) {
+            // Handle repeating campaigns.
+            if(!$campaign->getIntervalEndOccurrence()) {
+                $occurrences = 1;
+            } else {
+                $occurrences = $campaign->getIntervalEndOccurrence();
+            }
+
+            /** @var \DateTime $startDate */
+            $startDate = $campaign->getIntervalStartDate();
+            /** @var \DateInterval $duration */
+            $duration = $campaign->getStartDate()->diff($campaign->getEndDate());
+            $now = new \DateTime('now');
+            $maxTimelineDate = clone $now;
+            $maxTimelineDate->modify(
+                $this->container->getParameter('campaignchain.max_date_interval')
+            );
+            $firstInstanceId = null;
+            $repeatingCount = 0;
+
+            // If an actual instance exists as a child campaign, then add it.
+            /** @var Campaign $childCampaign */
+            $childCampaign =
+                $this->em->getRepository('CampaignChain\CoreBundle\Entity\Campaign')
+                    ->findOneByParent($campaign);
+            if($childCampaign){
+                $firstInstanceId = $data['id'] = (string)$campaign->getId() . '_campaign';
+                $data['start_date'] = $childCampaign->getStartDate()->format(self::FORMAT_TIMELINE_DATE);
+                $data['end_date'] = $childCampaign->getEndDate()->format(self::FORMAT_TIMELINE_DATE);
+                $ganttCampaignData[] = $data;
+            }
+
+            /*
+             * Let's iterate through all the future instances of a repeating
+             * campaign.
+             */
+            for($i = 0; $i < $occurrences; $i++){
+                /*
+                 * Take the interval's start/end date for the first instance,
+                 * otherwise calculate the start/end date by adding the
+                 * campaign's interval to the start/end date of the
+                 * previous instance.
+                 */
+                $startDate->modify($campaign->getInterval());
+                $endDate = clone $startDate;
+                $endDate->add($duration);
+
+                $hasEnded = (
+                    $campaign->getIntervalEndDate() != NULL &&
+                    $endDate > $campaign->getIntervalEndDate()
+                );
+
+                /*
+                 * If the instance is in the past, skip it,
+                 * because we only want ongoing or upcoming ones.
+                 */
+                if(
+                    !$hasEnded && $startDate >=  $campaign->getIntervalNextRun() &&
+                    ($startDate > $now || $endDate > $now)
+                ) {
+                    /*
+                     * Is this the first repeating campaign instance?
+                     */
+                    if(!$firstInstanceId) {
+                        /*
+                         * This is the first instance, so we define it as
+                         * the parent of the other repeating campaign
+                         * instances.
+                         */
+                        $firstInstanceId = $data['id'] = (string)$campaign->getId() . '_campaign';
+                    } else {
+                        /*
+                         * This is not the first instance of a repeating
+                         * campaign in the timeline, so let's add the first instance
+                         * as the parent campaign.
+                         */
+                        $data['id'] = (string)$campaign->getId() . '_' . $repeatingCount . '_campaign';
+                        $data['parent'] = $firstInstanceId;
+                        $repeatingCount++;
+                    }
+                    $data['start_date'] = $startDate->format(self::FORMAT_TIMELINE_DATE);
+                    $data['interval'] = $campaign->getIntervalHumanReadable();
+                    $data['end_date'] = $endDate->format(self::FORMAT_TIMELINE_DATE);
+
+                    $ganttCampaignData[] = $data;
+                }
+
+                if (
+                    $campaign->getIntervalEndOccurrence() == NULL &&
+                    (!$hasEnded && $startDate < $maxTimelineDate)
+                ) {
+                    $occurrences++;
+                }
+            }
+        } else {
+            throw new \Exception('Unknown campaign type.');
+        }
+
+        return $ganttCampaignData;
     }
 
     /**
@@ -60,6 +245,8 @@ class DhtmlxGantt
             $qb->andWhere('c.id = :campaignId')
                 ->setParameter('campaignId', $campaignId);
         }
+
+        $qb->andWhere('c.parent IS NULL');
 
         $qb->orderBy('c.startDate', 'DESC');
 
@@ -96,6 +283,7 @@ class DhtmlxGantt
             $campaign_data['campaignchain_id'] = (string) $campaign->getId();
             $campaign_data['type'] = 'campaign';
             $campaign_data['route_edit_api'] = $campaign->getCampaignModule()->getRoutes()['edit_api'];
+            $campaign_data['route_plan_detail'] = $campaign->getCampaignModule()->getRoutes()['plan_detail'];
             $campaignService = $this->container->get('campaignchain.core.campaign');
             $campaign_data['tpl_teaser'] = $campaignService->tplTeaser(
                 $campaign->getCampaignModule(),

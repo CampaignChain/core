@@ -19,6 +19,7 @@ namespace CampaignChain\CoreBundle\Model;
 
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class FullCalendar
@@ -29,6 +30,11 @@ class FullCalendar
     protected $container;
     protected $serializer;
 
+    /**
+     * @var array
+     */
+    protected $options;
+
     public function __construct(EntityManager $em, ContainerInterface $container, SerializerInterface $serializer)
     {
         $this->em = $em;
@@ -36,26 +42,37 @@ class FullCalendar
         $this->serializer = $serializer;
     }
 
-    public function getEvents($bundleName = null, $moduleIdentifier = null, $campaignId = null){
+    public function getEvents(array $options = array()){
+        $resolver = new OptionsResolver();
+
+        $resolver->setDefaults(array(
+            'bundle_name' => null,
+            'module_identifier' => null,
+            'campaign_id' => null,
+            'only_activities' => false,
+        ));
+
+        $this->options = $resolver->resolve($options);
+
         $calendarEvents = array();
 
         $qb = $this->em->createQueryBuilder();
         $qb->select('c')
             ->from('CampaignChain\CoreBundle\Entity\Campaign', 'c');
 
-        if(isset($bundleName) && isset($moduleIdentifier)){
+        if($this->options['bundle_name'] && $this->options['module_identifier']){
             $qb->from('CampaignChain\CoreBundle\Entity\Module', 'm')
                 ->from('CampaignChain\CoreBundle\Entity\Bundle', 'b')
                 ->where('b.name = :bundleName')
                 ->andWhere('m.identifier = :moduleIdentifier')
                 ->andWhere('m.id = c.campaignModule')
-                ->setParameter('bundleName', $bundleName)
-                ->setParameter('moduleIdentifier', $moduleIdentifier);
+                ->setParameter('bundleName', $this->options['bundle_name'])
+                ->setParameter('moduleIdentifier', $this->options['module_identifier']);
         }
 
-        if(isset($campaign)){
+        if($this->options['campaign_id']){
             $qb->andWhere('c.id = :campaignId')
-                ->setParameter('campaignId', $campaignId);
+                ->setParameter('campaignId', $this->options['campaign_id']);
         }
 
         $qb->orderBy('c.startDate', 'DESC');
@@ -80,65 +97,67 @@ class FullCalendar
 
         $campaignEvents = array();
 
-        foreach($campaigns as $campaign){
-            $campaignEvent['title'] = $campaign->getName();
+        foreach($campaigns as $campaign) {
+            if (!$this->options['only_activities']) {
+                $campaignEvent['title'] = $campaign->getName();
 
-            // Retrieve the start and end date from the trigger hook.
-            $hookService = $this->container->get($campaign->getTriggerHook()->getServices()['entity']);
-            $hook = $hookService->getHook($campaign);
-            $campaignEvent['start'] = $hook->getStartDate()->format(self::FORMAT_CALENDAR_DATE);
-            if($hook->getEndDate()){
-                $campaignEvent['end'] = $hook->getEndDate()->format(self::FORMAT_CALENDAR_DATE);
-            } else {
-                $campaignEvent['end'] = $campaignEvent['start'];
+                // Retrieve the start and end date from the trigger hook.
+                $hookService = $this->container->get($campaign->getTriggerHook()->getServices()['entity']);
+                $hook = $hookService->getHook($campaign);
+                $campaignEvent['start'] = $hook->getStartDate()->format(self::FORMAT_CALENDAR_DATE);
+                if ($hook->getEndDate()) {
+                    $campaignEvent['end'] = $hook->getEndDate()->format(self::FORMAT_CALENDAR_DATE);
+                } else {
+                    $campaignEvent['end'] = $campaignEvent['start'];
+                }
+                // Provide the hook's start and end date form field names.
+                //$campaignEvent['start_date_identifier'] = $hookService->getStartDateIdentifier();
+                //$campaignEvent['end_date_identifier'] = $hookService->getEndDateIdentifier();
+
+                $campaignEvent['allDay'] = true;
+                $campaignEvent['type'] = 'campaign';
+                $campaignEvent['campaignchain_id'] = $campaign->getId();
+                $campaignEvent['route_edit_api'] = $campaign->getCampaignModule()->getRoutes()['edit_api'];
+                $campaignService = $this->container->get('campaignchain.core.campaign');
+                $campaignEvent['tpl_teaser'] = $campaignService->tplTeaser(
+                    $campaign->getCampaignModule(),
+                    array(
+                        'only_icon' => true,
+                        'size' => 24,
+                    )
+                );
+                //$campaignEvent['trigger_identifier'] = str_replace('-', '_', $campaign->getTriggerHook()->getIdentifier());
+
+                if ($hook->getStartDate() < $userNow && $hook->getEndDate() > $userNow) {
+                    $campaignEvents['ongoing'][] = $campaignEvent;
+                } elseif ($hook->getStartDate() < $userNow && $hook->getEndDate() < $userNow) {
+                    $campaignEvents['done'][] = $campaignEvent;
+                } elseif ($hook->getStartDate() > $userNow && $hook->getEndDate() > $userNow) {
+                    $campaignEvents['upcoming'][] = $campaignEvent;
+                }
             }
-            // Provide the hook's start and end date form field names.
-            //$campaignEvent['start_date_identifier'] = $hookService->getStartDateIdentifier();
-            //$campaignEvent['end_date_identifier'] = $hookService->getEndDateIdentifier();
 
-            $campaignEvent['allDay'] = true;
-            $campaignEvent['type'] = 'campaign';
-            $campaignEvent['campaignchain_id'] = $campaign->getId();
-            $campaignEvent['route_edit_api'] = $campaign->getCampaignModule()->getRoutes()['edit_api'];
-            $campaignService = $this->container->get('campaignchain.core.campaign');
-            $campaignEvent['tpl_teaser'] = $campaignService->tplTeaser(
-                $campaign->getCampaignModule(),
-                array(
-                    'only_icon' => true,
-                    'size' => 24,
-                )
-            );
-            //$campaignEvent['trigger_identifier'] = str_replace('-', '_', $campaign->getTriggerHook()->getIdentifier());
-
-            if($hook->getStartDate() < $userNow && $hook->getEndDate() > $userNow){
-                $campaignEvents['ongoing'][] = $campaignEvent;
-            } elseif($hook->getStartDate() < $userNow && $hook->getEndDate() < $userNow){
-                $campaignEvents['done'][] = $campaignEvent;
-            } elseif($hook->getStartDate() > $userNow && $hook->getEndDate() > $userNow){
-                $campaignEvents['upcoming'][] = $campaignEvent;
+            if (isset($campaignEvents['ongoing'])) {
+                $calendarEvents['campaign_ongoing']['data'] = $this->serializer->serialize($campaignEvents['ongoing'], 'json');
+                $calendarEvents['campaign_ongoing']['options'] = array(
+                    'className' => 'campaignchain-calendar-ongoing campaignchain-calendar-campaign',
+                    'startEditable' => false,
+                );
             }
-        }
-
-        if(isset($campaignEvents['ongoing'])){
-            $calendarEvents['campaign_ongoing']['data'] = $this->serializer->serialize($campaignEvents['ongoing'], 'json');
-            $calendarEvents['campaign_ongoing']['options'] = array(
-                'className' => 'campaignchain-calendar-ongoing campaignchain-calendar-campaign',
-                'startEditable' => false,
-            );
-        }
-        if(isset($campaignEvents['done'])){
-            $calendarEvents['campaign_done']['data'] = $this->serializer->serialize($campaignEvents['done'], 'json');
-            $calendarEvents['campaign_done']['options'] = array(
-                'className' => 'campaignchain-calendar-done campaignchain-calendar-campaign',
-                'editable' => false,
-            );
-        }
-        if(isset($campaignEvents['upcoming'])){
-            $calendarEvents['campaign_upcoming']['data'] = $this->serializer->serialize($campaignEvents['upcoming'], 'json');
-            $calendarEvents['campaign_upcoming']['options'] = array(
-                'className' => 'campaignchain-calendar-upcoming campaignchain-calendar-campaign',
-                'startEditable' => false,
-            );
+            if (isset($campaignEvents['done'])) {
+                $calendarEvents['campaign_done']['data'] = $this->serializer->serialize($campaignEvents['done'], 'json');
+                $calendarEvents['campaign_done']['options'] = array(
+                    'className' => 'campaignchain-calendar-done campaignchain-calendar-campaign',
+                    'editable' => false,
+                );
+            }
+            if (isset($campaignEvents['upcoming'])) {
+                $calendarEvents['campaign_upcoming']['data'] = $this->serializer->serialize($campaignEvents['upcoming'], 'json');
+                $calendarEvents['campaign_upcoming']['options'] = array(
+                    'className' => 'campaignchain-calendar-upcoming campaignchain-calendar-campaign',
+                    'startEditable' => false,
+                );
+            }
         }
 
         // Retrieve all activities

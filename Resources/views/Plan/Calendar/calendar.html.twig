@@ -1,0 +1,92 @@
+{#
+Copyright 2016 CampaignChain, Inc. <info@campaignchain.com>
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+#}
+
+
+{% javascripts '@fullcalendar_js' combine=true %}
+<script src="{{ asset_url }}"></script>
+{% endjavascripts %}
+
+{% stylesheets '@fullcalendar_css' %}
+<link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
+{% endstylesheets %}
+
+<script>
+    $(document).ready(function() {
+
+        $('#calendar').fullCalendar({
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month,agendaWeek,agendaDay'
+            },
+            timeFormat: {
+                month: 'H:mm',
+                agendaWeek: 'H:mm',
+                agendaDay: 'H:mm'
+            },
+            defaultDate: new Date(),
+            editable: true,
+            defaultTimedEventDuration: '00:01:00',
+            eventRender: function(event, element) {
+                // Render Milestone icon.
+                if (event.icon_path_16px)
+                {
+                    element.css({"background-image":"url('" + event.icon_path_16px +"')"});
+                }
+
+                // Render Activity and Campaign icons
+                if (event.tpl_teaser)
+                {
+                    element.prepend(event.tpl_teaser);
+                }
+
+                // Edit in modal.
+                element.bind('dblclick', function() {
+                    // Done tasks cannot be edited.
+                    var today = campaignchainGetUserDateTime(moment());
+                    if(+event.start < +today && +event.end < +today){
+                        return false;
+                    }
+                    campaignchainShowModal(
+                        event.type, event.campaignchain_id, event.route_edit_api,
+                        event, 'campaignchainCalendarTaskDblClickSuccess'
+                    );
+                });
+            },
+            eventDrop: function(event, delta, revertFunc) {
+                var start_date = campaignchainCalendarNormalizeDate(event.start.format());
+                var requestData = { id: event.campaignchain_id, start_date: start_date.format() };
+                campaignchainMoveAction(event.type, requestData);
+            },
+            eventSources: [
+                {% if events and events is iterable %}
+                    {% for event_type, event in events %}
+                    {
+                        events: {{ event.data|raw }},
+                        {% for option_key, option_val in event.options %}
+                            {{ option_key }}: '{{ option_val }}',
+                        {% endfor %}
+                    },
+                    {% endfor %}
+                {% endif %}
+            ]
+        });
+    });
+
+</script>
+<div id='calendar'></div>
+
+{% include 'CampaignChainCoreBundle:Base:modal_remote.html.twig' %}

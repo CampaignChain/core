@@ -251,22 +251,31 @@ class Action extends Meta
             }
         } elseif (strpos($this->interval, 'weeks') !== false) {
             $intervalParts = explode(' ', $this->interval);
-            $weeks = str_replace('+', '', $intervalParts[2]);
-            $dayOfWeek = $intervalParts[1];
-            if ($weeks == '1') {
-                return 'Every '.$dayOfWeek;
+            $dayOfWeek = NULL;
+            if(strpos($this->interval, 'Next') !== false){
+                $weeks = str_replace('+', '', $intervalParts[2]);
+                $dayOfWeek = $intervalParts[1];
             } else {
+                $weeks = str_replace('+', '', $intervalParts[0]);
+            }
+            if($weeks == '1' && $dayOfWeek) {
+                return 'Every ' . $dayOfWeek;
+            } elseif($weeks == '1'){
+                return 'Every week';
+            } elseif($dayOfWeek) {
                 return $dayOfWeek.' every '.$weeks.' weeks';
+            } else {
+                return 'Every '.$weeks.' weeks';
             }
         } elseif (strpos($this->interval, 'month') !== false) {
             $intervalParts = explode(' ', $this->interval);
 
             if (strpos($this->interval, 'hours') !== false) {
                 // Day of month
-                $days = str_replace('+', '', $intervalParts[5]) / 24;
-                $months = str_replace('+', '', $intervalParts[7]);
-                if ($days == '1') {
-                    if ($months == '1') {
+                $days = str_replace('+', '', $intervalParts[5])/24;
+                $months = str_replace('+', '', $intervalParts[7]) + 1;
+                if($days == '1') {
+                    if($months == '1') {
                         return 'Day 1 of every month';
                     } else {
                         return 'Day 1 of a month every '.$months.' months';

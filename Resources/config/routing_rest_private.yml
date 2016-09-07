@@ -1,0 +1,102 @@
+# Copyright 2016 CampaignChain, Inc. <info@campaignchain.com>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+#
+# Plan
+#
+
+campaignchain_core_plan_timeline_nested_campaigns_api:
+    pattern:  /plan/timeline/campaign/{id}
+    defaults: { _controller: CampaignChainCoreBundle:Campaign:getNestedCampaignsForTimelineApi }
+    options:
+        expose: true
+
+#
+# Campaign
+#
+
+campaignchain_core_campaign_edit_api:
+    pattern:  /campaign/{id}/edit
+    defaults: { _controller: CampaignChainCoreBundle:Campaign:editApi }
+    options:
+        expose: true
+
+campaignchain_core_campaign_move_api:
+    pattern:  /campaign/move
+    defaults: { _controller: CampaignChainCoreBundle:Campaign:moveApi }
+    methods:  [POST]
+    options:
+        expose: true
+
+#
+# Activity
+#
+
+campaignchain_core_activity_edit_api:
+    pattern:  /activity/{id}/edit
+    defaults: { _controller: CampaignChainCoreBundle:Activity:editApi }
+    options:
+        expose: true
+
+campaignchain_core_activity_move_api:
+    pattern:  /activity/move
+    defaults: { _controller: CampaignChainCoreBundle:Activity:moveApi }
+    methods:  [POST]
+    options:
+        expose: true
+
+#
+# Milestone
+#
+
+campaignchain_core_milestone_edit_api:
+    pattern:  /milestone/{id}/edit
+    defaults: { _controller: CampaignChainCoreBundle:Milestone:editApi }
+    options:
+        expose: true
+
+campaignchain_core_milestone_move_api:
+    pattern:  /milestone/move
+    defaults: { _controller: CampaignChainCoreBundle:Milestone:moveApi }
+    methods:  [POST]
+    options:
+        expose: true
+
+#
+# Location
+#
+
+campaignchain_core_location_list_activities_api:
+    pattern:  /location/{id}/activities
+    defaults: { _controller: CampaignChainCoreBundle:Location:apiListActivities }
+    options:
+        expose: true
+
+#
+# Report
+#
+
+campaignchain_core_report_list_cta_locations_per_campaign_api:
+    pattern:  /report/cta/campaign/{id}/locations
+    defaults: { _controller: CampaignChainCoreBundle:Report:apiListCtaLocationsPerCampaign }
+    options:
+        expose: true
+
+#
+# Tracking
+#
+
+campaignchain_core_channel_cta_tracking_test:
+    pattern:  /channel/{id}/cta-tracking/test
+    defaults: { _controller: CampaignChainCoreBundle:Channel:apiTestCtaTracking, id: 0 }

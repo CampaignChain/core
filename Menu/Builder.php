@@ -22,6 +22,54 @@ use Symfony\Component\DependencyInjection\ContainerAware;
 
 class Builder extends ContainerAware
 {
+    public function mainNav(FactoryInterface $factory, array $options)
+    {
+        $menu = $factory->createItem('Home');
+
+        // Plan
+        $menu->addChild('Plan');
+        $menu['Plan']->addChild('Campaigns', array(
+                'route' => 'campaignchain_core_plan'
+            ));
+        $menu['Plan']->addChild('Activities', array(
+            'route' => 'campaignchain_core_plan_activities'
+        ));
+        $menu['Plan']->addChild('Templates', array(
+            'route' => 'campaignchain_core_plan_templates'
+        ));
+
+        // Execute
+        $menu->addChild('Execute', array(
+            'route' => 'campaignchain_core_execute'
+        ));
+
+        // Monitor
+        $menu->addChild('Monitor', array(
+            'route' => 'campaignchain_core_report'
+        ));
+
+        // New
+        $menu->addChild('New')->setAttributes(
+            array(
+                'class' => 'btn btn-default',
+                'id' => 'menu_new'
+                ));
+        $menu['New']->addChild('Activity', array(
+            'route' => 'campaignchain_core_activities_new'
+        ));
+        $menu['New']->addChild('Milestone', array(
+            'route' => 'campaignchain_core_milestone_new'
+        ));
+        $menu['New']->addChild('Campaign', array(
+            'route' => 'campaignchain_core_campaign_new'
+        ));
+        $menu['New']->addChild('Location', array(
+            'route' => 'campaignchain_core_channel_new'
+        ));
+
+        return $menu;
+    }
+    
     public function executeListTab(FactoryInterface $factory, array $options)
     {
         $menu = $factory->createItem('root');

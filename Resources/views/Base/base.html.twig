@@ -38,6 +38,7 @@ limitations under the License.
                 window.campaignchainTimezone = "{{ app.session.get('campaignchain.timezone') }}";
                 window.campaignchainTimezoneOffset = "{{ campaignchain_user_timezone_offset }}";
                 window.campaignchainTimezoneAbbreviation = "{{ campaignchain_user_timezone_abbreviation }}";
+                window.campaignchainSchedulerInterval = {{ campaignchain_core_scheduler_interval }};
             </script>
         {% endblock %}
 

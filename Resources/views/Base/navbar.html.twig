@@ -36,21 +36,7 @@ limitations under the License.
             </a>
 
             {% if is_granted('ROLE_USER') -%}
-
-                <ul class="navbar-nav nav campaignchain-navbar">
-                    <li class="first"><a href="{{ path('campaignchain_core_plan') }}" data-step="5"><i class="fa fa-calendar"></i> <span class="visible-md-inline visible-lg-inline visible-sm-inline">Plan</span></a></li>
-                    <li><a href="{{ path('campaignchain_core_execute') }}"><i class="fa fa-dashboard"></i> <span class="visible-md-inline visible-lg-inline visible-sm-inline">Execute</span></a></li>
-                    <li class="last" data-step="6"><a href="{{ path('campaignchain_core_report') }}"><i class="fa fa-area-chart"></i> <span class="visible-md-inline visible-lg-inline visible-sm-inline">Monitor</span></a></li>
-                    <li class="dropdown" data-step="1">
-                        <a href="#" class="dropdown-toggle btn btn-default" data-toggle="dropdown" id="menu_new"><span class="fa fa-plus"></span> <span class="visible-md-inline visible-lg-inline visible-sm-inline">New </span><span class="caret visible-md-inline-block visible-lg-inline-block visible-sm-inline-block"></span></a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li  class="first" data-step="4"><a href="{{ path('campaignchain_core_activities_new') }}">Activity</a></li>
-                            <li><a href="{{ path('campaignchain_core_milestone_new') }}">Milestone</a></li>
-                            <li data-step="3"><a href="{{ path('campaignchain_core_campaign_new') }}">Campaign</a></li>
-                            <li data-step="2"><a href="{{ path('campaignchain_core_channel_new') }}">Location</a></li>
-                        </ul>
-                    </li>
-                </ul>
+                {{ knp_menu_render('CampaignChainCoreBundle:Builder:mainNav', { 'style': 'navbar' }) }}
             {% endif %}
         </div>
 
@@ -103,3 +89,6 @@ limitations under the License.
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
 </nav>
+<div class="breadcrumb">
+    {{ cnerta_breadcrumb_render('CampaignChainCoreBundle:Builder:mainNav') }}
+</div>

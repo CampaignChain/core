@@ -37,7 +37,7 @@ function onGanttRender_todayLine(today) {
 }
 
 gantt.templates.task_class = function(start, end, task){
-    if(+campaignchainGetUserDateTime(start) < +today && +campaignchainGetUserDateTime(end) > +today){
+    if(+campaignchainGetUserDateTime(start) < +today.subtract(1, "minute") && +campaignchainGetUserDateTime(end) > +today){
         // Give running campaigns a different color.
         var class_name = "campaignchain_gantt_ongoing";
     }
