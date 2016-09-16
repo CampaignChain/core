@@ -516,6 +516,15 @@ class Installer
                 $module->setRoutes($moduleParams['routes']);
             }
 
+            // Check for required services definitions for Activity module
+            if($bundle->getType() == 'campaignchain-activity'){
+                if(!isset($moduleParams['services']) || !isset($moduleParams['services']['handler'])) {
+                    throw new \Exception(
+                        "You must define the following service names in campaignchain.yml for module '" . $identifier . "' in bundle '" . $bundle->getName() . "': handler."
+                    );
+                }
+            }
+
             if (isset($moduleParams['services']) && is_array($moduleParams['services']) && count(
                     $moduleParams['services']
                 )

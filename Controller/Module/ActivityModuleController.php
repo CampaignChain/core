@@ -348,6 +348,16 @@ class ActivityModuleController extends Controller
             );
         }
 
+        // Check if the content can be executed.
+        if($content){
+            $isExecutable = $this->handler->isExecutableInChannel($content);
+            if(!$isExecutable['status']) {
+                throw new \Exception($isExecutable['message']);
+            }
+
+            $activity->setCheckExecutable($this->handler->checkExecutable($content));
+        }
+
         $em = $this->getDoctrine()->getManager();
 
         // Make sure that data stays intact by using transactions.
@@ -490,6 +500,14 @@ class ActivityModuleController extends Controller
                     $operation,
                     $form->get($this->contentModuleFormName)->getData()
                 );
+
+                // Check if the content can be executed.
+                $isExecutable = $this->handler->isExecutableInChannel($content);
+                if(!$isExecutable['status']) {
+                    throw new \Exception($isExecutable['message']);
+                }
+
+                $activity->setCheckExecutable($this->handler->checkExecutable($content));
 
                 if ($this->parameters['equals_operation']) {
                     // The activity equals the operation. Thus, we update the operation with the same data.

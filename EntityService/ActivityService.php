@@ -337,4 +337,28 @@ class ActivityService
 
         return $clonedActivity;
     }
+
+    public function isExecutableInCampaign(Activity $activity)
+    {
+        $operations = $this->em->getRepository('CampaignChainCoreBundle:Operation')
+            ->findByActivity($activity);
+
+        if (count($operations)) {
+            /** @var OperationService $operationService */
+            $operationService = $this->container->get('campaignchain.core.operation');
+            /** @var Operation $operation */
+            foreach ($operations as $operation) {
+                $content = $operationService->getContent($operation);
+
+                $handlerService = $this->container->get(
+                    $activity->getModule()->getServices()['handler']
+                );
+
+                $isExecutable = $handlerService->isExecutableInCampaign($content);
+                if(!$isExecutable['status']){
+                    return $isExecutable;
+                }
+            }
+        }
+    }
 }

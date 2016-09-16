@@ -85,6 +85,11 @@ class Activity extends Action implements AssignableInterface
     protected $equalsOperation = true;
 
     /**
+     * @ORM\Column(type="boolean")
+     */
+    protected $checkExecutable = false;
+
+    /**
      * @ORM\ManyToOne(targetEntity="CampaignChain\CoreBundle\Entity\User", inversedBy="activities")
      * @ORM\JoinColumn(name="assignee", referencedColumnName="id")
      */
@@ -320,6 +325,30 @@ class Activity extends Action implements AssignableInterface
     public function setEqualsOperation($equalsOperation)
     {
         $this->equalsOperation = $equalsOperation;
+
+        return $this;
+    }
+
+    /**
+     * Get checkExecutable.
+     *
+     * @return bool
+     */
+    public function getCheckExecutable()
+    {
+        return $this->checkExecutable;
+    }
+
+    /**
+     * Set checkExecutable.
+     *
+     * @param bool $checkExecutable
+     *
+     * @return Activity
+     */
+    public function setCheckExecutable($checkExecutable)
+    {
+        $this->checkExecutable = $checkExecutable;
 
         return $this;
     }

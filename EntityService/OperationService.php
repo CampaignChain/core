@@ -148,4 +148,24 @@ class OperationService
 
         return $operation;
     }
+
+    public function getContent(Operation $operation)
+    {
+        $operationServices = $operation->getModule()->getServices();
+
+        if (isset($operationServices['operation'])) {
+            $operationService = $this->container->get(
+                $operationServices['operation']
+            );
+
+            return $operationService->getContent($operation);
+        } else {
+            throw new \Exception(
+                'No content available for Operation '
+                .'with ID "'.$operation->getId().'" '
+                .'in module "'.$operation->getModule()->getIdentifier()
+                .'" of bundle "'.$operation->getModule()->getBundle()->getName().'".'
+            );
+        }
+    }
 }
