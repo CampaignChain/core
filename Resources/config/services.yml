@@ -477,6 +477,11 @@ services:
         arguments:
             - '@service_container'
 
+    campaignchain.core.util.scheduler:
+        class: CampaignChain\CoreBundle\Util\SchedulerUtil
+        arguments:
+            - '%campaignchain_core.scheduler.interval%'
+
     campaignchain.core.util.command:
         class: CampaignChain\CoreBundle\Util\CommandUtil
         arguments:

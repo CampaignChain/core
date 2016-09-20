@@ -25,6 +25,7 @@ use CampaignChain\CoreBundle\Entity\Medium;
 use CampaignChain\CoreBundle\Entity\Module;
 use CampaignChain\CoreBundle\EntityService\ActivityService;
 use CampaignChain\CoreBundle\Exception\ExternalApiException;
+use CampaignChain\CoreBundle\Validator\AbstractActivityValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Form;
 use CampaignChain\CoreBundle\Entity\Operation;
@@ -39,6 +40,11 @@ class ActivityModuleController extends Controller
      * @var AbstractActivityHandler
      */
     protected $handler;
+
+    /**
+     * @var AbstractActivityValidator
+     */
+    protected $validator = null;
 
     /**
      * @var Campaign
@@ -89,6 +95,10 @@ class ActivityModuleController extends Controller
 
         /** @var AbstractActivityHandler handler */
         $this->handler = $this->get($this->parameters['handler']);
+
+        if(isset($this->parameters['validator'])){
+            $this->validator = $this->get($this->parameters['validator']);
+        }
 
         $this->activityBundleName = $this->parameters['bundle_name'];
         $this->activityModuleIdentifier = $this->parameters['module_identifier'];
@@ -348,16 +358,6 @@ class ActivityModuleController extends Controller
             );
         }
 
-        // Check if the content can be executed.
-        if($content){
-            $isExecutable = $this->handler->isExecutableInChannel($content);
-            if(!$isExecutable['status']) {
-                throw new \Exception($isExecutable['message']);
-            }
-
-            $activity->setCheckExecutable($this->handler->checkExecutable($content));
-        }
-
         $em = $this->getDoctrine()->getManager();
 
         // Make sure that data stays intact by using transactions.
@@ -381,6 +381,7 @@ class ActivityModuleController extends Controller
             $em->flush();
 
             $hookService = $this->get('campaignchain.core.hook');
+            /** @var Activity $activity */
             $activity = $hookService->processHooks(
                 $this->parameters['bundle_name'],
                 $this->parameters['module_identifier'],
@@ -388,6 +389,17 @@ class ActivityModuleController extends Controller
                 $form,
                 true
             );
+
+            // Check if the content can be executed.
+            if($this->validator && $content){
+                $isExecutable = $this->validator->isExecutableInChannel($content, $activity->getStartDate());
+                if(!$isExecutable['status']) {
+                    throw new \Exception($isExecutable['message']);
+                }
+
+                $activity->setCheckExecutable($this->validator->checkExecutable($content, null));
+            }
+
             $em->flush();
 
             $em->getConnection()->commit();
@@ -501,14 +513,6 @@ class ActivityModuleController extends Controller
                     $form->get($this->contentModuleFormName)->getData()
                 );
 
-                // Check if the content can be executed.
-                $isExecutable = $this->handler->isExecutableInChannel($content);
-                if(!$isExecutable['status']) {
-                    throw new \Exception($isExecutable['message']);
-                }
-
-                $activity->setCheckExecutable($this->handler->checkExecutable($content));
-
                 if ($this->parameters['equals_operation']) {
                     // The activity equals the operation. Thus, we update the operation with the same data.
                     $operation->setName($activity->getName());
@@ -523,12 +527,24 @@ class ActivityModuleController extends Controller
             }
 
             $hookService = $this->get('campaignchain.core.hook');
+            /** @var Activity $activity */
             $activity = $hookService->processHooks(
                 $this->activityBundleName,
                 $this->activityModuleIdentifier,
                 $activity,
                 $form
             );
+
+            // Check if the content can be executed.
+            if($this->validator) {
+                $isExecutable = $this->validator->isExecutableInChannel($content, $activity->getStartDate());
+                if (!$isExecutable['status']) {
+                    throw new \Exception($isExecutable['message']);
+                }
+
+                $activity->setCheckExecutable($this->validator->checkExecutable($content, null));
+            }
+
             $em->persist($activity);
 
             $em->flush();
