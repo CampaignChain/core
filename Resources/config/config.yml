@@ -29,6 +29,14 @@ campaignchain_core:
         interval_dev: 9600
         # Timeout of Scheduler in seconds. Default value is 600s.
         timeout: 600
+    theme:
+        layouts:
+            default:
+                show_header: true
+                show_footer: true
+            embedded:
+                show_header: false
+                show_footer: false
 
 assetic:
     assets:

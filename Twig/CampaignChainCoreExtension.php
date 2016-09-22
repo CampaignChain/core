@@ -24,9 +24,12 @@ use CampaignChain\CoreBundle\Util\SystemUtil;
 use Proxies\__CG__\CampaignChain\CoreBundle\Entity\Milestone;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class CampaignChainCoreExtension extends \Twig_Extension
 {
+    const DEFAULT_LAYOUT_NAME = 'default';
+
     protected $em;
     protected $container;
     protected $datetime;
@@ -455,6 +458,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
             'campaignchain_env' => $this->container->getParameter('campaignchain.env'),
             'campaignchain_core_scheduler_interval'  => $this->container->getParameter('campaignchain_core.scheduler.interval'),
             'campaignchain_relative_start_date'  => new \DateTime(Campaign::RELATIVE_START_DATE),
+            'campaignchain_layout' => $this->getGlobalLayout(),
         );
     }
 
@@ -515,5 +519,41 @@ class CampaignChainCoreExtension extends \Twig_Extension
                 return $milestoneService->isRemovable($object);
 
         }
+    }
+
+    public function getGlobalLayout()
+    {
+        /** @var RequestStack $requestService */
+        $requestService = $this->container->get('request_stack');
+        $request = $requestService->getCurrentRequest();
+
+        // If name of Layout is not set as URL parameter, use default options.
+        if(
+            !$request->get('campaignchain-layout') &&
+            !$this->container->get('session')->has('campaignchain.layout')
+        ){
+            $layoutName = self::DEFAULT_LAYOUT_NAME;
+        } elseif($request->get('campaignchain-layout')){
+            $layoutName = $request->get('campaignchain-layout');
+        } elseif ($this->container->get('session')->has('campaignchain.layout')){
+            return $this->container->get('session')->get('campaignchain.layout');
+        }
+
+        // If the new layout name is set, then save it in the session.
+
+        $paramParent = 'campaignchain_core.theme.layouts.' . $layoutName;
+
+        if (
+            $this->container->hasParameter($paramParent . '.show_header')
+        ) {
+            $layout['show_header'] = $this->container->getParameter($paramParent . '.show_header');
+            $layout['show_footer'] = $this->container->getParameter($paramParent . '.show_footer');
+
+            $this->container->get('session')->set('campaignchain.layout', $layout);
+
+            return $layout;
+        }
+
+        throw new \Exception('No layout parameters defined for '.$paramParent);
     }
 }

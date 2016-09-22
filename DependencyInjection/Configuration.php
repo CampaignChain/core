@@ -96,6 +96,13 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
+                ->arrayNode('theme')
+                    ->canBeEnabled()
+                    ->children()
+                        ->variableNode('layouts')
+                        ->end()
+                    ->end()
+                ->end()
             ->end()
         ;
 
