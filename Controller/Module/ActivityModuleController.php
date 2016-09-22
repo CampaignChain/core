@@ -542,7 +542,7 @@ class ActivityModuleController extends Controller
                     throw new \Exception($isExecutable['message']);
                 }
 
-                $activity->setCheckExecutable($this->validator->checkExecutable($content, null));
+                $activity->setCheckExecutable($this->validator->checkExecutable($content, $activity->getStartDate()));
             }
 
             $em->persist($activity);
