@@ -31,7 +31,7 @@ class Version20160916085817 extends AbstractMigration implements ContainerAwareI
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE campaignchain_activity ADD checkExecutable TINYINT(1) NOT NULL');
+        $this->addSql('ALTER TABLE campaignchain_activity ADD mustValidate TINYINT(1) NOT NULL');
     }
 
     public function postUp(Schema $schema)
@@ -64,8 +64,8 @@ class Version20160916085817 extends AbstractMigration implements ContainerAwareI
                                     $activity->getModule()->getServices()['handler']
                                 );
 
-                                $activity->setCheckExecutable(
-                                    $handlerService->checkExecutable($content)
+                                $activity->setMustValidate(
+                                    $handlerService->mustValidate($content)
                                 );
 
                                 $em->persist($activity);
@@ -95,6 +95,6 @@ class Version20160916085817 extends AbstractMigration implements ContainerAwareI
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE campaignchain_activity DROP checkExecutable');
+        $this->addSql('ALTER TABLE campaignchain_activity DROP mustValidate');
     }
 }

@@ -87,7 +87,7 @@ class Activity extends Action implements AssignableInterface
     /**
      * @ORM\Column(type="boolean")
      */
-    protected $checkExecutable = false;
+    protected $mustValidate = false;
 
     /**
      * @ORM\ManyToOne(targetEntity="CampaignChain\CoreBundle\Entity\User", inversedBy="activities")
@@ -330,25 +330,25 @@ class Activity extends Action implements AssignableInterface
     }
 
     /**
-     * Get checkExecutable.
+     * Get mustValidate.
      *
      * @return bool
      */
-    public function getCheckExecutable()
+    public function getMustValidate()
     {
-        return $this->checkExecutable;
+        return $this->mustValidate;
     }
 
     /**
-     * Set checkExecutable.
+     * Set mustValidate.
      *
-     * @param bool $checkExecutable
+     * @param bool $mustValidate
      *
      * @return Activity
      */
-    public function setCheckExecutable($checkExecutable)
+    public function setMustValidate($mustValidate)
     {
-        $this->checkExecutable = $checkExecutable;
+        $this->mustValidate = $mustValidate;
 
         return $this;
     }

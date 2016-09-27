@@ -268,7 +268,7 @@ class CampaignService
         $activities = $this->em->getRepository('CampaignChainCoreBundle:Activity')
             ->findBy(array(
                 'campaign' => $campaign,
-                'checkExecutable' => true
+                'mustValidate' => true
             ));
 
         if(count($activities)){

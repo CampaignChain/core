@@ -397,7 +397,7 @@ class ActivityModuleController extends Controller
                     throw new \Exception($isExecutable['message']);
                 }
 
-                $activity->setCheckExecutable($this->validator->checkExecutable($content, null));
+                $activity->setMustValidate($this->validator->mustValidate($content, null));
             }
 
             $em->flush();
@@ -542,7 +542,7 @@ class ActivityModuleController extends Controller
                     throw new \Exception($isExecutable['message']);
                 }
 
-                $activity->setCheckExecutable($this->validator->checkExecutable($content, $activity->getStartDate()));
+                $activity->setMustValidate($this->validator->mustValidate($content, $activity->getStartDate()));
             }
 
             $em->persist($activity);

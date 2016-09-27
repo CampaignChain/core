@@ -38,7 +38,7 @@ abstract class AbstractActivityValidator
      *
      * @return bool
      */
-    public function checkExecutable($content, \DateTime $startDate)
+    public function mustValidate($content, \DateTime $startDate)
     {
         return false;
     }

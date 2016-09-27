@@ -20,12 +20,14 @@ namespace CampaignChain\CoreBundle\Repository;
 use CampaignChain\CoreBundle\Entity\Action;
 use CampaignChain\CoreBundle\Entity\Activity;
 use CampaignChain\CoreBundle\Entity\Job;
+use CampaignChain\CoreBundle\Entity\Location;
 use DateTime;
+use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query;
 
 class ActivityRepository extends EntityRepository
 {
-
     /**
      * @param DateTime $periodStart
      * @param DateTime $periodEnd
@@ -66,5 +68,36 @@ class ActivityRepository extends EntityRepository
             ->setParameter('periodStart', $periodStart->format('Y-m-d H:i:s'))
             ->getQuery()
             ->getResult();
+    }
+
+    public function getClosestScheduledActivity(Activity $activity, $interval)
+    {
+        $startInterval = clone $activity->getStartDate();
+        $startInterval->modify($interval);
+
+        $qb = $this->createQueryBuilder('a');
+        $qb->select('a');
+
+        if(substr($interval, 0, 1) == "-"){
+            $qb->where('a.startDate < :startDate')
+                ->andWhere('a.startDate > :startInterval');
+        } else {
+            $qb->where('a.startDate > :startDate')
+                ->andWhere('a.startDate < :startInterval');
+        }
+
+        $qb->setParameter('startInterval', $startInterval)
+            ->andWhere('a.location = :location')
+            ->andWhere('a.campaign = :campaign')
+            ->andWhere('a.status != :closed')
+            ->setParameter('startDate', $activity->getStartDate())
+            ->setParameter('location', $activity->getLocation())
+            ->setParameter('campaign', $activity->getCampaign())
+            ->setParameter('closed', Action::STATUS_CLOSED)
+            ->orderBy('a.startDate', 'DESC')
+            ->setMaxResults(1);
+
+        $query = $qb->getQuery();
+        return $query->getOneOrNullResult();
     }
 }

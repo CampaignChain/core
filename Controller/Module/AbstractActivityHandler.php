@@ -296,7 +296,7 @@ abstract class AbstractActivityHandler
      *
      * @return bool
      */
-    public function checkExecutable($content)
+    public function mustValidate($content)
     {
         return false;
     }
