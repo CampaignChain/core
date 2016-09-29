@@ -276,7 +276,7 @@ class CampaignService
             $activityService = $this->container->get('campaignchain.core.activity');
 
             foreach ($activities as $activity){
-                $isExecutable = $activityService->isExecutableInCampaign($activity);
+                $isExecutable = $activityService->isExecutableByCampaign($activity);
 
                 if(!$isExecutable['status']){
                     return $isExecutable;

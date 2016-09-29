@@ -17,6 +17,22 @@
 
 namespace CampaignChain\CoreBundle\Exception;
 
-class ExternalApiException extends \RuntimeException
+class ErrorCode
 {
+    const PHP_EXCEPTION = 1001;
+    const ACTION_NOT_EXECUTABLE_IN_CHANNEL = 1002;
+
+    static function getMessageByCode($code)
+    {
+        $messages = array(
+            1001 => 'An error in the PHP code occurred',
+            1002 => 'The Action cannot be executed in the Channel'
+        );
+
+        if(isset($messages[$code])){
+            return $messages[$code];
+        } else {
+            throw new \Exception('Error code "'.$code.'" does not exist.');
+        }
+    }
 }

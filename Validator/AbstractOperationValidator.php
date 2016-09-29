@@ -27,7 +27,7 @@ use Symfony\Component\Form\Form;
  * Class AbstractModuleRequirements
  * @package CampaignChain\CoreBundle\Service\Module
  */
-abstract class AbstractActivityValidator
+abstract class AbstractOperationValidator
 {
     /**
      * Implement this method to identify whether the Activity should be
@@ -66,21 +66,46 @@ abstract class AbstractActivityValidator
      * @param object $content
      * @return array
      */
-    public function isExecutableInChannel($content, \DateTime $startDate)
+    public function isExecutableByChannel($content, \DateTime $startDate)
     {
         return array(
             'status' => true,
         );
     }
 
-    public function isExecutableInCampaign($content, \DateTime $startDate)
+    /**
+     * An Activity implements this method to allow a Campaign to check whether
+     * the Activity can be executed within the realm of the Campaign.
+     *
+     * For example, a repeating campaign will not work properly if a Twitter
+     * status message without a link is supposed to be published every day. In
+     * that case, Twitter might deny posting of the message due to duplicate
+     * content.
+     *
+     * @param $content
+     * @param \DateTime $startDate
+     * @return array
+     */
+    public function isExecutableByCampaign($content, \DateTime $startDate)
     {
         return array(
             'status' => true,
         );
     }
 
-    public function isExecutableInCampaignByInterval($content, \DateTime $startDate, $interval, $errMsg)
+    /**
+     * This is a helper method to quickly implement Activity-specific
+     * checks as per an interval.
+     *
+     * For example, the same Tweet cannot be published within 24 hours.
+     *
+     * @param $content
+     * @param \DateTime $startDate
+     * @param $interval
+     * @param $errMsg
+     * @return array
+     */
+    public function isExecutableByCampaignByInterval($content, \DateTime $startDate, $interval, $errMsg)
     {
         /** @var Campaign $campaign */
         $campaign = $content->getOperation()->getActivity()->getCampaign();
@@ -99,8 +124,23 @@ abstract class AbstractActivityValidator
             }
         }
 
-        return $this->isExecutableInCampaign(
+        return $this->isExecutableByCampaign(
             $content, $content->getOperation()->getActivity()->getStartDate()
+        );
+    }
+
+    /**
+     * Allows the Scheduler to check whether an Activity that is due now can
+     * actually be executed.
+     *
+     * @param $content
+     * @param \DateTime $startDate
+     * @return array
+     */
+    public function isExecutableByScheduler($content, \DateTime $startDate)
+    {
+        return array(
+            'status' => true,
         );
     }
 }

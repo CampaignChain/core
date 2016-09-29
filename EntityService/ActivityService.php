@@ -338,7 +338,7 @@ class ActivityService
         return $clonedActivity;
     }
 
-    public function isExecutableInCampaign(Activity $activity)
+    public function isExecutableByCampaign(Activity $activity)
     {
         $operations = $this->em->getRepository('CampaignChainCoreBundle:Operation')
             ->findByActivity($activity);
@@ -350,13 +350,13 @@ class ActivityService
             foreach ($operations as $operation) {
                 $content = $operationService->getContent($operation);
 
-                $moduleServices = $activity->getModule()->getServices();
+                $moduleServices = $operation->getModule()->getServices();
                 if(isset($moduleServices['validator'])) {
-                    $handlerService = $this->container->get(
+                    $validatorService = $this->container->get(
                         $moduleServices['validator']
                     );
 
-                    $isExecutable = $handlerService->isExecutableInCampaign($content, $activity->getStartDate());
+                    $isExecutable = $validatorService->isExecutableByCampaign($content, $activity->getStartDate());
                     if (!$isExecutable['status']) {
                         return $isExecutable;
                     }
