@@ -79,4 +79,28 @@ abstract class AbstractActivityValidator
             'status' => true,
         );
     }
+
+    public function isExecutableInCampaignByInterval($content, \DateTime $startDate, $interval, $errMsg)
+    {
+        /** @var Campaign $campaign */
+        $campaign = $content->getOperation()->getActivity()->getCampaign();
+
+        if($campaign->getInterval()){
+            $campaignIntervalDate = new \DateTime();
+            $campaignIntervalDate->modify($campaign->getInterval());
+            $maxDuplicateIntervalDate = new \DateTime();
+            $maxDuplicateIntervalDate->modify($interval);
+
+            if($maxDuplicateIntervalDate > $campaignIntervalDate){
+                return array(
+                    'status' => false,
+                    'message' => $errMsg,
+                );
+            }
+        }
+
+        return $this->isExecutableInCampaign(
+            $content, $content->getOperation()->getActivity()->getStartDate()
+        );
+    }
 }

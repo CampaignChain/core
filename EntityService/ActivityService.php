@@ -350,15 +350,22 @@ class ActivityService
             foreach ($operations as $operation) {
                 $content = $operationService->getContent($operation);
 
-                $handlerService = $this->container->get(
-                    $activity->getModule()->getServices()['handler']
-                );
+                $moduleServices = $activity->getModule()->getServices();
+                if(isset($moduleServices['validator'])) {
+                    $handlerService = $this->container->get(
+                        $moduleServices['validator']
+                    );
 
-                $isExecutable = $handlerService->isExecutableInCampaign($content);
-                if(!$isExecutable['status']){
-                    return $isExecutable;
+                    $isExecutable = $handlerService->isExecutableInCampaign($content, $activity->getStartDate());
+                    if (!$isExecutable['status']) {
+                        return $isExecutable;
+                    }
                 }
             }
         }
+
+        return array(
+            'status' => true,
+        );
     }
 }
