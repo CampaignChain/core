@@ -66,7 +66,7 @@ abstract class AbstractOperationValidator
      * @param object $content
      * @return array
      */
-    public function isExecutableByChannel($content, \DateTime $startDate)
+    public function isExecutableByLocation($content, \DateTime $startDate)
     {
         return array(
             'status' => true,

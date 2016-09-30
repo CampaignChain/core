@@ -397,7 +397,7 @@ class ActivityModuleController extends Controller
 
             // Check if the content can be executed.
             if(isset($this->validators['operations']) && $content){
-                $isExecutable = $this->validators['operations'][0]->isExecutableByChannel($content, $activity->getStartDate());
+                $isExecutable = $this->validators['operations'][0]->isExecutableByLocation($content, $activity->getStartDate());
                 if(!$isExecutable['status']) {
                     throw new \Exception($isExecutable['message']);
                 }
@@ -544,7 +544,7 @@ class ActivityModuleController extends Controller
 
             // Check if the content can be executed.
             if(isset($this->validators['operations'])) {
-                $isExecutable = $this->validators['operations'][0]->isExecutableByChannel($content, $activity->getStartDate());
+                $isExecutable = $this->validators['operations'][0]->isExecutableByLocation($content, $activity->getStartDate());
                 if (!$isExecutable['status']) {
                     throw new \Exception($isExecutable['message']);
                 }

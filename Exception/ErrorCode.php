@@ -20,13 +20,19 @@ namespace CampaignChain\CoreBundle\Exception;
 class ErrorCode
 {
     const PHP_EXCEPTION = 1001;
-    const ACTION_NOT_EXECUTABLE_IN_CHANNEL = 1002;
+    const OPERATION_NOT_EXECUTABLE_IN_LOCATION = 1002;
+    const ACTIVITY_NOT_EXECUTABLE_IN_LOCATION = 1003;
+    const MILESTONE_NOT_EXECUTABLE_IN_LOCATION = 1004;
+    const CONNECTION_TO_REST_API_FAILED = 1005;
 
     static function getMessageByCode($code)
     {
         $messages = array(
-            1001 => 'An error in the PHP code occurred',
-            1002 => 'The Action cannot be executed in the Channel'
+            1001 => 'An error in the PHP code occurred.',
+            1002 => 'The Operation cannot be executed in the Location.',
+            1003 => 'The Activity cannot be executed in the Location.',
+            1004 => 'The Milestone cannot be executed in the Location.',
+            1005 => 'The connection to the REST API failed.'
         );
 
         if(isset($messages[$code])){
