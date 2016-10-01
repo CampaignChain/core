@@ -18,14 +18,10 @@
 namespace CampaignChain\CoreBundle\Validator;
 
 use CampaignChain\CoreBundle\Entity\Campaign;
-use CampaignChain\CoreBundle\Entity\Activity;
-use CampaignChain\CoreBundle\Entity\Location;
-use CampaignChain\CoreBundle\Entity\Operation;
-use Symfony\Component\Form\Form;
 
 /**
- * Class AbstractModuleRequirements
- * @package CampaignChain\CoreBundle\Service\Module
+ * Class AbstractOperationValidator
+ * @package CampaignChain\CoreBundle\Validator
  */
 abstract class AbstractOperationValidator
 {
