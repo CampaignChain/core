@@ -29,6 +29,14 @@ campaignchain_core:
         interval_dev: 9600
         # Timeout of Scheduler in seconds. Default value is 600s.
         timeout: 600
+    cta:
+        url_shortener:
+            # To ensure that a shortened URL is unique for the same original
+            # URL, it is necessary to add a query parameter if a URL fragment
+            # already exists. The name of the query parameter is being defined
+            # below (e.g. 'ccshortly') and will appear in the URL like this:
+            # http://www.example.com/?ccshortly=3#fragment
+            unique_param_name: 'ccshortly'
 
 assetic:
     assets:
