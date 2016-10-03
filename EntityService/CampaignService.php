@@ -262,4 +262,30 @@ class CampaignService
 
         return $twigExt->tplTeaser($campaign, $options);
     }
+
+    public function isExecutable(Campaign $campaign)
+    {
+        $activities = $this->em->getRepository('CampaignChainCoreBundle:Activity')
+            ->findBy(array(
+                'campaign' => $campaign,
+                'mustValidate' => true
+            ));
+
+        if(count($activities)){
+            /** @var ActivityService $activityService */
+            $activityService = $this->container->get('campaignchain.core.activity');
+
+            foreach ($activities as $activity){
+                $isExecutable = $activityService->isExecutableByCampaign($activity);
+
+                if(!$isExecutable['status']){
+                    return $isExecutable;
+                }
+            }
+        }
+
+        return array(
+            'status' => true,
+        );
+    }
 }

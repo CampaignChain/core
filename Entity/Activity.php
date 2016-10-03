@@ -85,6 +85,11 @@ class Activity extends Action implements AssignableInterface
     protected $equalsOperation = true;
 
     /**
+     * @ORM\Column(type="boolean")
+     */
+    protected $mustValidate = false;
+
+    /**
      * @ORM\ManyToOne(targetEntity="CampaignChain\CoreBundle\Entity\User", inversedBy="activities")
      * @ORM\JoinColumn(name="assignee", referencedColumnName="id")
      */
@@ -320,6 +325,30 @@ class Activity extends Action implements AssignableInterface
     public function setEqualsOperation($equalsOperation)
     {
         $this->equalsOperation = $equalsOperation;
+
+        return $this;
+    }
+
+    /**
+     * Get mustValidate.
+     *
+     * @return bool
+     */
+    public function getMustValidate()
+    {
+        return $this->mustValidate;
+    }
+
+    /**
+     * Set mustValidate.
+     *
+     * @param bool $mustValidate
+     *
+     * @return Activity
+     */
+    public function setMustValidate($mustValidate)
+    {
+        $this->mustValidate = $mustValidate;
 
         return $this;
     }

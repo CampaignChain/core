@@ -200,6 +200,7 @@ services:
             - '@campaignchain.core.location'
             - %campaignchain_core.tracking.js_mode%
             - %router.request_context.scheme%://%router.request_context.host%
+            - %campaignchain_core.cta.url_shortener.unique_param_name%
 
     campaignchain.core.user:
         class: CampaignChain\CoreBundle\EntityService\UserService
@@ -476,6 +477,11 @@ services:
         class: CampaignChain\CoreBundle\Util\DateTimeUtil
         arguments:
             - '@service_container'
+
+    campaignchain.core.util.scheduler:
+        class: CampaignChain\CoreBundle\Util\SchedulerUtil
+        arguments:
+            - '%campaignchain_core.scheduler.interval%'
 
     campaignchain.core.util.command:
         class: CampaignChain\CoreBundle\Util\CommandUtil

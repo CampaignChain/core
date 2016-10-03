@@ -45,6 +45,7 @@ campaignchain_core:
             # below (e.g. 'ccshortly') and will appear in the URL like this:
             # http://www.example.com/?ccshortly=3#fragment
             unique_param_name: 'ccshortly'
+
 assetic:
     assets:
         campaignchain_base_css:

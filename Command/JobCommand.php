@@ -19,6 +19,8 @@ namespace CampaignChain\CoreBundle\Command;
 
 use CampaignChain\CoreBundle\Entity\Action;
 use CampaignChain\CoreBundle\Entity\Job;
+use CampaignChain\CoreBundle\Exception\ErrorCode;
+use CampaignChain\CoreBundle\Exception\JobException;
 use CampaignChain\CoreBundle\Job\JobActionInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -62,6 +64,7 @@ class JobCommand extends ContainerAwareCommand
 
         $jobId = $input->getArgument('jobId');
 
+        /** @var Job $job */
         $job = $em->getRepository('CampaignChainCoreBundle:Job')->find($jobId);
 
         if (!$job) {
@@ -89,10 +92,16 @@ class JobCommand extends ContainerAwareCommand
                                 break;
                         }
                         $job->setMessage($jobService->getMessage());
+                    } catch (JobException $e) {
+                        $job->setMessage($e->getMessage());
+                        $job->setStatus(Job::STATUS_ERROR);
+                        $job->setErrorCode($e->getCode());
+                        $em->flush();
                     } catch (\Exception $e) {
                         $job->setMessage($e->getMessage());
                         $job->setStatus(Job::STATUS_ERROR);
-                        // TODO: Notify owner of operation of error.
+                        $job->setErrorCode(ErrorCode::PHP_EXCEPTION);
+                        $em->flush();
                     }
                 } else {
                     $errorMsg = 'The job service "'.$job->getName().'" with the class "'.get_class(

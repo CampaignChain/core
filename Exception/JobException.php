@@ -15,15 +15,8 @@
  * limitations under the License.
  */
 
-namespace CampaignChain\CoreBundle\EntityService;
+namespace CampaignChain\CoreBundle\Exception;
 
-use CampaignChain\CoreBundle\Entity\Operation;
-
-interface OperationServiceInterface
+class JobException extends \Exception
 {
-    public function getContent(Operation $operation);
-
-    public function cloneOperation(Operation $oldOperation, Operation $newOperation);
-
-    public function removeOperation($OperationId);
 }
