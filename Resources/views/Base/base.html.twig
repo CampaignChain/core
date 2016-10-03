@@ -66,6 +66,7 @@ limitations under the License.
         <![endif]-->
     </head>
     <body>
+        {% if campaignchain_layout.show_header %}
         <div id="sidemenu">
             {% if is_granted('ROLE_USER') -%}
                 {% include 'CampaignChainCoreBundle:Base:side_menu.html.twig' %}
@@ -73,6 +74,8 @@ limitations under the License.
         </div>
         {% include 'CampaignChainCoreBundle:Base:navbar.html.twig' %}
         <div id="main-content">
+        {% endif %}
+
             <div class="container">
                 {% block page_header %}
                     <div class="page-header">
@@ -88,7 +91,11 @@ limitations under the License.
                     {% block body %}{% endblock %}
                 </div>
             </div>
+
+        {% if campaignchain_layout.show_header %}
         </div>
+        {% endif %}
+        {% if campaignchain_layout.show_footer %}
         <footer class="footer">
                 <p class="navbar-text text-muted">
                     Powered by <a href="{{ path('campaignchain_core_homepage') }}" rel="external">CampaignChain</a>
@@ -96,7 +103,10 @@ limitations under the License.
                             &nbsp;({{ campaignchain_system.version }})
                         {% endif %}</p>
         </footer>
+        {% endif %}
+        {% if campaignchain_layout.show_header %}
         <div id="sidemenu-drape"></div>
+        {% endif %}
         <script type="text/javascript">
             $(function () {
                 $("[data-toggle=tooltip]").tooltip();

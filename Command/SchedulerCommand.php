@@ -787,8 +787,6 @@ class SchedulerCommand extends ContainerAwareCommand
             $job->setStatus(Job::STATUS_ERROR);
             $job->setMessage($errMsg);
             $this->em->flush();
-
-            throw new \RuntimeException($e->getMessage());
         }
     }
 
