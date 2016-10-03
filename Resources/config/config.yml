@@ -37,7 +37,14 @@ campaignchain_core:
             embedded:
                 show_header: false
                 show_footer: false
-
+    cta:
+        url_shortener:
+            # To ensure that a shortened URL is unique for the same original
+            # URL, it is necessary to add a query parameter if a URL fragment
+            # already exists. The name of the query parameter is being defined
+            # below (e.g. 'ccshortly') and will appear in the URL like this:
+            # http://www.example.com/?ccshortly=3#fragment
+            unique_param_name: 'ccshortly'
 assetic:
     assets:
         campaignchain_base_css:
