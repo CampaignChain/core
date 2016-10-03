@@ -89,11 +89,6 @@ class Job extends Meta
     protected $message;
 
     /**
-     * @ORM\Column(type="smallint", nullable=true)
-     */
-    protected $errorCode;
-
-    /**
      * @ORM\Column(type="string", nullable=true)
      */
     protected $jobType;
@@ -322,29 +317,6 @@ class Job extends Meta
     public function getMessage()
     {
         return $this->message;
-    }
-
-    /**
-     * Set errorCode
-     *
-     * @param integer $errorCode
-     * @return Job
-     */
-    public function setErrorCode($errorCode)
-    {
-        $this->errorCode = $errorCode;
-
-        return $this;
-    }
-
-    /**
-     * Get errorCode
-     *
-     * @return integer
-     */
-    public function getErrorCode()
-    {
-        return $this->errorCode;
     }
 
     /**

@@ -105,19 +105,6 @@ class Location extends Medium
     protected $targetCtas;
 
     /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->activities = new ArrayCollection();
-        $this->ctas = new ArrayCollection();
-        $this->referrerCtas = new ArrayCollection();
-        $this->sourceCtas = new ArrayCollection();
-        $this->targetCtas = new ArrayCollection();
-        $this->children = new ArrayCollection();
-    }
-
-    /**
      * Get id
      *
      * @return integer 
@@ -339,6 +326,19 @@ class Location extends Medium
     public function getCtas()
     {
         return $this->ctas;
+    }
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->activities = new ArrayCollection();
+        $this->ctas = new ArrayCollection();
+        $this->referrerCtas = new ArrayCollection();
+        $this->sourceCtas = new ArrayCollection();
+        $this->targetCtas = new ArrayCollection();
+        $this->children = new ArrayCollection();
     }
 
     /**

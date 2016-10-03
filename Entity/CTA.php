@@ -26,9 +26,6 @@ use CampaignChain\CoreBundle\Util\ParserUtil;
  *
  * @ORM\Entity
  * @ORM\Table(name="campaignchain_cta")
- *
- * @todo Ensure the tracking ID is unique across parent CTAs.
- * @todo Either shortened expanded or shortened tracking URL must be provided.
  */
 class CTA extends Meta
 {
@@ -47,75 +44,40 @@ class CTA extends Meta
 
     /**
      * @ORM\ManyToOne(targetEntity="Location", cascade={"persist"}, inversedBy="ctas")
-     * @ORM\JoinColumn(name="location_id", referencedColumnName="id", nullable=true)
+     * @ORM\JoinColumn(name="location_id", referencedColumnName="id", nullable=false)
      */
     protected $location;
 
     /**
-     * Original URL entered by customer
+     * Original url entered by customer
      *
      * @ORM\Column(type="string", length=255, nullable=false)
      */
     protected $originalUrl;
 
     /**
-     * Expanded URL.
-     *
-     * Will be identical with original URL, if no shortener service was used for
-     * original URL.
+     * Expanded url (will be identical with original url, if no shortener service was used)
      *
      * @ORM\Column(type="string", length=255, nullable=false)
      */
     protected $expandedUrl;
 
     /**
-     * Expanded URL shortened.
-     *
-     * Only defined if original URL does not point to a connected Location.
-     *
-     * @ORM\Column(type="string", length=30, nullable=true)
-     */
-    protected $shortenedExpandedUrl;
-
-    /**
-     * Unique version of expanded URL, which has an additional fragement or
-     * query parameter to ensure the shortened version of it is unique.
-     *
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    protected $uniqueExpandedUrl;
-
-    /**
-     * Shortened version of unique expanded URL.
-     *
-     * @ORM\Column(type="string", length=30, nullable=true)
-     */
-    protected $shortenedUniqueExpandedUrl;
-
-    /**
-     * Tracking URL.
-     *
-     * Only defined if original URL points to a connected Location.
+     * Tracking url
      *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected $trackingUrl;
 
     /**
-     * Tracking URL shortened.
-     *
-     * Only defined if original URL points to a connected Location.
+     * Tracking url shortened
      *
      * @ORM\Column(type="string", length=30, nullable=true)
      */
     protected $shortenedTrackingUrl;
 
     /**
-     * Tracking ID.
-     *
-     * Unique random string.
-     *
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=false)
      */
     protected $trackingId;
 
@@ -123,14 +85,6 @@ class CTA extends Meta
      * @ORM\OneToMany(targetEntity="ReportCTA", mappedBy="CTA")
      */
     protected $reports;
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->reports = new ArrayCollection();
-    }
 
     /**
      * Get id
@@ -210,61 +164,6 @@ class CTA extends Meta
     /**
      * @return mixed
      */
-    public function getShortenedExpandedUrl()
-    {
-        return $this->shortenedExpandedUrl;
-    }
-
-    /**
-     * @param mixed $shortenedExpandedUrl
-     * @return CTA
-     */
-    public function setShortenedExpandedUrl($shortenedExpandedUrl)
-    {
-        $this->shortenedExpandedUrl = $shortenedExpandedUrl;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getUniqueExpandedUrl()
-    {
-        return $this->uniqueExpandedUrl;
-    }
-
-    /**
-     * @param mixed $uniqueExpandedUrl
-     * @return CTA
-     */
-    public function setUniqueExpandedUrl($uniqueExpandedUrl)
-    {
-        $this->uniqueExpandedUrl = $uniqueExpandedUrl;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getShortenedUniqueExpandedUrl()
-    {
-        return $this->shortenedUniqueExpandedUrl;
-    }
-
-    /**
-     * @param mixed $shortenedUniqueExpandedUrl
-     * @return CTA
-     */
-    public function setShortenedUniqueExpandedUrl($shortenedUniqueExpandedUrl)
-    {
-        $this->shortenedUniqueExpandedUrl = $shortenedUniqueExpandedUrl;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
     public function getTrackingUrl()
     {
         return $this->trackingUrl;
@@ -319,6 +218,14 @@ class CTA extends Meta
     public function getOperation()
     {
         return $this->operation;
+    }
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->reports = new ArrayCollection();
     }
 
     /**

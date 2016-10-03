@@ -35,12 +35,6 @@ class CTAParserData
      * @var array list of tracked CTAs
      */
     protected $trackedCTAs = array();
-
-    /**
-     * @var array list of shortened CTAs
-     */
-    protected $untrackedCTAs = array();
-
     /**
      * @var array list of untracked urls
      */
@@ -91,30 +85,18 @@ class CTAParserData
     }
 
     /**
-     * Keep a record of a untracked CTA and queue it for replacement
-     *
-     * @param CTA $cta
+     * Keep a record of a untracked url and queue it for replacement
+     * @param string $url
      */
-    public function addUntrackedCTA(CTA $cta)
+    public function addUntrackedUrl($url)
     {
-        $this->untrackedCTAs[] = $cta;
-
-        if($cta->getShortenedExpandedUrl()) {
-            $trackingUrl = $cta->getOriginalUrl();
-            $shortenedUrl = $cta->getShortenedExpandedUrl();
-        } elseif($cta->getShortenedUniqueExpandedUrl()){
-            $trackingUrl = $cta->getUniqueExpandedUrl();
-            $shortenedUrl = $cta->getShortenedUniqueExpandedUrl();
-        } else {
-            $trackingUrl = $cta->getOriginalUrl();
-            $shortenedUrl = $cta->getOriginalUrl();
-        }
+        $this->untrackedUrls[] = $url;
 
         $this->queueForReplacement(
-            $cta->getOriginalUrl(),
-            $cta->getExpandedUrl(),
-            $trackingUrl,
-            $shortenedUrl
+            $url,
+            $url,
+            $url,
+            $url
         );
     }
 
@@ -161,10 +143,10 @@ class CTAParserData
     }
 
     /**
-     * @return array list of untracked CTA objects
+     * @return array list of untracked urls
      */
-    public function getUntrackedCTAs()
+    public function getUntrackedUrls()
     {
-        return $this->untrackedCTAs;
+        return $this->untrackedUrls;
     }
 }

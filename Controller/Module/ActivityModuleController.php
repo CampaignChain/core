@@ -25,7 +25,6 @@ use CampaignChain\CoreBundle\Entity\Medium;
 use CampaignChain\CoreBundle\Entity\Module;
 use CampaignChain\CoreBundle\EntityService\ActivityService;
 use CampaignChain\CoreBundle\Exception\ExternalApiException;
-use CampaignChain\CoreBundle\Validator\AbstractOperationValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Form;
 use CampaignChain\CoreBundle\Entity\Operation;
@@ -40,11 +39,6 @@ class ActivityModuleController extends Controller
      * @var AbstractActivityHandler
      */
     protected $handler;
-
-    /**
-     * @var AbstractOperationValidator
-     */
-    protected $validator = array();
 
     /**
      * @var Campaign
@@ -96,10 +90,6 @@ class ActivityModuleController extends Controller
         /** @var AbstractActivityHandler handler */
         $this->handler = $this->get($this->parameters['handler']);
 
-        if(isset($this->parameters['validator'])){
-            $this->validators['activity'] = $this->get($this->parameters['validator']);
-        }
-
         $this->activityBundleName = $this->parameters['bundle_name'];
         $this->activityModuleIdentifier = $this->parameters['module_identifier'];
 
@@ -117,11 +107,6 @@ class ActivityModuleController extends Controller
             $this->contentModuleIdentifier = $this->parameters['operations'][0]['module_identifier'];
             $this->contentModuleFormName = str_replace('-', '_', $this->contentModuleIdentifier);
             $this->contentFormType = $this->parameters['operations'][0]['form_type'];
-            if(isset($this->parameters['operations'][0]['validator'])){
-                $this->validators['operations'][0] = $this->get(
-                    $this->parameters['operations'][0]['validator']
-                );
-            }
         } else {
             $this->contentFormType = $this->parameters['content_form_type'];
         }
@@ -386,7 +371,6 @@ class ActivityModuleController extends Controller
             $em->flush();
 
             $hookService = $this->get('campaignchain.core.hook');
-            /** @var Activity $activity */
             $activity = $hookService->processHooks(
                 $this->parameters['bundle_name'],
                 $this->parameters['module_identifier'],
@@ -394,19 +378,6 @@ class ActivityModuleController extends Controller
                 $form,
                 true
             );
-
-            // Check if the content can be executed.
-            if(isset($this->validators['operations']) && $content){
-                $isExecutable = $this->validators['operations'][0]->isExecutableByLocation($content, $activity->getStartDate());
-                if(!$isExecutable['status']) {
-                    throw new \Exception($isExecutable['message']);
-                }
-
-                $activity->setMustValidate(
-                    $this->validators['operations'][0]->mustValidate($content, $activity->getStartDate())
-                );
-            }
-
             $em->flush();
 
             $em->getConnection()->commit();
@@ -534,26 +505,12 @@ class ActivityModuleController extends Controller
             }
 
             $hookService = $this->get('campaignchain.core.hook');
-            /** @var Activity $activity */
             $activity = $hookService->processHooks(
                 $this->activityBundleName,
                 $this->activityModuleIdentifier,
                 $activity,
                 $form
             );
-
-            // Check if the content can be executed.
-            if(isset($this->validators['operations'])) {
-                $isExecutable = $this->validators['operations'][0]->isExecutableByLocation($content, $activity->getStartDate());
-                if (!$isExecutable['status']) {
-                    throw new \Exception($isExecutable['message']);
-                }
-
-                $activity->setMustValidate(
-                    $this->validators['operations'][0]->mustValidate($content, $activity->getStartDate())
-                );
-            }
-
             $em->persist($activity);
 
             $em->flush();
