@@ -1,0 +1,59 @@
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!-- Tell the browser to be responsive to screen width -->
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+{% block javascripts %}
+    {% javascripts '@jquery_js' '@bootstrap_js' '@jquery_file_upload_js' '@jquery_cropper_js' filter='?yui_js' combine=true %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+    <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
+    {% javascripts '@moment_js' combine=true %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    <!-- AdminLTE App -->
+    <script src="{{ asset('theme/dist/js/app.min.js') }}"></script>
+    {% javascripts '@campaignchain_base_js' combine=true %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    <script type="text/javascript">
+        window.campaignchainTimeFormat = "{{ campaignchain_user_time_format.moment_js }}";
+        window.campaignchainDatetimeFormat = "{{ campaignchain_user_datetime_format.moment_js }}";
+        window.campaignchainTimezone = "{{ app.session.get('campaignchain.timezone') }}";
+        window.campaignchainTimezoneOffset = "{{ campaignchain_user_timezone_offset }}";
+        window.campaignchainTimezoneAbbreviation = "{{ campaignchain_user_timezone_abbreviation }}";
+        window.campaignchainSchedulerInterval = {{ campaignchain_core_scheduler_interval }};
+    </script>
+{% endblock %}
+
+{% block stylesheets %}
+    <!-- Theme style -->
+    <link rel="stylesheet" href="{{ asset('theme/dist/css/AdminLTE.min.css') }}">
+    <!-- AdminLTE Skins. We have chosen the skin-blue for this starter
+          page. However, you can choose any other skin. Make sure you
+          apply the skin class to the body tag so the changes take effect.
+    -->
+    <link rel="stylesheet" href="{{ asset("theme/dist/css/skins/"~avanzu_admin_context.options.skin~".min.css") }}">
+    {% stylesheets '@bootstrap_less' '@jquery_cropper_css' combine=true %}
+    <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
+    {% endstylesheets %}
+    <link href="/style.css" type="text/css" rel="stylesheet" />
+    {% stylesheets '@campaignchain_base_css' filter="cssrewrite"
+    'bundles/campaignchaincore/css/*'%}
+    <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
+    {% endstylesheets %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+{% endblock %}
+
+<!-- Add Fonta Awesome Glyphicons -->
+<link rel="stylesheet" type="text/css" href="{{ asset('bundles/bmatznerfontawesome/css/font-awesome.min.css') }}" />
+
+<link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.3/html5shiv.js"></script>
+<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->

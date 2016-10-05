@@ -1,118 +1,344 @@
-{#
-Copyright 2016 CampaignChain, Inc. <info@campaignchain.com>
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-   http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-#}
-
 <!DOCTYPE html>
+<!--
+This is a starter template page. Use this page to start your new project from
+scratch. This page gets rid of all links and provides the needed markup only.
+-->
 <html>
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-        <title>{{ page_title }} - CampaignChain</title>
-        {% block javascripts %}
-            {% javascripts '@jquery_js' '@bootstrap_js' '@jquery_file_upload_js' '@jquery_cropper_js' filter='?yui_js' combine=true %}
-                <script src="{{ asset_url }}"></script>
-            {% endjavascripts %}
-            <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
-            <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
-            {% javascripts '@moment_js' combine=true %}
-            <script src="{{ asset_url }}"></script>
-            {% endjavascripts %}
-            {% javascripts '@campaignchain_base_js' combine=true %}
-                <script src="{{ asset_url }}"></script>
-            {% endjavascripts %}
-            <script type="text/javascript">
-                window.campaignchainTimeFormat = "{{ campaignchain_user_time_format.moment_js }}";
-                window.campaignchainDatetimeFormat = "{{ campaignchain_user_datetime_format.moment_js }}";
-                window.campaignchainTimezone = "{{ app.session.get('campaignchain.timezone') }}";
-                window.campaignchainTimezoneOffset = "{{ campaignchain_user_timezone_offset }}";
-                window.campaignchainTimezoneAbbreviation = "{{ campaignchain_user_timezone_abbreviation }}";
-                window.campaignchainSchedulerInterval = {{ campaignchain_core_scheduler_interval }};
-            </script>
-        {% endblock %}
+<head>
+    <title>
+        {{ page_title }} - CampaignChain
+    </title>
+    {% include('CampaignChainCoreBundle:Base:_head.html.twig') %}
+    {% block avanzu_head %}{% endblock %}
+</head>
 
-        {% block stylesheets %}
-            {% stylesheets '@bootstrap_less' '@jquery_cropper_css' combine=true %}
-                <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
-            {% endstylesheets %}
-            <link href="/style.css" type="text/css" rel="stylesheet" />
-            {% stylesheets '@campaignchain_base_css' filter="cssrewrite"
-            'bundles/campaignchaincore/css/*'%}
-                <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
-            {% endstylesheets %}
-        {% endblock %}
+<body class="{{ avanzu_admin_context.skin|default("")|body_class }}">
+<div class="wrapper">
 
-        <!-- Add Fonta Awesome Glyphicons -->
-        <link rel="stylesheet" type="text/css" href="{{ asset('bundles/bmatznerfontawesome/css/font-awesome.min.css') }}" />
+    <!-- Main Header -->
+    <header class="main-header">
 
-        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+        <!-- Logo -->
+        <a href="{{ app.request.getSchemeAndHttpHost() }}" class="logo">
+            <!-- mini logo for sidebar mini 50x50 pixels -->
+            <span class="logo-mini">
+                {% block avanzu_logo_mini %}<img src="/icon.png" height="24">{% endblock %}
+            </span>
+            <!-- logo for regular state and mobile devices -->
+            <span class="logo-lg">
+               {% block avanzu_logo_lg %}<img src="/logo.png" height="24">{% endblock %}
+            </span>
+        </a>
 
-        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-        <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-        <![endif]-->
-    </head>
-    <body>
-        {% if campaignchain_layout.show_header %}
-        <div id="sidemenu">
-            {% if is_granted('ROLE_USER') -%}
-                {% include 'CampaignChainCoreBundle:Base:side_menu.html.twig' %}
-            {% endif %}
-        </div>
-        {% include 'CampaignChainCoreBundle:Base:navbar.html.twig' %}
-        <div id="main-content">
-        {% endif %}
+        <!-- Header Navbar -->
+        <nav class="navbar navbar-static-top" role="navigation">
+            <!-- Sidebar toggle button-->
+            <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+                <span class="sr-only">{{ 'Toggle navigation'|trans({}, 'AvanzuAdminTheme')  }}</span>
+            </a>
+            <!-- Navbar Right Menu -->
+            <div class="navbar-custom-menu">
+                <ul class="nav navbar-nav">
 
-            <div class="container">
-                {% block page_header %}
-                    <div class="page-header">
-                        <h1>{{ page_title }}{% if page_secondary_title is defined and page_secondary_title is not empty %} <small>{{ page_secondary_title }}</small>{% endif %}</h1>
-                    </div>
-                {% endblock %}
+                    {% block avanzu_navbar_messages %}
+                        {#
+                    <!-- Messages: style can be found in dropdown.less-->
+                    <li class="dropdown messages-menu">
+                        <!-- Menu toggle button -->
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <i class="fa fa-envelope-o"></i>
+                            <span class="label label-success">4</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li class="header">You have 4 messages</li>
+                            <li>
+                                <!-- inner menu: contains the messages -->
+                                <ul class="menu">
+                                    <li><!-- start message -->
+                                        <a href="#">
+                                            <div class="pull-left">
+                                                <!-- User Image -->
+                                                <img src="{{ asset('theme/dist/img/user2-160x160.jpg') }}" class="img-circle" alt="User Image">
+                                            </div>
+                                            <!-- Message title and timestamp -->
+                                            <h4>
+                                                Support Team
+                                                <small><i class="fa fa-clock-o"></i> 5 mins</small>
+                                            </h4>
+                                            <!-- The message -->
+                                            <p>Why not buy a new awesome theme?</p>
+                                        </a>
+                                    </li>
+                                    <!-- end message -->
+                                </ul>
+                                <!-- /.menu -->
+                            </li>
+                            <li class="footer"><a href="#">See All Messages</a></li>
+                        </ul>
+                    </li>
+                    <!-- /.messages-menu -->
+                    #}
+                        {{ render(controller('AvanzuAdminThemeBundle:Navbar:messages')) }}
+                    {% endblock %}
+                    {% block avanzu_navbar_notifications %}
+                        {#
+                    <!-- Notifications Menu -->
+                    <li class="dropdown notifications-menu">
+                        <!-- Menu toggle button -->
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <i class="fa fa-bell-o"></i>
+                            <span class="label label-warning">10</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li class="header">You have 10 notifications</li>
+                            <li>
+                                <!-- Inner Menu: contains the notifications -->
+                                <ul class="menu">
+                                    <li><!-- start notification -->
+                                        <a href="#">
+                                            <i class="fa fa-users text-aqua"></i> 5 new members joined today
+                                        </a>
+                                    </li>
+                                    <!-- end notification -->
+                                </ul>
+                            </li>
+                            <li class="footer"><a href="#">View all</a></li>
+                        </ul>
+                    </li>
+                    #}
+                        {{ render(controller('AvanzuAdminThemeBundle:Navbar:notifications')) }}
+                    {% endblock %}
+                    {% block avanzu_navbar_tasks %}
+                        {#
+                    <!-- Tasks Menu -->
+                    <li class="dropdown tasks-menu">
+                        <!-- Menu Toggle Button -->
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <i class="fa fa-flag-o"></i>
+                            <span class="label label-danger">9</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li class="header">You have 9 tasks</li>
+                            <li>
+                                <!-- Inner menu: contains the tasks -->
+                                <ul class="menu">
+                                    <li><!-- Task item -->
+                                        <a href="#">
+                                            <!-- Task title and progress text -->
+                                            <h3>
+                                                Design some buttons
+                                                <small class="pull-right">20%</small>
+                                            </h3>
+                                            <!-- The progress bar -->
+                                            <div class="progress xs">
+                                                <!-- Change the css width attribute to simulate progress -->
+                                                <div class="progress-bar progress-bar-aqua" style="width: 20%" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
+                                                    <span class="sr-only">20% Complete</span>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <!-- end task item -->
+                                </ul>
+                            </li>
+                            <li class="footer">
+                                <a href="#">View all tasks</a>
+                            </li>
+                        </ul>
+                    </li>
+                    #}
+                        {{ render(controller('AvanzuAdminThemeBundle:Navbar:tasks')) }}
+                    {% endblock %}
+                    {% block avanzu_navbar_user %}
+                        {#
+                    <!-- User Account Menu -->
+                    <li class="dropdown user user-menu">
+                        <!-- Menu Toggle Button -->
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <!-- The user image in the navbar-->
+                            <img src="{{ asset('theme/dist/img/user2-160x160.jpg') }}" class="user-image" alt="User Image">
+                            <!-- hidden-xs hides the username on small devices so only the image appears. -->
+                            <span class="hidden-xs">Alexander Pierce</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <!-- The user image in the menu -->
+                            <li class="user-header">
+                                <img src="{{ asset('theme/dist/img/user2-160x160.jpg') }}" class="img-circle" alt="User Image">
 
-                {% block bodytabs %}{% endblock %}
+                                <p>
+                                    Alexander Pierce - Web Developer
+                                    <small>Member since Nov. 2012</small>
+                                </p>
+                            </li>
+                            <!-- Menu Body -->
+                            <li class="user-body">
+                                <div class="row">
+                                    <div class="col-xs-4 text-center">
+                                        <a href="#">Followers</a>
+                                    </div>
+                                    <div class="col-xs-4 text-center">
+                                        <a href="#">Sales</a>
+                                    </div>
+                                    <div class="col-xs-4 text-center">
+                                        <a href="#">Friends</a>
+                                    </div>
+                                </div>
+                                <!-- /.row -->
+                            </li>
+                            <!-- Menu Footer-->
+                            <li class="user-footer">
+                                <div class="pull-left">
+                                    <a href="#" class="btn btn-default btn-flat">Profile</a>
+                                </div>
+                                <div class="pull-right">
+                                    <a href="#" class="btn btn-default btn-flat">Sign out</a>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                    #}
+                        {{ render(controller('AvanzuAdminThemeBundle:Navbar:user')) }}
+                    {% endblock %}
+                    {% block avanzu_navbar_control_sidebar_toggle %}
+                    {% if avanzu_admin_context.control_sidebar %}
+                    <!-- Control Sidebar Toggle Button -->
+                    <li>
+                        <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+                    </li>
+                    {% endif %}
+                    {% endblock %}
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <!-- Left side column. contains the logo and sidebar -->
+    <aside class="main-sidebar">
 
-                {% include 'CampaignChainCoreBundle:Base:flashbag.html.twig' %}
+        <!-- sidebar: style can be found in sidebar.less -->
+        <section class="sidebar">
 
-                <div class="page-content">
-                    {% block body %}{% endblock %}
+            {% block avanzu_sidebar_user %}
+                {% if app.user is not null and is_granted('IS_AUTHENTICATED_FULLY') %}
+                    {{ render(controller('AvanzuAdminThemeBundle:Sidebar:userPanel')) }}
+                {% endif %}
+            {% endblock %}
+
+            {% block avanzu_sidebar_search %}
+                {{ render(controller('AvanzuAdminThemeBundle:Sidebar:searchForm')) }}
+            {% endblock %}
+
+            {% block avanzu_sidebar_nav %}
+                {% if avanzu_admin_context.knp_menu.enable %}
+                    {% include 'AvanzuAdminThemeBundle:Sidebar:knp-menu.html.twig' %}
+                {% else %}
+                    {{ render(controller('AvanzuAdminThemeBundle:Sidebar:menu', {'request':app.request})) }}
+                {% endif %}
+            {% endblock %}
+            {#
+            <!-- Sidebar user panel (optional) -->
+            <div class="user-panel">
+                <div class="pull-left image">
+                    <img src="{{ asset('theme/dist/img/user2-160x160.jpg') }}" class="img-circle" alt="User Image">
+                </div>
+                <div class="pull-left info">
+                    <p>Alexander Pierce</p>
+                    <!-- Status -->
+                    <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
                 </div>
             </div>
 
-        {% if campaignchain_layout.show_header %}
-        </div>
+            <!-- search form (Optional) -->
+            <form action="#" method="get" class="sidebar-form">
+                <div class="input-group">
+                    <input type="text" name="q" class="form-control" placeholder="Search...">
+              <span class="input-group-btn">
+                <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i>
+                </button>
+              </span>
+                </div>
+            </form>
+            <!-- /.search form -->
+
+            <!-- Sidebar Menu -->
+            <ul class="sidebar-menu">
+                <li class="header">HEADER</li>
+                <!-- Optionally, you can add icons to the links -->
+                <li class="active"><a href="#"><i class="fa fa-link"></i> <span>Link</span></a></li>
+                <li><a href="#"><i class="fa fa-link"></i> <span>Another Link</span></a></li>
+                <li class="treeview">
+                    <a href="#"><i class="fa fa-link"></i> <span>Multilevel</span> <i class="fa fa-angle-left pull-right"></i></a>
+                    <ul class="treeview-menu">
+                        <li><a href="#">Link in level 2</a></li>
+                        <li><a href="#">Link in level 2</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <!-- /.sidebar-menu -->
+            #}
+        </section>
+        <!-- /.sidebar -->
+    </aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                {{ page_title }}{% if page_secondary_title is defined and page_secondary_title is not empty %} <small>{{ page_secondary_title }}</small>{% endif %}
+            </h1>
+
+            {% block avanzu_breadcrumb %}
+                {% if avanzu_admin_context.knp_menu.enable %}
+                    {% include 'AvanzuAdminThemeBundle:Breadcrumb:knp-breadcrumb.html.twig' %}
+                {% else %}
+                    {{ render(controller('AvanzuAdminThemeBundle:Breadcrumb:breadcrumb', {'request':app.request, 'title' : block('page_title')})) }}
+                {% endif %}
+            {% endblock %}
+            {#
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                <li class="active">Here</li>
+            </ol>
+            #}
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            {% block bodytabs %}{% endblock %}
+
+            {% include 'CampaignChainCoreBundle:Base:flashbag.html.twig' %}
+
+            <div class="page-content">
+                {% block body %}{% endblock %}
+            </div>
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <!-- Main Footer -->
+
+    {% block avanzu_footer %}
+        {% include 'CampaignChainCoreBundle:Base:_footer.html.twig' %}
+    {% endblock %}
+    {% block avanzu_control_sidebar %}
+        {% if avanzu_admin_context.control_sidebar %}
+            {% include 'AvanzuAdminThemeBundle:Partials:_control-sidebar.html.twig' %}
         {% endif %}
-        {% if campaignchain_layout.show_footer %}
-        <footer class="footer">
-                <p class="navbar-text text-muted">
-                    Powered by <a href="{{ path('campaignchain_core_homepage') }}" rel="external">CampaignChain</a>
-                        {% if (campaignchain_system is not null) and (campaignchain_system.version is not null) %}
-                            &nbsp;({{ campaignchain_system.version }})
-                        {% endif %}</p>
-        </footer>
-        {% endif %}
-        {% if campaignchain_layout.show_header %}
-        <div id="sidemenu-drape"></div>
-        {% endif %}
-        <script type="text/javascript">
-            $(function () {
-                $("[data-toggle=tooltip]").tooltip();
-            })
-        </script>
-        <div class="modal fade" id="campaignchain-default-modal" data-show="false"><div class="modal-dialog"><div class="modal-content"></div></div></div>
-        {% block javascripts_footer %}{% endblock %}
-    </body>
+    {% endblock %}
+</div>
+<!-- ./wrapper -->
+<!-- REQUIRED JS SCRIPTS -->
+{% block avanzu_javascripts %}{% endblock %}
+{% block avanzu_javascripts_inline %}{% endblock %}
+
+<script type="text/javascript">
+    $(function () {
+        $("[data-toggle=tooltip]").tooltip();
+    })
+</script>
+<div class="modal fade" id="campaignchain-default-modal" data-show="false"><div class="modal-dialog"><div class="modal-content"></div></div></div>
+{% block javascripts_footer %}{% endblock %}
+
+</body>
 </html>

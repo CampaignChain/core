@@ -35,7 +35,7 @@
         "sensio/generator-bundle": "~2.5",
         "components/jquery": "1.11.*",
         "oyejorge/less.php": "~1.5",
-        "braincrafted/bootstrap-bundle": "2.1.2",
+        "braincrafted/bootstrap-bundle": "2.2.*",
         "incenteev/composer-parameter-handler": "~2.0",
         "twbs/bootstrap": "3.3.*",
         "knplabs/knp-menu": "dev-master",

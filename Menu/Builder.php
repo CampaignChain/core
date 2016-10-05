@@ -22,15 +22,25 @@ use Symfony\Component\DependencyInjection\ContainerAware;
 
 class Builder extends ContainerAware
 {
-    public function mainNav(FactoryInterface $factory, array $options)
+    /**
+     * @param FactoryInterface $factory
+     *
+     * Add any other dependency you need
+     */
+    public function __construct(FactoryInterface $factory)
     {
-        $menu = $factory->createItem('Home');
+        $this->factory = $factory;
+    }
+
+    public function mainNav(array $options)
+    {
+        $menu = $this->factory->createItem('Home');
 
         // Plan
         $menu->addChild('Plan');
         $menu['Plan']->addChild('Campaigns', array(
                 'route' => 'campaignchain_core_plan'
-            ));
+            ))->setAttribute('class', 'header');
         $menu['Plan']->addChild('Activities', array(
             'route' => 'campaignchain_core_plan_activities'
         ));

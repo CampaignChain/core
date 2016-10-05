@@ -1,0 +1,12 @@
+<footer class="main-footer">
+    <!-- To the right -->
+    <div class="pull-right hidden-xs">
+        Anything you want
+    </div>
+
+    <!-- Default to the left -->
+    Powered by <a href="{{ path('campaignchain_core_homepage') }}" rel="external">CampaignChain</a>
+    {% if (campaignchain_system is not null) and (campaignchain_system.version is not null) %}
+        &nbsp;({{ campaignchain_system.version }})
+    {% endif %}
+</footer>

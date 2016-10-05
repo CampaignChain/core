@@ -46,6 +46,15 @@ campaignchain_core:
             # http://www.example.com/?ccshortly=3#fragment
             unique_param_name: 'ccshortly'
 
+avanzu_admin_theme:
+    theme:
+        skin: skin-black
+        widget:
+            collapsible: false
+            removable: false
+    knp_menu:                         # knp menu integration
+        enable         : true
+
 assetic:
     assets:
         campaignchain_base_css:
