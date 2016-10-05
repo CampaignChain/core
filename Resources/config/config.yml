@@ -30,6 +30,7 @@ campaignchain_core:
         # Timeout of Scheduler in seconds. Default value is 600s.
         timeout: 600
     theme:
+        skin: skin-black
         layouts:
             default:
                 show_header: true
@@ -45,15 +46,6 @@ campaignchain_core:
             # below (e.g. 'ccshortly') and will appear in the URL like this:
             # http://www.example.com/?ccshortly=3#fragment
             unique_param_name: 'ccshortly'
-
-avanzu_admin_theme:
-    theme:
-        skin: skin-black
-        widget:
-            collapsible: false
-            removable: false
-    knp_menu:                         # knp menu integration
-        enable         : true
 
 assetic:
     assets:
@@ -301,7 +293,7 @@ braincrafted_bootstrap:
     output_dir: null
     assets_dir: "%kernel.root_dir%/../vendor/twbs/bootstrap"
     jquery_path: "%kernel.root_dir%/../components/jquery/jquery.js"
-    less_filter: "lessphp"
+    css_preprocessor: "lessphp"
     auto_configure:
         assetic: true
         twig: true
@@ -444,3 +436,12 @@ nelmio_api_doc:
         request_format:
             formats:
                 json: application/json
+
+avanzu_admin_theme:
+    theme:
+        skin: "%campaignchain_core.theme.skin%"
+        widget:
+            collapsible: false
+            removable: false
+    knp_menu:                         # knp menu integration
+        enable         : true
