@@ -439,9 +439,19 @@ nelmio_api_doc:
 
 avanzu_admin_theme:
     theme:
-        skin: "%campaignchain_core.theme.skin%"
+        skin: "%campaignchain.theme.skin%"
         widget:
             collapsible: false
             removable: false
+            bordered: false
     knp_menu:                         # knp menu integration
         enable         : true
+
+twig:
+    form:
+        resources:
+            - "CampaignChainCoreBundle:Form:fields.html.twig"
+            - "BraincraftedBootstrapBundle:Form:bootstrap.html.twig"
+            - "SCDatetimepickerBundle:Form:div_layout.html.twig"
+            - "SCDatetimepickerBundle:Form:jquery_layout.html.twig"
+            - "SCDatetimepickerBundle:Form:stylesheet_layout.html.twig"

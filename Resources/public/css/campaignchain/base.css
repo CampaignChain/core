@@ -478,3 +478,7 @@ div.scrollable {
 .secondary-nav {
     padding-bottom: 30px;
 }
+
+.box-body div {
+    display: block !important;
+}

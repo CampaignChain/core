@@ -10,6 +10,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
     </title>
     {% include('CampaignChainCoreBundle:Base:_head.html.twig') %}
     {% block avanzu_head %}{% endblock %}
+    {% block javascripts %}{% endblock %}
+    {% block stylesheets %}{% endblock %}
 </head>
 
 <body class="{{ avanzu_admin_context.skin|default("")|body_class }}">

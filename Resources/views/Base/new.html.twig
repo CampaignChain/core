@@ -16,6 +16,8 @@ limitations under the License.
 
 {% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
 
+{% form_theme form 'CampaignChainCoreBundle:Form:fields.html.twig' %}
+
 {% block javascripts %}
     {{ parent() }}
     {% if form is defined %}
@@ -63,21 +65,23 @@ limitations under the License.
 
     {% block form_header %}{% endblock %}
 
+    {% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig' %}
     {% block form %}
-        <form method="POST" class="form-horizontal" role="form" enctype="multipart/form-data">
-            {{ bootstrap_set_style('horizontal') }}
+        {% block box_before %}{{ form_start(form) }}{% endblock %}
+        {{ bootstrap_set_style('horizontal') }}
             {{ bootstrap_set_widget_col(6) }}
             {{ bootstrap_set_label_col(2) }}
-            {{ form_widget(form) }}
+            {% block box_body %}{{ form_widget(form) }}{% endblock %}
+            {% block box_footer %}
             <div class="form-group">
-                <div class="col-lg-offset-2 col-lg-6">
-                    <div class="btn-group pull-right" role="group" aria-label="...">
-                        {% include 'CampaignChainCoreBundle:Base:form_footer_buttons.html.twig' %}
-                    </div>
+                <div class="btn-group pull-right" role="group" aria-label="...">
+                    {% include 'CampaignChainCoreBundle:Base:form_footer_buttons.html.twig' %}
                 </div>
             </div>
-        </form>
+            {% endblock %}
+        {% block box_after %}{{ form_end(form)}}{% endblock %}
     {% endblock %}
+    {% endembed %}
 
     {% block form_footer %}{% endblock %}
 
