@@ -54,6 +54,15 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
                 <span class="sr-only">{{ 'Toggle navigation'|trans({}, 'AvanzuAdminTheme')  }}</span>
             </a>
+            {% if is_granted('ROLE_USER') -%}
+                <a  data-step="1" href="#" class="create-toggle" data-toggle="dropdown" role="button"><span class="fa fa-plus"></span> <span class="visible-md-inline visible-lg-inline visible-sm-inline">Create </span><span class="caret"></span></a>
+                <ul class="dropdown-menu" role="menu">
+                    <li  class="first" data-step="4"><a href="{{ path('campaignchain_core_activities_new') }}">Activity</a></li>
+                    <li><a href="{{ path('campaignchain_core_milestone_new') }}">Milestone</a></li>
+                    <li data-step="3"><a href="{{ path('campaignchain_core_campaign_new') }}">Campaign</a></li>
+                    <li data-step="2"><a href="{{ path('campaignchain_core_channel_new') }}">Location</a></li>
+                </ul>
+            {% endif %}
             <!-- Navbar Right Menu -->
             <div class="navbar-custom-menu">
                 <ul class="nav navbar-nav">
@@ -171,7 +180,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         {% if campaignchain_env == 'dev' %}
                             <ul class="nav navbar-nav">
                                 <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Developer Tools"><span class="fa fa-wrench"></span> <span class="visible-xs-inline">Developer Tools </span><b class="caret"></b></a>
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Developer Tools"><span class="fa fa-wrench"></span> <b class="caret"></b></a>
                                     <ul class="dropdown-menu">
                                         <li><a href="{{ path('campaignchain_development_sample_data') }}">Sample Data</a></li>
                                         <li><a href="{{ path('campaignchain_development_reset_system') }}">Reset System</a></li>
@@ -231,16 +240,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <!-- sidebar: style can be found in sidebar.less -->
         <section class="sidebar">
             {% if is_granted('ROLE_USER') -%}
-                {% block avanzu_sidebar_user %}
-                    {% if app.user is not null and is_granted('IS_AUTHENTICATED_FULLY') %}
-                        {{ render(controller('AvanzuAdminThemeBundle:Sidebar:userPanel')) }}
-                    {% endif %}
-                {% endblock %}
-
-                {% block avanzu_sidebar_search %}
-                    {{ render(controller('AvanzuAdminThemeBundle:Sidebar:searchForm')) }}
-                {% endblock %}
-
                 {% block avanzu_sidebar_nav %}
                     {% if avanzu_admin_context.knp_menu.enable %}
                         {% include 'AvanzuAdminThemeBundle:Sidebar:knp-menu.html.twig' %}

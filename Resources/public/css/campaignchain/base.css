@@ -181,10 +181,6 @@ ul.nav-tabs {
     display: none;
 }
 
-.campaignchain-sticky-heading {
-    background: #ffffff;
-}
-
 iframe {
     background-image: url("/bundles/campaignchaincore/images/spinner.gif");
     background-repeat: no-repeat;
@@ -505,4 +501,19 @@ div.scrollable {
 .nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
     background-color: transparent;
     font-weight: bold;
+}
+
+.skin-black .main-header .navbar > .create-toggle {
+    border-right: 1px solid #eee;
+    color: #333;
+}
+.skin-black .main-header .navbar .create-toggle {
+    color: #333;
+}
+.main-header .create-toggle {
+    background-color: transparent;
+    background-image: none;
+    float: left;
+    padding: 15px;
+    color: #337ab7;
 }
