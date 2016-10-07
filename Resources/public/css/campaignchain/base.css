@@ -479,6 +479,30 @@ div.scrollable {
     padding-bottom: 30px;
 }
 
+/* AdminLTE overrides */
+
 .box-body div {
     display: block !important;
+}
+
+.fc-view-container {
+    background-color: white;
+}
+
+.control-sidebar .nav-stacked > li > a {
+    color: #eeeeee;
+}
+
+.control-sidebar .nav-stacked > li > a:hover,
+.control-sidebar .nav-stacked > li > a:focus {
+    color: #444;
+}
+
+.navbar-nav .btn {
+    padding: 6px 6px 26px;
+}
+
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+    background-color: transparent;
+    font-weight: bold;
 }

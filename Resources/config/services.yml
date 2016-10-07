@@ -443,10 +443,23 @@ services:
         tags:
             - { name: knp_menu.menu_builder, method: mainNav, alias: main }
 
-    app.setup_knp_menu_listener:
-        class: CampaignChain\CoreBundle\EventListener\MenuListener
+    # AdminLTE
+    campaignchain.core.theme.menu:
+        class: CampaignChain\CoreBundle\EventListener\Theme\MenuListener
         tags:
             - { name: kernel.event_listener, event: theme.sidebar_setup_knp_menu, method: onSetupMenu }
+
+    campaignchain.core.theme.user_model:
+        class: CampaignChain\CoreBundle\Model\Theme\UserModel
+        arguments:
+            - "@security.token_storage"
+
+    campaignchain.core.theme.user_listener:
+        class: CampaignChain\CoreBundle\EventListener\Theme\UserListener
+        arguments:
+            - "@campaignchain.core.theme.user_model"
+        tags:
+            - { name: kernel.event_listener, event: theme.navbar_user, method: onShowUser }
 
     # Serializer
     campaignchain.core.serializer.encoder.json:

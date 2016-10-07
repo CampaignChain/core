@@ -16,12 +16,10 @@ limitations under the License.
 
 {% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
 
-{% form_theme form 'CampaignChainCoreBundle:Form:fields.html.twig' %}
-
 {% block javascripts %}
     {{ parent() }}
     {% if form is defined %}
-    {{ form_javascript(form) }}
+        {{ form_javascript(form) }}
     {% endif %}
     <script>
         $(":required")
@@ -30,7 +28,7 @@ limitations under the License.
                 .prepend("<span class='icon-asterisk'></span> ");
     </script>
     {% javascripts '@daterangepicker_js' combine=false %}
-        <script src="{{ asset_url }}"></script>
+    <script src="{{ asset_url }}"></script>
     {% endjavascripts %}
     {% if blockui is defined %}
         {% javascripts '@blockui_js' combine=true %}
@@ -42,19 +40,19 @@ limitations under the License.
 {% block stylesheets %}
     {{ parent() }}
     {% if form is defined %}
-    {{ form_stylesheet(form) }}
+        {{ form_stylesheet(form) }}
     {% endif %}
     {% stylesheets '@select2_css' combine=true %}
-        <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
+    <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
     {% endstylesheets %}
     {% stylesheets '@daterangepicker_css' %}
-        <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
+    <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
     {% endstylesheets %}
 {% endblock %}
 
 {% block body %}
     {% javascripts '@select2_js' %}
-        <script src="{{ asset_url }}"></script>
+    <script src="{{ asset_url }}"></script>
     {% endjavascripts %}
 
     {% for flashMessage in app.session.flashbag.get('success') %}
@@ -65,23 +63,21 @@ limitations under the License.
 
     {% block form_header %}{% endblock %}
 
-    {% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig' %}
     {% block form %}
-        {% block box_before %}{{ form_start(form) }}{% endblock %}
-        {{ bootstrap_set_style('horizontal') }}
+        <form method="POST" class="form-horizontal" role="form" enctype="multipart/form-data">
+            {{ bootstrap_set_style('horizontal') }}
             {{ bootstrap_set_widget_col(6) }}
             {{ bootstrap_set_label_col(2) }}
-            {% block box_body %}{{ form_widget(form) }}{% endblock %}
-            {% block box_footer %}
+            {{ form_widget(form) }}
             <div class="form-group">
-                <div class="btn-group pull-right" role="group" aria-label="...">
-                    {% include 'CampaignChainCoreBundle:Base:form_footer_buttons.html.twig' %}
+                <div class="col-lg-offset-2 col-lg-6">
+                    <div class="btn-group pull-right" role="group" aria-label="...">
+                        {% include 'CampaignChainCoreBundle:Base:form_footer_buttons.html.twig' %}
+                    </div>
                 </div>
             </div>
-            {% endblock %}
-        {% block box_after %}{{ form_end(form)}}{% endblock %}
+        </form>
     {% endblock %}
-    {% endembed %}
 
     {% block form_footer %}{% endblock %}
 

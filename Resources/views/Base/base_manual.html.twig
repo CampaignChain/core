@@ -1,0 +1,118 @@
+{#
+Copyright 2016 CampaignChain, Inc. <info@campaignchain.com>
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+#}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <title>{{ page_title }} - CampaignChain</title>
+        {% block javascripts %}
+            {% javascripts '@jquery_js' '@bootstrap_js' '@jquery_file_upload_js' '@jquery_cropper_js' filter='?yui_js' combine=true %}
+                <script src="{{ asset_url }}"></script>
+            {% endjavascripts %}
+            <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+            <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
+            {% javascripts '@moment_js' combine=true %}
+            <script src="{{ asset_url }}"></script>
+            {% endjavascripts %}
+            {% javascripts '@campaignchain_base_js' combine=true %}
+                <script src="{{ asset_url }}"></script>
+            {% endjavascripts %}
+            <script type="text/javascript">
+                window.campaignchainTimeFormat = "{{ campaignchain_user_time_format.moment_js }}";
+                window.campaignchainDatetimeFormat = "{{ campaignchain_user_datetime_format.moment_js }}";
+                window.campaignchainTimezone = "{{ app.session.get('campaignchain.timezone') }}";
+                window.campaignchainTimezoneOffset = "{{ campaignchain_user_timezone_offset }}";
+                window.campaignchainTimezoneAbbreviation = "{{ campaignchain_user_timezone_abbreviation }}";
+                window.campaignchainSchedulerInterval = {{ campaignchain_core_scheduler_interval }};
+            </script>
+        {% endblock %}
+
+        {% block stylesheets %}
+            {% stylesheets '@bootstrap_less' '@jquery_cropper_css' combine=true %}
+                <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
+            {% endstylesheets %}
+            <link href="/style.css" type="text/css" rel="stylesheet" />
+            {% stylesheets '@campaignchain_base_css' filter="cssrewrite"
+            'bundles/campaignchaincore/css/*'%}
+                <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
+            {% endstylesheets %}
+        {% endblock %}
+
+        <!-- Add Fonta Awesome Glyphicons -->
+        <link rel="stylesheet" type="text/css" href="{{ asset('bundles/bmatznerfontawesome/css/font-awesome.min.css') }}" />
+
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <body>
+        {% if campaignchain_layout.show_header %}
+        <div id="sidemenu">
+            {% if is_granted('ROLE_USER') -%}
+                {% include 'CampaignChainCoreBundle:Base:side_menu.html.twig' %}
+            {% endif %}
+        </div>
+        {% include 'CampaignChainCoreBundle:Base:navbar.html.twig' %}
+        <div id="main-content">
+        {% endif %}
+
+            <div class="container">
+                {% block page_header %}
+                    <div class="page-header">
+                        <h1>{{ page_title }}{% if page_secondary_title is defined and page_secondary_title is not empty %} <small>{{ page_secondary_title }}</small>{% endif %}</h1>
+                    </div>
+                {% endblock %}
+
+                {% block bodytabs %}{% endblock %}
+
+                {% include 'CampaignChainCoreBundle:Base:flashbag.html.twig' %}
+
+                <div class="page-content">
+                    {% block body %}{% endblock %}
+                </div>
+            </div>
+
+        {% if campaignchain_layout.show_header %}
+        </div>
+        {% endif %}
+        {% if campaignchain_layout.show_footer %}
+        <footer class="footer">
+                <p class="navbar-text text-muted">
+                    Powered by <a href="{{ path('campaignchain_core_homepage') }}" rel="external">CampaignChain</a>
+                        {% if (campaignchain_system is not null) and (campaignchain_system.version is not null) %}
+                            &nbsp;({{ campaignchain_system.version }})
+                        {% endif %}</p>
+        </footer>
+        {% endif %}
+        {% if campaignchain_layout.show_header %}
+        <div id="sidemenu-drape"></div>
+        {% endif %}
+        <script type="text/javascript">
+            $(function () {
+                $("[data-toggle=tooltip]").tooltip();
+            })
+        </script>
+        <div class="modal fade" id="campaignchain-default-modal" data-show="false"><div class="modal-dialog"><div class="modal-content"></div></div></div>
+        {% block javascripts_footer %}{% endblock %}
+    </body>
+</html>

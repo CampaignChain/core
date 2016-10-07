@@ -1,3 +1,19 @@
+{#
+Copyright 2016 CampaignChain, Inc. <info@campaignchain.com>
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+#}
+
 <!DOCTYPE html>
 <!--
 This is a starter template page. Use this page to start your new project from
@@ -41,174 +57,170 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <!-- Navbar Right Menu -->
             <div class="navbar-custom-menu">
                 <ul class="nav navbar-nav">
-
-                    {% block avanzu_navbar_messages %}
-                        {#
-                    <!-- Messages: style can be found in dropdown.less-->
-                    <li class="dropdown messages-menu">
-                        <!-- Menu toggle button -->
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            <i class="fa fa-envelope-o"></i>
-                            <span class="label label-success">4</span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li class="header">You have 4 messages</li>
-                            <li>
-                                <!-- inner menu: contains the messages -->
-                                <ul class="menu">
-                                    <li><!-- start message -->
-                                        <a href="#">
-                                            <div class="pull-left">
-                                                <!-- User Image -->
-                                                <img src="{{ asset('theme/dist/img/user2-160x160.jpg') }}" class="img-circle" alt="User Image">
-                                            </div>
-                                            <!-- Message title and timestamp -->
-                                            <h4>
-                                                Support Team
-                                                <small><i class="fa fa-clock-o"></i> 5 mins</small>
-                                            </h4>
-                                            <!-- The message -->
-                                            <p>Why not buy a new awesome theme?</p>
-                                        </a>
-                                    </li>
-                                    <!-- end message -->
-                                </ul>
-                                <!-- /.menu -->
-                            </li>
-                            <li class="footer"><a href="#">See All Messages</a></li>
-                        </ul>
-                    </li>
-                    <!-- /.messages-menu -->
-                    #}
-                        {{ render(controller('AvanzuAdminThemeBundle:Navbar:messages')) }}
-                    {% endblock %}
-                    {% block avanzu_navbar_notifications %}
-                        {#
-                    <!-- Notifications Menu -->
-                    <li class="dropdown notifications-menu">
-                        <!-- Menu toggle button -->
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            <i class="fa fa-bell-o"></i>
-                            <span class="label label-warning">10</span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li class="header">You have 10 notifications</li>
-                            <li>
-                                <!-- Inner Menu: contains the notifications -->
-                                <ul class="menu">
-                                    <li><!-- start notification -->
-                                        <a href="#">
-                                            <i class="fa fa-users text-aqua"></i> 5 new members joined today
-                                        </a>
-                                    </li>
-                                    <!-- end notification -->
-                                </ul>
-                            </li>
-                            <li class="footer"><a href="#">View all</a></li>
-                        </ul>
-                    </li>
-                    #}
-                        {{ render(controller('AvanzuAdminThemeBundle:Navbar:notifications')) }}
-                    {% endblock %}
-                    {% block avanzu_navbar_tasks %}
-                        {#
-                    <!-- Tasks Menu -->
-                    <li class="dropdown tasks-menu">
-                        <!-- Menu Toggle Button -->
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            <i class="fa fa-flag-o"></i>
-                            <span class="label label-danger">9</span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li class="header">You have 9 tasks</li>
-                            <li>
-                                <!-- Inner menu: contains the tasks -->
-                                <ul class="menu">
-                                    <li><!-- Task item -->
-                                        <a href="#">
-                                            <!-- Task title and progress text -->
-                                            <h3>
-                                                Design some buttons
-                                                <small class="pull-right">20%</small>
-                                            </h3>
-                                            <!-- The progress bar -->
-                                            <div class="progress xs">
-                                                <!-- Change the css width attribute to simulate progress -->
-                                                <div class="progress-bar progress-bar-aqua" style="width: 20%" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
-                                                    <span class="sr-only">20% Complete</span>
+                    {% if is_granted('ROLE_USER') -%}
+                        {% block avanzu_navbar_messages %}
+                            {#
+                        <!-- Messages: style can be found in dropdown.less-->
+                        <li class="dropdown messages-menu">
+                            <!-- Menu toggle button -->
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <i class="fa fa-envelope-o"></i>
+                                <span class="label label-success">4</span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li class="header">You have 4 messages</li>
+                                <li>
+                                    <!-- inner menu: contains the messages -->
+                                    <ul class="menu">
+                                        <li><!-- start message -->
+                                            <a href="#">
+                                                <div class="pull-left">
+                                                    <!-- User Image -->
+                                                    <img src="{{ asset('theme/dist/img/user2-160x160.jpg') }}" class="img-circle" alt="User Image">
                                                 </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <!-- end task item -->
-                                </ul>
-                            </li>
-                            <li class="footer">
-                                <a href="#">View all tasks</a>
-                            </li>
-                        </ul>
-                    </li>
-                    #}
-                        {{ render(controller('AvanzuAdminThemeBundle:Navbar:tasks')) }}
-                    {% endblock %}
-                    {% block avanzu_navbar_user %}
-                        {#
-                    <!-- User Account Menu -->
-                    <li class="dropdown user user-menu">
-                        <!-- Menu Toggle Button -->
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            <!-- The user image in the navbar-->
-                            <img src="{{ asset('theme/dist/img/user2-160x160.jpg') }}" class="user-image" alt="User Image">
-                            <!-- hidden-xs hides the username on small devices so only the image appears. -->
-                            <span class="hidden-xs">Alexander Pierce</span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <!-- The user image in the menu -->
-                            <li class="user-header">
-                                <img src="{{ asset('theme/dist/img/user2-160x160.jpg') }}" class="img-circle" alt="User Image">
+                                                <!-- Message title and timestamp -->
+                                                <h4>
+                                                    Support Team
+                                                    <small><i class="fa fa-clock-o"></i> 5 mins</small>
+                                                </h4>
+                                                <!-- The message -->
+                                                <p>Why not buy a new awesome theme?</p>
+                                            </a>
+                                        </li>
+                                        <!-- end message -->
+                                    </ul>
+                                    <!-- /.menu -->
+                                </li>
+                                <li class="footer"><a href="#">See All Messages</a></li>
+                            </ul>
+                        </li>
+                        <!-- /.messages-menu -->
+                        #}
+                            {{ render(controller('AvanzuAdminThemeBundle:Navbar:messages')) }}
+                        {% endblock %}
+                        {% block avanzu_navbar_notifications %}
+                            {#
+                        <!-- Notifications Menu -->
+                        <li class="dropdown notifications-menu">
+                            <!-- Menu toggle button -->
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <i class="fa fa-bell-o"></i>
+                                <span class="label label-warning">10</span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li class="header">You have 10 notifications</li>
+                                <li>
+                                    <!-- Inner Menu: contains the notifications -->
+                                    <ul class="menu">
+                                        <li><!-- start notification -->
+                                            <a href="#">
+                                                <i class="fa fa-users text-aqua"></i> 5 new members joined today
+                                            </a>
+                                        </li>
+                                        <!-- end notification -->
+                                    </ul>
+                                </li>
+                                <li class="footer"><a href="#">View all</a></li>
+                            </ul>
+                        </li>
+                        #}
+                            {{ render(controller('AvanzuAdminThemeBundle:Navbar:notifications')) }}
+                        {% endblock %}
+                        {% block avanzu_navbar_tasks %}
+                            {#
+                        <!-- Tasks Menu -->
+                        <li class="dropdown tasks-menu">
+                            <!-- Menu Toggle Button -->
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <i class="fa fa-flag-o"></i>
+                                <span class="label label-danger">9</span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li class="header">You have 9 tasks</li>
+                                <li>
+                                    <!-- Inner menu: contains the tasks -->
+                                    <ul class="menu">
+                                        <li><!-- Task item -->
+                                            <a href="#">
+                                                <!-- Task title and progress text -->
+                                                <h3>
+                                                    Design some buttons
+                                                    <small class="pull-right">20%</small>
+                                                </h3>
+                                                <!-- The progress bar -->
+                                                <div class="progress xs">
+                                                    <!-- Change the css width attribute to simulate progress -->
+                                                    <div class="progress-bar progress-bar-aqua" style="width: 20%" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
+                                                        <span class="sr-only">20% Complete</span>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <!-- end task item -->
+                                    </ul>
+                                </li>
+                                <li class="footer">
+                                    <a href="#">View all tasks</a>
+                                </li>
+                            </ul>
+                        </li>
+                        #}
+                            {{ render(controller('AvanzuAdminThemeBundle:Navbar:tasks')) }}
+                        {% endblock %}
+                        <!-- Developer Tools -->
+                        {% if campaignchain_env == 'dev' %}
+                            <ul class="nav navbar-nav">
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Developer Tools"><span class="fa fa-wrench"></span> <span class="visible-xs-inline">Developer Tools </span><b class="caret"></b></a>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="{{ path('campaignchain_development_sample_data') }}">Sample Data</a></li>
+                                        <li><a href="{{ path('campaignchain_development_reset_system') }}">Reset System</a></li>
+                                        <li><a href="{{ path('nelmio_api_doc_index') }}" target="_blank">REST API Doc</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        {% endif %}
+                        {% block avanzu_navbar_user %}
+                        <!-- User Account Menu -->
+                        <li class="dropdown user user-menu">
+                            <!-- Menu Toggle Button -->
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <!-- The user image in the navbar-->
+                                <img src="{{ app.user.avatarImage|imagine_filter('navbar_avatar') }}" class="user-image" alt="{{ app.user.name }} ({{ app.user.username }})">
+                                <!-- hidden-xs hides the username on small devices so only the image appears. -->
+                                <span class="hidden-xs">{{ app.user.name }} ({{ app.user.username }})</span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <!-- The user image in the menu -->
+                                <li class="user-header">
+                                    <img src="{{ app.user.avatarImage|imagine_filter('avatar') }}" class="img-circle" alt="User Image">
 
-                                <p>
-                                    Alexander Pierce - Web Developer
-                                    <small>Member since Nov. 2012</small>
-                                </p>
-                            </li>
-                            <!-- Menu Body -->
-                            <li class="user-body">
-                                <div class="row">
-                                    <div class="col-xs-4 text-center">
-                                        <a href="#">Followers</a>
+                                    <p>
+                                        {{ app.user.name }} ({{ app.user.username }})
+                                        <small>Timezone: {{ campaignchain_user_timezone_abbreviation }}</small>
+                                    </p>
+                                </li>
+                                <!-- Menu Footer-->
+                                <li class="user-footer">
+                                    <div class="pull-left">
+                                        <a href="{{ path('campaignchain_core_profile_edit') }}" class="btn btn-default btn-flat">Profile</a>
                                     </div>
-                                    <div class="col-xs-4 text-center">
-                                        <a href="#">Sales</a>
+                                    <div class="pull-right">
+                                        <a href="{{ path('fos_user_security_logout') }}" class="btn btn-default btn-flat">Sign out</a>
                                     </div>
-                                    <div class="col-xs-4 text-center">
-                                        <a href="#">Friends</a>
-                                    </div>
-                                </div>
-                                <!-- /.row -->
-                            </li>
-                            <!-- Menu Footer-->
-                            <li class="user-footer">
-                                <div class="pull-left">
-                                    <a href="#" class="btn btn-default btn-flat">Profile</a>
-                                </div>
-                                <div class="pull-right">
-                                    <a href="#" class="btn btn-default btn-flat">Sign out</a>
-                                </div>
-                            </li>
-                        </ul>
-                    </li>
-                    #}
-                        {{ render(controller('AvanzuAdminThemeBundle:Navbar:user')) }}
-                    {% endblock %}
-                    {% block avanzu_navbar_control_sidebar_toggle %}
-                    {% if avanzu_admin_context.control_sidebar %}
-                    <!-- Control Sidebar Toggle Button -->
-                    <li>
-                        <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
-                    </li>
+                                </li>
+                            </ul>
+                        </li>
+                        {% endblock %}
+                        {% block avanzu_navbar_control_sidebar_toggle %}
+                        {% if avanzu_admin_context.control_sidebar %}
+                        <!-- Control Sidebar Toggle Button -->
+                        <li>
+                            <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+                        </li>
+                        {% endif %}
+                        {% endblock %}
                     {% endif %}
-                    {% endblock %}
                 </ul>
             </div>
         </nav>
@@ -218,24 +230,25 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
         <!-- sidebar: style can be found in sidebar.less -->
         <section class="sidebar">
+            {% if is_granted('ROLE_USER') -%}
+                {% block avanzu_sidebar_user %}
+                    {% if app.user is not null and is_granted('IS_AUTHENTICATED_FULLY') %}
+                        {{ render(controller('AvanzuAdminThemeBundle:Sidebar:userPanel')) }}
+                    {% endif %}
+                {% endblock %}
 
-            {% block avanzu_sidebar_user %}
-                {% if app.user is not null and is_granted('IS_AUTHENTICATED_FULLY') %}
-                    {{ render(controller('AvanzuAdminThemeBundle:Sidebar:userPanel')) }}
-                {% endif %}
-            {% endblock %}
+                {% block avanzu_sidebar_search %}
+                    {{ render(controller('AvanzuAdminThemeBundle:Sidebar:searchForm')) }}
+                {% endblock %}
 
-            {% block avanzu_sidebar_search %}
-                {{ render(controller('AvanzuAdminThemeBundle:Sidebar:searchForm')) }}
-            {% endblock %}
-
-            {% block avanzu_sidebar_nav %}
-                {% if avanzu_admin_context.knp_menu.enable %}
-                    {% include 'AvanzuAdminThemeBundle:Sidebar:knp-menu.html.twig' %}
-                {% else %}
-                    {{ render(controller('AvanzuAdminThemeBundle:Sidebar:menu', {'request':app.request})) }}
-                {% endif %}
-            {% endblock %}
+                {% block avanzu_sidebar_nav %}
+                    {% if avanzu_admin_context.knp_menu.enable %}
+                        {% include 'AvanzuAdminThemeBundle:Sidebar:knp-menu.html.twig' %}
+                    {% else %}
+                        {{ render(controller('AvanzuAdminThemeBundle:Sidebar:menu', {'request':app.request})) }}
+                    {% endif %}
+                {% endblock %}
+            {% endif %}
             {#
             <!-- Sidebar user panel (optional) -->
             <div class="user-panel">
@@ -323,11 +336,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
     {% block avanzu_footer %}
         {% include 'CampaignChainCoreBundle:Base:_footer.html.twig' %}
     {% endblock %}
-    {% block avanzu_control_sidebar %}
-        {% if avanzu_admin_context.control_sidebar %}
-            {% include 'AvanzuAdminThemeBundle:Partials:_control-sidebar.html.twig' %}
-        {% endif %}
-    {% endblock %}
+    {% if is_granted('ROLE_USER') -%}
+        {% block avanzu_control_sidebar %}
+            {% if avanzu_admin_context.control_sidebar %}
+                {% include 'CampaignChainCoreBundle:Base:_settings.html.twig' %}
+            {% endif %}
+        {% endblock %}
+    {% endif %}
 </div>
 <!-- ./wrapper -->
 <!-- REQUIRED JS SCRIPTS -->

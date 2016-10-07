@@ -293,7 +293,8 @@ braincrafted_bootstrap:
     output_dir: null
     assets_dir: "%kernel.root_dir%/../vendor/twbs/bootstrap"
     jquery_path: "%kernel.root_dir%/../components/jquery/jquery.js"
-    css_preprocessor: "lessphp"
+#    css_preprocessor: "lessphp"
+    less_filter: "lessphp"
     auto_configure:
         assetic: true
         twig: true
@@ -446,12 +447,3 @@ avanzu_admin_theme:
             bordered: false
     knp_menu:                         # knp menu integration
         enable         : true
-
-twig:
-    form:
-        resources:
-            - "CampaignChainCoreBundle:Form:fields.html.twig"
-            - "BraincraftedBootstrapBundle:Form:bootstrap.html.twig"
-            - "SCDatetimepickerBundle:Form:div_layout.html.twig"
-            - "SCDatetimepickerBundle:Form:jquery_layout.html.twig"
-            - "SCDatetimepickerBundle:Form:stylesheet_layout.html.twig"

@@ -40,11 +40,10 @@ class ThemePass implements CompilerPassInterface
          * Avoid that Avanzu overrides the Braincrafted form widgets.
          */
         $param = $container->getParameter('twig.form.resources');
-        print_r($param);
         $param = VariableUtil::unsetInNumericArrayByValue(
             $param,
             'AvanzuAdminThemeBundle:layout:form-theme.html.twig'
-        );print_r($param);
+        );
         $container->setParameter(
             'twig.form.resources',
             $param

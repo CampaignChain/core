@@ -22,19 +22,9 @@ use Symfony\Component\DependencyInjection\ContainerAware;
 
 class Builder extends ContainerAware
 {
-    /**
-     * @param FactoryInterface $factory
-     *
-     * Add any other dependency you need
-     */
-    public function __construct(FactoryInterface $factory)
+    public function mainNav(FactoryInterface $factory, array $options)
     {
-        $this->factory = $factory;
-    }
-
-    public function mainNav(array $options)
-    {
-        $menu = $this->factory->createItem('Home');
+        $menu = $factory->createItem('Home');
 
         // Plan
         $menu->addChild('Plan');
