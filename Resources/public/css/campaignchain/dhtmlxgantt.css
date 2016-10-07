@@ -31,6 +31,10 @@ background: "#cccccc"
 border: "#777777"
 */
 
+.gantt_container {
+    background-color: white;
+}
+
 .campaignchain_gantt_weekend{
     background: #f4f7f4;
 }

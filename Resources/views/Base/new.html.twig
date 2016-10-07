@@ -19,7 +19,7 @@ limitations under the License.
 {% block javascripts %}
     {{ parent() }}
     {% if form is defined %}
-    {{ form_javascript(form) }}
+        {{ form_javascript(form) }}
     {% endif %}
     <script>
         $(":required")
@@ -28,7 +28,7 @@ limitations under the License.
                 .prepend("<span class='icon-asterisk'></span> ");
     </script>
     {% javascripts '@daterangepicker_js' combine=false %}
-        <script src="{{ asset_url }}"></script>
+    <script src="{{ asset_url }}"></script>
     {% endjavascripts %}
     {% if blockui is defined %}
         {% javascripts '@blockui_js' combine=true %}
@@ -40,19 +40,19 @@ limitations under the License.
 {% block stylesheets %}
     {{ parent() }}
     {% if form is defined %}
-    {{ form_stylesheet(form) }}
+        {{ form_stylesheet(form) }}
     {% endif %}
     {% stylesheets '@select2_css' combine=true %}
-        <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
+    <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
     {% endstylesheets %}
     {% stylesheets '@daterangepicker_css' %}
-        <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
+    <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
     {% endstylesheets %}
 {% endblock %}
 
 {% block body %}
     {% javascripts '@select2_js' %}
-        <script src="{{ asset_url }}"></script>
+    <script src="{{ asset_url }}"></script>
     {% endjavascripts %}
 
     {% for flashMessage in app.session.flashbag.get('success') %}

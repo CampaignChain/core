@@ -73,4 +73,13 @@ class VariableUtil
 
         return $result;
     }
+
+    static function unsetInNumericArrayByValue(array $array, $val)
+    {
+        if(($key = array_search($val, $array)) !== false) {
+            unset($array[$key]);
+        }
+
+        return $array;
+    }
 }

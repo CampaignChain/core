@@ -18,6 +18,7 @@
 namespace CampaignChain\CoreBundle;
 
 use CampaignChain\CoreBundle\DependencyInjection\CampaignChainCoreExtension;
+use CampaignChain\CoreBundle\DependencyInjection\Compiler\ThemePass;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use CampaignChain\CoreBundle\DependencyInjection\Compiler\InstallWizardPass;
@@ -32,6 +33,7 @@ class CampaignChainCoreBundle extends Bundle
     public function build(ContainerBuilder $container)
     {
         $container->addCompilerPass(new InstallWizardPass());
+        $container->addCompilerPass(new ThemePass());
     }
 
     public function getContainerExtension()

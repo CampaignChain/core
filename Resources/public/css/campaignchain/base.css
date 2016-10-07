@@ -29,10 +29,16 @@ html {
     position: relative;
 }
 
-/* Fix overlapping of content by Bootstrap's fixed top navbar */
 body {
-    padding-top: 40px;
-    margin-bottom: 80px;
+}
+
+.skin-black .main-header > .logo {
+    background-color: #fff;
+    border-bottom: 1px solid #eee;
+}
+
+.skin-black .main-header > .logo:hover {
+    background-color: #fcfcfc !important;
 }
 
 /* Don't display JQuery's autocomplete helper */
@@ -139,7 +145,9 @@ ul.nav-tabs {
 
 .breadcrumb {
     margin: 0px;
-    margin-top: 6px;
+    padding: 2px 15px;
+    font-size: 12px;
+    border-top: 1px #e7e7e7;
 }
 
 .breadcrumb > .active {
@@ -171,10 +179,6 @@ ul.nav-tabs {
 
 .campaignchain-footer-content {
     display: none;
-}
-
-.campaignchain-sticky-heading {
-    background: #ffffff;
 }
 
 iframe {
@@ -469,4 +473,47 @@ div.scrollable {
 
 .secondary-nav {
     padding-bottom: 30px;
+}
+
+/* AdminLTE overrides */
+
+.box-body div {
+    display: block !important;
+}
+
+.fc-view-container {
+    background-color: white;
+}
+
+.control-sidebar .nav-stacked > li > a {
+    color: #eeeeee;
+}
+
+.control-sidebar .nav-stacked > li > a:hover,
+.control-sidebar .nav-stacked > li > a:focus {
+    color: #444;
+}
+
+.navbar-nav .btn {
+    padding: 6px 6px 26px;
+}
+
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+    background-color: transparent;
+    font-weight: bold;
+}
+
+.skin-black .main-header .navbar > .create-toggle {
+    border-right: 1px solid #eee;
+    color: #333;
+}
+.skin-black .main-header .navbar .create-toggle {
+    color: #333;
+}
+.main-header .create-toggle {
+    background-color: transparent;
+    background-image: none;
+    float: left;
+    padding: 15px;
+    color: #337ab7;
 }

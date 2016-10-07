@@ -301,6 +301,12 @@ campaignchain_core_user_edit:
     pattern:  /user/edit/{id}
     defaults: { _controller: CampaignChainCoreBundle:User:edit }
 
+campaignchain_core_theme_profile:
+    pattern:  /user/edit/{ident}
+    defaults: { _controller: CampaignChainCoreBundle:User:edit }
+    options:
+        avanzu_admin_route: profile
+
 campaignchain_core_user_change_password:
     pattern:  /user/change_password/{id}
     defaults: { _controller: CampaignChainCoreBundle:User:changePassword }

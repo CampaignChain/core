@@ -30,7 +30,7 @@ class Builder extends ContainerAware
         $menu->addChild('Plan');
         $menu['Plan']->addChild('Campaigns', array(
                 'route' => 'campaignchain_core_plan'
-            ));
+            ))->setAttribute('class', 'header');
         $menu['Plan']->addChild('Activities', array(
             'route' => 'campaignchain_core_plan_activities'
         ));
