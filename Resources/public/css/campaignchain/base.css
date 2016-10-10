@@ -505,15 +505,18 @@ div.scrollable {
 
 .skin-black .main-header .navbar > .create-toggle {
     border-right: 1px solid #eee;
-    color: #333;
 }
-.skin-black .main-header .navbar .create-toggle {
-    color: #333;
+
+.main-header .navbar > a:hover,
+.main-header .navbar > a:focus {
+    color: #999 !important;
+    text-decoration: none !important;
 }
+
 .main-header .create-toggle {
     background-color: transparent;
     background-image: none;
     float: left;
     padding: 15px;
-    color: #337ab7;
+    color: #333;
 }

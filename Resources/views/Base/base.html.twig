@@ -56,8 +56,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <span class="sr-only">{{ 'Toggle navigation'|trans({}, 'AvanzuAdminTheme')  }}</span>
                 </a>
                 {% if is_granted('ROLE_USER') -%}
-                    <a  data-step="1" href="#" class="create-toggle" data-toggle="dropdown" role="button"><span class="fa fa-plus"></span> <span class="visible-md-inline visible-lg-inline visible-sm-inline">Create </span><span class="caret"></span></a>
-                    <ul class="dropdown-menu" role="menu">
+                    <a  data-step="1" href="#" class="create-toggle" data-toggle="dropdown"><span class="fa fa-plus"></span> <span class="visible-md-inline visible-lg-inline visible-sm-inline">Create </span><span class="caret"></span></a>
+                    <ul class="dropdown-menu">
                         <li  class="first" data-step="4"><a href="{{ path('campaignchain_core_activities_new') }}">Activity</a></li>
                         <li><a href="{{ path('campaignchain_core_milestone_new') }}">Milestone</a></li>
                         <li data-step="3"><a href="{{ path('campaignchain_core_campaign_new') }}">Campaign</a></li>
