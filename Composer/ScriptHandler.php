@@ -37,7 +37,9 @@ class ScriptHandler extends SensioScriptHandler
 
     public static function enableInstallMode(CommandEvent $event)
     {
-        SystemUtil::enableInstallMode();
+        if(!file_exists(SystemUtil::getInstallDoneFilePath())) {
+            SystemUtil::enableInstallMode();
+        }
 
         $event->getIO()->write('CampaignChain: Enabled install mode.');
     }

@@ -31,10 +31,17 @@ class SystemUtil
         return self::getRootDir().'app/campaignchain/.install';
     }
 
+    static function getInstallDoneFilePath()
+    {
+        return self::getRootDir().'app/campaignchain/.install_done';
+    }
+
     /**
      * Checks whether system is in install mode.
+     *
+     * @param string $redirectUrl
      */
-    static function redirectInstallMode()
+    static function redirectInstallMode($redirectUrl = '/campaignchain/install.php')
     {
         // Only apply if in request context.
         if(isset($_SERVER['REQUEST_URI'])) {
@@ -44,7 +51,7 @@ class SystemUtil
             ) {
                 // System is not installed yet and user wants to access
                 // a secured page. Hence, redirect to Installation Wizard.
-                header('Location: /campaignchain/install.php');
+                header('Location: '.$redirectUrl);
                 exit;
             } elseif (
                 // System is installed and user wants to access the Installation
@@ -63,12 +70,18 @@ class SystemUtil
         $fs = new Filesystem();
 
         $fs->dumpFile(self::getInstallFilePath(), '');
+        if(file_exists(self::getInstallDoneFilePath())){
+            $fs->remove(self::getInstallDoneFilePath());
+        }
     }
 
     static function disableInstallMode()
     {
         $fs = new Filesystem();
-        $fs->remove(self::getInstallFilePath());
+        $fs->dumpFile(self::getInstallDoneFilePath(), '');
+        if(file_exists(self::getInstallFilePath())){
+            $fs->remove(self::getInstallFilePath());
+        }
     }
 
     static function isInstallMode()
