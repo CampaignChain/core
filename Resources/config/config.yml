@@ -375,6 +375,7 @@ liip_imagine:
                 wrapper: gaufrette://images/
     data_loader: stream_loader
     filter_sets:
+        cache: ~
         auto_rotate:
             filters:
                 auto_rotate: ~

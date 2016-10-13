@@ -45,7 +45,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 </span>
                 <!-- logo for regular state and mobile devices -->
                 <span class="logo-lg">
-                   {% block avanzu_logo_lg %}<img src="/logo.png" height="24">{% endblock %}
+                   {% block avanzu_logo_lg %}<img src="{{ '/theme/logo.png' | imagine_filter('cache') }}" height="24">{% endblock %}
                 </span>
             </a>
 
