@@ -278,6 +278,11 @@ campaignchain_development_reset_system:
     defaults: { _controller: CampaignChainCoreBundle:Development:resetSystem }
     condition: "request.getScriptName() == '/app_dev.php'"
 
+# theme settings
+campaignchain_core_theme_settings:
+    pattern:  /theme/settings
+    defaults: { _controller: CampaignChainCoreBundle:Theme:settings }
+
 # user management routes
 campaignchain_core_user:
     pattern:  /user/list

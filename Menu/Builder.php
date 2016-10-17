@@ -171,6 +171,12 @@ class Builder extends ContainerAware
             ]);
         }
 
+        if(!isset($systemNavigation['theme']) || $systemNavigation['theme']) {
+            $menu->addChild('Theme', [
+                'route' => 'campaignchain_core_theme_settings',
+            ]);
+        }
+
         if ($systemNavigation) {
             foreach ($systemNavigation['settings'] as $systemSetting) {
                 list($label, $route) = $systemSetting;

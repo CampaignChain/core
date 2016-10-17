@@ -63,6 +63,7 @@ class FileUploadService
         }
 
         $this->filesystem->delete($file);
+        $this->cacheManager->remove($file);
     }
 
     /**

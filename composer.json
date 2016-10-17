@@ -60,8 +60,7 @@
         "mremi/url-shortener": "dev-master",
         "knplabs/knp-gaufrette-bundle": "^0.3.0",
         "gkralik/php-uglifyjs": "dev-master",
-        "campaignchain/location-website": "dev-master",
-        "cnerta/breadcrumb-bundle": "2.1.*"
+        "campaignchain/location-website": "dev-master"
     },
     "autoload": {
         "psr-4": { "CampaignChain\\CoreBundle\\": "" }
@@ -74,7 +73,6 @@
                     "Braincrafted\\Bundle\\BootstrapBundle\\BraincraftedBootstrapBundle",
                     "Knp\\Bundle\\MenuBundle\\KnpMenuBundle",
                     "Knp\\Bundle\\PaginatorBundle\\KnpPaginatorBundle",
-                    "Cnerta\\BreadcrumbBundle\\CnertaBreadcrumbBundle",
                     "SC\\DatetimepickerBundle\\SCDatetimepickerBundle",
                     "FOS\\UserBundle\\FOSUserBundle",
                     "Bmatzner\\FontAwesomeBundle\\BmatznerFontAwesomeBundle",

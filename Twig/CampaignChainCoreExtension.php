@@ -76,6 +76,12 @@ class CampaignChainCoreExtension extends \Twig_Extension
         return $this->container->get('campaignchain.core.system')->getActiveSystem();
     }
 
+    public function theme(){
+        return $this->em
+            ->getRepository('CampaignChainCoreBundle:Theme')
+            ->find(1);
+    }
+
     public function mediumIcon($object)
     {
         $class = get_class($object);
@@ -455,6 +461,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
             "campaignchain_user_timezone_offset" => $this->getGlobalTimezoneOffset(),
             "campaignchain_user_timezone_abbreviation" => $this->getGlobalTimezoneAbbreviation(),
             'campaignchain_system' => $this->system(),
+            'campaignchain_theme' => $this->theme(),
             'campaignchain_env' => $this->container->getParameter('campaignchain.env'),
             'campaignchain_core_scheduler_interval'  => $this->container->getParameter('campaignchain_core.scheduler.interval'),
             'campaignchain_relative_start_date'  => new \DateTime(Campaign::RELATIVE_START_DATE),

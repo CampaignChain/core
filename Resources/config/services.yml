@@ -237,6 +237,11 @@ services:
             - '@doctrine.orm.entity_manager'
             - '@service_container'
 
+    campaignchain.core.form.type.theme:
+        class: CampaignChain\CoreBundle\Form\Type\ThemeType
+        tags:
+            - { name: form.type, alias: campaignchain_core_theme }
+
     campaignchain.core.form.type.user:
         class: CampaignChain\CoreBundle\Form\Type\UserType
         arguments:

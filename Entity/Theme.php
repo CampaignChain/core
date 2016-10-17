@@ -42,7 +42,7 @@ class Theme extends Meta
 
     /**
      * @Assert\Image(
-     *     mimeTypes = "image/x-icon",
+     *     mimeTypes = {"image/x-icon", "image/png"},
      *     minWidth = 16,
      *     minHeight = 16,
      *     maxWidth = 32,

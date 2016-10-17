@@ -345,6 +345,8 @@ knp_gaufrette:
     filesystems:
         images:
             adapter: images
+        theme:
+            adapter: images
 
 oneup_uploader:
     mappings:
@@ -375,7 +377,7 @@ liip_imagine:
                 wrapper: gaufrette://images/
     data_loader: stream_loader
     filter_sets:
-        cache: ~
+        theme: ~
         auto_rotate:
             filters:
                 auto_rotate: ~
