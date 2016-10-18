@@ -384,7 +384,10 @@ class ParserUtil
     static function isSameHost($url)
     {
         $urlParts = parse_url($url);
-        if($_SERVER['SERVER_NAME'] == $urlParts['host']){
+        if(
+            isset($_SERVER['SERVER_NAME']) &&
+            $_SERVER['SERVER_NAME'] == $urlParts['host']
+        ){
             return true;
         }
 

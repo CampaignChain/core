@@ -113,6 +113,8 @@ class CTAService
             }
         });
 
+        $options = $resolver->resolve($options);
+
         $ctaParserData = new CTAParserData();
         $ctaParserData->setContent($content);
 
