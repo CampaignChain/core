@@ -140,7 +140,8 @@ limitations under the License.
         <div class="modal-dialog modal-md" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <img src="/logo.png" height="24" class="visible-md-block visible-lg-block visible-sm-block pull-left">
+
+                    <img src="{{ campaignchain_theme.getLogo() | imagine_filter('theme') }}" height="24" class="visible-md-block visible-lg-block visible-sm-block pull-right">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 </div>
                 <div class="modal-body text-center">
