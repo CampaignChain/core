@@ -45,11 +45,10 @@ class FileUploadService
     /**
      * @param $path
      * @param $content
-     * @param boolean $overwrite
      */
-    public function storeImage($path, $content, $overwrite = true)
+    public function storeImage($path, $content)
     {
-        $this->filesystem->write($path, $content, $overwrite);
+        $this->filesystem->write($path, $content);
     }
 
     /**
