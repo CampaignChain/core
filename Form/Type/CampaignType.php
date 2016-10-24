@@ -18,6 +18,7 @@
 namespace CampaignChain\CoreBundle\Form\Type;
 
 use CampaignChain\CoreBundle\Util\DateTimeUtil;
+use CampaignChain\TextareaCountFormTypeBundle\Form\Type\TextareaCountType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -33,7 +34,7 @@ class CampaignType extends HookListenerType
                     'placeholder' => 'Give your campaign a name',
                 )
             ))
-            ->add('description', 'textarea', array(
+            ->add('description', TextareaCountType::class, array(
                 'label' => 'Description',
                 'required' => false,
                 'attr' => array(

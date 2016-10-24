@@ -275,17 +275,6 @@ assetic:
         require_js:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/components/requirejs/require.js"
-        twitter_text_js:
-            inputs:
-                - "@CampaignChainCoreBundle/Resources/public/components/twitter-text/js/twitter-text.js"
-        highlight_textarea_js:
-            inputs:
-                - "@CampaignChainCoreBundle/Resources/public/components/jquery-ui/jquery-ui.min.js"
-                - "@CampaignChainCoreBundle/Resources/public/components/jquery-highlighttextarea/jquery.highlighttextarea.min.js"
-        highlight_textarea_css:
-            inputs:
-                - "@CampaignChainCoreBundle/Resources/public/components/jquery-ui/themes/base/jquery-ui.min.css"
-                - "@CampaignChainCoreBundle/Resources/public/components/jquery-highlighttextarea/jquery.highlighttextarea.min.css"
     bundles:
         - "CampaignChainCoreBundle"
         - "FOSUserBundle"
