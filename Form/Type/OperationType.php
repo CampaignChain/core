@@ -17,6 +17,7 @@
 
 namespace CampaignChain\CoreBundle\Form\Type;
 
+use CampaignChain\CoreBundle\Entity\Location;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Doctrine\ORM\EntityManager;
@@ -46,7 +47,7 @@ abstract class OperationType extends AbstractType
         $this->view = $view;
     }
 
-    public function setLocation($location){
+    public function setLocation(Location $location){
         $this->location = $location;
     }
 
