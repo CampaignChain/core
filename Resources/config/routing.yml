@@ -24,7 +24,10 @@ campaignchain_core_install_step:
 # main routes
 campaignchain_core_homepage:
     pattern:  /
-    defaults: { _controller: CampaignChainCoreBundle:About:index }
+    defaults:
+        _controller: FrameworkBundle:Redirect:redirect
+        route: campaignchain_core_plan
+        permanent: true
     options:
         campaignchain:
             description: The start page
