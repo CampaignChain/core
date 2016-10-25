@@ -520,3 +520,39 @@ div.scrollable {
     padding: 15px;
     color: #333;
 }
+
+.main-header .sidebar-toggle {
+    width: 54px;
+}
+
+@media (min-width: 768px) {
+    .main-header .sidebar-toggle::before {
+        margin-left: 4px;
+    }
+
+    .main-header .sidebar-toggle::after {
+        content: "\f177";
+        margin-left: -22px;
+    }
+
+    .sidebar-collapse .main-header .sidebar-toggle::after {
+        content: "\f178";
+        margin-left: -12px;
+    }
+}
+
+@media (max-width: 767px) {
+    .sidebar-open .main-header .sidebar-toggle::before {
+        margin-left: 4px;
+    }
+
+    .sidebar-open .main-header .sidebar-toggle::after {
+        content: "\f177";
+        margin-left: -22px;
+    }
+
+    .main-header .sidebar-toggle::after {
+        content: "\f178";
+        margin-left: -12px;
+    }
+}
