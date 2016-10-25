@@ -10,7 +10,7 @@
         "moment-timezone": "0.2",
         "ScrollToFixed": "1.0",
         "gantt": "4.0",
-        "fullcalendar": "",
+        "fullcalendar": "2.*",
         "jquery.countdown": "2.0",
         "ladda": "",
         "blockui": "",
