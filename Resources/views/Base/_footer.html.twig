@@ -14,15 +14,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 #}
 
-<footer class="main-footer">
-    <!-- To the right -->
-    <div class="pull-right hidden-xs">
-        <a href="#"  data-step="7" onclick="popupwindow('{{ campaignchain_system.getDocsURL() }}/user/index.html','',900,600)"><i class="fa fa-book"></i> <span class="visible-md-inline visible-lg-inline visible-sm-inline">Help</span></a>
-    </div>
+<footer class="main-footer" data-step="6">
+    <!-- To the left -->
+    {% spaceless %}
+    {% include 'CampaignChainCoreBundle:Base:_tour.html.twig' %}
+    {% endspaceless %}
+    <a href="#" class="btn-campaignchain-footer" data-dismiss="modal" onclick="startIntro();"><i class="fa fa-play-circle" aria-hidden="true"></i><span class="visible-md-inline visible-lg-inline visible-sm-inline"> Tour</span></a>
+    <a href="{{ path('campaignchain_core_about') }}" class="btn-campaignchain-footer"><i class="fa fa-info-circle" aria-hidden="true"></i><span class="visible-md-inline visible-lg-inline visible-sm-inline"> About</span></a>
+    <a href="#" onclick="popupwindow('{{ campaignchain_system.getDocsURL() }}/user/index.html','',900,600)" class="btn-campaignchain-footer"><i class="fa fa-book"></i><span class="visible-md-inline visible-lg-inline visible-sm-inline"> Docs</span></a>
 
-    <!-- Default to the left -->
-    Powered by <a href="{{ path('campaignchain_core_homepage') }}" rel="external">CampaignChain</a>
-    {% if (campaignchain_system is not null) and (campaignchain_system.version is not null) %}
-        &nbsp;({{ campaignchain_system.version }})
-    {% endif %}
+    <!-- Default to the right -->
+    <div class="pull-right hidden-xs">
+        Powered by <a href="{{ path('campaignchain_core_homepage') }}" rel="external">CampaignChain</a>
+    </div>
 </footer>

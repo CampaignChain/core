@@ -18,63 +18,145 @@
 namespace CampaignChain\CoreBundle\EventListener\Theme;
 
 use Avanzu\AdminThemeBundle\Event\KnpMenuEvent;
+use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
 class MenuListener
 {
+    /**
+     * @var AuthorizationChecker
+     */
+    protected $authorizationChecker;
+
+    public function __construct(AuthorizationChecker $authorizationChecker) {
+        $this->authorizationChecker = $authorizationChecker;
+    }
+
     public function onSetupMenu(KnpMenuEvent $event)
     {
         $menu = $event->getMenu();
 
-        /*
-         * Plan
-         */
-        $menu->addChild('Plan', [
-                'label' => 'PLAN',
-                'childOptions' => $event->getChildOptions()
-            ]
-        )
-            ->setLabelAttribute('icon', 'fa fa-calendar')
-            ->setChildrenAttribute('class', 'treeview-menu');
-        $menu->getChild('Plan')->addChild('PlanCampaigns', [
-                'route' => 'campaignchain_core_plan',
-                'label' => 'Campaigns',
-                'childOptions' => $event->getChildOptions()
-            ]
-        )
-            ->setLabelAttribute('icon', 'fa fa-circle-o');
-        $menu->getChild('Plan')->addChild('PlanActivities', [
-                'route' => 'campaignchain_core_plan_activities',
-                'label' => 'Activities',
-                'childOptions' => $event->getChildOptions()
-            ]
-        )->setLabelAttribute('icon', 'fa fa-circle-o');
-        $menu->getChild('Plan')->addChild('PlanCampaignTemplates', [
-                'route' => 'campaignchain_core_plan_templates',
-                'label' => 'Templates',
-                'childOptions' => $event->getChildOptions()
-            ]
-        )->setLabelAttribute('icon', 'fa fa-circle-o');
+        if($this->authorizationChecker->isGranted('ROLE_USER')) {
+            /*
+             * Connect Channels.
+             */
+            $menu->addChild('Connect', [
+                    'label' => 'CONNECT',
+                    'childOptions' => $event->getChildOptions()
+                ]
+            )
+                ->setLabelAttribute('icon', 'fa fa-exchange')
+                ->setChildrenAttribute('class', 'treeview-menu');
+            $menu->getChild('Connect')
+                ->addChild('ConnectNewLocation', [
+                    'route' => 'campaignchain_core_channel_new',
+                    'label' => 'New Location',
+                    'childOptions' => $event->getChildOptions()
+                    ]
+                )
+                ->setLabelAttribute('icon', 'fa fa-circle-o')
+                ->setAttribute('data-step', '1');
+            $menu->getChild('Connect')
+                ->addChild('ConnectChannels', [
+                    'route' => 'campaignchain_core_channel',
+                    'label' => 'Channels',
+                    'childOptions' => $event->getChildOptions()
+                    ]
+                )
+                ->setLabelAttribute('icon', 'fa fa-circle-o');
+            $menu->getChild('Connect')->addChild('ConnectLocations', [
+                    'route' => 'campaignchain_core_location',
+                    'label' => 'Locations',
+                    'childOptions' => $event->getChildOptions()
+                ]
+            )->setLabelAttribute('icon', 'fa fa-circle-o');
 
-        /*
-         * Execute
-         */
-        $menu->addChild('Execute', [
-                'label' => 'EXECUTE',
-                'route' => 'campaignchain_core_execute',
-                'childOptions' => $event->getChildOptions()
-            ]
-        )
-            ->setLabelAttribute('icon', 'fa fa-dashboard');
+            /*
+             * Create Actions.
+             */
+            $menu->addChild('Create', [
+                    'label' => 'CREATE',
+                    'childOptions' => $event->getChildOptions(),
+                    ]
+                )
+                ->setLabelAttribute('icon', 'fa fa-plus-square')
+                ->setChildrenAttribute('class', 'treeview-menu');
+            $menu->getChild('Create')->addChild('CreateCampaign', [
+                    'route' => 'campaignchain_core_campaign_new',
+                    'label' => 'Campaign',
+                    'childOptions' => $event->getChildOptions()
+                    ]
+                )
+                ->setLabelAttribute('icon', 'fa fa-circle-o')
+                ->setAttribute('data-step', '2');
+            $menu->getChild('Create')->addChild('CreateActivity', [
+                    'route' => 'campaignchain_core_activities_new',
+                    'label' => 'Activity',
+                    'childOptions' => $event->getChildOptions()
+                    ]
+                )
+                ->setLabelAttribute('icon', 'fa fa-circle-o')
+                ->setAttribute('data-step', '3');
+            $menu->getChild('Create')->addChild('CreateMilestone', [
+                    'route' => 'campaignchain_core_milestone_new',
+                    'label' => 'Milestone',
+                    'childOptions' => $event->getChildOptions()
+                    ]
+                )
+                ->setLabelAttribute('icon', 'fa fa-circle-o');
 
-        /*
-         * Monitor
-         */
-        $menu->addChild('Monitor', [
-                'label' => 'MONITOR',
-                'route' => 'campaignchain_core_report',
-                'childOptions' => $event->getChildOptions()
-            ]
-        )
-            ->setLabelAttribute('icon', 'fa fa-bar-chart');
+            /*
+             * Plan
+             */
+            $menu->addChild('Plan', [
+                    'label' => 'PLAN',
+                    'childOptions' => $event->getChildOptions(),
+                ]
+            )
+                ->setLabelAttribute('icon', 'fa fa-calendar')
+                ->setChildrenAttribute('class', 'treeview-menu');
+            $menu->getChild('Plan')->addChild('PlanCampaigns', [
+                    'route' => 'campaignchain_core_plan',
+                    'label' => 'Campaigns',
+                    'childOptions' => $event->getChildOptions()
+                ]
+            )
+                ->setLabelAttribute('icon', 'fa fa-circle-o')
+                ->setAttribute('data-step', '4')
+                ->addChild('PlanCampaignTemplates', [
+                        'route' => 'campaignchain_core_plan_templates',
+                        'label' => 'Templates',
+                        'childOptions' => $event->getChildOptions()
+                    ]
+                )->setLabelAttribute('icon', 'fa fa-circle-o');
+            $menu->getChild('Plan')->addChild('PlanActivities', [
+                    'route' => 'campaignchain_core_plan_activities',
+                    'label' => 'Activities',
+                    'childOptions' => $event->getChildOptions()
+                ]
+            )->setLabelAttribute('icon', 'fa fa-circle-o');
+
+            /*
+             * Execute
+             */
+            $menu->addChild('Execute', [
+                    'label' => 'EXECUTE',
+                    'route' => 'campaignchain_core_execute',
+                    'childOptions' => $event->getChildOptions()
+                ]
+            )
+                ->setLabelAttribute('icon', 'fa fa-dashboard');
+
+            /*
+             * Monitor
+             */
+            $menu->addChild('Monitor', [
+                    'label' => 'MONITOR',
+                    'route' => 'campaignchain_core_report',
+                    'childOptions' => $event->getChildOptions()
+                    ]
+                )
+                ->setLabelAttribute('icon', 'fa fa-bar-chart')
+                ->setAttribute('data-step', '5');
+        }
     }
 }

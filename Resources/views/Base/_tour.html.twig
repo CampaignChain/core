@@ -14,48 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 #}
 
-{% extends 'CampaignChainCoreBundle:About:index.html.twig' %}
+{% javascripts "@intro_js" %}<script src="{{ asset_url }}"></script>{% endjavascripts %}
 
-{% block javascripts %}
-    {{ parent() }}
-    {% javascripts "@intro_js" %}<script src="{{ asset_url }}"></script>{% endjavascripts %}
-{% endblock %}
-
-{% block stylesheets %}
-    {{ parent() }}
-    {% stylesheets "@intro_css" %}<link rel="stylesheet" href="{{ asset_url }}" />{% endstylesheets %}
-    <style>
-        .intro_step_sm {
-            min-width: 330px;
-            max-width: 330px;
-            padding: 15px 25px;
-        }
-        .intro_step_md {
-            min-width: 500px;
-            max-width: 500px;
-            padding: 15px 25px;
-        }
-        .intro_step_md h4 {
-            margin-bottom: 10px;
-        }
-        .intro_step_picture {
-            min-width: 600px;
-            max-width: 600px;
-            padding: 15px 25px;
-        }
-        .intro_step_picture h4 {
-            margin-bottom: 10px;
-        }
-        .intro_step_picture img {
-            margin-top: 15px;
-            margin-bottom: 20px;
-        }
-    </style>
-{% endblock %}
-
-{% block body %}
-
-    {{ parent() }}
+{% stylesheets "@intro_css" %}<link rel="stylesheet" href="{{ asset_url }}" />{% endstylesheets %}
 
     <script type="text/javascript">
         function startIntro(){
@@ -65,42 +26,38 @@ limitations under the License.
                 steps: [
                     {
                         element: document.querySelector('[data-step="1"]'),
-                        intro: "<h4>Start here</h4><p>This is where you create new Locations, Campaigns and everything else.</p>",
-                        position: "bottom",
-                        tooltipClass: "intro_step_sm"
-                    },
-                    {
-                        element: document.querySelector('[data-step="2"]'),
                         intro: "<h4>Create New Location</h4><p>Start using CampaignChain by creating a Location first. Locations are Web properties where Activities are being executed. For example, a Facebook page is a Location within the Facebook Channel. One Channel can have various Locations (e.g. a Facebook user stream and a page).</p>",
                         position: "right",
                         tooltipClass: "intro_step_md"
                     },
                     {
-                        element: document.querySelector('[data-step="3"]'),
+                        element: document.querySelector('[data-step="2"]'),
                         intro: "<h4>Create New Campaign</h4><p>Now you can create a Campaign. A Campaign is the basis for all related marketing Activities. To create a new Campaign, provide its name and specify its duration.</p>",
                         position: "right",
                         tooltipClass: "intro_step_md"
                     },
                     {
-                        element: document.querySelector('[data-step="4"]'),
+                        element: document.querySelector('[data-step="3"]'),
                         intro: "<h4>Create New Activity</h4><p>Activities are marketing tasks that happen within a campaign. For example, 'Update Status on Facebook' is an Activity. Prior to creating an Activity, a related Campaign must already exist.</p>",
                         position: "right",
                         tooltipClass: "intro_step_md"
                     },
                     {
-                        element: document.querySelector('[data-step="5"]'),
+                        element: document.querySelector('[data-step="4"]'),
                         intro: '<h4>Plan</h4>{% image '@CampaignChainCoreBundle/Resources/public/images/intro_index/intro_step_plan.png' %}<img src="{{ asset_url }}"  height="303" width="524" />{% endimage %}<p>In the planning section, you have a full overview of which Activities will be executed when in which Campaign. All items in a planning view can be edited with a double click.</p>',
+                        position: "auto",
+                        tooltipClass: "intro_step_picture"
+                    },
+                    {
+                        element: document.querySelector('[data-step="5"]'),
+                        intro: '<h4>Monitor</h4>{% image '@CampaignChainCoreBundle/Resources/public/images/intro_index/intro_step_monitor.png' %}<img src="{{ asset_url }}" height="177" width="530" />{% endimage %}<p>Monitor your marketing Return on Investment: CampaignChain analyzes channel-specific data, such as the number of likes or comments of a Facebook post or the number of Twitter re-tweets and more.</p>',
+                        position: "auto",
                         tooltipClass: "intro_step_picture"
                     },
                     {
                         element: document.querySelector('[data-step="6"]'),
-                        intro: '<h4>Monitor</h4>{% image '@CampaignChainCoreBundle/Resources/public/images/intro_index/intro_step_monitor.png' %}<img src="{{ asset_url }}" height="177" width="530" />{% endimage %}<p>Monitor your marketing Return on Investment: CampaignChain analyzes channel-specific data, such as the number of likes or comments of a Facebook post or the number of Twitter re-tweets and more.</p>',
-                        tooltipClass: "intro_step_picture"
-                    },
-                    {
-                        element: document.querySelector('[data-step="7"]'),
                         intro: "<h4>Thanks for completing the tour!</h4><p>You can always restart the tour or read the manual here.</p>",
-                        position: "bottom-right-aligned",
+                        position: "top",
                         tooltipClass: "intro_step_sm"
                     }
                 ],
@@ -108,31 +65,28 @@ limitations under the License.
             });
 
             intro.onbeforechange(function (targetElement) {
-                switch($(targetElement).attr("data-step")) {
+                var currentStep = $(targetElement).attr("data-step");
+                switch(currentStep) {
+                    case "1":
                     case "2":
-                        // open dropdown and stop bootstrap from closing it
-                        $('a#menu_new').dropdown('toggle');
-                        $('a#menu_new').removeAttr('data-toggle');
-                        break;
+                    case "3":
+                    case "4":
                     case "5":
-                        // reset the dropdown menu
-                        $('a#menu_new').attr('data-toggle', 'dropdown');
+                        $('li[data-step="' + currentStep + '"]').parent().slideDown();
+                        break;
+                    case "6":
+                        $('ul.treeview-menu').slideUp();
                         break;
                 }
             });
 
             intro.onexit(function () {
                 // reset the dropdown menu
-                $('a#menu_new').attr('data-toggle', 'dropdown');
+                $('ul.treeview-menu').slideUp();
             });
 
             intro.start();
         }
-
-        // show modal and offer the tour
-        $(document).ready(function () {
-            $('#introModal').modal('show');
-        });
     </script>
 
     <!-- Modal -->
@@ -141,7 +95,7 @@ limitations under the License.
             <div class="modal-content">
                 <div class="modal-header">
 
-                    <img src="{{ campaignchain_theme.getLogo() | imagine_filter('theme') }}" height="24" class="visible-md-block visible-lg-block visible-sm-block pull-right">
+                    <img src="{{ campaignchain_theme.getLogo() | imagine_filter('theme') }}" height="24" class="visible-md-block visible-lg-block visible-sm-block pull-left">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 </div>
                 <div class="modal-body text-center">
@@ -155,7 +109,5 @@ limitations under the License.
             </div>
         </div>
     </div>
-
-{% endblock %}
 
 

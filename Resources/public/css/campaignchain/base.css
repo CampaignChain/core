@@ -503,22 +503,10 @@ div.scrollable {
     font-weight: bold;
 }
 
-.skin-black .main-header .navbar > .create-toggle {
-    border-right: 1px solid #eee;
-}
-
 .main-header .navbar > a:hover,
 .main-header .navbar > a:focus {
     color: #999 !important;
     text-decoration: none !important;
-}
-
-.main-header .create-toggle {
-    background-color: transparent;
-    background-image: none;
-    float: left;
-    padding: 15px;
-    color: #333;
 }
 
 .main-header .sidebar-toggle {
@@ -555,4 +543,21 @@ div.scrollable {
         content: "\f178";
         margin-left: -12px;
     }
+}
+
+.btn-campaignchain-channel {
+    height: 72px;
+}
+
+.btn-campaignchain-footer {
+    padding: 16px;
+    border-right: 1px solid #eee;
+}
+
+.btn-campaignchain-footer i.fa {
+    padding-right: 4px;
+}
+
+.main-footer > .btn-campaignchain-footer:first-child {
+    padding-left: 0px;
 }

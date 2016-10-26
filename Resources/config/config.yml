@@ -272,6 +272,7 @@ assetic:
         intro_css:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/components/intro.js/minified/introjs.min.css"
+                - "@CampaignChainCoreBundle/Resources/public/css/campaignchain/intro.css"
         require_js:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/components/requirejs/require.js"

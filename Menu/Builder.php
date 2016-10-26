@@ -153,18 +153,6 @@ class Builder extends ContainerAware
             }
         }
 
-        if(!isset($systemNavigation['channels']) || $systemNavigation['channels']) {
-            $menu->addChild('Channels', [
-                'route' => 'campaignchain_core_channel',
-            ]);
-        }
-
-        if(!isset($systemNavigation['locations']) || $systemNavigation['locations']) {
-            $menu->addChild('Locations', [
-                'route' => 'campaignchain_core_location',
-            ]);
-        }
-
         if(!isset($systemNavigation['modules']) || $systemNavigation['modules']) {
             $menu->addChild('Modules', [
                 'route' => 'campaignchain_core_module',

@@ -44,6 +44,10 @@ limitations under the License.
 {% endblock %}
 
 {% block stylesheets %}
+    {% stylesheets '@bootstrap_less' '@jquery_cropper_css' combine=true %}
+    <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
+    {% endstylesheets %}
+    <link href="/style.css" type="text/css" rel="stylesheet" />
     <!-- Theme style -->
     <link rel="stylesheet" href="{{ asset('theme/dist/css/AdminLTE.min.css') }}">
     <!-- AdminLTE Skins. We have chosen the skin-blue for this starter
@@ -51,10 +55,6 @@ limitations under the License.
           apply the skin class to the body tag so the changes take effect.
     -->
     <link rel="stylesheet" href="{{ asset("theme/dist/css/skins/"~avanzu_admin_context.options.skin~".min.css") }}">
-    {% stylesheets '@bootstrap_less' '@jquery_cropper_css' combine=true %}
-    <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
-    {% endstylesheets %}
-    <link href="/style.css" type="text/css" rel="stylesheet" />
     {% stylesheets '@campaignchain_base_css' filter="cssrewrite"
     'bundles/campaignchaincore/css/*'%}
     <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />

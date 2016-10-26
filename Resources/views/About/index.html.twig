@@ -20,10 +20,40 @@ limitations under the License.
 
 <div class="row">
     <div class="col-md-6">
-        <div class="jumbotron">
-            <h3>The Cockpit for Digital Marketing</h3>
-            <p>Our marketing integration software provides you with a manageable overview of campaign activities in many online channels. It automates routine work so that you can focus on new lead generation opportunities.</p>
-            <p><a href="http://www.campaignchain.com">www.campaignchain.com</a></p>
+        <div class="box box-default">
+            <div class="box-header with-border">
+                <h3 class="box-title">Introduction</h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <p>Our marketing integration software provides you with a manageable overview of campaign activities in many online channels. It automates routine work so that you can focus on new lead generation opportunities.</p>
+            </div>
+            <!-- /.box-body -->
+        </div>
+        <div class="box box-default">
+            <div class="box-header with-border">
+                <h3 class="box-title">Software</h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <dl class="dl-horizontal">
+                    {% if (campaignchain_system is not null) %}
+                        {% if campaignchain_system.name is not null %}
+                            <dt>Edition</dt>
+                            <dd>{{ campaignchain_system.name }}</dd>
+                        {% endif %}
+                        {% if campaignchain_system.version is not null %}
+                            <dt>Version</dt>
+                            <dd>{{ campaignchain_system.version }}</dd>
+                        {% endif %}
+                        {% if campaignchain_system.homepage is not null %}
+                            <dt>Homepage</dt>
+                            <dd><a href="{{ campaignchain_system.homepage }}">{{ campaignchain_system.homepage }}</a></dd>
+                        {% endif %}
+                    {% endif %}
+                </dl>
+            </div>
+            <!-- /.box-body -->
         </div>
     </div>
     <div class="col-md-6">
@@ -46,18 +76,6 @@ limitations under the License.
         </form>
 
         <!--End mc_embed_signup-->
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-12">
-        <h2>Get Started</h2>
-        <div class="embed-responsive embed-responsive-16by9">
-            <iframe
-                    class="embed-responsive-item"
-                    src="http://docs.campaignchain.com/en/master/user/get_started.html"
-                    width="100%"
-            ></iframe>
-        </div>
     </div>
 </div>
  {% endblock %}

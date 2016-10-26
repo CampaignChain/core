@@ -59,44 +59,21 @@ class ChannelController extends Controller
 
     public function newAction(Request $request)
     {
-        $form = $this->createFormBuilder()
-            ->add('module', 'entity', array(
-                'label' => 'Channel',
-                'class' => 'CampaignChainCoreBundle:ChannelModule',
-                'query_builder' => function(EntityRepository $er) {
-                        return $er->createQueryBuilder('m')
-                            ->orderBy('m.displayName', 'ASC');
-                    },
-                'property' => 'displayName',
-                'empty_value' => 'Select a channel',
-                'empty_data' => null,
-                'attr' => array(
-                    'show_image' => true,
-                )
-            ))
-            ->getForm();
+        $repository = $this->getDoctrine()
+            ->getRepository('CampaignChainCoreBundle:ChannelModule');
 
-        $form->handleRequest($request);
+        $query = $repository->createQueryBuilder('cm')
+            ->select('cm')
+            ->orderBy('cm.displayName', 'ASC')
+            ->getQuery();
 
-        if ($form->isValid()) {
-            $channel = new Channel();
-
-            $module = $form->getData()['module'];
-            $wizard = $this->get('campaignchain.core.channel.wizard');
-            $wizard->start($channel, $module);
-
-            return $this->redirect(
-                $this->generateUrl(
-                    $module->getRoutes()['new']
-                )
-            );
-        }
+        $channelModules = $query->getResult();
 
         return $this->render(
-            'CampaignChainCoreBundle:Base:new.html.twig',
+            'CampaignChainCoreBundle:Channel:new.html.twig',
             array(
                 'page_title' => 'Connect New Location',
-                'form' => $form->createView(),
+                'channel_modules' => $channelModules,
             ));
     }
 

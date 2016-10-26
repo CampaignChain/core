@@ -451,6 +451,7 @@ services:
     # Theme
     campaignchain.core.theme.menu:
         class: CampaignChain\CoreBundle\EventListener\Theme\MenuListener
+        arguments: ['@security.authorization_checker']
         tags:
             - { name: kernel.event_listener, event: theme.sidebar_setup_knp_menu, method: onSetupMenu }
 

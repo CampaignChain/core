@@ -1,0 +1,35 @@
+{#
+Copyright 2016 CampaignChain, Inc. <info@campaignchain.com>
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+#}
+
+{% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
+
+{% block body %}
+    <div class="box">
+        <div class="box-header">
+            <h3 class="box-title">Channels</h3>
+        </div>
+        <div class="box-body">
+            {% for channel_module in channel_modules %}
+            <a href="{{ path(channel_module.getRoutes().new) }}" class="btn btn-app btn-campaignchain-channel">
+                <img src="{{ asset( channel_module|campaignchain_channel_asset_path~'/images/icons/32x32/'~channel_module|campaignchain_channel_icon_name ) }}" />
+                <br/>
+                {{ channel_module.getDisplayName() }}
+            </a>
+            {% endfor %}
+        </div>
+        <!-- /.box-body -->
+    </div>
+{% endblock %}

@@ -55,15 +55,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
                     <span class="sr-only">{{ 'Toggle navigation'|trans({}, 'AvanzuAdminTheme')  }}</span>
                 </a>
-                {% if is_granted('ROLE_USER') -%}
-                    <a  data-step="1" href="#" class="create-toggle" data-toggle="dropdown"><span class="fa fa-plus"></span> <span class="visible-md-inline visible-lg-inline visible-sm-inline">Create </span><span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li  class="first" data-step="4"><a href="{{ path('campaignchain_core_activities_new') }}">Activity</a></li>
-                        <li><a href="{{ path('campaignchain_core_milestone_new') }}">Milestone</a></li>
-                        <li data-step="3"><a href="{{ path('campaignchain_core_campaign_new') }}">Campaign</a></li>
-                        <li data-step="2"><a href="{{ path('campaignchain_core_channel_new') }}">Location</a></li>
-                    </ul>
-                {% endif %}
                 <!-- Navbar Right Menu -->
                 <div class="navbar-custom-menu">
                     <ul class="nav navbar-nav">
@@ -329,7 +320,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <section class="content">
             {% block bodytabs %}{% endblock %}
 
-            {% include 'CampaignChainCoreBundle:Base:flashbag.html.twig' %}
+            {% include 'CampaignChainCoreBundle:Base:_flashbag.html.twig' %}
 
             <div class="page-content">
                 {% block body %}{% endblock %}
