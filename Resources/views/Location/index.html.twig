@@ -17,9 +17,30 @@ limitations under the License.
 {% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
 
 {% block body %}
-    {% include 'CampaignChainCoreBundle:Base:datatable.html.twig' %}
+    {% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig' %}
+        {% block box_title %}
+            Connect a New Location
+        {% endblock %}
+        {% block box_body %}
+            {% for channel_module in channel_modules %}
+                <a href="{{ path(channel_module.getRoutes().new) }}" class="btn btn-app btn-campaignchain-channel">
+                    <img src="{{ asset( channel_module|campaignchain_channel_asset_path~'/images/icons/32x32/'~channel_module|campaignchain_channel_icon_name ) }}" />
+                    <br/>
+                    {{ channel_module.getDisplayName() }}
+                </a>
+            {% endfor %}
+        {% endblock %}
+    {% endembed %}
 
-    <!--<div class="table-responsive">-->
+
+    {% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig' with{
+        'boxtype': 'default'
+    } %}
+        {% block box_title %}Connected Locations{% endblock %}
+        {% block box_body %}
+            {% include 'CampaignChainCoreBundle:Base:datatable.html.twig' %}
+
+            <!--<div class="table-responsive">-->
         <table id="example" class="table table-striped table-bordered dataTable">
             <thead>
                 <tr>
@@ -30,9 +51,7 @@ limitations under the License.
             </thead>
             <tbody>
                 {% for location in locations %}
-                    <tr class="
-                            {% if location.status == "inactive" %}text-muted {% endif %}
-                            ">
+                    <tr{% if location.status == "inactive" %} class="text-muted"{% endif %}>
                         <td>
                             {{ location|campaignchain_tpl_teaser }}
                         </td>
@@ -40,6 +59,7 @@ limitations under the License.
                             {{ location.getLocationModule().getDisplayName() }}
                         </td>
                         <td align="center">
+                            <div class="btn-group">
                             {% if location|campaignchain_is_removable %}
                                 <a  class="btn btn-danger"
                                     role="button"
@@ -92,11 +112,13 @@ limitations under the License.
                                     <span class="fa fa-check-square-o"></span>
                                 </a>
                             {% endif %}
+                                </div>
                         </td>
                     </tr>
 
                 {% endfor %}
             </tbody>
         </table>
-
+        {% endblock %}
+    {% endembed %}
 {% endblock %}

@@ -477,10 +477,6 @@ div.scrollable {
 
 /* AdminLTE overrides */
 
-.box-body div {
-    display: block !important;
-}
-
 .fc-view-container {
     background-color: white;
 }

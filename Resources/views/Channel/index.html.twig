@@ -17,15 +17,16 @@ limitations under the License.
 {% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
 
 {% block body %}
+    {% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig' %}
+        {% block box_body %}
     {% include 'CampaignChainCoreBundle:Base:datatable.html.twig' %}
 
     <!--<div class="table-responsive">-->
         <table id="example" class="table table-striped table-bordered dataTable">
             <thead>
                 <tr>
-                    <th>Name</th>
                     <th>Channel</th>
-                    <th>Locations</th>
+                    <th>Connected Locations</th>
                     <th>CTA Tracking</th>
                     <th></th>
                 </tr>
@@ -35,7 +36,6 @@ limitations under the License.
                     <tr class="
                             {% if channel.status == "inactive" %}text-muted {% endif %}
                             ">
-                        <td>{{ channel.name }}</td>
                         <td><img src="{{ asset( channel.getChannelModule()|campaignchain_channel_asset_path~'/images/icons/16x16/'~channel.getChannelModule()|campaignchain_channel_icon_name ) }}" /> {{ channel.getChannelModule().getDisplayName() }}</td>
                         <td>
                             <ul>
@@ -125,5 +125,7 @@ limitations under the License.
             </tbody>
         </table>
     <!--</div>-->
+        {% endblock %}
+    {% endembed %}
 
 {% endblock %}

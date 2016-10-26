@@ -438,5 +438,6 @@ avanzu_admin_theme:
             collapsible: false
             removable: false
             bordered: false
+            use_footer: false
     knp_menu:                         # knp menu integration
         enable         : true

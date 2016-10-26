@@ -18,6 +18,7 @@
 namespace CampaignChain\CoreBundle\Controller;
 
 use CampaignChain\CoreBundle\Entity\Location;
+use CampaignChain\CoreBundle\Entity\Medium;
 use CampaignChain\CoreBundle\EntityService\LocationService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use CampaignChain\CoreBundle\Entity\Channel;
@@ -27,6 +28,20 @@ use Symfony\Component\HttpFoundation\Response;
 class LocationController extends Controller
 {
     public function indexAction(){
+        $repository = $this->getDoctrine()
+            ->getRepository('CampaignChainCoreBundle:ChannelModule');
+
+        $query = $repository->createQueryBuilder('cm')
+            ->select('cm')
+            ->from('\CampaignChain\CoreBundle\Entity\Channel', 'c')
+            ->where('c.status != :status')
+            ->andWhere('c.channelModule = cm')
+            ->orderBy('cm.displayName', 'ASC')
+            ->setParameter('status', Medium::STATUS_INACTIVE)
+            ->getQuery();
+
+        $channelModules = $query->getResult();
+
         $repository = $this->getDoctrine()
             ->getRepository('CampaignChainCoreBundle:Location');
 
@@ -49,7 +64,8 @@ class LocationController extends Controller
             'CampaignChainCoreBundle:Location:index.html.twig',
             array(
                 'page_title' => 'Locations',
-                'locations' => $locations
+                'locations' => $locations,
+                'channel_modules' => $channelModules,
             ));
     }
 

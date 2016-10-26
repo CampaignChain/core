@@ -46,13 +46,12 @@ class MenuListener
             )
                 ->setLabelAttribute('icon', 'fa fa-exchange')
                 ->setChildrenAttribute('class', 'treeview-menu');
-            $menu->getChild('Connect')
-                ->addChild('ConnectNewLocation', [
-                    'route' => 'campaignchain_core_channel_new',
-                    'label' => 'New Location',
+            $menu->getChild('Connect')->addChild('ConnectLocations', [
+                    'route' => 'campaignchain_core_location',
+                    'label' => 'Locations',
                     'childOptions' => $event->getChildOptions()
-                    ]
-                )
+                ]
+            )
                 ->setLabelAttribute('icon', 'fa fa-circle-o')
                 ->setAttribute('data-step', '1');
             $menu->getChild('Connect')
@@ -63,12 +62,6 @@ class MenuListener
                     ]
                 )
                 ->setLabelAttribute('icon', 'fa fa-circle-o');
-            $menu->getChild('Connect')->addChild('ConnectLocations', [
-                    'route' => 'campaignchain_core_location',
-                    'label' => 'Locations',
-                    'childOptions' => $event->getChildOptions()
-                ]
-            )->setLabelAttribute('icon', 'fa fa-circle-o');
 
             /*
              * Create Actions.

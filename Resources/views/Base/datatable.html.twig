@@ -20,7 +20,7 @@ limitations under the License.
     {% endjavascripts %}
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function() {
-            $('#example').dataTable( {
+            $('table#example').dataTable( {
                 "fnPreDrawCallback": function( oSettings ) {
                     $("[data-toggle=tooltip]").tooltip();
                 }
