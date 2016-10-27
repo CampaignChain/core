@@ -107,6 +107,10 @@ limitations under the License.
                 function campaignchainToggleStatus(uri, element) {
                     $this = $(element);
                     $this.prop('disabled', true);
+                    var $icon = $this.find("i");
+                    $icon.removeClass("fa-pause").removeClass("fa-play");
+                    $icon.addClass("fa-spinner fa-spin");
+
                     $.ajax({
                         type: "POST",
                         url: "/api/v1/modules/toggle-status",
@@ -116,18 +120,18 @@ limitations under the License.
                         dataType: "json",
                         success: function (response) {
                             $this.tooltip("hide");
-                            var $icon = $this.find("i");
+                            $icon.removeClass('fa-spinner fa-spin');
                             var $badge = $('#campaignchain-status[data-uri="' + uri +'"]');
                             var $connect = $('#campaignchain-connect-location[data-uri="' + uri +'"]');
                             if(response[0]["status"] == "inactive"){
                                 $this.attr("data-original-title", "Set active");
-                                $icon.addClass("fa-play").removeClass("fa-pause");
+                                $icon.addClass("fa-play");
                                 $badge.addClass("bg-yellow").removeClass("bg-green");
                                 $badge.html('<i class="fa fa-pause-circle"></i> Inactive');
                                 $connect.attr('disabled', 'disabled');
                             } else {
                                 $this.attr("data-original-title", "Set inactive");
-                                $icon.addClass("fa-pause").removeClass("fa-play");
+                                $icon.addClass("fa-pause");
                                 $badge.addClass("bg-green").removeClass("bg-yellow");
                                 $badge.html('<i class="fa fa-play-circle"></i> Active');
                                 $connect.removeAttr('disabled');
