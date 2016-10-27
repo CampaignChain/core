@@ -77,8 +77,8 @@ limitations under the License.
                         </td>
                         <td align="center">
                             <div class="btn-group btn-group-sm">
-                                <a href="{{ path(channel.getChannelModule().getRoutes().new) }}" role="button" class="btn btn-default"
-                                   data-tooltip="true" data-placement="top" data-original-title="Connect with Location">
+                                <a href="{{ path('campaignchain_core_channel_new', {id: channel.getChannelModule().id}) }}" role="button" class="btn btn-default"
+                                   data-tooltip="true" data-placement="top" data-original-title="Connect new Location">
                                     <i class="fa fa-exchange"></i>
                                 </a>
                                 {% if  channel.status == 'inactive' %}

@@ -23,7 +23,7 @@ limitations under the License.
         {% endblock %}
         {% block box_body %}
             {% for channel_module in channel_modules %}
-                <a href="{{ path(channel_module.getRoutes().new) }}" class="btn btn-app btn-campaignchain-channel">
+                <a href="{{ path('campaignchain_core_channel_new', {id: channel_module.id}) }}" class="btn btn-app btn-campaignchain-channel">
                     <img src="{{ asset( channel_module|campaignchain_channel_asset_path~'/images/icons/32x32/'~channel_module|campaignchain_channel_icon_name ) }}" />
                     <br/>
                     {{ channel_module.getDisplayName() }}

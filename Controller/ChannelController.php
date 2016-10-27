@@ -48,24 +48,21 @@ class ChannelController extends Controller
             ));
     }
 
-    public function newAction(Request $request)
-    {
-        $repository = $this->getDoctrine()
-            ->getRepository('CampaignChainCoreBundle:ChannelModule');
+    public function newAction(Request $request, $id)
+    {echo $id;
+        $channel = new Channel();
+        $module = $this->getDoctrine()
+            ->getRepository('CampaignChainCoreBundle:ChannelModule')
+            ->find($id);
 
-        $query = $repository->createQueryBuilder('cm')
-            ->select('cm')
-            ->orderBy('cm.displayName', 'ASC')
-            ->getQuery();
+        $wizard = $this->get('campaignchain.core.channel.wizard');
+        $wizard->start($channel, $module);
 
-        $channelModules = $query->getResult();
-
-        return $this->render(
-            'CampaignChainCoreBundle:Channel:new.html.twig',
-            array(
-                'page_title' => 'Connect New Location',
-                'channel_modules' => $channelModules,
-            ));
+        return $this->redirect(
+            $this->generateUrl(
+                $module->getRoutes()['new']
+            )
+        );
     }
 
     public function apiListActivitiesAction(Request $request, $id){

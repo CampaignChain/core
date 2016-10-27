@@ -218,7 +218,7 @@ campaignchain_core_channel:
                 expose: true
 
 campaignchain_core_channel_new:
-    pattern:  /channel/new/
+    pattern:  /channel/new/{id}
     defaults: { _controller: CampaignChainCoreBundle:Channel:new }
     options:
         campaignchain:
