@@ -50,13 +50,13 @@ limitations under the License.
                     <td align="center">
                         <a class="btn btn-primary"
                            role="button"
-                           data-toggle="tooltip" data-placement="top" data-original-title="Edit"
+                           data-tooltip="true" data-placement="top" data-original-title="Edit"
                            href="{{ path('campaignchain_core_campaign_edit',{'id':campaign.id}) }}">
                            <span class="fa fa-pencil"></span>
                         </a>
                         <a class="btn btn-primary"
                            role="button"
-                           data-toggle="tooltip" data-placement="top" data-original-title="Plan"
+                           data-tooltip="true" data-placement="top" data-original-title="Plan"
                            href="{{ path(campaign.getCampaignModule().getRoutes().plan_detail,{'id':campaign.id}) }}">
                             <span class="fa fa-calendar"></span>
                         </a>

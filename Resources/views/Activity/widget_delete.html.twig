@@ -33,7 +33,7 @@ limitations under the License.
                     <a class="btn btn-default" role="button"# data-dismiss="modal">Abort</a>
                     <a  class="btn btn-danger"
                         role="button"
-                        data-toggle="tooltip" data-placement="top" data-original-title="Remove this activity"
+                        data-tooltip="true" data-placement="top" data-original-title="Remove this activity"
                         href="{{ path('campaignchain_core_activity_remove',{'id':activity.id}) }}">
                         <i class="fa fa-trash"></i>
                     </a>
@@ -45,7 +45,7 @@ limitations under the License.
 {% else %}
     <a  class="btn btn-danger" disabled="disabled"
         role="button"
-        data-toggle="tooltip" data-placement="top" data-original-title="It's not possible to remove activities which have already started or used in reports">
+        data-tooltip="true" data-placement="top" data-original-title="It's not possible to remove activities which have already started or used in reports">
         <i class="fa fa-trash"></i>
     </a>
 {% endif %}

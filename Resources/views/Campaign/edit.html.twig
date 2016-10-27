@@ -18,7 +18,7 @@ limitations under the License.
 
 {% block form_footer_btn_group %}
     <a class="btn btn-primary"
-       data-toggle="tooltip" data-placement="top" data-original-title="Plan"
+       data-tooltip="true" data-placement="top" data-original-title="Plan"
        href="{{ path(campaign.getCampaignModule().getRoutes().plan_detail,{'id':campaign.id}) }}">
         <span class="fa fa-calendar"></span>
     </a>

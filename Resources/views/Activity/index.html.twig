@@ -59,14 +59,14 @@ limitations under the License.
                             {% if activity.status == 'open' or activity.status == 'paused' %}
                             <a  class="btn btn-primary"
                                 role="button"
-                                data-toggle="tooltip" data-placement="top" data-original-title="Edit"
+                                data-tooltip="true" data-placement="top" data-original-title="Edit"
                                 href="{{ path('campaignchain_core_activity_edit',{'id':activity.id}) }}">
                                 <i class="fa fa-pencil"></i>
                             </a>
                             {% else %}
                             <a  class="btn btn-primary"
                                 role="button"
-                                data-toggle="tooltip" data-placement="top" data-original-title="View"
+                                data-tooltip="true" data-placement="top" data-original-title="View"
                                 href="{{ path('campaignchain_core_activity_read',{'id':activity.id}) }}">
                                 <span class="fa fa-file-text"></span>
                             </a>

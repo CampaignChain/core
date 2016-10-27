@@ -263,4 +263,9 @@ $(document).ready(function() {
     $(".campaignchain-tooltip-top li").tooltip({
         placement : 'top'
     });
+
+    // Bootstrap tooltip
+    $(function () {
+        $('[data-tooltip="true"]').tooltip();
+    })
 });

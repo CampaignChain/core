@@ -21,8 +21,9 @@ limitations under the License.
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function() {
             $('table#example').dataTable( {
+                fixedHeader: true,
                 "fnPreDrawCallback": function( oSettings ) {
-                    $("[data-toggle=tooltip]").tooltip();
+                    $('[data-tooltip="true"]').tooltip();
                 }
             } );
         } );

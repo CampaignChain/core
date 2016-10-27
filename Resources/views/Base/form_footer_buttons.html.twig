@@ -16,18 +16,18 @@ limitations under the License.
 
 
 {% if form_cancel_route is defined %}
-    <a href="{{ path(form_cancel_route) }}" class="btn btn-default" role="button" data-toggle="tooltip" data-placement="top" data-original-title="Cancel"><i class="fa fa-close"></i></a>
+    <a href="{{ path(form_cancel_route) }}" class="btn btn-default" role="button" data-tooltip="true" data-placement="top" data-original-title="Cancel"><i class="fa fa-close"></i></a>
 {% endif %}
 {% if form_submit_label is defined %}
     {% if form_submit_label == 'Save' %}
-        <button {% if blockui is defined %}id="blockui-wait-button"{% endif %} class="btn btn-primary" type="submit" data-toggle="tooltip" data-placement="top" data-original-title="Save"><i class="fa fa-save"></i></button>
+        <button {% if blockui is defined %}id="blockui-wait-button"{% endif %} class="btn btn-primary" type="submit" data-tooltip="true" data-placement="top" data-original-title="Save"><i class="fa fa-save"></i></button>
     {% elseif form_submit_label == 'Upload' %}
-        <button {% if blockui is defined %}id="blockui-wait-button"{% endif %} class="btn btn-primary" type="submit" data-toggle="tooltip" data-placement="top" data-original-title="Upload"><i class="fa fa-upload"></i></button>
+        <button {% if blockui is defined %}id="blockui-wait-button"{% endif %} class="btn btn-primary" type="submit" data-tooltip="true" data-placement="top" data-original-title="Upload"><i class="fa fa-upload"></i></button>
     {% elseif form_submit_label == 'Reset' %}
-        <button {% if blockui is defined %}id="blockui-wait-button"{% endif %} class="btn btn-primary" type="submit" data-toggle="tooltip" data-placement="top" data-original-title="Reset"><i class="fa fa-undo"></i></button>
+        <button {% if blockui is defined %}id="blockui-wait-button"{% endif %} class="btn btn-primary" type="submit" data-tooltip="true" data-placement="top" data-original-title="Reset"><i class="fa fa-undo"></i></button>
     {% elseif form_submit_label == 'Next' %}
-        <button {% if blockui is defined %}id="blockui-wait-button"{% endif %} class="btn btn-primary" type="submit" data-toggle="tooltip" data-placement="top" data-original-title="Next"><i class="fa fa-arrow-right"></i></button>
+        <button {% if blockui is defined %}id="blockui-wait-button"{% endif %} class="btn btn-primary" type="submit" data-tooltip="true" data-placement="top" data-original-title="Next"><i class="fa fa-arrow-right"></i></button>
     {% endif %}
 {% else %}
-    <button {% if blockui is defined %}id="blockui-wait-button"{% endif %} class="btn btn-primary" type="submit" data-toggle="tooltip" data-placement="top" data-original-title="Save"><i class="fa fa-save"></i></button>
+    <button {% if blockui is defined %}id="blockui-wait-button"{% endif %} class="btn btn-primary" type="submit" data-tooltip="true" data-placement="top" data-original-title="Save"><i class="fa fa-save"></i></button>
 {% endif %}

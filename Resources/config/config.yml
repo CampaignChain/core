@@ -146,9 +146,11 @@ assetic:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/components/datatables/media/js/jquery.dataTables.min.js"
                 - "@CampaignChainCoreBundle/Resources/public/components/datatables/media/js/dataTables.bootstrap.min.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/datatables-fixedheader/js/dataTables.fixedHeader.js"
         datatables_css:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/components/datatables/media/css/dataTables.bootstrap.min.css"
+                - "@CampaignChainCoreBundle/Resources/public/components/datatables-fixedheader/css/fixedHeader.bootstrap.scss"
         datatables_sort_asc:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/components/datatables/media/images/sort_asc.png"

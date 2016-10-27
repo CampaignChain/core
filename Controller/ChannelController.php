@@ -26,18 +26,9 @@ use Doctrine\ORM\EntityRepository;
 class ChannelController extends Controller
 {
     public function indexAction(){
-        $repository = $this->getDoctrine()
-            ->getRepository('CampaignChainCoreBundle:Channel');
-
-        $query = $repository->createQueryBuilder('c')
-            ->select('c, cm, b, l')
-            ->join('c.channelModule', 'cm')
-            ->join('c.locations', 'l')
-            ->join('cm.bundle', 'b')
-            ->orderBy('c.name', 'ASC')
-            ->getQuery();
-
-        $repository_channels = $query->getResult();
+        $repository_channels = $this->getDoctrine()
+            ->getRepository('CampaignChainCoreBundle:Channel')
+            ->getAllChannels();
 
         if(!count($repository_channels)){
             $system = $this->get('campaignchain.core.system')->getActiveSystem();

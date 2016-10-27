@@ -47,15 +47,24 @@ class ChannelModuleRepository extends EntityRepository
 
     public function getActiveChannelModules()
     {
-        $query = $this->createQueryBuilder('cm')
+        return $this->createQueryBuilder('cm')
             ->select('cm')
             ->leftJoin('cm.channels', 'c')
             ->where('c.status != :status AND c.channelModule = cm')
             ->orWhere('c.channelModule IS NULL')
             ->orderBy('cm.displayName', 'ASC')
             ->setParameter('status', Medium::STATUS_INACTIVE)
-            ->getQuery();
+            ->getQuery()
+            ->getResult();
+    }
 
-        return $query->getResult();
+    public function getAllChannelModules()
+    {
+        return $this->createQueryBuilder('cm')
+            ->select('cm')
+            ->leftJoin('cm.channels', 'c')
+            ->orderBy('cm.displayName', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 }

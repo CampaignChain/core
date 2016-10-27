@@ -557,3 +557,20 @@ div.scrollable {
 .main-footer > .btn-campaignchain-footer:first-child {
     padding-left: 0px;
 }
+
+/* Fontawesome */
+
+.fa-stack {
+    font-size: 60%;
+    height: 2.2em !important;
+    width: 1.8em !important;
+}
+
+/* Bootstrap */
+
+.btn-group {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display:         flex;
+}

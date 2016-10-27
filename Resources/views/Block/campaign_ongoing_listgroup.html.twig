@@ -18,7 +18,7 @@ limitations under the License.
     <h3>{{ settings.title }}</h3>
     <ul class="list-group campaignchain-tooltip-top campaignchain-tooltip-text-left">
     {% for campaign in campaigns %}
-        <li class="list-group-item" data-toggle="tooltip" data-placement="top"
+        <li class="list-group-item" data-tooltip="true" data-placement="top"
             data-original-title="Start: {{ campaign.startDate|date('Y-m-d H:i:s') }}
     End: {{ campaign.endDate|date('Y-m-d H:i:s') }}">
             {{ campaign.endDate|campaignchain_remaining_time_badge|raw }}

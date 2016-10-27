@@ -37,26 +37,26 @@
                         <td>{{ user.humanRole }}</td>
                         <td>
                             <a role="button" class="btn btn-primary"
-                               data-toggle="tooltip" data-placement="top" data-original-title="Edit"
+                               data-tooltip="true" data-placement="top" data-original-title="Edit"
                                href="{{ path('campaignchain_core_user_edit',{'id':user.id}) }}">
                                 <span class="fa fa-pencil"></span>
                             </a>
                             {% if user.isSuperAdmin %}
                                 <a role="button" class="btn btn-primary" disabled="disabled"
-                                   data-toggle="tooltip" data-placement="top" data-original-title="Users with super admin privileges can not be disabled"
+                                   data-tooltip="true" data-placement="top" data-original-title="Users with super admin privileges can not be disabled"
                                    href="{{ path('campaignchain_core_user_toggle_enabling',{'id':user.id}) }}">
                                     <span class="fa fa-check-square-o"></span>
                                 </a>
                                 {% else %}
                                     {% if user.enabled%}
                                     <a role="button" class="btn btn-primary"
-                                       data-toggle="tooltip" data-placement="top" data-original-title="Disable"
+                                       data-tooltip="true" data-placement="top" data-original-title="Disable"
                                        href="{{ path('campaignchain_core_user_toggle_enabling',{'id':user.id}) }}">
                                         <span class="fa fa-check-square-o"></span>
                                     </a>
                                     {% else %}
                                     <a role="button" class="btn btn-primary"
-                                       data-toggle="tooltip" data-placement="top" data-original-title="Enable"
+                                       data-tooltip="true" data-placement="top" data-original-title="Enable"
                                        href="{{ path('campaignchain_core_user_toggle_enabling',{'id':user.id}) }}">
                                         <span class="fa fa-square-o"></span>
                                     </a>

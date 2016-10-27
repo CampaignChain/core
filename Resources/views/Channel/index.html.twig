@@ -18,6 +18,7 @@ limitations under the License.
 
 {% block body %}
     {% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig' %}
+        {% block box_title %}Channels with Connected Locations{% endblock %}
         {% block box_body %}
     {% include 'CampaignChainCoreBundle:Base:datatable.html.twig' %}
 
@@ -26,6 +27,7 @@ limitations under the License.
             <thead>
                 <tr>
                     <th>Channel</th>
+                    <th>Status</th>
                     <th>Connected Locations</th>
                     <th>CTA Tracking</th>
                     <th></th>
@@ -37,6 +39,13 @@ limitations under the License.
                             {% if channel.status == "inactive" %}text-muted {% endif %}
                             ">
                         <td><img src="{{ asset( channel.getChannelModule()|campaignchain_channel_asset_path~'/images/icons/16x16/'~channel.getChannelModule()|campaignchain_channel_icon_name ) }}" /> {{ channel.getChannelModule().getDisplayName() }}</td>
+                        <td>
+                            {% if channel.status == "active" %}
+                            <span class="badge bg-green"><i class="fa fa-play-circle"></i> Active</span>
+                            {% else %}
+                            <span class="badge bg-yellow"><i class="fa fa-pause-circle"></i> Inactive</span>
+                            {% endif %}
+                        </td>
                         <td>
                             <ul>
                             {% set locations = channel|campaignchain_channel_root_locations %}
@@ -67,10 +76,29 @@ limitations under the License.
 
                         </td>
                         <td align="center">
-                            {% if channel|campaignchain_is_removable %}
-                                <a  class="btn btn-danger"
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ path(channel.getChannelModule().getRoutes().new) }}" role="button" class="btn btn-default"
+                                   data-tooltip="true" data-placement="top" data-original-title="Connect with Location">
+                                    <i class="fa fa-exchange"></i>
+                                </a>
+                                {% if  channel.status == 'inactive' %}
+                                <a role="button" class="btn btn-default"
+                                   data-tooltip="true" data-placement="top" data-original-title="Set active"
+                                   href="{{ path('campaignchain_core_channel_toggle_status',{'id':channel.id}) }}">
+                                    <span class="fa fa-play"></span>
+                                </a>
+                                {% else %}
+                                <a role="button" class="btn btn-default"
+                                   data-tooltip="true" data-placement="top" data-original-title="Set inactive"
+                                   href="{{ path('campaignchain_core_channel_toggle_status',{'id':channel.id}) }}">
+                                    <span class="fa fa-pause"></span>
+                                </a>
+                                {% endif %}
+                                {% if channel|campaignchain_is_removable %}
+                                <a  class="btn btn-default"
                                     role="button"
-                                    data-toggle="modal" data-target="#modal-{{ channel.id }}">
+                                    data-toggle="modal" data-target="#modal-{{ channel.id }}"
+                                    data-tooltip="true" data-placement="top" data-original-title="Remove Channel">
                                     <i class="fa fa-trash"></i>
                                 </a>
                                 <div id="modal-{{ channel.id }}" class="modal fade" role="dialog">
@@ -89,7 +117,7 @@ limitations under the License.
                                                 <a class="btn btn-default" role="button"# data-dismiss="modal">Abort</a>
                                                 <a  class="btn btn-danger"
                                                     role="button"
-                                                    data-toggle="tooltip" data-placement="top" data-original-title="Remove this channel"
+                                                    data-tooltip="true" data-placement="top" data-original-title="Remove this channel"
                                                     href="{{ path('campaignchain_core_location_remove',{'id':channel.id}) }}">
                                                     <i class="fa fa-trash"></i>
                                                 </a>
@@ -99,26 +127,13 @@ limitations under the License.
                                     </div>
                                 </div>
                                 {% else %}
-                                    <a  class="btn btn-danger" disabled="disabled"
-                                        role="button"
-                                        data-toggle="tooltip" data-placement="top" data-original-title="It's not possible to remove channels which have ongoing activities or used in reports">
+                                <a  class="btn btn-default" disabled="disabled"
+                                    role="button"
+                                    data-tooltip="true" data-placement="top" data-original-title="It's not possible to remove channels which have ongoing activities or used in reports">
                                         <i class="fa fa-trash"></i>
-                                    </a>
-                                    {% endif %}
-                            {% if  channel.status == 'inactive' %}
-                                <a role="button" class="btn btn-primary"
-                                   data-toggle="tooltip" data-placement="top" data-original-title="Set active"
-                                   href="{{ path('campaignchain_core_channel_toggle_status',{'id':channel.id}) }}">
-                                    <span class="fa fa-square-o"></span>
                                 </a>
-
-                            {% else %}
-                                <a role="button" class="btn btn-primary"
-                                   data-toggle="tooltip" data-placement="top" data-original-title="Set inactive"
-                                   href="{{ path('campaignchain_core_channel_toggle_status',{'id':channel.id}) }}">
-                                    <span class="fa fa-check-square-o"></span>
-                                </a>
-                            {% endif %}
+                                {% endif %}
+                            </div>
                         </td>
                     </tr>
                 {% endfor %}
