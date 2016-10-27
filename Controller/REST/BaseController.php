@@ -51,12 +51,23 @@ class BaseController extends FOSRestController
         return $this->responseHeaders($this->handleView($view));
     }
 
-    protected function errorResponse($message, $code = 400)
+    protected function errorResponse($message, $code = Response::HTTP_BAD_REQUEST)
     {
         if($code == 0){
             $code = 400;
         }
         $response['error'] = array(
+            'message'   => $message,
+            'code'      => $code,
+        );
+
+        $view = $this->view($response, $code);
+        return $this->responseHeaders($this->handleView($view));
+    }
+
+    protected function successResponse($message, $code = Response::HTTP_OK)
+    {
+        $response['success'] = array(
             'message'   => $message,
             'code'      => $code,
         );

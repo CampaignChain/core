@@ -29,6 +29,9 @@ use Doctrine\ORM\Mapping as ORM;
 
 abstract class Module extends Meta
 {
+    /**
+     * Repository name constants.
+     */
     const REPOSITORY_CAMPAIGN = 'CampaignModule';
     const REPOSITORY_MILESTONE = 'MilestoneModule';
     const REPOSITORY_ACTIVITY = 'ActivityModule';
@@ -37,6 +40,12 @@ abstract class Module extends Meta
     const REPOSITORY_LOCATION = 'LocationModule';
     const REPOSITORY_SECURITY = 'SecurityModule';
     const REPOSITORY_REPORT = 'ReportModule';
+
+    /**
+     * Status constants.
+     */
+    const STATUS_ACTIVE = 'active';
+    const STATUS_INACTIVE = 'inactive';
 
     /**
      * @ORM\Column(type="integer")
@@ -89,6 +98,11 @@ abstract class Module extends Meta
      * @ORM\Column(type="array")
      */
     protected $params;
+
+    /**
+     * @ORM\Column(type="string", length=20, nullable=false)
+     */
+    protected $status = self::STATUS_ACTIVE;
 
     /**
      * Get id
@@ -305,5 +319,35 @@ abstract class Module extends Meta
     public function getParams()
     {
         return $this->params;
+    }
+
+    /**
+     * Set status
+     *
+     * @param string $status
+     * @return Medium
+     */
+    public function setStatus($status)
+    {
+        if (!in_array($status, array(
+            self::STATUS_ACTIVE,
+            self::STATUS_INACTIVE,
+        ))) {
+            throw new \InvalidArgumentException("Invalid status in ".get_class($this).".");
+        }
+
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * Get status
+     *
+     * @return string
+     */
+    public function getStatus()
+    {
+        return $this->status;
     }
 }

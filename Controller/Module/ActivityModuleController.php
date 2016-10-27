@@ -267,7 +267,6 @@ class ActivityModuleController extends Controller
             $moduleService = $this->get('campaignchain.core.module');
             $activity->setActivityModule(
                 $moduleService->getModule(
-                    Module::REPOSITORY_ACTIVITY,
                     $this->activityBundleName,
                     $this->activityModuleIdentifier
                 )

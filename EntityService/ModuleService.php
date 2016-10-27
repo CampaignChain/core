@@ -32,20 +32,7 @@ class ModuleService
         $this->container = $container;
     }
 
-    public function getModule($repository, $bundleName, $moduleIdentifier){
-        if (!in_array($repository, array(
-            Module::REPOSITORY_CAMPAIGN,
-            Module::REPOSITORY_MILESTONE,
-            Module::REPOSITORY_ACTIVITY,
-            Module::REPOSITORY_OPERATION,
-            Module::REPOSITORY_CHANNEL,
-            Module::REPOSITORY_LOCATION,
-            Module::REPOSITORY_SECURITY,
-            Module::REPOSITORY_REPORT,
-        ))) {
-            throw new \InvalidArgumentException("Invalid module repository.");
-        }
-
+    public function getModule($bundleName, $moduleIdentifier){
         // Get bundle.
         $bundle = $this->em
             ->getRepository('CampaignChainCoreBundle:Bundle')
@@ -58,7 +45,7 @@ class ModuleService
 
         // Get the module's config.
         $module = $this->em
-            ->getRepository('CampaignChainCoreBundle:'.$repository)
+            ->getRepository('CampaignChainCoreBundle:Module')
             ->findOneBy(array(
                     'bundle' => $bundle,
                     'identifier' => $moduleIdentifier,
@@ -66,10 +53,30 @@ class ModuleService
             );
         if (!$module) {
             throw new \Exception(
-                'No operation module found for bundle '.$bundle->getName().' and identifier '.$moduleIdentifier
+                'No module found for bundle '.$bundle->getName().' and identifier '.$moduleIdentifier
             );
         }
 
         return $module;
+    }
+
+    public function toggleStatus($bundleName, $moduleIdentifier)
+    {
+        /** @var Module $module */
+        $module = $this->getModule($bundleName, $moduleIdentifier);
+
+        $toggle = (($module->getStatus() == Module::STATUS_ACTIVE) ? $module->setStatus(
+            Module::STATUS_INACTIVE
+        ) : $module->setStatus(Module::STATUS_ACTIVE));
+
+        if($module->getBundle()->getType() == 'campaignchain-channel') {
+            foreach ($module->getChannels() as $channel) {
+                $channel->setStatus($module->getStatus());
+            }
+        }
+        $this->em->persist($module);
+        $this->em->flush();
+
+        return $module->getStatus();
     }
 }

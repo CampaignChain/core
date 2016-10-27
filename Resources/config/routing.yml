@@ -207,13 +207,26 @@ campaignchain_core_module_new:
             rest:
                 expose: true
 
+campaignchain_core_module_toggle_status:
+    pattern:  /module/{id}/toggleStatus
+    defaults: { _controller: CampaignChainCoreBundle:Module:toggleStatus }
+
 # channel routes
 campaignchain_core_channel:
     pattern:  /channels/
-    defaults: { _controller: CampaignChainCoreBundle:Channel:index }
+    defaults: { _controller: CampaignChainCoreBundle:Channel:indexChannelModules }
     options:
         campaignchain:
             description: View all channels
+            rest:
+                expose: true
+
+campaignchain_core_channel_accounts:
+    pattern:  /channels/accounts/
+    defaults: { _controller: CampaignChainCoreBundle:Channel:indexAccounts }
+    options:
+        campaignchain:
+            description: View all connected channel user accounts
             rest:
                 expose: true
 

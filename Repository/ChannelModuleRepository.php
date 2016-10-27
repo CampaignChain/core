@@ -18,8 +18,8 @@ namespace CampaignChain\CoreBundle\Repository;
 
 use CampaignChain\CoreBundle\Entity\ActivityModule;
 use CampaignChain\CoreBundle\Entity\LocationModule;
+use CampaignChain\CoreBundle\Entity\Module;
 use Doctrine\ORM\EntityRepository;
-use CampaignChain\CoreBundle\Entity\Medium;
 
 class ChannelModuleRepository extends EntityRepository
 {
@@ -50,10 +50,9 @@ class ChannelModuleRepository extends EntityRepository
         return $this->createQueryBuilder('cm')
             ->select('cm')
             ->leftJoin('cm.channels', 'c')
-            ->where('c.status != :status AND c.channelModule = cm')
-            ->orWhere('c.channelModule IS NULL')
+            ->where('cm.status != :status')
             ->orderBy('cm.displayName', 'ASC')
-            ->setParameter('status', Medium::STATUS_INACTIVE)
+            ->setParameter('status', Module::STATUS_INACTIVE)
             ->getQuery()
             ->getResult();
     }
@@ -62,7 +61,6 @@ class ChannelModuleRepository extends EntityRepository
     {
         return $this->createQueryBuilder('cm')
             ->select('cm')
-            ->leftJoin('cm.channels', 'c')
             ->orderBy('cm.displayName', 'ASC')
             ->getQuery()
             ->getResult();

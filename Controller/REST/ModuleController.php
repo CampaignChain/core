@@ -17,8 +17,13 @@
 
 namespace CampaignChain\CoreBundle\Controller\REST;
 
+use CampaignChain\CoreBundle\Entity\URI;
+use CampaignChain\CoreBundle\Util\ParserUtil;
 use CampaignChain\CoreBundle\Util\VariableUtil;
+use Doctrine\ORM\Query\Parser;
 use FOS\RestBundle\Controller\Annotations as REST;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use FOS\RestBundle\Request\ParamFetcher;
@@ -32,7 +37,7 @@ use FOS\RestBundle\Request\ParamFetcher;
  */
 class ModuleController extends BaseController
 {
-    const SELECT_STATEMENT = 'b.name AS composerPackage, m.identifier AS moduleIdentifier, m.displayName, m.description, m.routes, m.services, m.hooks, m.params, m.createdDate';
+    const SELECT_STATEMENT = 'b.name AS composerPackage, m.identifier AS moduleIdentifier, m.displayName, m.description, m.routes, m.services, m.hooks, m.params, m.createdDate, m.status';
 
     /**
      * List all available types for modules
@@ -467,10 +472,7 @@ class ModuleController extends BaseController
      */
     public function getUrisAction($uri)
     {
-        $uriParts = explode('/', $uri);
-        $vendor = $uriParts[0];
-        $project = $uriParts[1];
-        $identifier = $uriParts[2];
+        $uri = new URI($uri);
 
         $qb = $this->getQueryBuilder();
         $qb->select(self::SELECT_STATEMENT);
@@ -479,13 +481,68 @@ class ModuleController extends BaseController
         $qb->where('b.id = m.bundle');
         $qb->andWhere('b.name = :package');
         $qb->andWhere('m.identifier = :module');
-        $qb->setParameter('package', $vendor.'/'.$project);
-        $qb->setParameter('module', $identifier);
+        $qb->setParameter('package', $uri->getPackage());
+        $qb->setParameter('module', $uri->getModule());
         $qb->orderBy('m.identifier');
         $query = $qb->getQuery();
 
         return $this->response(
             $query->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY)
         );
+    }
+
+    /**
+     * Toggle the status of a Module to active or inactive.
+     *
+     * Example Request
+     * ===============
+     *
+     *      POST /api/v1/modules/toggle-status
+     *
+     * Example Input
+     * =============
+     *
+    {
+        "uri": "campaignchain/channel-twitter/campaignchain-twitter"
+    }
+     *
+     * Example Response
+     * ================
+     *
+     * See:
+     *
+     *      GET /api/v1/modules/uris/{uri}
+     *
+     * @ApiDoc(
+     *  section="Core",
+     *  requirements={
+     *      {
+     *          "name"="uri",
+     *          "requirement"="[A-Za-z0-9][A-Za-z0-9_.-]*\/[A-Za-z0-9][A-Za-z0-9_.-]*\/[A-Za-z0-9][A-Za-z0-9_.-]*"
+     *      }
+     *  }
+     * )
+     *
+     * @REST\Post("/toggle-status")
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function postToggleStatusAction(Request $request)
+    {
+        $uri = new URI($request->request->get('uri'));
+
+        $service = $this->get('campaignchain.core.module');
+        try {
+            $status = $service->toggleStatus($uri->getPackage(), $uri->getModule());
+            $response = $this->forward(
+                'CampaignChainCoreBundle:REST/Module:getUris',
+                array(
+                    'uri' => $request->request->get('uri')
+                )
+            );
+            return $response->setStatusCode(Response::HTTP_CREATED);
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage());
+        }
     }
 }

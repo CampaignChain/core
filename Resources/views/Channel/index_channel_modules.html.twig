@@ -1,0 +1,148 @@
+{#
+Copyright 2016 CampaignChain, Inc. <info@campaignchain.com>
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+#}
+
+{% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
+
+{% block body %}
+    {% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig' %}
+        {% block box_title %}Channels with Connected Locations{% endblock %}
+        {% block box_body %}
+
+        {% include 'CampaignChainCoreBundle:Base:datatable.html.twig' %}
+
+        <!--<div class="table-responsive">-->
+        <table id="example" class="table table-striped table-bordered dataTable">
+            <thead>
+                <tr>
+                    <th>Channel</th>
+                    <th>Status</th>
+                    <th>Connected Locations</th>
+                    <th>CTA Tracking</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for channel_module in channel_modules %}
+                    <tr{% if channel_module.status == "inactive" %} class="text-muted"{% endif %}>
+                        <td><img src="{{ asset( channel_module|campaignchain_channel_asset_path~'/images/icons/16x16/'~channel_module|campaignchain_channel_icon_name ) }}" /> {{ channel_module.getDisplayName() }}</td>
+                        <td>
+                            {% if channel_module.status == "active" %}
+                            <span id="campaignchain-status" class="badge bg-green" data-uri="{{ channel_module.getBundle().getName() ~ '/' ~ channel_module.identifier }}"><i class="fa fa-play-circle"></i> Active</span>
+                            {% else %}
+                            <span id="campaignchain-status" class="badge bg-yellow" data-uri="{{ channel_module.getBundle().getName() ~ '/' ~ channel_module.identifier }}"><i class="fa fa-pause-circle"></i> Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <ul>
+                            {% if
+                            channel_module.getChannels() is iterable and
+                            channel_module.getChannels()|length > 0
+                            %}
+                                {% for channel in channel_module.getChannels() %}
+                                    {% set locations = channel|campaignchain_channel_root_locations %}
+                                    {% for location in locations %}
+                                        <li>{{ location.name }} ({{ location.getLocationModule().getDisplayName() }})<br/><a href="{{ location.url }}">{{ location.url }}</a></li>
+                                    {% endfor %}
+                                {% endfor %}
+                            {% endif %}
+                            </ul>
+                        </td>
+                        <td>
+                            {#{% set module_params = channel_module.getParams() %}#}
+                            {#{% if channel_module.status == "active" %}#}
+                                {#{% if module_params is iterable and#}
+                                {#module_params['cta_tracking'] is defined and#}
+                                {#module_params['cta_tracking'] %}#}
+                                    {#<a href="{{ path('campaignchain_core_channel_cta_test',{'id':channel.id}) }}" class="btn btn-primary" role="button">Enable & Test</a>#}
+                                {#{% else %}#}
+                                    {#<i class="fa fa-ban"></i>#}
+                                {#{% endif %}#}
+                            {#{% else %}#}
+                                {#{% if module_params is iterable and#}
+                                {#module_params['cta_tracking'] is defined and#}
+                                {#module_params['cta_tracking'] %}#}
+                                {#<a class="btn btn-primary" disabled="disabled" role="button">Enable & Test</a>#}
+                                {#{% else %}#}
+                                    {#<i class="fa fa-ban" disabled="disabled"></i>#}
+                                {#{% endif %}#}
+                            {#{% endif %}#}
+                        </td>
+                        <td align="center">
+                            <div class="btn-group btn-group-sm">
+                                <a id="campaignchain-connect-location"
+                                   data-uri="{{ channel_module.getBundle().getName() ~ '/' ~ channel_module.identifier }}"
+                                   href="{{ path('campaignchain_core_channel_new', {id: channel_module.id}) }}"
+                                    {% if channel_module.status == "inactive" %}disabled="disabled"{% endif %}
+                                   role="button" class="btn btn-default"
+                                   data-tooltip="true" data-placement="top" data-original-title="Connect new Location">
+                                    <i class="fa fa-exchange"></i>
+                                </a>
+                                <a role="button" class="btn btn-default"
+                                   data-tooltip="true" data-placement="top"
+                                   data-original-title="{% if  channel_module.status == "inactive" %}Set active{% else %}Set inactive{% endif %}"
+                                   href="javascript:void(0);" onclick="campaignchainToggleStatus('{{ channel_module.getBundle().getName() ~ '/' ~ channel_module.identifier }}', this)">
+                                    <i class="fa {% if  channel_module.status == "inactive" %}fa-play{% else %}fa-pause{% endif %}"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+            <script type="application/javascript">
+                function campaignchainToggleStatus(uri, element) {
+                    $this = $(element);
+                    $this.prop('disabled', true);
+                    $.ajax({
+                        type: "POST",
+                        url: "/api/v1/modules/toggle-status",
+                        data: {
+                            uri: uri
+                        },
+                        dataType: "json",
+                        success: function (response) {
+                            $this.tooltip("hide");
+                            var $icon = $this.find("i");
+                            var $badge = $('#campaignchain-status[data-uri="' + uri +'"]');
+                            var $connect = $('#campaignchain-connect-location[data-uri="' + uri +'"]');
+                            if(response[0]["status"] == "inactive"){
+                                $this.attr("data-original-title", "Set active");
+                                $icon.addClass("fa-play").removeClass("fa-pause");
+                                $badge.addClass("bg-yellow").removeClass("bg-green");
+                                $badge.html('<i class="fa fa-pause-circle"></i> Inactive');
+                                $connect.attr('disabled', 'disabled');
+                            } else {
+                                $this.attr("data-original-title", "Set inactive");
+                                $icon.addClass("fa-pause").removeClass("fa-play");
+                                $badge.addClass("bg-green").removeClass("bg-yellow");
+                                $badge.html('<i class="fa fa-play-circle"></i> Active');
+                                $connect.removeAttr('disabled');
+                            }
+                            $this.prop('disabled', false);
+                            $this.tooltip("toggle");
+                            $this.mouseleave(function( event ) {
+                                $this.tooltip("hide");
+                            });
+                        }
+                    })
+                }
+            </script>
+    <!--</div>-->
+        {% endblock %}
+    {% endembed %}
+
+{% endblock %}

@@ -25,7 +25,30 @@ use Doctrine\ORM\EntityRepository;
 
 class ChannelController extends Controller
 {
-    public function indexAction(){
+    public function indexChannelModulesAction(){
+        $channel_modules = $this->getDoctrine()
+            ->getRepository('CampaignChainCoreBundle:ChannelModule')
+            ->getAllChannelModules();
+        //dump($channel_modules);exit;
+        if(!count($channel_modules)){
+            $system = $this->get('campaignchain.core.system')->getActiveSystem();
+            $this->get('session')->getFlashBag()->add(
+                'warning',
+                'No channels defined yet. To learn how to create one, please <a href="#" onclick="popupwindow(\''.
+                $system->getDocsURL().'/user/get_started.html#connect-to-a-channel'.
+                '\',\'\',900,600)">consult the documentation</a>.'
+            );
+        }
+
+        return $this->render(
+            'CampaignChainCoreBundle:Channel:index_channel_modules.html.twig',
+            array(
+                'page_title' => 'Channels',
+                'channel_modules' => $channel_modules
+            ));
+    }
+
+    public function indexAccountsAction(){
         $repository_channels = $this->getDoctrine()
             ->getRepository('CampaignChainCoreBundle:Channel')
             ->getAllChannels();
@@ -41,7 +64,7 @@ class ChannelController extends Controller
         }
 
         return $this->render(
-            'CampaignChainCoreBundle:Channel:index.html.twig',
+            'CampaignChainCoreBundle:Channel:index_accounts.html.twig',
             array(
                 'page_title' => 'Channels',
                 'repository_channels' => $repository_channels
@@ -49,7 +72,7 @@ class ChannelController extends Controller
     }
 
     public function newAction(Request $request, $id)
-    {echo $id;
+    {
         $channel = new Channel();
         $module = $this->getDoctrine()
             ->getRepository('CampaignChainCoreBundle:ChannelModule')
