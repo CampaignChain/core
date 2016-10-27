@@ -28,19 +28,9 @@ use Symfony\Component\HttpFoundation\Response;
 class LocationController extends Controller
 {
     public function indexAction(){
-        $repository = $this->getDoctrine()
-            ->getRepository('CampaignChainCoreBundle:ChannelModule');
-
-        $query = $repository->createQueryBuilder('cm')
-            ->select('cm')
-            ->from('\CampaignChain\CoreBundle\Entity\Channel', 'c')
-            ->where('c.status != :status')
-            ->andWhere('c.channelModule = cm')
-            ->orderBy('cm.displayName', 'ASC')
-            ->setParameter('status', Medium::STATUS_INACTIVE)
-            ->getQuery();
-
-        $channelModules = $query->getResult();
+        $channelModules = $this->getDoctrine()
+            ->getRepository('CampaignChainCoreBundle:ChannelModule')
+            ->getActiveChannelModules();
 
         $repository = $this->getDoctrine()
             ->getRepository('CampaignChainCoreBundle:Location');

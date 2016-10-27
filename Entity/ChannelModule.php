@@ -20,7 +20,7 @@ namespace CampaignChain\CoreBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="CampaignChain\CoreBundle\Repository\ChannelRepository")
+ * @ORM\Entity(repositoryClass="CampaignChain\CoreBundle\Repository\ChannelModuleRepository")
  */
 class ChannelModule extends Module
 {
