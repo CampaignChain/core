@@ -136,13 +136,21 @@ class MilestoneController extends Controller
     }
 
     /**
+     * Move a Milestone to a new start date.
+     *
      * @ApiDoc(
      *  section = "Core",
      *  views = { "private" },
      *  requirements={
      *      {
      *          "name"="id",
+     *          "description" = "Milestone ID",
      *          "requirement"="\d+"
+     *      },
+     *     {
+     *          "name"="start_date",
+     *          "description" = "Start date in ISO8601 format",
+     *          "requirement"="/(\d{4})-(\d{2})-(\d{2})T(\d{2})\:(\d{2})\:(\d{2})[+-](\d{2})\:(\d{2})/"
      *      }
      *  }
      * )

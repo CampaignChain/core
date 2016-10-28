@@ -136,6 +136,8 @@ class ChannelController extends Controller
     }
 
     /**
+     * Checks whether a Channel has the tracking code included.
+     *
      * @ApiDoc(
      *  section = "Core",
      *  views = { "private" },
@@ -148,7 +150,7 @@ class ChannelController extends Controller
      * )
      *
      * @param Request $request
-     * @param $id
+     * @param $id Channel ID
      * @return Response
      * @throws \Exception
      */

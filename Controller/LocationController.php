@@ -61,6 +61,8 @@ class LocationController extends Controller
     }
 
     /**
+     * Get the Activity modules that are available for a Location.
+     *
      * @ApiDoc(
      *  section = "Core",
      *  views = { "private" },
@@ -73,7 +75,7 @@ class LocationController extends Controller
      * )
      *
      * @param Request $request
-     * @param $id
+     * @param $id Location ID
      * @return Response
      * @throws \Exception
      */
@@ -108,6 +110,7 @@ class LocationController extends Controller
 
         return new Response($serializer->serialize($response, 'json'));
     }
+
     public function  removeAction(Request $request, $id)
     {
         $locationService = $this->get('campaignchain.core.location');

@@ -54,6 +54,8 @@ class ReportController extends Controller
     }
 
     /**
+     * Returns all Locations with CTA data within a Campaign.
+     *
      * @ApiDoc(
      *  section = "Core",
      *  views = { "private" },
@@ -65,7 +67,7 @@ class ReportController extends Controller
      *  }
      * )
      *
-     * @param $id
+     * @param $id Campaign ID
      * @return Response
      */
     public function apiListCtaLocationsPerCampaignAction($id)

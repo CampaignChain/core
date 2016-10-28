@@ -111,13 +111,21 @@ class CampaignController extends BaseController
     }
 
     /**
+     * Move a Campaign to a new start date.
+     *
      * @ApiDoc(
      *  section = "Core",
      *  views = { "private" },
      *  requirements={
      *      {
      *          "name"="id",
+     *          "description" = "Campaign ID",
      *          "requirement"="\d+"
+     *      },
+     *     {
+     *          "name"="start_date",
+     *          "description" = "Start date in ISO8601 format",
+     *          "requirement"="/(\d{4})-(\d{2})-(\d{2})T(\d{2})\:(\d{2})\:(\d{2})[+-](\d{2})\:(\d{2})/"
      *      }
      *  }
      * )
@@ -189,6 +197,8 @@ class CampaignController extends BaseController
     }
 
     /**
+     * Returns a Campaign with its children (e.g. repeating campaign).
+     *
      * @ApiDoc(
      *  section = "Core",
      *  views = { "private" },
@@ -201,7 +211,7 @@ class CampaignController extends BaseController
      * )
      *
      * @param Request $request
-     * @param $id
+     * @param $id Campaign ID
      * @return Response
      */
     public function getNestedCampaignsForTimelineApiAction(Request $request, $id)
