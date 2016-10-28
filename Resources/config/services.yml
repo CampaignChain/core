@@ -111,7 +111,7 @@ services:
         class: CampaignChain\CoreBundle\EventListener\ConsoleExceptionListener
         arguments:
             logger: '@monolog.logger.scheduler'
-            entityManager: '@doctrine.orm.default_entity_manager'
+            entityManager: '@doctrine.orm.entity_manager'
         tags:
             - { name: kernel.event_listener, event: console.exception }
 
@@ -383,7 +383,7 @@ services:
             class: CampaignChain\CoreBundle\Module\BundleConfig
             arguments:
                 - '@campaignchain.core.module.locator'
-                - '@doctrine.orm.default_entity_manager'
+                - '@doctrine.orm.entity_manager'
 
     campaignchain.core.module.locator:
         class: CampaignChain\CoreBundle\Module\BundleLocator
@@ -518,7 +518,7 @@ services:
         arguments:
             - '@campaignchain.core.user'
             - '@h4cc_alice_fixtures.manager'
-            - '@doctrine.orm.default_entity_manager'
+            - '@doctrine.orm.entity_manager'
             - '@liip_imagine.mime_type_guesser'
             - '@liip_imagine.extension_guesser'
 
