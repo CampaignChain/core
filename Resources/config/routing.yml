@@ -395,18 +395,17 @@ _liip_imagine:
 # Public REST routes are being created automatically via FOSRestBundle.
 campaignchain_core_rest_public:
     resource: "@CampaignChainCoreBundle/Resources/config/routing_rest_public.yml"
-    type: annotation/api_
     prefix: /api/v1
 
 # Public REST routes are being created automatically via FOSRestBundle.
 campaignchain_core_rest_private:
     resource: "@CampaignChainCoreBundle/Resources/config/routing_rest_private.yml"
-    type: annotation/api_private_
     prefix: /api/private
 
+# We clone the public REST API for the private to make it accessible to the Web app
 campaignchain_core_rest_private_public:
     resource: "@CampaignChainCoreBundle/Resources/config/routing_rest_public.yml"
-    type: annotation/api_private_
+    type: campaignchain-clone/api_private_
     prefix: /api/private
 
 # NelmioApiDocBundle routes

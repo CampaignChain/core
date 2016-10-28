@@ -22,6 +22,7 @@ use CampaignChain\CoreBundle\Entity\Channel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityRepository;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 class ChannelController extends Controller
 {
@@ -134,6 +135,23 @@ class ChannelController extends Controller
             ));
     }
 
+    /**
+     * @ApiDoc(
+     *  section = "Core",
+     *  views = { "private" },
+     *  requirements={
+     *      {
+     *          "name"="id",
+     *          "requirement"="\d+"
+     *      }
+     *  }
+     * )
+     *
+     * @param Request $request
+     * @param $id
+     * @return Response
+     * @throws \Exception
+     */
     public function apiTestCtaTrackingAction(Request $request, $id){
         $response = array();
 

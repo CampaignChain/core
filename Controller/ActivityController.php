@@ -24,6 +24,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\HttpFoundation\Response;
 use CampaignChain\CoreBundle\Entity\Action;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 class ActivityController extends Controller
 {
@@ -269,6 +270,21 @@ class ActivityController extends Controller
         return $this->redirectToRoute('campaignchain_core_activities');
     }
 
+    /**
+     * @ApiDoc(
+     *  section = "Core",
+     *  views = { "private" },
+     *  requirements={
+     *      {
+     *          "name"="id",
+     *          "requirement"="\d+"
+     *      }
+     *  }
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
     public function moveApiAction(Request $request)
     {
         $serializer = $this->get('campaignchain.core.serializer.default');

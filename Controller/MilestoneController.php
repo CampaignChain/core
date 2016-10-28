@@ -22,6 +22,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityRepository;
 use CampaignChain\CoreBundle\Entity\Action;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 class MilestoneController extends Controller
 {
@@ -134,6 +135,21 @@ class MilestoneController extends Controller
         );
     }
 
+    /**
+     * @ApiDoc(
+     *  section = "Core",
+     *  views = { "private" },
+     *  requirements={
+     *      {
+     *          "name"="id",
+     *          "requirement"="\d+"
+     *      }
+     *  }
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
     public function moveApiAction(Request $request)
     {
         $serializer = $this->get('campaignchain.core.serializer.default');

@@ -49,7 +49,7 @@ class PackageController extends BaseController
     ]
      *
      * @ApiDoc(
-     *  section="Core"
+     *  section="Core",
      * )
      *
      * @REST\Get("/vendors")

@@ -28,18 +28,18 @@ use Symfony\Component\Routing\RouteCollection;
  */
 class RoutingLoaderService extends Loader {
 
-    var $typePrefix = 'annotation/';
+    const TYPE_CLONE_PREFIX = 'campaignchain-clone/';
 
     public function load($resource, $type = null)
     {
-        $routeNamePrefix = substr($type,strlen($this->typePrefix));
+        $routeNamePrefix = substr($type,strlen(self::TYPE_CLONE_PREFIX));
 
         $collection = new RouteCollection();
         $routes = $this->import($resource);
         $routes2 = clone $routes;
 
         foreach ($routes as $name => $route) {
-            $routes2->add($routeNamePrefix.$name,$route);
+            $routes2->add($routeNamePrefix.$name, $route);
             $routes2->remove($name);
         }
 
@@ -50,6 +50,6 @@ class RoutingLoaderService extends Loader {
 
     public function supports($resource, $type = null)
     {
-        return substr($type, 0, strlen($this->typePrefix)) === $this->typePrefix;
+        return substr($type, 0, strlen(self::TYPE_CLONE_PREFIX)) === self::TYPE_CLONE_PREFIX;
     }
 }

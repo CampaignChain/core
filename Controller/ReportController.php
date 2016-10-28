@@ -20,6 +20,7 @@ namespace CampaignChain\CoreBundle\Controller;
 use CampaignChain\CoreBundle\Entity\ReportModule;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 /**
  * Class ReportController.
@@ -52,6 +53,21 @@ class ReportController extends Controller
         return $this->redirectToRoute($reportModule->getRoutes()['index']);
     }
 
+    /**
+     * @ApiDoc(
+     *  section = "Core",
+     *  views = { "private" },
+     *  requirements={
+     *      {
+     *          "name"="id",
+     *          "requirement"="\d+"
+     *      }
+     *  }
+     * )
+     *
+     * @param $id
+     * @return Response
+     */
     public function apiListCtaLocationsPerCampaignAction($id)
     {
         $repository = $this->getDoctrine()

@@ -24,6 +24,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityRepository;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 class CampaignController extends BaseController
 {
@@ -109,6 +110,21 @@ class CampaignController extends BaseController
 
     }
 
+    /**
+     * @ApiDoc(
+     *  section = "Core",
+     *  views = { "private" },
+     *  requirements={
+     *      {
+     *          "name"="id",
+     *          "requirement"="\d+"
+     *      }
+     *  }
+     * )
+     *
+     * @param Request $request
+     * @return Response
+     */
     public function moveApiAction(Request $request)
     {
         $serializer = $this->get('campaignchain.core.serializer.default');
@@ -172,6 +188,22 @@ class CampaignController extends BaseController
         return new Response($serializer->serialize($responseData, 'json'));
     }
 
+    /**
+     * @ApiDoc(
+     *  section = "Core",
+     *  views = { "private" },
+     *  requirements={
+     *      {
+     *          "name"="id",
+     *          "requirement"="\d+"
+     *      }
+     *  }
+     * )
+     *
+     * @param Request $request
+     * @param $id
+     * @return Response
+     */
     public function getNestedCampaignsForTimelineApiAction(Request $request, $id)
     {
         $responseData = array();

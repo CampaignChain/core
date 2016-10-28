@@ -24,6 +24,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use CampaignChain\CoreBundle\Entity\Channel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 class LocationController extends Controller
 {
@@ -59,6 +60,23 @@ class LocationController extends Controller
             ));
     }
 
+    /**
+     * @ApiDoc(
+     *  section = "Core",
+     *  views = { "private" },
+     *  requirements={
+     *      {
+     *          "name"="id",
+     *          "requirement"="\d+"
+     *      }
+     *  }
+     * )
+     *
+     * @param Request $request
+     * @param $id
+     * @return Response
+     * @throws \Exception
+     */
     public function apiListActivitiesAction(Request $request, $id){
         $location = $this->getDoctrine()
             ->getRepository('CampaignChainCoreBundle:Location')
