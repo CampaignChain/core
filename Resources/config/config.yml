@@ -437,6 +437,7 @@ avanzu_admin_theme:
     theme:
         skin: "%campaignchain.theme.skin%"
         widget:
+            type: default
             collapsible: false
             removable: false
             bordered: false

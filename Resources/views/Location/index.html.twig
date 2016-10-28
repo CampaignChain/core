@@ -17,7 +17,9 @@ limitations under the License.
 {% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
 
 {% block body %}
-    {% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig' %}
+    {% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig' with {
+    'boxtype': 'primary'
+    } %}
         {% block box_title %}
             Connect a New Location
         {% endblock %}
@@ -33,9 +35,7 @@ limitations under the License.
     {% endembed %}
 
 
-    {% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig' with{
-        'boxtype': 'default'
-    } %}
+    {% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig' %}
         {% block box_title %}Connected Locations{% endblock %}
         {% block box_body %}
             {% include 'CampaignChainCoreBundle:Base:datatable.html.twig' %}
