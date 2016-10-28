@@ -133,6 +133,11 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
+    campaignchain.core.routing_loader:
+        class: CampaignChain\CoreBundle\Service\RoutingLoaderService
+        tags:
+            - { name: routing.loader }
+
     # Services
     campaignchain.core.module:
         class: CampaignChain\CoreBundle\EntityService\ModuleService
