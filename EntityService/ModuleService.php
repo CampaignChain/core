@@ -17,18 +17,18 @@
 
 namespace CampaignChain\CoreBundle\EntityService;
 
-use Doctrine\ORM\EntityManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use CampaignChain\CoreBundle\Entity\Module;
+use Doctrine\Bundle\DoctrineBundle\Registry;
 
 class ModuleService
 {
     protected $em;
     protected $container;
 
-    public function __construct(EntityManager $em, ContainerInterface $container)
+    public function __construct(Registry $doctrine, ContainerInterface $container)
     {
-        $this->em = $em;
+        $this->em = $doctrine->getManager();
         $this->container = $container;
     }
 

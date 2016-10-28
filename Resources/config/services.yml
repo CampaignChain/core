@@ -142,7 +142,7 @@ services:
     campaignchain.core.module:
         class: CampaignChain\CoreBundle\EntityService\ModuleService
         arguments:
-            - '@doctrine.orm.entity_manager'
+            - '@doctrine'
             - '@service_container'
 
     campaignchain.core.location:
