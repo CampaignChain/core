@@ -39,7 +39,7 @@ class Version20160916085817 extends AbstractMigration implements ContainerAwareI
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         /** @var ManagerRegistry $managerRegistry */
-        $managerRegistry = $this->getContainer()->get('doctrine');
+        $managerRegistry = $this->container->get('doctrine');
         $em = $managerRegistry->getManager();
 
         $activities = $em->getRepository('CampaignChainCoreBundle:Activity')->findAll();
