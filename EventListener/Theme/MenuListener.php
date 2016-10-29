@@ -62,6 +62,14 @@ class MenuListener
                     ]
                 )
                 ->setLabelAttribute('icon', 'fa fa-circle-o');
+            $menu->getChild('Connect')
+                ->addChild('ConnectTracking', [
+                        'route' => 'campaignchain_core_channel_tracking',
+                        'label' => 'Tracking',
+                        'childOptions' => $event->getChildOptions()
+                    ]
+                )
+                ->setLabelAttribute('icon', 'fa fa-circle-o');
 
             /*
              * Create Actions.

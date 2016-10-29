@@ -59,7 +59,13 @@ class DhtmlxGantt
             ->setParameter('status', Action::STATUS_CLOSED)
             ->setParameter('relative_start_date', new \DateTime(Campaign::RELATIVE_START_DATE));
 
-        $qb->orderBy('c.startDate', 'DESC');
+        $qb->addSelect(
+            '(CASE '.
+            'WHEN c.intervalNextRun IS NOT NULL THEN c.intervalNextRun '.
+            'ELSE c.startDate '.
+            'END) AS HIDDEN ORD'
+        );
+        $qb->orderBy('ORD', 'ASC');
 
         $query = $qb->getQuery();
         $campaigns = $query->getResult();

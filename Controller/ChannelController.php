@@ -49,6 +49,29 @@ class ChannelController extends Controller
             ));
     }
 
+    public function indexTrackingAction(){
+        $repository_channels = $this->getDoctrine()
+            ->getRepository('CampaignChainCoreBundle:Channel')
+            ->getAllChannels();
+
+        if(!count($repository_channels)){
+            $system = $this->get('campaignchain.core.system')->getActiveSystem();
+            $this->get('session')->getFlashBag()->add(
+                'warning',
+                'No channels defined yet. To learn how to create one, please <a href="#" onclick="popupwindow(\''.
+                $system->getDocsURL().'/user/get_started.html#connect-to-a-channel'.
+                '\',\'\',900,600)">consult the documentation</a>.'
+            );
+        }
+
+        return $this->render(
+            'CampaignChainCoreBundle:Channel:index_tracking.html.twig',
+            array(
+                'page_title' => 'Tracking',
+                'repository_channels' => $repository_channels
+            ));
+    }
+
     public function indexAccountsAction(){
         $repository_channels = $this->getDoctrine()
             ->getRepository('CampaignChainCoreBundle:Channel')

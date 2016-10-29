@@ -79,4 +79,21 @@ class ModuleService
 
         return $module->getStatus();
     }
+
+    public function getCopyAsCampaignModules($campaignId)
+    {
+        // Get the available campaign types for conversion
+        $qb = $this->em->createQueryBuilder();
+        $qb->select('cm')
+            ->from('CampaignChain\CoreBundle\Entity\Campaign', 'c')
+            ->from('CampaignChain\CoreBundle\Entity\CampaignModuleConversion', 'cmc')
+            ->from('CampaignChain\CoreBundle\Entity\CampaignModule', 'cm')
+            ->where('c.id = :campaignId')
+            ->andWhere('c.campaignModule = cmc.from')
+            ->andWhere('cmc.to = cm.id')
+            ->orderBy('cm.displayName', 'ASC')
+            ->setParameter('campaignId', $campaignId);
+        $query = $qb->getQuery();
+        return $query->getResult();
+    }
 }

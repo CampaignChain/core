@@ -19,6 +19,7 @@ namespace CampaignChain\CoreBundle\Twig;
 
 use CampaignChain\CoreBundle\Entity\Campaign;
 use CampaignChain\CoreBundle\Entity\User;
+use CampaignChain\CoreBundle\EntityService\ModuleService;
 use CampaignChain\CoreBundle\Util\ParserUtil;
 use CampaignChain\CoreBundle\Util\SystemUtil;
 use Proxies\__CG__\CampaignChain\CoreBundle\Entity\Milestone;
@@ -418,18 +419,9 @@ class CampaignChainCoreExtension extends \Twig_Extension
     public function btnCopyCampaign($campaignId)
     {
         // Get the available campaign types for conversion
-        $qb = $this->em->createQueryBuilder();
-        $qb->select('cm')
-            ->from('CampaignChain\CoreBundle\Entity\Campaign', 'c')
-            ->from('CampaignChain\CoreBundle\Entity\CampaignModuleConversion', 'cmc')
-            ->from('CampaignChain\CoreBundle\Entity\CampaignModule', 'cm')
-            ->where('c.id = :campaignId')
-            ->andWhere('c.campaignModule = cmc.from')
-            ->andWhere('cmc.to = cm.id')
-            ->orderBy('cm.displayName', 'ASC')
-            ->setParameter('campaignId', $campaignId);
-        $query = $qb->getQuery();
-        $campaignTypes = $query->getResult();
+        /** @var ModuleService $moduleService */
+        $moduleService = $this->container->get('campaignchain.core.module');
+        $campaignTypes = $moduleService->getCopyAsCampaignModules($campaignId);
 
         if(count($campaignTypes)){
             return $this->container->get('templating')->render(

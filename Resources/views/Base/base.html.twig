@@ -295,6 +295,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
+        {% block bodytabs %}{% endblock %}
+
         <!-- Content Header (Page header) -->
         <section class="content-header">
             <h1>
@@ -318,7 +320,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
         <!-- Main content -->
         <section class="content">
-            {% block bodytabs %}{% endblock %}
 
             {% include 'CampaignChainCoreBundle:Base:_flashbag.html.twig' %}
 

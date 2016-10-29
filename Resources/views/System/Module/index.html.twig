@@ -24,7 +24,13 @@ limitations under the License.
 {% endblock %}
 
 {% block bodytabs %}
-    {{ knp_menu_render('CampaignChainCoreBundle:Builder:modulesTab', { 'style': 'tabs' }) }}
+    {{ knp_menu_render(
+    'CampaignChainCoreBundle:Builder:modulesTab',
+    {
+        'template': 'CampaignChainCoreBundle:Menu:nav_top.html.twig',
+        'style': 'navbar'
+    }
+    ) }}
     {% include 'CampaignChainCoreBundle:System/Module:badges.html.twig' %}
 {% endblock %}
 

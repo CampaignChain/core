@@ -36,7 +36,6 @@ gantt.config.row_height = 40;
 //gantt.config.autosize = true;
 
 if(window.campaignchainGanttShowButtons == true) {
-    console.log('show_buttons');
     gantt.config.columns = [
         {name: "text", label: "Campaigns", tree: true, width: 200},
         {

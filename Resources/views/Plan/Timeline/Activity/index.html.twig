@@ -47,7 +47,13 @@ limitations under the License.
 {% endblock %}
 
 {% block bodytabs %}
-    {{ knp_menu_render('CampaignChainCampaignScheduledCampaignBundle:Builder:planListTab', { 'style': 'tabs' }) }}
+    {{ knp_menu_render(
+    'CampaignChainCampaignScheduledCampaignBundle:Builder:planListTab',
+    {
+        'template': 'CampaignChainCoreBundle:Menu:nav_top.html.twig',
+        'style': 'navbar'
+    }
+    ) }}
 {% endblock %}
 
 {% block body %}

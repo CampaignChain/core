@@ -88,16 +88,19 @@ a.external-noicon:after {
     padding: 15px;
 }
 
-.campaignchain-navbar {
-    float: left;
-    margin-right: 10px;
-    margin-left: 1px;
-}
-.campaignchain-navbar > li {
-    float: left;
+.content-wrapper .campaignchain-navbar-page {
+    margin-bottom: 0px;
+    min-height: 40px;
 }
 
+.content-wrapper .campaignchain-navbar-page a {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
 
+.content-wrapper .campaignchain-navbar-page a .fa {
+    padding-right: 2px;
+}
 
 @media (max-width: 768px) {
     .campaignchain-navbar .open .dropdown-menu {

@@ -296,6 +296,8 @@ braincrafted_bootstrap:
         variables_file: null
         bootstrap_output: "%kernel.root_dir%/../vendor/twbs/less/bootstrap.less"
         bootstrap_template: "BraincraftedBootstrapBundle:Bootstrap:bootstrap.less.twig"
+    icon_prefix: fa
+
 sc_datetimepicker:
     picker: null
 fos_user:

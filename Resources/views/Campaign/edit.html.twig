@@ -15,12 +15,3 @@ limitations under the License.
 #}
 
 {% extends 'CampaignChainCoreBundle:Base:edit.html.twig' %}
-
-{% block form_footer_btn_group %}
-    <a class="btn btn-primary"
-       data-tooltip="true" data-placement="top" data-original-title="Plan"
-       href="{{ path(campaign.getCampaignModule().getRoutes().plan_detail,{'id':campaign.id}) }}">
-        <span class="fa fa-calendar"></span>
-    </a>
-    {{ campaign.id|campaignchain_btn_copy_campaign }}
-{% endblock %}

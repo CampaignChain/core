@@ -17,5 +17,11 @@ limitations under the License.
 {% extends 'CampaignChainCoreBundle:Base:edit.html.twig' %}
 
 {% block bodytabs %}
-    {{ knp_menu_render('CampaignChainCoreBundle:Builder:profileListTab', { 'style': 'tabs' }) }}
+    {{ knp_menu_render(
+    'CampaignChainCoreBundle:Builder:profileListTab'
+    {
+        'template': 'CampaignChainCoreBundle:Menu:nav_top.html.twig',
+        'style': 'navbar'
+    }
+    ) }}
 {% endblock %}

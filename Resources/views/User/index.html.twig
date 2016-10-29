@@ -1,7 +1,13 @@
 {% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
 
 {% block bodytabs %}
-    {{ knp_menu_render('CampaignChainCoreBundle:Builder:userListTab', { 'style': 'tabs' }) }}
+    {{ knp_menu_render(
+    'CampaignChainCoreBundle:Builder:userListTab',
+    {
+        'template': 'CampaignChainCoreBundle:Menu:nav_top.html.twig',
+        'style': 'navbar'
+    }
+    ) }}
 {% endblock %}
 
 {% block body %}

@@ -27,24 +27,22 @@ limitations under the License.
         <table id="example" class="table table-striped table-bordered dataTable">
             <thead>
                 <tr>
-                    <th>Channel</th>
                     <th>Status</th>
+                    <th>Channel</th>
                     <th>Connected Locations</th>
-                    <th>CTA Tracking</th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
                 {% for channel_module in channel_modules %}
                     <tr{% if channel_module.status == "inactive" %} class="text-muted"{% endif %}>
+                        <td><a
+                               data-tooltip="true" data-placement="top"
+                               data-original-title="{% if  channel_module.status == "inactive" %}Set active{% else %}Set inactive{% endif %}"
+                               href="javascript:void(0);" onclick="campaignchainToggleStatus('{{ channel_module.getBundle().getName() ~ '/' ~ channel_module.identifier }}', this)">
+                                <i class="fa {% if  channel_module.status == "inactive" %}fa-toggle-off{% else %}fa-toggle-on{% endif %} fa-lg  "></i>
+                            </a></td>
                         <td><img src="{{ asset( channel_module|campaignchain_channel_asset_path~'/images/icons/16x16/'~channel_module|campaignchain_channel_icon_name ) }}" /> {{ channel_module.getDisplayName() }}</td>
-                        <td>
-                            {% if channel_module.status == "active" %}
-                            <span id="campaignchain-status" class="badge bg-green" data-uri="{{ channel_module.getBundle().getName() ~ '/' ~ channel_module.identifier }}"><i class="fa fa-play-circle"></i> Active</span>
-                            {% else %}
-                            <span id="campaignchain-status" class="badge bg-yellow" data-uri="{{ channel_module.getBundle().getName() ~ '/' ~ channel_module.identifier }}"><i class="fa fa-pause-circle"></i> Inactive</span>
-                            {% endif %}
-                        </td>
                         <td>
                             <ul>
                             {% if
@@ -60,26 +58,6 @@ limitations under the License.
                             {% endif %}
                             </ul>
                         </td>
-                        <td>
-                            {#{% set module_params = channel_module.getParams() %}#}
-                            {#{% if channel_module.status == "active" %}#}
-                                {#{% if module_params is iterable and#}
-                                {#module_params['cta_tracking'] is defined and#}
-                                {#module_params['cta_tracking'] %}#}
-                                    {#<a href="{{ path('campaignchain_core_channel_cta_test',{'id':channel.id}) }}" class="btn btn-primary" role="button">Enable & Test</a>#}
-                                {#{% else %}#}
-                                    {#<i class="fa fa-ban"></i>#}
-                                {#{% endif %}#}
-                            {#{% else %}#}
-                                {#{% if module_params is iterable and#}
-                                {#module_params['cta_tracking'] is defined and#}
-                                {#module_params['cta_tracking'] %}#}
-                                {#<a class="btn btn-primary" disabled="disabled" role="button">Enable & Test</a>#}
-                                {#{% else %}#}
-                                    {#<i class="fa fa-ban" disabled="disabled"></i>#}
-                                {#{% endif %}#}
-                            {#{% endif %}#}
-                        </td>
                         <td align="center">
                             <div class="btn-group btn-group-sm">
                                 <a id="campaignchain-connect-location"
@@ -89,12 +67,6 @@ limitations under the License.
                                    role="button" class="btn btn-default"
                                    data-tooltip="true" data-placement="top" data-original-title="Connect new Location">
                                     <i class="fa fa-exchange"></i>
-                                </a>
-                                <a role="button" class="btn btn-default"
-                                   data-tooltip="true" data-placement="top"
-                                   data-original-title="{% if  channel_module.status == "inactive" %}Set active{% else %}Set inactive{% endif %}"
-                                   href="javascript:void(0);" onclick="campaignchainToggleStatus('{{ channel_module.getBundle().getName() ~ '/' ~ channel_module.identifier }}', this)">
-                                    <i class="fa {% if  channel_module.status == "inactive" %}fa-play{% else %}fa-pause{% endif %}"></i>
                                 </a>
                             </div>
                         </td>
@@ -108,7 +80,7 @@ limitations under the License.
                     $this = $(element);
                     $this.prop('disabled', true);
                     var $icon = $this.find("i");
-                    $icon.removeClass("fa-pause").removeClass("fa-play");
+                    $icon.removeClass("fa-toggle-off").removeClass("fa-toggle-on");
                     $icon.addClass("fa-spinner fa-spin");
 
                     $.ajax({
@@ -121,19 +93,14 @@ limitations under the License.
                         success: function (response) {
                             $this.tooltip("hide");
                             $icon.removeClass('fa-spinner fa-spin');
-                            var $badge = $('#campaignchain-status[data-uri="' + uri +'"]');
                             var $connect = $('#campaignchain-connect-location[data-uri="' + uri +'"]');
                             if(response[0]["status"] == "inactive"){
                                 $this.attr("data-original-title", "Set active");
-                                $icon.addClass("fa-play");
-                                $badge.addClass("bg-yellow").removeClass("bg-green");
-                                $badge.html('<i class="fa fa-pause-circle"></i> Inactive');
+                                $icon.addClass("fa-toggle-off");
                                 $connect.attr('disabled', 'disabled');
                             } else {
                                 $this.attr("data-original-title", "Set inactive");
-                                $icon.addClass("fa-pause");
-                                $badge.addClass("bg-green").removeClass("bg-yellow");
-                                $badge.html('<i class="fa fa-play-circle"></i> Active');
+                                $icon.addClass("fa-toggle-on");
                                 $connect.removeAttr('disabled');
                             }
                             $this.prop('disabled', false);

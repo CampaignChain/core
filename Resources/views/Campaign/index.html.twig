@@ -54,7 +54,13 @@ limitations under the License.
 {% endblock %}
 
 {% block bodytabs %}
-    {{ knp_menu_render('CampaignChainCoreBundle:Builder:executeListTab', { 'style': 'tabs' }) }}
+    {{ knp_menu_render(
+    'CampaignChainCoreBundle:Builder:executeListTab',
+    {
+        'template': 'CampaignChainCoreBundle:Menu:nav_top.html.twig',
+        'style': 'navbar'
+    }
+    ) }}
 {% endblock %}
 
 {% block body %}

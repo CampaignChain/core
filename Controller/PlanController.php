@@ -41,9 +41,7 @@ class PlanController extends Controller
             'CampaignChainCoreBundle:Plan/Timeline/Campaign:index.html.twig',
             array(
                 'page_title' => 'Plan Campaigns',
-                'gantt_tasks' => $this->get('campaignchain.core.model.dhtmlxgantt')->getOngoingUpcomingCampaigns(
-                    self::BUNDLE_NAME, self::MODULE_IDENTIFIER
-                ),
+                'gantt_tasks' => $this->get('campaignchain.core.model.dhtmlxgantt')->getOngoingUpcomingCampaigns(),
                 'gantt_toolbar_status' => 'default',
                 'gantt_show_buttons' => true,
                 'path_embedded' => $this->generateUrl('campaignchain_campaign_scheduled_plan_timeline'),

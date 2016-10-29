@@ -221,6 +221,15 @@ campaignchain_core_channel:
             rest:
                 expose: true
 
+campaignchain_core_channel_tracking:
+    pattern:  /channels/tracking/
+    defaults: { _controller: CampaignChainCoreBundle:Channel:indexTracking }
+    options:
+        campaignchain:
+            description: All Channels where calls-to-action can be tracked
+            rest:
+                expose: true
+
 campaignchain_core_channel_accounts:
     pattern:  /channels/accounts/
     defaults: { _controller: CampaignChainCoreBundle:Channel:indexAccounts }
