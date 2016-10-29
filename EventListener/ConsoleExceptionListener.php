@@ -20,7 +20,7 @@ namespace CampaignChain\CoreBundle\EventListener;
 
 use CampaignChain\CoreBundle\Command\SchedulerCommand;
 use CampaignChain\CoreBundle\Entity\Scheduler;
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Event\ConsoleExceptionEvent;
 
@@ -37,19 +37,19 @@ class ConsoleExceptionListener
     private $logger;
 
     /**
-     * @var EntityManager
+     * @var Registry
      */
-    private $entityManager;
+    private $em;
 
     /**
      * ConsoleExceptionListener constructor.
      * @param LoggerInterface $logger
-     * @param EntityManager $entityManager
+     * @param ManagerRegistry $managerRegistry
      */
-    public function __construct(LoggerInterface $logger, EntityManager $entityManager)
+    public function __construct(LoggerInterface $logger, ManagerRegistry $managerRegistry)
     {
         $this->logger = $logger;
-        $this->entityManager = $entityManager;
+        $this->em = $managerRegistry->getManager();
     }
 
     /**
@@ -80,8 +80,8 @@ class ConsoleExceptionListener
         $scheduler->setStatus(Scheduler::STATUS_ERROR);
         $scheduler->setExecutionEnd(new \DateTime());
 
-        $this->entityManager->persist($scheduler);
-        $this->entityManager->flush();
+        $this->em->persist($scheduler);
+        $this->em->flush();
 
         $command->getIo()->error($scheduler->getMessage());
         $this->logger->critical($scheduler->getMessage());

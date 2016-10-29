@@ -19,7 +19,7 @@ namespace CampaignChain\CoreBundle\EntityService;
 
 use CampaignChain\CoreBundle\Entity\ChannelModule;
 use CampaignChain\CoreBundle\Entity\LocationModule;
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use CampaignChain\CoreBundle\Entity\Channel;
 use CampaignChain\CoreBundle\Entity\Location;
 use CampaignChain\CoreBundle\Entity\Operation;
@@ -40,11 +40,18 @@ class LocationService
     protected $container;
     protected $activityService;
 
-    public function __construct(EntityManager $em, ContainerInterface $container, ActivityService $activityService)
+    /**
+     * @var CampaignChainCoreExtension
+     */
+    protected $twigExt;
+
+    public function __construct(ManagerRegistry $managerRegistry, ContainerInterface $container, ActivityService $activityService)
     {
-        $this->em = $em;
+        $this->em = $managerRegistry->getManager();
         $this->container = $container;
         $this->activityService = $activityService;
+
+        $this->twigExt = $this->container->get('campaignchain.core.twig.campaignchain_core_extension');
     }
 
     public function getLocation($id){
@@ -315,11 +322,7 @@ class LocationService
 
     public function tplTeaser($location, $options = array())
     {
-        $twigExt = new CampaignChainCoreExtension($this->em, $this->container);
-
-        return $twigExt->tplTeaser($location, $options);
-
-        return $icon;
+        return $this->twigExt->tplTeaser($location, $options);
     }
     /**
      * This method deletes a location if there are no closed activities.

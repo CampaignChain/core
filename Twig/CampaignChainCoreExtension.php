@@ -23,7 +23,7 @@ use CampaignChain\CoreBundle\Util\ParserUtil;
 use CampaignChain\CoreBundle\Util\SystemUtil;
 use Proxies\__CG__\CampaignChain\CoreBundle\Entity\Milestone;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class CampaignChainCoreExtension extends \Twig_Extension
@@ -34,9 +34,9 @@ class CampaignChainCoreExtension extends \Twig_Extension
     protected $container;
     protected $datetime;
 
-    public function __construct(EntityManager $em, ContainerInterface $container)
+    public function __construct(ManagerRegistry $managerRegistry, ContainerInterface $container)
     {
-        $this->em = $em;
+        $this->em = $managerRegistry->getManager();
         $this->container = $container;
         $this->datetime = $this->container->get('campaignchain.core.util.datetime');
     }

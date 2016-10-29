@@ -37,7 +37,6 @@ class DatetimeListener {
         // Only execute if HTTP request and not called as command.
         if($this->container->isScopeActive('request')){
             $entity = $args->getEntity();
-            $em = $args->getEntityManager();
 
             $reflect = new \ReflectionObject($entity);
             foreach ($reflect->getProperties(\ReflectionProperty::IS_PRIVATE | \ReflectionProperty::IS_PROTECTED) as $prop) {
@@ -76,7 +75,6 @@ class DatetimeListener {
 
     public function locale2UTC(LifecycleEventArgs $args){
         $entity = $args->getEntity();
-        $em = $args->getEntityManager();
 
         $reflect = new \ReflectionObject($entity);
         foreach ($reflect->getProperties(\ReflectionProperty::IS_PRIVATE | \ReflectionProperty::IS_PROTECTED) as $prop) {

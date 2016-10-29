@@ -20,7 +20,7 @@ namespace CampaignChain\CoreBundle\EntityService;
 use CampaignChain\CoreBundle\Entity\Link;
 use CampaignChain\CoreBundle\Entity\Location;
 use CampaignChain\CoreBundle\Entity\Operation;
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use CampaignChain\CoreBundle\Entity\CTAParserData;
 use CampaignChain\CoreBundle\Entity\CTA;
 use CampaignChain\CoreBundle\Service\UrlShortener\UrlShortenerServiceInterface;
@@ -44,13 +44,13 @@ class CTAService
 
     /**
      * CTAService constructor.
-     * @param EntityManager $em
+     * @param ManagerRegistry $managerRegistry
      * @param UrlShortenerServiceInterface $urlShortener
      * @param LocationService $locationService
      */
     public function __construct(
         $trackingIdName,
-        EntityManager $em,
+        ManagerRegistry $managerRegistry,
         UrlShortenerServiceInterface $urlShortener,
         LocationService $locationService,
         $trackingJsMode,
@@ -58,7 +58,7 @@ class CTAService
         $uniqueParamName
     ) {
         $this->trackingIdName = $trackingIdName;
-        $this->em = $em;
+        $this->em = $managerRegistry->getManager();
         $this->urlShortener = $urlShortener;
         $this->locationService = $locationService;
         $this->trackingJsMode = $trackingJsMode;

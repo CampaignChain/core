@@ -19,7 +19,7 @@ namespace CampaignChain\CoreBundle\Model;
 
 use CampaignChain\CoreBundle\Entity\Action;
 use CampaignChain\CoreBundle\Entity\Campaign;
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Acl\Exception\Exception;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -34,9 +34,9 @@ class DhtmlxGantt
 
     private $maxTimelineDate;
 
-    public function __construct(EntityManager $em, ContainerInterface $container, SerializerInterface $serializer)
+    public function __construct(ManagerRegistry $managerRegistry, ContainerInterface $container, SerializerInterface $serializer)
     {
-        $this->em = $em;
+        $this->em = $managerRegistry->getManager();
         $this->container = $container;
         $this->serializer = $serializer;
 

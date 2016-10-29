@@ -22,6 +22,7 @@ use CampaignChain\CoreBundle\Entity\Job;
 use CampaignChain\CoreBundle\Exception\ErrorCode;
 use CampaignChain\CoreBundle\Exception\JobException;
 use CampaignChain\CoreBundle\Job\JobActionInterface;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -60,7 +61,9 @@ class JobCommand extends ContainerAwareCommand
         // Start capturing duration of job execution.
         $stopwatch->start('job');
 
-        $em = $this->getContainer()->get('doctrine.orm.entity_manager');
+        /** @var ManagerRegistry $managerRegistry */
+        $managerRegistry = $this->getContainer()->get('doctrine');
+        $em = $managerRegistry->getManager();
 
         $jobId = $input->getArgument('jobId');
 

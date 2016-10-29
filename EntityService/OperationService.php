@@ -17,7 +17,7 @@
 
 namespace CampaignChain\CoreBundle\EntityService;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use CampaignChain\CoreBundle\Entity\Operation;
 use CampaignChain\CoreBundle\Entity\Activity;
@@ -27,9 +27,9 @@ class OperationService
     protected $em;
     protected $container;
 
-    public function __construct(EntityManager $em, ContainerInterface $container)
+    public function __construct(ManagerRegistry $managerRegistry, ContainerInterface $container)
     {
-        $this->em = $em;
+        $this->em = $managerRegistry->getManager();
         $this->container = $container;
     }
 

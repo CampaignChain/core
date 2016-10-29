@@ -18,7 +18,7 @@
 namespace CampaignChain\CoreBundle\Module;
 
 use CampaignChain\CoreBundle\Entity\Bundle;
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ManagerRegistry;
 
 class BundleConfig
 {
@@ -28,19 +28,19 @@ class BundleConfig
     private $bundleLocatorService;
 
     /**
-     * @var EntityManager
+     * @var Registry
      */
-    private $entityManager;
+    private $em;
 
     /**
      * BundleConfig constructor.
-     * @param EntityManager $entityManager
+     * @param ManagerRegistry $managerRegistry
      * @param BundleLocator $bundleLocatorService
      */
-    public function __construct(BundleLocator $bundleLocatorService, EntityManager $entityManager)
+    public function __construct(BundleLocator $bundleLocatorService, ManagerRegistry $managerRegistry)
     {
         $this->bundleLocatorService = $bundleLocatorService;
-        $this->entityManager = $entityManager;
+        $this->em = $managerRegistry->getManager();
     }
 
     /**
@@ -65,7 +65,7 @@ class BundleConfig
                 case Installer::STATUS_REGISTERED_OLDER:
                     // Get the existing bundle.
                     /** @var Bundle $registeredBundle */
-                    $registeredBundle = $this->entityManager
+                    $registeredBundle = $this->em
                         ->getRepository('CampaignChainCoreBundle:Bundle')
                         ->findOneByName($bundle->getName());
                     // Update the existing bundle's data.
@@ -96,7 +96,7 @@ class BundleConfig
     public function isRegisteredBundle(Bundle $newBundle)
     {
         /** @var Bundle $registeredBundle */
-        $registeredBundle = $this->entityManager
+        $registeredBundle = $this->em
             ->getRepository('CampaignChainCoreBundle:Bundle')
             ->findOneByName($newBundle->getName());
 

@@ -18,7 +18,7 @@
 namespace CampaignChain\CoreBundle\Module;
 
 use CampaignChain\CoreBundle\Entity\Bundle;
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
@@ -46,7 +46,6 @@ class BundleLocator
      * Locator constructor.
      * @param $rootDir
      * @param Package $package
-     * @param EntityManager $entityManager
      */
     public function __construct($rootDir, Package $package)
     {

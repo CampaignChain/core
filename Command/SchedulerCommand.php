@@ -23,7 +23,7 @@ use CampaignChain\CoreBundle\Entity\Scheduler;
 use CampaignChain\CoreBundle\Entity\SchedulerReportLocation;
 use CampaignChain\CoreBundle\Entity\SchedulerReportOperation;
 use DateTime;
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -85,7 +85,7 @@ class SchedulerCommand extends ContainerAwareCommand
     protected $logger;
 
     /**
-     * @var EntityManager
+     * @var Registry
      */
     protected $em;
 
@@ -211,7 +211,9 @@ class SchedulerCommand extends ContainerAwareCommand
             $this->logger = $this->getContainer()->get('logger');
         }
 
-        $this->em = $this->getContainer()->get('doctrine.orm.entity_manager');
+        /** @var ManagerRegistry $managerRegistry */
+        $managerRegistry = $this->getContainer()->get('doctrine');
+        $this->em = $managerRegistry->getManager();
     }
 
     /**

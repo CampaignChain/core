@@ -7,7 +7,7 @@ use CampaignChain\CoreBundle\Entity\Operation;
 use CampaignChain\CoreBundle\EntityService\OperationService;
 use Doctrine\DBAL\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -38,8 +38,10 @@ class Version20160916085817 extends AbstractMigration implements ContainerAwareI
     {
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        /** @var EntityManager $em */
-        $em = $this->container->get('doctrine.orm.entity_manager');
+        /** @var ManagerRegistry $managerRegistry */
+        $managerRegistry = $this->getContainer()->get('doctrine');
+        $em = $managerRegistry->getManager();
+
         $activities = $em->getRepository('CampaignChainCoreBundle:Activity')->findAll();
 
         if(count($activities)) {

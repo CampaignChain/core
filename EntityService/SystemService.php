@@ -17,20 +17,20 @@
 
 namespace CampaignChain\CoreBundle\EntityService;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ManagerRegistry;
 
 class SystemService
 {
-    /** @var EntityManager */
+    /** @var Registry */
     private $em;
 
     /**
      * SystemService constructor.
-     * @param EntityManager $em
+     * @param ManagerRegistry $managerRegistry
      */
-    public function __construct(EntityManager $em)
+    public function __construct(ManagerRegistry $managerRegistry)
     {
-        $this->em = $em;
+        $this->em = $managerRegistry->getManager();
     }
 
     public function getActiveSystem()

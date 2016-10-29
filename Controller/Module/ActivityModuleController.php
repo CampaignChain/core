@@ -762,7 +762,7 @@ class ActivityModuleController extends Controller
     private function getContentFormType($params)
     {
         $contentFormType = new $params['form_type'](
-            $this->getDoctrine()->getManager(),
+            $this->getDoctrine(),
             $this->get('service_container')
         );
 

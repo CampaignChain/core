@@ -13,7 +13,7 @@ namespace CampaignChain\CoreBundle\EntityService;
 use CampaignChain\CoreBundle\Entity\Channel;
 use CampaignChain\CoreBundle\Entity\Location;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class ChannelService
@@ -24,12 +24,12 @@ class ChannelService
     protected $locationService;
 
     public function __construct(
-        EntityManager $em,
+        ManagerRegistry $managerRegistry,
         ContainerInterface $container,
         ActivityService $activityService,
         LocationService $locationService
     ) {
-        $this->em = $em;
+        $this->em = $managerRegistry->getManager();
         $this->container = $container;
         $this->activityService = $activityService;
         $this->locationService = $locationService;

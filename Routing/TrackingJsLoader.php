@@ -20,7 +20,7 @@ namespace CampaignChain\CoreBundle\Routing;
 use Symfony\Component\Config\Loader\Loader;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ManagerRegistry;
 
 class TrackingJsLoader extends Loader
 {

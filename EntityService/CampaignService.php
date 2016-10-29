@@ -19,7 +19,7 @@ namespace CampaignChain\CoreBundle\EntityService;
 
 use CampaignChain\CoreBundle\Entity\Hook;
 use CampaignChain\Hook\DateRepeatBundle\Entity\DateRepeat;
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use CampaignChain\CoreBundle\Entity\Action;
 use CampaignChain\CoreBundle\Entity\Campaign;
@@ -28,15 +28,24 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class CampaignService
 {
+    protected $managerRegistry;
     protected $em;
     protected $container;
     protected $serializer;
 
-    public function __construct(EntityManager $em, ContainerInterface $container, SerializerInterface $serializer)
+    /**
+     * @var CampaignChainCoreExtension
+     */
+    protected $twigExt;
+
+    public function __construct(ManagerRegistry $managerRegistry, ContainerInterface $container, SerializerInterface $serializer)
     {
-        $this->em = $em;
+        $this->managerRegistry = $managerRegistry;
+        $this->em = $managerRegistry->getManager();
         $this->container = $container;
         $this->serializer = $serializer;
+
+        $this->twigExt = $this->container->get('campaignchain.core.twig.campaignchain_core_extension');
     }
 
     public function getAllCampaigns(){
@@ -258,9 +267,7 @@ class CampaignService
 
     public function tplTeaser($campaign, $options = array())
     {
-        $twigExt = new CampaignChainCoreExtension($this->em, $this->container);
-
-        return $twigExt->tplTeaser($campaign, $options);
+        return $this->twigExt->tplTeaser($campaign, $options);
     }
 
     public function isExecutable(Campaign $campaign)

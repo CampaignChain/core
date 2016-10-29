@@ -21,7 +21,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ManagerRegistry;
 
 class HookListener implements EventSubscriberInterface
 {
@@ -36,9 +36,9 @@ class HookListener implements EventSubscriberInterface
     private $campaign = null;
     private $hooksOptions = array();
 
-    public function __construct(EntityManager $em, ContainerInterface $container)
+    public function __construct(ManagerRegistry $managerRegistry, ContainerInterface $container)
     {
-        $this->em = $em;
+        $this->em = $managerRegistry->getManager();
         $this->container = $container;
     }
 

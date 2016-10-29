@@ -19,7 +19,7 @@ namespace CampaignChain\CoreBundle\Fixture;
 
 use CampaignChain\CoreBundle\EntityService\UserService;
 use CampaignChain\CoreBundle\Util\SystemUtil;
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use h4cc\AliceFixturesBundle\Fixtures\FixtureManager;
 use Symfony\Component\HttpFoundation\File\MimeType\ExtensionGuesserInterface;
 use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesserInterface;
@@ -37,7 +37,7 @@ class FileLoader
     private $fixtureManager;
 
     /**
-     * @var EntityManager
+     * @var Registry
      */
     private $em;
 
@@ -60,19 +60,19 @@ class FileLoader
      * SampleDataUtil constructor.
      * @param UserService $userService
      * @param FixtureManager $fixtureManager
-     * @param EntityManager $em
+     * @param ManagerRegistry $managerRegistry
      * @param MimeTypeGuesserInterface $mimeTypeGuesser
      * @param ExtensionGuesserInterface $extensionGuesser
      */
     public function __construct(
         UserService $userService, FixtureManager $fixtureManager,
-        EntityManager $em, MimeTypeGuesserInterface $mimeTypeGuesser,
+        ManagerRegistry $managerRegistry, MimeTypeGuesserInterface $mimeTypeGuesser,
         ExtensionGuesserInterface $extensionGuesser
     )
     {
         $this->userService = $userService;
         $this->fixtureManager = $fixtureManager;
-        $this->em = $em;
+        $this->em = $managerRegistry->getManager();
         $this->mimeTypeGuesser = $mimeTypeGuesser;
         $this->extensionGuesser = $extensionGuesser;
     }

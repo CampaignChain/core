@@ -20,7 +20,7 @@ namespace CampaignChain\CoreBundle\Form\Type;
 use CampaignChain\CoreBundle\Entity\Location;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\FormInterface;
 
@@ -33,9 +33,9 @@ abstract class OperationType extends AbstractType
     protected $location;
     protected $activityModule;
 
-    public function __construct(EntityManager $em, ContainerInterface $container)
+    public function __construct(ManagerRegistry $managerRegistry, ContainerInterface $container)
     {
-        $this->em = $em;
+        $this->em = $managerRegistry->getManager();
         $this->container = $container;
     }
 

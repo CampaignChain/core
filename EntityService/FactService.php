@@ -18,15 +18,15 @@
 namespace CampaignChain\CoreBundle\EntityService;
 
 use CampaignChain\CoreBundle\Entity\Operation;
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ManagerRegistry;
 
 class FactService
 {
     protected $em;
 
-    public function __construct(EntityManager $em)
+    public function __construct(ManagerRegistry $managerRegistry)
     {
-        $this->em = $em;
+        $this->em = $managerRegistry->getManager();
     }
 
     public function addFacts($factType, $bundleName, Operation $operation, array $facts)

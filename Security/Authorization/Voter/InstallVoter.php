@@ -17,6 +17,7 @@
 
 namespace CampaignChain\CoreBundle\Security\Authorization\Voter;
 
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -27,9 +28,9 @@ class InstallVoter implements VoterInterface
 
     private $em;
 
-    public function __construct($em)
+    public function __construct(ManagerRegistry $managerRegistry)
     {
-        $this->em = $em;
+        $this->em = $managerRegistry->getManager();
     }
 
     public function supportsAttribute($attribute)

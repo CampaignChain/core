@@ -25,7 +25,7 @@ use CampaignChain\CoreBundle\Entity\Location;
 use CampaignChain\CoreBundle\Entity\Operation;
 use CampaignChain\CoreBundle\Twig\CampaignChainCoreExtension;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 
@@ -34,10 +34,16 @@ class ActivityService
     protected $em;
     protected $container;
 
-    public function __construct(EntityManager $em, ContainerInterface $container)
+    /**
+     * @var CampaignChainCoreExtension
+     */
+    protected $twigExt;
+
+    public function __construct(ManagerRegistry $managerRegistry, ContainerInterface $container)
     {
-        $this->em = $em;
+        $this->em = $managerRegistry->getManager();
         $this->container = $container;
+        $this->twigExt = $this->container->get('campaignchain.core.twig.campaignchain_core_extension');
     }
 
     public function getAllActiveActivities($options = [])
@@ -296,19 +302,15 @@ class ActivityService
      */
     public function getIcons($activity)
     {
-        $twigExt = new CampaignChainCoreExtension($this->em, $this->container);
-
-        $icon['location_icon'] = $twigExt->mediumIcon($activity->getLocation());
-        $icon['activity_icon'] = '/'.$twigExt->mediumContext($activity->getLocation());
+        $icon['location_icon'] = $this->twigExt->mediumIcon($activity->getLocation());
+        $icon['activity_icon'] = '/'.$this->twigExt->mediumContext($activity->getLocation());
 
         return $icon;
     }
 
     public function tplTeaser($activity, $options = [])
     {
-        $twigExt = new CampaignChainCoreExtension($this->em, $this->container);
-
-        return $twigExt->tplTeaser($activity, $options);
+        return $this->twigExt->tplTeaser($activity, $options);
     }
 
     public function cloneActivity(Campaign $campaign, Activity $activity, $status = null)

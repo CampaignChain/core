@@ -26,7 +26,7 @@ use CampaignChain\CoreBundle\Entity\Hook;
 use CampaignChain\CoreBundle\Entity\Module;
 use CampaignChain\CoreBundle\Entity\System;
 use CampaignChain\CoreBundle\EntityService\SystemService;
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Yaml\Yaml;
@@ -41,7 +41,7 @@ class Installer
     const STATUS_REGISTERED_OLDER = 'Older version registered';
 
     /**
-     * @var EntityManager
+     * @var Registry
      */
     private $em;
 
@@ -130,7 +130,7 @@ class Installer
     /**
      * Installer constructor.
      *
-     * @param EntityManager   $em
+     * @param Registry   $em
      * @param BundleConfig    $bundleConfigService
      * @param string          $rootDir
      * @param SystemService   $systemService
@@ -139,7 +139,7 @@ class Installer
      * @param LoggerInterface $logger
      */
     public function __construct(
-        EntityManager $em,
+        ManagerRegistry $managerRegistry,
         BundleConfig $bundleConfigService,
         $rootDir,
         SystemService $systemService,
@@ -147,7 +147,7 @@ class Installer
         Repository $repository,
         LoggerInterface $logger
     ) {
-        $this->em = $em;
+        $this->em = $managerRegistry->getManager();
         $this->bundleConfigService = $bundleConfigService;
         $this->rootDir = $rootDir.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR;
         $this->systemService = $systemService;
