@@ -368,7 +368,7 @@ class LocationService
             $this->activityService->removeActivity($activity);
         }
 
-        //Hack to find the beloning entities which hae to be delted first
+        //Hack to find the belonging entities which hae to be deleted first
         $bundleName = explode('/', $location->getLocationModule()->getBundle()->getName());
         $classPrefix = 'CampaignChain\\'.implode('\\',array_map(function($e) {return ucfirst($e);},explode('-',$bundleName[1]))).'Bundle';
 

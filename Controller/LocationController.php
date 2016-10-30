@@ -20,6 +20,7 @@ namespace CampaignChain\CoreBundle\Controller;
 use CampaignChain\CoreBundle\Entity\Location;
 use CampaignChain\CoreBundle\Entity\Medium;
 use CampaignChain\CoreBundle\EntityService\LocationService;
+use Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use CampaignChain\CoreBundle\Entity\Channel;
 use Symfony\Component\HttpFoundation\Request;
@@ -112,6 +113,9 @@ class LocationController extends Controller
             $locationService->removeLocation($id);
             $this->addFlash('success', 'Location deleted successfully');
         } catch (\Exception $e) {
+            /** @var Logger $logger */
+            $logger = $this->get('logger');
+            $logger->critical($e->getMessage());
             $this->addFlash('warning', 'Location could not be deleted');
         }
 

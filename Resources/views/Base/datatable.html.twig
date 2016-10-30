@@ -22,6 +22,7 @@ limitations under the License.
         $(document).ready(function() {
             $('table#example').dataTable( {
                 fixedHeader: true,
+                "pageLength": 50,
                 "fnPreDrawCallback": function( oSettings ) {
                     $('[data-tooltip="true"]').tooltip();
                 }
