@@ -297,6 +297,7 @@ braincrafted_bootstrap:
         bootstrap_output: "%kernel.root_dir%/../vendor/twbs/less/bootstrap.less"
         bootstrap_template: "BraincraftedBootstrapBundle:Bootstrap:bootstrap.less.twig"
     icon_prefix: fa
+    fontawesome_dir: "@BmatznerFontAwesomeBundle/Resources/public"
 
 sc_datetimepicker:
     picker: null
