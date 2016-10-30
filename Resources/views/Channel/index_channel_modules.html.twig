@@ -36,12 +36,20 @@ limitations under the License.
             <tbody>
                 {% for channel_module in channel_modules %}
                     <tr{% if channel_module.status == "inactive" %} class="text-muted"{% endif %}>
-                        <td><a
+                        <td>
+                            <a
                                data-tooltip="true" data-placement="top"
-                               data-original-title="{% if  channel_module.status == "inactive" %}Set active{% else %}Set inactive{% endif %}"
-                               href="javascript:void(0);" onclick="campaignchainToggleStatus('{{ channel_module.getBundle().getName() ~ '/' ~ channel_module.identifier }}', this)">
+                               data-original-title="{% if  channel_module.status == "inactive" %}Inactive{% else %}Active{% endif %}"
+                               href="javascript:void(0);" onclick="campaignchainToggleStatus(
+                                        '{{ path('api_private_campaignchain_core_rest_module_post_toggle_status') }}',
+                                        { uri: '{{ channel_module.getBundle().getName() ~ '/' ~ channel_module.identifier }}'},
+                                        this,
+                                        '{{ channel_module.getBundle().getName() ~ '/' ~ channel_module.identifier }}',
+                                        [ 'connect-location' ]
+                                    )">
                                 <i class="fa {% if  channel_module.status == "inactive" %}fa-toggle-off{% else %}fa-toggle-on{% endif %} fa-lg  "></i>
-                            </a></td>
+                            </a>
+                        </td>
                         <td><img src="{{ asset( channel_module|campaignchain_channel_asset_path~'/images/icons/16x16/'~channel_module|campaignchain_channel_icon_name ) }}" /> {{ channel_module.getDisplayName() }}</td>
                         <td>
                             <ul>
@@ -60,8 +68,8 @@ limitations under the License.
                         </td>
                         <td align="center">
                             <div class="btn-group btn-group-sm">
-                                <a id="campaignchain-connect-location"
-                                   data-uri="{{ channel_module.getBundle().getName() ~ '/' ~ channel_module.identifier }}"
+                                <a data-campaignchain-toggle="connect-location"
+                                   data-campaignchain-id="{{ channel_module.getBundle().getName() ~ '/' ~ channel_module.identifier }}"
                                    href="{{ path('campaignchain_core_channel_new', {id: channel_module.id}) }}"
                                     {% if channel_module.status == "inactive" %}disabled="disabled"{% endif %}
                                    role="button" class="btn btn-default"
@@ -74,44 +82,6 @@ limitations under the License.
                 {% endfor %}
             </tbody>
         </table>
-
-            <script type="application/javascript">
-                function campaignchainToggleStatus(uri, element) {
-                    $this = $(element);
-                    $this.prop('disabled', true);
-                    var $icon = $this.find("i");
-                    $icon.removeClass("fa-toggle-off").removeClass("fa-toggle-on");
-                    $icon.addClass("fa-spinner fa-spin");
-
-                    $.ajax({
-                        type: "POST",
-                        url: "/api/private/modules/toggle-status",
-                        data: {
-                            uri: uri
-                        },
-                        dataType: "json",
-                        success: function (response) {
-                            $this.tooltip("hide");
-                            $icon.removeClass('fa-spinner fa-spin');
-                            var $connect = $('#campaignchain-connect-location[data-uri="' + uri +'"]');
-                            if(response[0]["status"] == "inactive"){
-                                $this.attr("data-original-title", "Set active");
-                                $icon.addClass("fa-toggle-off");
-                                $connect.attr('disabled', 'disabled');
-                            } else {
-                                $this.attr("data-original-title", "Set inactive");
-                                $icon.addClass("fa-toggle-on");
-                                $connect.removeAttr('disabled');
-                            }
-                            $this.prop('disabled', false);
-                            $this.tooltip("toggle");
-                            $this.mouseleave(function( event ) {
-                                $this.tooltip("hide");
-                            });
-                        }
-                    })
-                }
-            </script>
     <!--</div>-->
         {% endblock %}
     {% endembed %}

@@ -63,6 +63,11 @@ campaignchain_core_rest_channel:
     prefix:   /channels
     resource: CampaignChain\CoreBundle\Controller\REST\ChannelController
 
+campaignchain_core_rest_location:
+    type:     rest
+    prefix:   /locations
+    resource: CampaignChain\CoreBundle\Controller\REST\LocationController
+
 # This route accept a URL, which requires that we surpase Symfony's default
 # exlusion of / in route parameters.
 campaignchain_core_rest_channel_get_channels_locations_urls_url:

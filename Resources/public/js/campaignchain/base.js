@@ -212,6 +212,54 @@ function campaignchainTplMedium(iconPath, contextIconPath, text){
     return image + "<span class='text'>" + text + "</span></div>";
 }
 
+function campaignchainToggleStatus(url, data, element, id, dependencies) {
+    $this = $(element);
+    $this.prop('disabled', true);
+    var $icon = $this.find("i");
+
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: data,
+        dataType: "json",
+        success: function (response) {
+            $this.tooltip("hide");
+            if(response[0]["status"] == "inactive"){
+                $this.attr("data-original-title", "Inactive");
+                $icon.removeClass("fa-toggle-on").addClass("fa-toggle-off");
+            } else {
+                $this.attr("data-original-title", "Active");
+                $icon.removeClass("fa-toggle-off").addClass("fa-toggle-on");
+            }
+            if(dependencies.constructor === Array){
+                dependencies.forEach(function(entry) {
+                    switch (entry){
+                        case 'connect-location':
+                            campaignchainToggleConnectLocation(id, response[0]["status"])
+                            break;
+                    }
+                });
+            }
+            $this.prop('disabled', false);
+            $this.tooltip("toggle");
+            $this.mouseleave(function( event ) {
+                $this.tooltip("hide");
+            });
+        }
+    })
+}
+
+function campaignchainToggleConnectLocation(id, status)
+{
+    var $connect = $('[data-campaignchain-id="' + id +'"][data-campaignchain-toggle="connect-location"]');
+
+    if(status == "inactive"){
+        $connect.attr('disabled', 'disabled');
+    } else {
+        $connect.removeAttr('disabled');
+    }
+}
+
 //function campaignchainUserDatetimeRefresh(){
 //    var refresh=1000; // Refresh rate in milli seconds
 //    mytime=setTimeout('campaignchainDisplayUserDatetime()',refresh)
@@ -225,8 +273,6 @@ function campaignchainTplMedium(iconPath, contextIconPath, text){
 //}
 
 $(document).ready(function() {
-//    campaignchainDisplayUserDatetime();
-
     $(document.body)
         .markExternalLinks()
         // Register on the external link handler on <body> so clicks on elements added

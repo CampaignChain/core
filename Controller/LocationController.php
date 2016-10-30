@@ -35,12 +35,6 @@ class LocationController extends Controller
 
         $repository = $this->getDoctrine()
             ->getRepository('CampaignChainCoreBundle:Location');
-
-        //$query = $repository->createQueryBuilder('location')
-          //  ->where('location.operation IS NULL')
-            //->orderBy('location.name', 'ASC')
-            //->getQuery();
-
         $query = $repository->createQueryBuilder('location')
             ->select('location', 'channel', 'locationModule')
             ->join('location.channel','channel')
@@ -121,13 +115,6 @@ class LocationController extends Controller
             $this->addFlash('warning', 'Location could not be deleted');
         }
 
-        return $this->redirectToRoute('campaignchain_core_location');
-    }
-    public function toggleStatusAction(Request $request, $id)
-    {
-        /** @var LocationService $locationService */
-        $locationService = $this->get('campaignchain.core.location');
-        $locationService->toggleStatus($id);
         return $this->redirectToRoute('campaignchain_core_location');
     }
 }

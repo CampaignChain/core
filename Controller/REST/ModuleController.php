@@ -18,7 +18,6 @@
 namespace CampaignChain\CoreBundle\Controller\REST;
 
 use CampaignChain\CoreBundle\Entity\URI;
-use CampaignChain\CoreBundle\Util\ParserUtil;
 use CampaignChain\CoreBundle\Util\VariableUtil;
 use Doctrine\ORM\Query\Parser;
 use FOS\RestBundle\Controller\Annotations as REST;

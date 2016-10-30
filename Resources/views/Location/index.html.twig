@@ -44,8 +44,10 @@ limitations under the License.
         <table id="example" class="table table-striped table-bordered dataTable">
             <thead>
                 <tr>
+                    <th>Status</th>
                     <th>Name</th>
                     <th>Type</th>
+                    <th>Channel</th>
                     <th></th>
                 </tr>
             </thead>
@@ -53,17 +55,35 @@ limitations under the License.
                 {% for location in locations %}
                     <tr{% if location.status == "inactive" %} class="text-muted"{% endif %}>
                         <td>
+                            <a
+                                    data-tooltip="true" data-placement="top"
+                                    data-original-title="{% if  location.status == "inactive" %}Inactive{% else %}Active{% endif %}"
+                                    href="javascript:void(0);" onclick="campaignchainToggleStatus(
+                                    '{{ path('api_private_campaignchain_core_rest_location_post_toggle_status') }}',
+                                    { id: {{ location.id }} },
+                                    this,
+                                    '{{ location.getLocationModule().getBundle().getName() ~ '/' ~ location.getLocationModule().identifier }}',
+                                    [ 'connect-location' ]
+                                    )">
+                                <i class="fa {% if  location.status == "inactive" %}fa-toggle-off{% else %}fa-toggle-on{% endif %} fa-lg  "></i>
+                            </a>
+                        </td>
+                        <td>
                             {{ location|campaignchain_tpl_teaser }}
                         </td>
                         <td>
                             {{ location.getLocationModule().getDisplayName() }}
                         </td>
+                        <td>
+                            {{ location.getChannel().getChannelModule().getDisplayName() }}
+                        </td>
                         <td align="center">
-                            <div class="btn-group">
+                            <div class="btn-group btn-group-sm">
                             {% if location|campaignchain_is_removable %}
-                                <a  class="btn btn-danger"
+                                <a  class="btn btn-default"
                                     role="button"
-                                    data-toggle="modal" data-target="#modal-{{ location.id }}">
+                                    data-toggle="modal" data-target="#modal-{{ location.id }}"
+                                    data-tooltip="true" data-placement="top" data-original-title="Remove this location">
                                     <i class="fa fa-trash"></i>
                                 </a>
                                 <div id="modal-{{ location.id }}" class="modal fade" role="dialog">
@@ -92,27 +112,14 @@ limitations under the License.
                                     </div>
                                 </div>
                             {% else %}
-                                <a  class="btn btn-danger" disabled="disabled"
+                                <a  class="btn btn-default" disabled="disabled"
                                     role="button"
                                     data-tooltip="true" data-placement="top" data-original-title="It's not possible to remove locations which have ongoing activities or reports"
                                     >
                                     <i class="fa fa-trash"></i>
                                 </a>
                             {% endif %}
-                            {% if  location.status == "inactive" %}
-                                <a role="button" class="btn btn-primary"
-                                   data-tooltip="true" data-placement="top" data-original-title="Set Active"
-                                   href="{{ path('campaignchain_core_location_toggle_status',{'id':location.id}) }}">
-                                    <span class="fa fa-square-o"></span>
-                                </a>
-                            {% else %}
-                                <a role="button" class="btn btn-primary"
-                                   data-tooltip="true" data-placement="top" data-original-title="Set Inactive"
-                                   href="{{ path('campaignchain_core_location_toggle_status',{'id':location.id}) }}">
-                                    <span class="fa fa-check-square-o"></span>
-                                </a>
-                            {% endif %}
-                                </div>
+                            </div>
                         </td>
                     </tr>
 

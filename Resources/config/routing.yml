@@ -207,10 +207,6 @@ campaignchain_core_module_new:
             rest:
                 expose: true
 
-campaignchain_core_module_toggle_status:
-    pattern:  /module/{id}/toggleStatus
-    defaults: { _controller: CampaignChainCoreBundle:Module:toggleStatus }
-
 # channel routes
 campaignchain_core_channel:
     pattern:  /channels/
@@ -273,10 +269,6 @@ campaignchain_core_location:
 campaignchain_core_location_remove:
     pattern:  /location/{id}/remove
     defaults: { _controller: CampaignChainCoreBundle:Location:remove }
-
-campaignchain_core_location_toggle_status:
-    pattern:  /location/{id}/toggleDisabling
-    defaults: { _controller: CampaignChainCoreBundle:Location:toggleStatus }
 
 # tracking routes
 campaignchain_core_tracking_js:

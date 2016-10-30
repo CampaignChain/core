@@ -38,7 +38,9 @@ limitations under the License.
                     <tr class="
                             {% if channel.status == "inactive" %}text-muted {% endif %}
                             ">
-                        <td><img src="{{ asset( channel.getChannelModule()|campaignchain_channel_asset_path~'/images/icons/16x16/'~channel.getChannelModule()|campaignchain_channel_icon_name ) }}" /> {{ channel.getChannelModule().getDisplayName() }}</td>
+                        <td>
+                            <img src="{{ asset( channel.getChannelModule()|campaignchain_channel_asset_path~'/images/icons/16x16/'~channel.getChannelModule()|campaignchain_channel_icon_name ) }}" /> {{ channel.getChannelModule().getDisplayName() }}
+                        </td>
                         <td>
                             {% if channel.status == "active" %}
                             <span class="badge bg-green"><i class="fa fa-play-circle"></i> Active</span>

@@ -228,11 +228,4 @@ class ChannelController extends Controller
         }
         return $this->redirectToRoute('campaignchain_core_channel');
     }
-
-    public function toggleStatusAction(Request $request, $id)
-    {
-        $channelService = $this->get('campaignchain.core.channel');
-        $channelService->toggleStatusChannel($id);
-        return $this->redirectToRoute('campaignchain_core_channel');
-    }
 }
