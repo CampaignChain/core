@@ -120,6 +120,29 @@
         <code>/api/v1</code> appended to it. Hence, the full sample root endpoint
         is <code>http://www.example.com/api/v1</code>.
     </p>
+    <h2>Public vs. Private</h2>
+    <h3>Public API at /api/v1</h3>
+    <p>
+        If you want a third-party software to integrate with CampaignChain's
+        REST API, then use the public API.
+    </p>
+    <p>
+        All subsequent endpoints are only accessible through OAuth.
+    </p>
+    <h3>Private API at /api/private</h3>
+    <p>
+        If you want to extend the CampaignChain user interface and do a REST
+        API call from within the interface (e.g. through AJAX), then use the
+        private API.
+    </p>
+    <p>
+        The private API comprises all endpoints of the public API as well as
+        additional, <a href="{{ app.request.schemeAndHttpHost ~ app.request.requestUri }}/private/#resources">private-only endpoints</a>.
+    </p>
+    <p>
+        All subsequent endpoints are accessible for the CampaignChain
+        Web app once a user successfully logged in.
+    </p>
     <h2>Core</h2>
     <p>
         All endpoints of REST APIs that belong to the core functionality of
@@ -287,6 +310,6 @@
         All example requests or inputs provided in the documentation for each
         endpoint should work with the <a href="http://docs.campaignchain.com/en/master/developer/book/sample_data.html">sample data provided by CampaignChain, Inc.</a>
     </p>
-    <h1>Resources</h1>
+    <h1 name="resources">Resources</h1>
 </div>
 {% endif %}
