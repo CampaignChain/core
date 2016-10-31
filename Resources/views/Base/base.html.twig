@@ -324,7 +324,15 @@ scratch. This page gets rid of all links and provides the needed markup only.
             {% include 'CampaignChainCoreBundle:Base:_flashbag.html.twig' %}
 
             <div class="page-content">
+                {% if campaignchain_body_col is defined %}
+                    <div class="row">
+                        <div class="col-xs-{{ campaignchain_body_col }}">
+                {% endif %}
                 {% block body %}{% endblock %}
+                {% if campaignchain_body_col is defined %}
+                        </div>
+                    </div>
+                {% endif %}
             </div>
         </section>
         <!-- /.content -->

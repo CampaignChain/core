@@ -16,6 +16,8 @@ limitations under the License.
 
 {% extends 'CampaignChainCoreBundle:Base:new_dependent_select.html.twig' %}
 
+{% set campaignchain_body_col = 12 %}
+
 {% block javascripts %}
     {{ parent() }}
     {{ form_javascript(form_single) }}
@@ -68,58 +70,108 @@ limitations under the License.
 {% block form %}
 <div class="row">
     {% if form_multiple is not null %}
-    <div class="col-md-6">
-        <h2>Single Location</h2>
+        <div class="col-md-6">
+        {% set title_single = 'Single Location' %}
     {% else %}
-    <div class="col-md-9">
+        <div class="col-md-9">
+        {% set title_single = '' %}
     {% endif %}
-        <form method="POST" class="form-horizontal" role="form" enctype="multipart/form-data">
-            <div class="row">
-                <div class="col-lg-10">
-                    {{ bootstrap_set_style('horizontal') }}
-                    {{ bootstrap_set_widget_col(9) }}
-                    {{ bootstrap_set_label_col(3) }}
-                    {{ form_widget(form_single) }}
-                </div>
-                <div class="col-lg-2">
-                    <button class="btn btn-default" type="button" id="campaign_new_1"><i
-                                class="fa fa-plus"></i></button>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-lg-offset-3 col-lg-8">
-                    <div class="btn-group pull-right" role="group" aria-label="...">
-                        {% include 'CampaignChainCoreBundle:Base:form_footer_buttons.html.twig' %}
+        {% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig' %}
+            {% block box_before %}
+                <form method="POST" class="form-horizontal" role="form" enctype="multipart/form-data">
+                {{ bootstrap_set_style('horizontal') }}
+                {{ bootstrap_set_widget_col(9) }}
+                {{ bootstrap_set_label_col(3) }}
+            {% endblock %}
+            {% block box_title %}{{ title_single }}{% endblock %}
+            {% block box_body %}
+                <div class="row form-group">
+                    <div>
+                        {{ form_label(form_single.campaign) }}
+                    </div>
+                    <div class="col-sm-7">
+                        {{ form_errors(form_single.campaign) }}
+                        {{ form_widget(form_single.campaign) }}
+                    </div>
+                    <div class="col-sm-1">
+                        <button class="btn btn-default btn-sm pull-left" type="button" id="campaign_new_1">
+                            <i class="fa fa-plus"></i>
+                        </button>
                     </div>
                 </div>
-            </div>
-        </form>
+                <div class="row form-group">
+                    <div>
+                        {{ form_label(form_single.location) }}
+                    </div>
+                    <div class="col-sm-7">
+                        {{ form_errors(form_single.location) }}
+                        {{ form_widget(form_single.location) }}
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div>
+                        {{ form_label(form_single.activity) }}
+                    </div>
+                    <div class="col-sm-7">
+                        {{ form_errors(form_single.activity) }}
+                        {{ form_widget(form_single.activity) }}
+                    </div>
+                </div>
+            {% endblock %}
+            {% block box_footer %}
+                <div class="btn-group pull-right" role="group" aria-label="...">
+                    {% include 'CampaignChainCoreBundle:Base:form_footer_buttons.html.twig' %}
+                </div>
+            {% endblock %}
+            {% block box_after %}
+                </form>
+            {% endblock %}
+        {% endembed %}
     </div>
     {% if form_multiple is not null %}
     <div class="col-md-6">
-        <h2>Multiple Locations</h2>
-        <form method="POST" class="form-horizontal" role="form" enctype="multipart/form-data">
-            <div class="row">
-                <div class="col-lg-10">
-                    {{ bootstrap_set_style('horizontal') }}
-                    {{ bootstrap_set_widget_col(9) }}
-                    {{ bootstrap_set_label_col(3) }}
-                    {{ form_widget(form_multiple) }}
-                </div>
-                <div class="col-lg-2">
-                    <button class="btn btn-default" type="button" id="campaign_new_2"><i
-                                class="fa fa-plus"></i></button>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-lg-offset-3 col-lg-8">
-                    <div class="btn-group pull-right" role="group" aria-label="...">
-                        {% include 'CampaignChainCoreBundle:Base:form_footer_buttons.html.twig' %}
+        {% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig' %}
+            {% block box_before %}
+                <form method="POST" class="form-horizontal" role="form" enctype="multipart/form-data">
+                {{ bootstrap_set_style('horizontal') }}
+                {{ bootstrap_set_widget_col(9) }}
+                {{ bootstrap_set_label_col(3) }}
+            {% endblock %}
+            {% block box_title %}Multiple Locations{% endblock %}
+            {% block box_body %}
+                <div class="row form-group">
+                    <div>
+                        {{ form_label(form_multiple.campaign_multi) }}
+                    </div>
+                    <div class="col-sm-7">
+                        {{ form_errors(form_multiple.campaign_multi) }}
+                        {{ form_widget(form_multiple.campaign_multi) }}
+                    </div>
+                    <div class="col-sm-1">
+                        <button class="btn btn-default btn-sm pull-left" type="button" id="campaign_new_2">
+                            <i class="fa fa-plus"></i>
+                        </button>
                     </div>
                 </div>
-            </div>
-        </form>
-    </div>
+                <div class="row form-group">
+                    <div>
+                        {{ form_label(form_multiple.activity_multi) }}
+                    </div>
+                    <div class="col-sm-7">
+                        {{ form_errors(form_multiple.activity_multi) }}
+                        {{ form_widget(form_multiple.activity_multi) }}
+                    </div>
+                </div>
+            {% endblock %}
+            {% block box_footer %}
+                <div class="btn-group pull-right" role="group" aria-label="...">
+                    {% include 'CampaignChainCoreBundle:Base:form_footer_buttons.html.twig' %}
+                </div>
+            {% endblock %}
+            {% block box_after %}
+                </form>
+            {% endblock %}
+        {% endembed %}
     {% endif %}
 </div>
 {% endblock %}

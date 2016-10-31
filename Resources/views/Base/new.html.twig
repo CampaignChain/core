@@ -16,6 +16,10 @@ limitations under the License.
 
 {% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
 
+{% if campaignchain_body_col is not defined %}
+    {% set campaignchain_body_col = 8 %}
+{% endif %}
+
 {% block javascripts %}
     {{ parent() }}
     {% if form is defined %}
@@ -51,48 +55,41 @@ limitations under the License.
 {% endblock %}
 
 {% block body %}
-    <div class="row">
-        <div class="col-xs-8">
-        {% javascripts '@select2_js' %}
-        <script src="{{ asset_url }}"></script>
-        {% endjavascripts %}
+    {% javascripts '@select2_js' %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
 
-        {% block form_header %}{% endblock %}
+    {% block form_header %}{% endblock %}
 
-        {% block form %}
-            {% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig'  with{
-            'boxtype': 'primary'
-            } %}
-                {% block box_before %}
-                    <form method="POST" class="form-horizontal" role="form" enctype="multipart/form-data">
-                {% endblock %}
-                {% block box_body %}
+    {% block form %}
+        {% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig'  with{
+        'boxtype': 'primary'
+        } %}
+            {% block box_before %}
+                <form method="POST" class="form-horizontal" role="form" enctype="multipart/form-data">
                 {{ bootstrap_set_style('horizontal') }}
                 {{ bootstrap_set_widget_col(8) }}
                 {{ bootstrap_set_label_col(4) }}
+            {% endblock %}
+            {% block box_body %}
                 {{ form_widget(form) }}
-                {% endblock %}
-                {% block box_footer %}
-                <div class="form-group">
-                    <div class="col-lg-offset-4 col-lg-8">
-                        <div class="btn-group pull-right" role="group" aria-label="...">
-                            {% include 'CampaignChainCoreBundle:Base:form_footer_buttons.html.twig' %}
-                        </div>
-                    </div>
+            {% endblock %}
+            {% block box_footer %}
+                <div class="btn-group pull-right" role="group" aria-label="...">
+                    {% include 'CampaignChainCoreBundle:Base:form_footer_buttons.html.twig' %}
                 </div>
-                {% endblock %}
-                {% block box_after %}
-                    </form>
-                {% endblock %}
-            {% endembed %}
-        {% endblock %}
+            {% endblock %}
+            {% block box_after %}
+                </form>
+            {% endblock %}
+        {% endembed %}
+    {% endblock %}
 
-        {% block form_footer %}{% endblock %}
+    {% block form_custom %}{% endblock %}
 
-        {% if blockui is defined %}
-            {% include 'CampaignChainCoreBundle:Base:blockui_wait.html.twig' %}
-        {% endif %}
-    </div>
-    </div>
+    {% block form_footer %}{% endblock %}
 
+    {% if blockui is defined %}
+        {% include 'CampaignChainCoreBundle:Base:blockui_wait.html.twig' %}
+    {% endif %}
 {% endblock %}

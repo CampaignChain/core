@@ -35,26 +35,32 @@ limitations under the License.
 
 {% set campaign_tpl_options = {'size': '16'} %}
 
-<div id="campaignchain-activity-sidebar">
-    <div class="campaignchain-sidebar-item">
-        <h5>Campaign</h5>
+{% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig' %}
+    {% block box_title %}Campaign{% endblock %}
+    {% block box_body %}
         {{ campaign|campaignchain_tpl_teaser(campaign_tpl_options) }}<br/>
         {{ campaign|campaignchain_tpl_trigger_hook }}
-    </div>
-    {% if activity.getStatus() == 'closed' or show_date == true %}
-        <div class="campaignchain-sidebar-item">
-            <h5>Execution</h5>
+    {% endblock %}
+{% endembed %}
+
+{% if activity.getStatus() == 'closed' or show_date == true %}
+    {% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig' %}
+        {% block box_title %}Execution{% endblock %}
+        {% block box_body %}
             <div class="campaignchain-sidebar-icon"><i class="fa fa-clock-o"></i></div>
             <div class="campaignchain-sidebar-data">{{ activity|campaignchain_tpl_trigger_hook }}</div>
-        </div>
-    {% endif %}
-    {% if location is defined and location is not null %}
-        {% if location.getUrl() != '' %}
-            <div class="campaignchain-sidebar-item">
-                <h5>Location</h5>
+        {% endblock %}
+    {% endembed %}
+{% endif %}
+
+{% if location is defined and location is not null %}
+    {% if location.getUrl() != '' %}
+        {% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig' %}
+            {% block box_title %}Location{% endblock %}
+            {% block box_body %}
                 <div class="campaignchain-sidebar-icon"><i class="fa fa-globe"></i></div>
                 <div class="campaignchain-sidebar-data"><a href="{{ location.getUrl() }}">{{ location.getUrl() }}</a></div>
-            </div>
-        {% endif %}
+            {% endblock %}
+        {% endembed %}
     {% endif %}
-</div>
+{% endif %}

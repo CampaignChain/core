@@ -16,8 +16,9 @@ limitations under the License.
 
 {% set campaign_tpl_options = {'size': '16'} %}
 
-<div id="campaignchain-block">
-    <h3>{{ settings.title }}</h3>
+{% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig' %}
+        {% block box_title %}{{ settings.title }}{% endblock %}
+        {% block box_body %}
     <ul class="list-group">
         {% for activity in activities %}
             <li class="list-group-item">
@@ -38,4 +39,5 @@ limitations under the License.
             </li>
         {% endfor %}
     </ul>
-</div>
+        {% endblock %}
+{% endembed %}

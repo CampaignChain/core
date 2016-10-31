@@ -31,21 +31,18 @@ limitations under the License.
     'limit': '5',
     'sort': 'DESC'
     }) }}
-    <a class="btn btn-primary" href="{{ path('campaignchain_core_activities') }}">All Activities</a>
     </div>
     <div class="col-md-4">
         {{ sonata_block_render({ 'type': 'campaignchain.block.milestone.upcoming.listgroup' }, {
         'limit': '5',
         'sort': 'DESC'
         }) }}
-        <a class="btn btn-primary" href="{{ path('campaignchain_core_milestone') }}">All Milestones</a>
     </div>
     <div class="col-md-4">
         {{ sonata_block_render({ 'type': 'campaignchain.block.campaign.ongoing.listgroup' }, {
         'limit': '5',
         'sort': 'DESC'
         }) }}
-        <a class="btn btn-primary" href="{{ path('campaignchain_core_campaign') }}">All Campaigns</a>
     </div>
 </div>
 
