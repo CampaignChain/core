@@ -24,19 +24,9 @@ use CampaignChain\CoreBundle\EntityService\ModuleService;
 use Knp\Menu\FactoryInterface;
 use Symfony\Component\DependencyInjection\ContainerAware;
 
-class CampaignBuilder extends ContainerAware
+class PlanCampaignDetailBuilder extends ContainerAware
 {
-    public function planListTab(FactoryInterface $factory, array $options)
-    {
-        $menu = $factory->createItem('root');
-
-        $menu->addChild('Timeline', array('route' => 'campaignchain_campaign_scheduled_plan_timeline'));
-        $menu->addChild('Calendar', array('route' => 'campaignchain_campaign_scheduled_plan_calendar'));
-
-        return $menu;
-    }
-
-    public function detailsTab(FactoryInterface $factory, array $options)
+    public function navbar(FactoryInterface $factory, array $options)
     {
         $id = $this->container->get('request')->get('id');
         /** @var CampaignService $campaignService */

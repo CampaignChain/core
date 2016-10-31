@@ -18,6 +18,8 @@
 namespace CampaignChain\CoreBundle\EventListener\Theme;
 
 use Avanzu\AdminThemeBundle\Event\KnpMenuEvent;
+use CampaignChain\CoreBundle\Entity\Module;
+use CampaignChain\CoreBundle\EntityService\ModuleService;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
 class MenuListener
@@ -27,8 +29,17 @@ class MenuListener
      */
     protected $authorizationChecker;
 
-    public function __construct(AuthorizationChecker $authorizationChecker) {
+    /**
+     * @var ModuleService
+     */
+    protected $moduleService;
+
+    public function __construct(
+        AuthorizationChecker $authorizationChecker,
+        ModuleService $moduleService
+    ) {
         $this->authorizationChecker = $authorizationChecker;
+        $this->moduleService = $moduleService;
     }
 
     public function onSetupMenu(KnpMenuEvent $event)
@@ -81,14 +92,33 @@ class MenuListener
                 )
                 ->setLabelAttribute('icon', 'fa fa-plus-square')
                 ->setChildrenAttribute('class', 'treeview-menu');
+
+            // Get all module routes for creating a new Campaign.
+            $campaignModules = $this->moduleService->getModulesByType(Module::REPOSITORY_CAMPAIGN);
+            /** @var Module $module */
+            foreach($campaignModules as $module){
+                $extraRoutes['CreateCampaign'][] = $module->getRoutes()['new'];
+            }
+            $extraRoutes['CreateCampaign'][] = 'campaignchain_core_campaign_new';
+
             $menu->getChild('Create')->addChild('CreateCampaign', [
-                    'route' => 'campaignchain_core_campaign_new',
                     'label' => 'Campaign',
+                    'route' => 'campaignchain_core_campaign_new',
                     'childOptions' => $event->getChildOptions()
                     ]
                 )
                 ->setLabelAttribute('icon', 'fa fa-circle-o')
-                ->setAttribute('data-step', '2');
+                ->setAttribute('data-step', '2')
+                ->setExtra('routes', $extraRoutes['CreateCampaign']);
+
+            // Get all module routes for creating a new Activity.
+            $campaignModules = $this->moduleService->getModulesByType(Module::REPOSITORY_ACTIVITY);
+            /** @var Module $module */
+            foreach($campaignModules as $module){
+                $extraRoutes['CreateActivity'][] = $module->getRoutes()['new'];
+            }
+            $extraRoutes['CreateActivity'][] = 'campaignchain_core_activities_new';
+
             $menu->getChild('Create')->addChild('CreateActivity', [
                     'route' => 'campaignchain_core_activities_new',
                     'label' => 'Activity',
@@ -96,14 +126,25 @@ class MenuListener
                     ]
                 )
                 ->setLabelAttribute('icon', 'fa fa-circle-o')
-                ->setAttribute('data-step', '3');
+                ->setAttribute('data-step', '3')
+                ->setExtra('routes', $extraRoutes['CreateActivity']);
+
+            // Get all module routes for creating a new Milestone.
+            $campaignModules = $this->moduleService->getModulesByType(Module::REPOSITORY_MILESTONE);
+            /** @var Module $module */
+            foreach($campaignModules as $module){
+                $extraRoutes['CreateMilestone'][] = $module->getRoutes()['new'];
+            }
+            $extraRoutes['CreateMilestone'][] = 'campaignchain_core_milestone_new';
+
             $menu->getChild('Create')->addChild('CreateMilestone', [
                     'route' => 'campaignchain_core_milestone_new',
                     'label' => 'Milestone',
                     'childOptions' => $event->getChildOptions()
                     ]
                 )
-                ->setLabelAttribute('icon', 'fa fa-circle-o');
+                ->setLabelAttribute('icon', 'fa fa-circle-o')
+                ->setExtra('routes', $extraRoutes['CreateMilestone']);
 
             /*
              * Plan
@@ -116,22 +157,32 @@ class MenuListener
                 ->setLabelAttribute('icon', 'fa fa-calendar')
                 ->setChildrenAttribute('class', 'treeview-menu');
             $menu->getChild('Plan')->addChild('PlanCampaigns', [
-                    'route' => 'campaignchain_core_plan',
                     'label' => 'Campaigns',
+                    'route' => 'campaignchain_core_plan_campaigns',
                     'childOptions' => $event->getChildOptions()
                 ]
             )
                 ->setLabelAttribute('icon', 'fa fa-circle-o')
                 ->setAttribute('data-step', '4')
-                ->addChild('PlanCampaignTemplates', [
-                        'route' => 'campaignchain_core_plan_templates',
-                        'label' => 'Templates',
-                        'childOptions' => $event->getChildOptions()
-                    ]
-                )->setLabelAttribute('icon', 'fa fa-circle-o');
+                ->setExtra('routes', [
+                    'campaignchain_core_campaign',
+                    'campaignchain_core_plan_campaigns',
+                    'campaignchain_core_plan_templates'
+                ]);
             $menu->getChild('Plan')->addChild('PlanActivities', [
                     'route' => 'campaignchain_core_plan_activities',
                     'label' => 'Activities',
+                    'childOptions' => $event->getChildOptions()
+                ]
+            )
+                ->setLabelAttribute('icon', 'fa fa-circle-o')
+                ->setExtra('routes', [
+                    'campaignchain_core_plan_activities',
+                    'campaignchain_core_activities'
+                ]);
+            $menu->getChild('Plan')->addChild('PlanMilestones', [
+                    'route' => 'campaignchain_core_milestone',
+                    'label' => 'Milestones',
                     'childOptions' => $event->getChildOptions()
                 ]
             )->setLabelAttribute('icon', 'fa fa-circle-o');

@@ -44,6 +44,18 @@ campaignchain_core_about:
                 expose: true
 
 campaignchain_core_plan:
+    pattern:  /plan/
+    defaults:
+        _controller: FrameworkBundle:Redirect:redirect
+        route: campaignchain_core_plan_campaigns
+        permanent: true
+    options:
+        campaignchain:
+            description: Plan
+            rest:
+                expose: true
+
+campaignchain_core_plan_campaigns:
     pattern:  /plan/campaigns/
     defaults: { _controller: CampaignChainCoreBundle:Plan:campaigns }
     options:

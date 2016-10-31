@@ -446,17 +446,12 @@ services:
         tags:
             - { name: knp_menu.renderer, alias: dropdown }
 
-    campaignchain.core.menu:
-        class: CampaignChain\CoreBundle\Menu\Builder
-        arguments:
-            - "@knp_menu.factory"
-        tags:
-            - { name: knp_menu.menu_builder, method: mainNav, alias: main }
-
     # Theme
     campaignchain.core.theme.menu:
         class: CampaignChain\CoreBundle\EventListener\Theme\MenuListener
-        arguments: ['@security.authorization_checker']
+        arguments:
+            - '@security.authorization_checker'
+            - '@campaignchain.core.module'
         tags:
             - { name: kernel.event_listener, event: theme.sidebar_setup_knp_menu, method: onSetupMenu }
 

@@ -40,7 +40,7 @@ class PlanController extends Controller
         return $this->render(
             'CampaignChainCoreBundle:Plan/Timeline/Campaign:index.html.twig',
             array(
-                'page_title' => 'Plan Campaigns',
+                'page_title' => 'Open Campaigns',
                 'gantt_tasks' => $this->get('campaignchain.core.model.dhtmlxgantt')->getOngoingUpcomingCampaigns(),
                 'gantt_toolbar_status' => 'default',
                 'gantt_show_buttons' => true,
@@ -54,7 +54,7 @@ class PlanController extends Controller
         return $this->render(
             'CampaignChainCoreBundle:Plan/Calendar:index.html.twig',
             array(
-                'page_title' => 'Plan Activities',
+                'page_title' => 'Open Activities',
                 'events' => $this->get('campaignchain.core.model.fullcalendar')->getEvents(
                     array(
                         'only_activities' => true

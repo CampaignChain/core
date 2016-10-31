@@ -96,4 +96,10 @@ class ModuleService
         $query = $qb->getQuery();
         return $query->getResult();
     }
+
+    public function getModulesByType($type)
+    {
+        return $this->em->getRepository('CampaignChainCoreBundle:'.$type)
+            ->findAll();
+    }
 }

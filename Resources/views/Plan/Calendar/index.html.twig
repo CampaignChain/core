@@ -16,6 +16,16 @@ limitations under the License.
 
 {% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
 
+{% block bodytabs %}
+    {{ knp_menu_render(
+    'CampaignChainCoreBundle:PlanActivityBuilder:navbar',
+    {
+        'template': 'CampaignChainCoreBundle:Menu:nav_top.html.twig',
+        'style': 'navbar'
+    }
+    ) }}
+{% endblock %}
+
 {% block body %}
     {% include 'CampaignChainCoreBundle:Plan/Calendar:calendar.html.twig' %}
 {% endblock %}
