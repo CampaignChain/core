@@ -19,28 +19,38 @@ limitations under the License.
 {% block body %}
     {% include 'CampaignChainCoreBundle:Base:datatable.html.twig' %}
 
-    <!--<div class="table-responsive">-->
-    <table id="example" class="table table-striped table-bordered dataTable">
-        <thead>
-        <tr>
-            <th>Name</th>
-            <th>Description</th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for report in reports %}
-            <tr>
-                <td>{{ report.displayName }}</td>
-                <td>{{ report.description }}</td>
-                <td>
-                    <a class="btn btn-primary"
-                       href="{{ path('campaignchain_core_report_show', {id: report.id}) }}">
-                        <span class="fa fa-folder-open"></span></a>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-    <!--</div>-->
+    {% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig' %}
+        {% block box_body %}
+            <!--<div class="table-responsive">-->
+            <table id="example" class="table table-striped table-bordered dataTable">
+                <thead>
+                <tr>
+                    <th>Report Name</th>
+                    <th>Description</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for report in reports %}
+                    <tr>
+                        <td>
+                            <a href="{{ path('campaignchain_core_report_show', {id: report.id}) }}">
+                            {{ report.displayName }}
+                            </a>
+                        </td>
+                        <td>{{ report.description }}</td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a class="btn btn-default"
+                                   href="{{ path('campaignchain_core_report_show', {id: report.id}) }}">
+                                    <span class="fa fa-folder-open"></span></a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <!--</div>-->
+        {% endblock %}
+    {% endembed %}
 {% endblock %}

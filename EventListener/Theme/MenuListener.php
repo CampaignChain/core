@@ -44,6 +44,46 @@ class MenuListener
 
     public function onSetupMenu(KnpMenuEvent $event)
     {
+        /*
+         * Get all dynamic routes from modules.
+         */
+        // Get all module routes for creating a new Campaign.
+        $campaignModules = $this->moduleService->getModulesByType(Module::REPOSITORY_CAMPAIGN);
+        /** @var Module $module */
+        foreach($campaignModules as $module){
+            $extraRoutes['CreateCampaign'][] = $module->getRoutes()['new'];
+        }
+        $extraRoutes['CreateCampaign'][] = 'campaignchain_core_campaign_new';
+        $extraRoutes['PlanCampaigns'][] = 'campaignchain_core_campaign';
+        $extraRoutes['PlanCampaigns'][] = 'campaignchain_core_plan_campaigns';
+        $extraRoutes['PlanCampaigns'][] = 'campaignchain_core_plan_templates';
+
+        // Get all module routes for creating a new Activity.
+        $campaignModules = $this->moduleService->getModulesByType(Module::REPOSITORY_ACTIVITY);
+        /** @var Module $module */
+        foreach($campaignModules as $module){
+            $extraRoutes['CreateActivity'][] = $module->getRoutes()['new'];
+            $extraRoutes['PlanActivities'][] = $module->getRoutes()['edit'];
+            $extraRoutes['PlanActivities'][] = $module->getRoutes()['read'];
+        }
+        $extraRoutes['CreateActivity'][] = 'campaignchain_core_activities_new';
+        $extraRoutes['PlanActivities'][] = 'campaignchain_core_plan_activities';
+        $extraRoutes['PlanActivities'][] = 'campaignchain_core_activities';
+
+        // Get all module routes for creating a new Milestone.
+        $campaignModules = $this->moduleService->getModulesByType(Module::REPOSITORY_MILESTONE);
+        /** @var Module $module */
+        foreach($campaignModules as $module){
+            $extraRoutes['CreateMilestone'][] = $module->getRoutes()['new'];
+            $extraRoutes['PlanMilestones'][] = $module->getRoutes()['edit'];
+            $extraRoutes['PlanMilestones'][] = $module->getRoutes()['read'];
+        }
+        $extraRoutes['CreateMilestone'][] = 'campaignchain_core_milestone_new';
+        $extraRoutes['PlanMilestones'][] = 'campaignchain_core_milestone';
+
+        /*
+         * Build menu.
+         */
         $menu = $event->getMenu();
 
         if($this->authorizationChecker->isGranted('ROLE_USER')) {
@@ -93,14 +133,6 @@ class MenuListener
                 ->setLabelAttribute('icon', 'fa fa-plus-square')
                 ->setChildrenAttribute('class', 'treeview-menu');
 
-            // Get all module routes for creating a new Campaign.
-            $campaignModules = $this->moduleService->getModulesByType(Module::REPOSITORY_CAMPAIGN);
-            /** @var Module $module */
-            foreach($campaignModules as $module){
-                $extraRoutes['CreateCampaign'][] = $module->getRoutes()['new'];
-            }
-            $extraRoutes['CreateCampaign'][] = 'campaignchain_core_campaign_new';
-
             $menu->getChild('Create')->addChild('CreateCampaign', [
                     'label' => 'Campaign',
                     'route' => 'campaignchain_core_campaign_new',
@@ -111,14 +143,6 @@ class MenuListener
                 ->setAttribute('data-step', '2')
                 ->setExtra('routes', $extraRoutes['CreateCampaign']);
 
-            // Get all module routes for creating a new Activity.
-            $campaignModules = $this->moduleService->getModulesByType(Module::REPOSITORY_ACTIVITY);
-            /** @var Module $module */
-            foreach($campaignModules as $module){
-                $extraRoutes['CreateActivity'][] = $module->getRoutes()['new'];
-            }
-            $extraRoutes['CreateActivity'][] = 'campaignchain_core_activities_new';
-
             $menu->getChild('Create')->addChild('CreateActivity', [
                     'route' => 'campaignchain_core_activities_new',
                     'label' => 'Activity',
@@ -128,14 +152,6 @@ class MenuListener
                 ->setLabelAttribute('icon', 'fa fa-circle-o')
                 ->setAttribute('data-step', '3')
                 ->setExtra('routes', $extraRoutes['CreateActivity']);
-
-            // Get all module routes for creating a new Milestone.
-            $campaignModules = $this->moduleService->getModulesByType(Module::REPOSITORY_MILESTONE);
-            /** @var Module $module */
-            foreach($campaignModules as $module){
-                $extraRoutes['CreateMilestone'][] = $module->getRoutes()['new'];
-            }
-            $extraRoutes['CreateMilestone'][] = 'campaignchain_core_milestone_new';
 
             $menu->getChild('Create')->addChild('CreateMilestone', [
                     'route' => 'campaignchain_core_milestone_new',
@@ -164,11 +180,8 @@ class MenuListener
             )
                 ->setLabelAttribute('icon', 'fa fa-circle-o')
                 ->setAttribute('data-step', '4')
-                ->setExtra('routes', [
-                    'campaignchain_core_campaign',
-                    'campaignchain_core_plan_campaigns',
-                    'campaignchain_core_plan_templates'
-                ]);
+                ->setExtra('routes', $extraRoutes['PlanCampaigns']);
+
             $menu->getChild('Plan')->addChild('PlanActivities', [
                     'route' => 'campaignchain_core_plan_activities',
                     'label' => 'Activities',
@@ -176,16 +189,16 @@ class MenuListener
                 ]
             )
                 ->setLabelAttribute('icon', 'fa fa-circle-o')
-                ->setExtra('routes', [
-                    'campaignchain_core_plan_activities',
-                    'campaignchain_core_activities'
-                ]);
+                ->setExtra('routes', $extraRoutes['PlanActivities']);
+
             $menu->getChild('Plan')->addChild('PlanMilestones', [
                     'route' => 'campaignchain_core_milestone',
                     'label' => 'Milestones',
                     'childOptions' => $event->getChildOptions()
                 ]
-            )->setLabelAttribute('icon', 'fa fa-circle-o');
+            )
+                ->setLabelAttribute('icon', 'fa fa-circle-o')
+                ->setExtra('routes', $extraRoutes['PlanMilestones']);
 
             /*
              * Execute

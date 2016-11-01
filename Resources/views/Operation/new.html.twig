@@ -18,6 +18,16 @@ limitations under the License.
 
 {% set campaignchain_body_col = 12 %}
 
+{% block bodytabs %}
+    {{ knp_menu_render(
+    'CampaignChainCoreBundle:PlanActivityBuilder:navbar',
+    {
+        'template': 'CampaignChainCoreBundle:Menu:nav_top.html.twig',
+        'style': 'navbar'
+    }
+    ) }}
+{% endblock %}
+
 {% block form_header %}
 <div class="row">
     <div class="col-md-8">

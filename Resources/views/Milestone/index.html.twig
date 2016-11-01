@@ -28,68 +28,83 @@ limitations under the License.
 
 {% block body %}
     {% include 'CampaignChainCoreBundle:Base:datatable.html.twig' %}
+    {% import 'CampaignChainCoreBundle:Macros:action_status.html.twig' as action_status %}
 
-    <!--<div class="table-responsive">-->
-    <table id="example" class="table table-striped table-bordered dataTable">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Campaign</th>
-                    <th>Due</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for milestone in milestones %}
-                    <tr class="
-                            {% if milestone.status == "paused"  or milestone|campaignchain_is_removable %}text-muted {% endif %}
-                            ">
-                        <td>{{ milestone.name }}</td>
-                        <td>  <a href="{{ path(milestone.campaign.campaignModule.routes.plan_detail,{'id': milestone.campaign.id}) }}">{{ milestone.campaign.name }}</a></td>
-                        <td>{{ milestone|campaignchain_tpl_trigger_hook }}</td>
-                        <td align="center">
-                            {% if milestone.status == "open" or milestone.status == "paused" %}
-                            <a  class="btn btn-primary"
-                                role="button"
-                                data-tooltip="true" data-placement="top" data-original-title="Edit"
-                                href="{{ path('campaignchain_core_milestone_edit',{'id':milestone.id}) }}">
-                                <span class="fa fa-pencil"></span>
-                            </a>
-                            <a  class="btn btn-danger"
-                                role="button"
-                                data-tooltip="true" data-placement="top" data-original-title="Remove this milestone"
-                                href="{{ path('campaignchain_core_milestone_remove',{'id':milestone.id}) }}">
-                                <i class="fa fa-trash"></i>
-                            </a>
-                            {% elseif milestone.status == "closed" %}
-                           {# <a  class="btn btn-primary" disabled="disabled"
-                                role="button"
-                                data-tooltip="true" data-placement="top" data-original-title="View"
-                                href="">
-                                <span class="fa fa-file-text"></span>
-                            </a>#}
-                            <a  class="btn btn-danger" disabled="disabled"
-                                role="button"
-                                data-tooltip="true" data-placement="top" data-original-title="It's not possible to remove milestones which are lying in the past">
-                                <i class="fa fa-trash"></i>
-                            </a>
-                           {% endif %}
-                            {#{% if milestone.status == "paused" %}#}
-                                {#<button type="button" class="btn btn-default btn-xs">#}
-                                    {#<a href="#"><span class="fa fa-play"></span></a>#}
-                                {#</button>#}
-                            {#{% else %}#}
-                                {#<button type="button" class="btn btn-default btn-xs">#}
-                                    {#<a href="#"><span class="fa fa-pause"></span></a>#}
-                                {#</button>#}
-                            {#{% endif %}#}
-                            {#<button type="button" class="btn btn-default btn-xs">#}
-                                {#<a href="#"><span class="fa fa-trash-o"></span></a>#}
-                            {#</button>#}
-                        </td>
+    {% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig' %}
+        {% block box_body %}
+        <!--<div class="table-responsive">-->
+        <table id="example" class="table table-striped table-bordered dataTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Campaign</th>
+                        <th>Execution</th>
+                        <th></th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    <!--</div>-->
+                </thead>
+                <tbody>
+                    {% for milestone in milestones %}
+                        <tr class="
+                                {% if milestone.status == "paused"  or milestone|campaignchain_is_removable %}text-muted {% endif %}
+                                ">
+                            <td>
+                                <a href="{{ path('campaignchain_core_milestone_edit',{'id':milestone.id}) }}">
+                                {{ milestone.name }}
+                                </a>
+                            </td>
+                            <td>
+                                {{ action_status.badge( milestone ) }}
+                            </td>
+                            <td>  <a href="{{ path(milestone.campaign.campaignModule.routes.plan_detail,{'id': milestone.campaign.id}) }}">{{ milestone.campaign.name }}</a></td>
+                            <td>{{ milestone|campaignchain_tpl_trigger_hook }}</td>
+                            <td align="center">
+                                <div class="btn-group btn-group-sm">
+                                    {% if milestone.status == "open" or milestone.status == "paused" %}
+                                        <a  class="btn btn-default"
+                                            role="button"
+                                            data-tooltip="true" data-placement="top" data-original-title="Edit"
+                                            href="{{ path('campaignchain_core_milestone_edit',{'id':milestone.id}) }}">
+                                            <span class="fa fa-pencil"></span>
+                                        </a>
+                                        <a  class="btn btn-default"
+                                            role="button"
+                                            data-tooltip="true" data-placement="top" data-original-title="Remove this milestone"
+                                            href="{{ path('campaignchain_core_milestone_remove',{'id':milestone.id}) }}">
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                    {% elseif milestone.status == "closed" %}
+                                        <a  class="btn btn-default"
+                                            role="button"
+                                            data-tooltip="true" data-placement="top" data-original-title="View"
+                                            href="{{ path('campaignchain_core_milestone_edit',{'id':milestone.id}) }}">
+                                            <span class="fa fa-file-text"></span>
+                                         </a>
+                                        <a  class="btn btn-default" disabled="disabled"
+                                            role="button"
+                                            data-tooltip="true" data-placement="top" data-original-title="It's not possible to remove milestones which are lying in the past">
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                   {% endif %}
+                                    {#{% if milestone.status == "paused" %}#}
+                                        {#<button type="button" class="btn btn-default btn-xs">#}
+                                            {#<a href="#"><span class="fa fa-play"></span></a>#}
+                                        {#</button>#}
+                                    {#{% else %}#}
+                                        {#<button type="button" class="btn btn-default btn-xs">#}
+                                            {#<a href="#"><span class="fa fa-pause"></span></a>#}
+                                        {#</button>#}
+                                    {#{% endif %}#}
+                                    {#<button type="button" class="btn btn-default btn-xs">#}
+                                        {#<a href="#"><span class="fa fa-trash-o"></span></a>#}
+                                    {#</button>#}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        <!--</div>-->
+        {% endblock %}
+    {% endembed %}
 {% endblock %}

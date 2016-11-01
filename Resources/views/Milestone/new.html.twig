@@ -18,6 +18,16 @@ limitations under the License.
 
 {% set campaignchain_body_col = 12 %}
 
+{% block bodytabs %}
+    {{ knp_menu_render(
+    'CampaignChainCoreBundle:PlanMilestoneBuilder:navbar',
+    {
+        'template': 'CampaignChainCoreBundle:Menu:nav_top.html.twig',
+        'style': 'navbar'
+    }
+    ) }}
+{% endblock %}
+
 {% block form_header %}
 <div class="row">
     <div class="col-md-8">
@@ -25,32 +35,27 @@ limitations under the License.
         {% endblock %}
 
         {% block form %}
-            <form method="POST" class="form-horizontal" role="form" enctype="multipart/form-data">
-                {{ bootstrap_set_style('horizontal') }}
-                {{ bootstrap_set_widget_col(9) }}
-                {{ bootstrap_set_label_col(3) }}
-                {{ form_widget(form) }}
-                <div class="form-group">
-                    <div class="col-lg-offset-3 col-lg-9">
-                        <div class="btn-group pull-right" role="group" aria-label="...">
-                            {% if form_cancel_route is defined %}
-                                <a href="{{ path(form_cancel_route) }}" class="btn btn-default" role="button"><i class="fa fa-close"></i> Cancel</a>
-                            {% endif %}
-                            {% if form_submit_label is defined %}
-                                {% if form_submit_label == 'Save' %}
-                                    <button class="btn btn-primary" type="submit"><i class="fa fa-save"></i> Save</button>
-                                {% elseif form_submit_label == 'Upload' %}
-                                    <button class="btn btn-primary" type="submit"><i class="fa fa-upload"></i> Upload</button>
-                                {% elseif form_submit_label == 'Reset' %}
-                                    <button class="btn btn-primary" type="submit"><i class="fa fa-undo"></i> Reset</button>
-                                {% endif %}
-                            {% else %}
-                                <button class="btn btn-primary" type="submit">Next <i class="fa fa-arrow-right"></i></button>
-                            {% endif %}
-                        </div>
+            {% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig'  with{
+            'boxtype': 'primary'
+            } %}
+                {% block box_before %}
+                    <form method="POST" class="form-horizontal" role="form" enctype="multipart/form-data">
+                    {{ bootstrap_set_style('horizontal') }}
+                    {{ bootstrap_set_widget_col(9) }}
+                    {{ bootstrap_set_label_col(3) }}
+                {% endblock %}
+                {% block box_body %}
+                    {{ form_widget(form) }}
+                {% endblock %}
+                {% block box_footer %}
+                    <div class="btn-group pull-right" role="group" aria-label="...">
+                        {% include 'CampaignChainCoreBundle:Base:form_footer_buttons.html.twig' %}
                     </div>
-                </div>
-            </form>
+                {% endblock %}
+                {% block box_after %}
+                    </form>
+                {% endblock %}
+            {% endembed %}
         {% endblock %}
 
         {% block form_footer %}

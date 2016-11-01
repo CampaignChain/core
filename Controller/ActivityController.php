@@ -218,7 +218,7 @@ class ActivityController extends Controller
 
         // If closed activity, then redirect to read view.
         $activity = $activityService->getActivity($id);
-        if($activity->getStatus() == 'closed'){
+        if($activity->getStatus() == Action::STATUS_CLOSED){
             $routeType = 'read';
         }
 

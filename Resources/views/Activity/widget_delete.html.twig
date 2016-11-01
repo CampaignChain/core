@@ -15,7 +15,7 @@ limitations under the License.
 #}
 
 {% if activity|campaignchain_is_removable %}
-    <a  class="btn btn-danger"
+    <a  class="btn btn-default"
         role="button"
         data-toggle="modal" data-target="#modal-{{ activity.id }}">
         <i class="fa fa-trash"></i>
@@ -43,7 +43,7 @@ limitations under the License.
         </div>
     </div>
 {% else %}
-    <a  class="btn btn-danger" disabled="disabled"
+    <a  class="btn btn-default" disabled="disabled"
         role="button"
         data-tooltip="true" data-placement="top" data-original-title="It's not possible to remove activities which have already started or used in reports">
         <i class="fa fa-trash"></i>

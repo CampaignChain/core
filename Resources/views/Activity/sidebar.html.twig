@@ -35,6 +35,15 @@ limitations under the License.
 
 {% set campaign_tpl_options = {'size': '16'} %}
 
+{% if activity.getStatus() == 'closed' or show_date == true %}
+    {% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig' %}
+        {% block box_title %}Execution{% endblock %}
+        {% block box_body %}
+            {{ activity|campaignchain_tpl_trigger_hook }}
+        {% endblock %}
+    {% endembed %}
+{% endif %}
+
 {% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig' %}
     {% block box_title %}Campaign{% endblock %}
     {% block box_body %}
@@ -42,16 +51,6 @@ limitations under the License.
         {{ campaign|campaignchain_tpl_trigger_hook }}
     {% endblock %}
 {% endembed %}
-
-{% if activity.getStatus() == 'closed' or show_date == true %}
-    {% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig' %}
-        {% block box_title %}Execution{% endblock %}
-        {% block box_body %}
-            <div class="campaignchain-sidebar-icon"><i class="fa fa-clock-o"></i></div>
-            <div class="campaignchain-sidebar-data">{{ activity|campaignchain_tpl_trigger_hook }}</div>
-        {% endblock %}
-    {% endembed %}
-{% endif %}
 
 {% if location is defined and location is not null %}
     {% if location.getUrl() != '' %}

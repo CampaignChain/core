@@ -62,14 +62,11 @@ border: "#777777"
     filter:alpha(opacity=40); /* For IE8 and earlier */
 }
 
-.campaignchain_gantt_ongoing {
-    background-color: #F0AD4E;
-    border: 1px solid #EEA236;
-}
 .campaignchain_gantt_ongoing .gantt_task_content {
     color: #ffffff;
 }
 
+.campaignchain_gantt_ongoing,
 .campaignchain_gantt_upcoming {
     background-color: #5BC0DE;
     border: 1px solid #46B8DA;

@@ -17,6 +17,8 @@
 
 namespace CampaignChain\CoreBundle\Controller;
 
+use CampaignChain\CoreBundle\Entity\Milestone;
+use CampaignChain\CoreBundle\EntityService\MilestoneService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -102,15 +104,24 @@ class MilestoneController extends Controller
             ));
     }
 
-    public function editAction(Request $request, $id){
-        // TODO: If a milestone is over/done, it cannot be edited.
+    public function editAction(Request $request, $id)
+    {
+        /** @var MilestoneService $milestoneService */
         $milestoneService = $this->get('campaignchain.core.milestone');
-        $milestoneModule = $milestoneService->getMilestoneModuleByMilestone($id);
-        $routes = $milestoneModule->getRoutes();
+        /** @var Milestone $milestone */
+        $milestone = $milestoneService->getMilestone($id);
+        $routes = $milestone->getMilestoneModule()->getRoutes();
+
+        $routeType = 'edit';
+
+        // If closed activity, then redirect to read view.
+        if($milestone->getStatus() == Action::STATUS_CLOSED){
+            $routeType = 'read';
+        }
 
         return $this->redirect(
             $this->generateUrl(
-                $routes['edit'],
+                $routes[$routeType],
                 array(
                     'id' => $id,
                 )

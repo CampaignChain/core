@@ -37,7 +37,7 @@ class ReportController extends Controller
         return $this->render(
             'CampaignChainCoreBundle:Report:index.html.twig',
             [
-                'page_title' => 'Reports',
+                'page_title' => 'Monitor',
                 'reports' => $reports,
             ]
         );

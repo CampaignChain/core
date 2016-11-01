@@ -1,0 +1,43 @@
+{#
+Copyright 2016 CampaignChain, Inc. <info@campaignchain.com>
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+#}
+
+{% macro badge(action) %}
+    {% if action.getStatus() == constant('CampaignChain\\CoreBundle\\Entity\\Action::STATUS_OPEN') %}
+        <span id="campaignchain-status" class="badge alert-info">Open</span>
+    {% elseif action.getStatus() == constant('CampaignChain\\CoreBundle\\Entity\\Action::STATUS_CLOSED') %}
+        <span id="campaignchain-status" class="badge">Closed</span>
+    {% elseif action.getStatus() == constant('CampaignChain\\CoreBundle\\Entity\\Action::STATUS_PAUSED') %}
+
+        {% if action.getInterval() is not null %}
+            {#
+            If there's an interval and the status is "paused", then we switch
+            the status to "open", because this is a repeating campaign.
+            #}
+            <span id="campaignchain-status" class="badge alert-info">Open</span>
+        {% elseif action.getStartDate()|date('Y-m-d H:i:s') == constant('CampaignChain\\CoreBundle\\Entity\\Campaign::RELATIVE_START_DATE') %}
+            {#
+            This is a template.
+            #}
+            <span id="campaignchain-status" class="badge alert-info">Open</span>
+        {% else %}
+            <span id="campaignchain-status" class="badge alert-warning">Paused</span>
+        {% endif %}
+    {% elseif action.getStatus() == constant('CampaignChain\\CoreBundle\\Entity\\Action::STATUS_INTERACTION_REQUIRED') %}
+        <span id="campaignchain-status" class="badge alert-danger">Interaction Required</span>
+    {% elseif action.getStatus() == constant('CampaignChain\\CoreBundle\\Entity\\Action::BACKGROUND_PROCESS') %}
+        <span id="campaignchain-status" class="badge">Background Process</span>
+    {% endif %}
+{% endmacro %}

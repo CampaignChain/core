@@ -16,9 +16,11 @@ limitations under the License.
 
 {% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
 
+{% set campaignchain_body_col = 12 %}
+
 {% block bodytabs %}
     {{ knp_menu_render(
-    'CampaignChainCoreBundle:PlanCampaignBuilder:navbar',
+    'CampaignChainCoreBundle:PlanMilestoneBuilder:navbar',
     {
         'template': 'CampaignChainCoreBundle:Menu:nav_top.html.twig',
         'style': 'navbar'
@@ -27,5 +29,17 @@ limitations under the License.
 {% endblock %}
 
 {% block body %}
-    {% include 'CampaignChainCoreBundle:Campaign:table.html.twig' %}
+<div class="row">
+    <div class="col-md-8">
+        {% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig' %}
+            {% block box_title %}{{ milestone.getName() }}{% endblock %}
+            {% block box_body %}
+
+            {% endblock %}
+        {% endembed %}
+    </div>
+    <div class="col-md-4">
+        {% include 'CampaignChainCoreBundle:Milestone:sidebar.html.twig' %}
+    </div>
+</div>
 {% endblock %}

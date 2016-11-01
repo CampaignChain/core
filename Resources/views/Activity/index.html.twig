@@ -28,14 +28,18 @@ limitations under the License.
 
 {% block body %}
     {% include 'CampaignChainCoreBundle:Base:datatable.html.twig' %}
+{% import 'CampaignChainCoreBundle:Macros:action_status.html.twig' as action_status %}
 
+    {% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig' %}
+        {% block box_body %}
     <!--<div class="table-responsive">-->
         <table id="example" class="table table-striped table-bordered dataTable">
             <thead>
                 <tr>
-                    <th></th>
                     <th>Name</th>
+                    <th>Status</th>
                     <th>Campaign</th>
+                    <th>Channel</th>
                     <th>Execution</th>
                     <th></th>
                 </tr>
@@ -45,55 +49,58 @@ limitations under the License.
                     <tr class="
                             {% if activity.status == "closed" or activity.status == "paused" %}text-muted {% endif %}
                             ">
-                        <td align="center">
-                            {% if activity.status == "open" %}
-                                <i class="fa fa-clock-o"></i>
-                            {% elseif activity.status == "paused" %}
-                                <i class="fa fa-pause-circle-o"></i>
-                            {% elseif activity.status == "closed" %}
-                                <i class="fa fa-check-circle"></i>
-                            {% endif %}
-                        </td>
                         <td>
                             {{ activity|campaignchain_tpl_teaser }}
                         </td>
-                        <td>{{ activity.getCampaign().getName() }}</td>
+                        <td>
+                            {{ action_status.badge( activity ) }}
+                        </td>
+                        <td>
+                            <a href="{{ path(activity.getCampaign().getCampaignModule().routes.plan_detail,{'id': activity.getCampaign().getId()}) }}">{{ activity.getCampaign().getName() }}</a>
+                        </td>
+                        <td>
+                            {{ activity.getChannel().getChannelModule().getDisplayName() }}
+                        </td>
                         <td>
                             {{ activity|campaignchain_tpl_trigger_hook }}
                         </td>
                         <td align="center">
-                            {% if activity.status == 'open' or activity.status == 'paused' %}
-                            <a  class="btn btn-primary"
-                                role="button"
-                                data-tooltip="true" data-placement="top" data-original-title="Edit"
-                                href="{{ path('campaignchain_core_activity_edit',{'id':activity.id}) }}">
-                                <i class="fa fa-pencil"></i>
-                            </a>
-                            {% else %}
-                            <a  class="btn btn-primary"
-                                role="button"
-                                data-tooltip="true" data-placement="top" data-original-title="View"
-                                href="{{ path('campaignchain_core_activity_read',{'id':activity.id}) }}">
-                                <span class="fa fa-file-text"></span>
-                            </a>
-                            {% endif %}
-                            {{ activity|campaignchain_tpl_delete_activity }}
-                            {#{% if activity.status == "paused" %}#}
+                            <div class="btn-group btn-group-sm">
+                                {% if activity.status == 'open' or activity.status == 'paused' %}
+                                <a  class="btn btn-default"
+                                    role="button"
+                                    data-tooltip="true" data-placement="top" data-original-title="Edit"
+                                    href="{{ path('campaignchain_core_activity_edit',{'id':activity.id}) }}">
+                                    <i class="fa fa-pencil"></i>
+                                </a>
+                                {% else %}
+                                <a  class="btn btn-default"
+                                    role="button"
+                                    data-tooltip="true" data-placement="top" data-original-title="View"
+                                    href="{{ path('campaignchain_core_activity_read',{'id':activity.id}) }}">
+                                    <span class="fa fa-file-text"></span>
+                                </a>
+                                {% endif %}
+                                {{ activity|campaignchain_tpl_delete_activity }}
+                                {#{% if activity.status == "paused" %}#}
+                                    {#<button type="button" class="btn btn-default btn-xs">#}
+                                        {#<a href="#"><span class="fa fa-play"></span></a>#}
+                                    {#</button>#}
+                                {#{% else %}#}
+                                    {#<button type="button" class="btn btn-default btn-xs">#}
+                                        {#<a href="#"><span class="fa fa-pause"></span></a>#}
+                                    {#</button>#}
+                                {#{% endif %}#}
                                 {#<button type="button" class="btn btn-default btn-xs">#}
-                                    {#<a href="#"><span class="fa fa-play"></span></a>#}
+                                    {#<a href="#"><span class="fa fa-trash-o"></span></a>#}
                                 {#</button>#}
-                            {#{% else %}#}
-                                {#<button type="button" class="btn btn-default btn-xs">#}
-                                    {#<a href="#"><span class="fa fa-pause"></span></a>#}
-                                {#</button>#}
-                            {#{% endif %}#}
-                            {#<button type="button" class="btn btn-default btn-xs">#}
-                                {#<a href="#"><span class="fa fa-trash-o"></span></a>#}
-                            {#</button>#}
+                            </div>
                         </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     <!--</div>-->
+        {% endblock %}
+    {% endembed %}
 {% endblock %}
