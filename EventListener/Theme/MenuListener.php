@@ -63,8 +63,12 @@ class MenuListener
         /** @var Module $module */
         foreach($campaignModules as $module){
             $extraRoutes['CreateActivity'][] = $module->getRoutes()['new'];
-            $extraRoutes['PlanActivities'][] = $module->getRoutes()['edit'];
-            $extraRoutes['PlanActivities'][] = $module->getRoutes()['read'];
+            if(isset($module->getRoutes()['edit'])) {
+                $extraRoutes['PlanActivities'][] = $module->getRoutes()['edit'];
+            }
+            if(isset($module->getRoutes()['read'])) {
+                $extraRoutes['PlanActivities'][] = $module->getRoutes()['read'];
+            }
         }
         $extraRoutes['CreateActivity'][] = 'campaignchain_core_activities_new';
         $extraRoutes['PlanActivities'][] = 'campaignchain_core_plan_activities';
@@ -75,8 +79,12 @@ class MenuListener
         /** @var Module $module */
         foreach($campaignModules as $module){
             $extraRoutes['CreateMilestone'][] = $module->getRoutes()['new'];
-            $extraRoutes['PlanMilestones'][] = $module->getRoutes()['edit'];
-            $extraRoutes['PlanMilestones'][] = $module->getRoutes()['read'];
+            if(isset($module->getRoutes()['edit'])) {
+                $extraRoutes['PlanMilestones'][] = $module->getRoutes()['edit'];
+            }
+            if(isset($module->getRoutes()['read'])) {
+                $extraRoutes['PlanMilestones'][] = $module->getRoutes()['read'];
+            }
         }
         $extraRoutes['CreateMilestone'][] = 'campaignchain_core_milestone_new';
         $extraRoutes['PlanMilestones'][] = 'campaignchain_core_milestone';
