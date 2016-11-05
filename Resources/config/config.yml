@@ -180,8 +180,7 @@ assetic:
         dhtmlxgantt_js:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/components/gantt/codebase/dhtmlxgantt.js"
-        dhtmlxgantt_tooltip_js:
-            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/gantt/codebase/ext/dhtmlxgantt_fullscreen.js"
                 - "@CampaignChainCoreBundle/Resources/public/components/gantt/codebase/ext/dhtmlxgantt_tooltip.js"
         campaignchain_dhtmlxgantt_pre_init_global_js:
             inputs:

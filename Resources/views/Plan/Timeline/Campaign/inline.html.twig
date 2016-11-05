@@ -14,48 +14,5 @@ See the License for the specific language governing permissions and
 limitations under the License.
 #}
 
-{% block javascripts %}
-    {% javascripts '@dhtmlxgantt_js' combine=true %}
-    <!-- @dhtmlxgantt_js --><script src="{{ asset_url }}"></script>
-    {% endjavascripts %}
-    {% javascripts '@dhtmlxgantt_tooltip_js' combine=true %}
-    <!-- @dhtmlxgantt_tooltip_js --><script src="{{ asset_url }}"></script>
-    {% endjavascripts %}
-{% endblock %}
-
-{% block stylesheets %}
-    {% stylesheets '@dhtmlxgantt_css' combine=true %}
-        <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
-    {% endstylesheets %}
-{% endblock %}
-
-{% set gantt_toolbar_status = 'inline' %}
-
-{% javascripts '@campaignchain_dhtmlxgantt_pre_init_absolute_dates_js' combine=true %}
-<script src="{{ asset_url }}"></script>
-{% endjavascripts %}
-
-{% javascripts '@campaignchain_dhtmlxgantt_pre_init_global_campaign_js' combine=true %}
-<script src="{{ asset_url }}"></script>
-{% endjavascripts %}
-
-{% include 'CampaignChainCoreBundle:Plan/Timeline/Campaign:toolbar.html.twig' %}
-
-<div id="gantt_here" style='width:100%; height:600px;'></div>
-
-<script type="text/javascript">
-    var tasks = {{ gantt_tasks|raw }}
-    gantt.init("gantt_here");
-</script>
-
-{% javascripts '@campaignchain_dhtmlxgantt_post_init_absolute_dates_js' combine=true %}
-    <script src="{{ asset_url }}"></script>
-{% endjavascripts %}
-
-<script type="text/javascript">
-    gantt.parse (tasks);
-
-    scrollToToday();
-</script>
-
-{% include 'CampaignChainCoreBundle:Base:modal_remote.html.twig' %}
+{% import 'CampaignChainCoreBundle:Macros:plan.html.twig' as macroPlan %}
+{{ macroPlan.timeline(gantt_tasks, true, false, false) }}

@@ -14,37 +14,22 @@ See the License for the specific language governing permissions and
 limitations under the License.
 #}
 
-        <div class="btn-toolbar" role="toolbar">
-            <div class="btn-group">
-                <a href="#" onclick="scrollToToday()" class="btn btn-default" role="button">Today</a>
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                    <span class="fa fa-clock-o"></span> Time Scale <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                    {% if gantt_toolbar_timescale_hours is not defined %}
-                        <li role="presentation" class="dropdown-header">Hours</li>
-                            <li><a href="#" onclick="zoom_tasks('week', 'full_day')">Full Day</a></li>
-                            <li><a href="#" onclick="zoom_tasks('week', 'work_hours')">Office Hours</a></li>
-                        <li class="divider"></li>
-                    {% endif %}
-                    <li role="presentation" class="dropdown-header">Days</li>
-                        <li><a href="#" onclick="zoom_tasks('trplweek', 'full_week')">Full Week</a></li>
-                        <li><a href="#" onclick="zoom_tasks('trplweek', 'work_week')">Work Week</a></li>
-                    <li class="divider"></li>
-                    <li><a href="#" onclick="zoom_tasks('year', 'year')">Months</a></li>
-                    <li><a href="#" onclick="zoom_tasks('fullyear', 'fullyear')">Years</a></li>
-                </ul>
-            </div>
-            {% block header_toolbar_btn_group %}{% endblock %}
-            <div class="btn-group pull-right">
-                {% if gantt_toolbar_status != 'fullscreen' %}
-                    <a href="{{ path_fullscreen }}" class="btn btn-default" role="button"><span class="fa fa-arrows-alt"></span></a>
-                {% endif %}
-            </div>
-        </div>
+<div class="btn-toolbar" role="toolbar">
+    <div class="btn-group btn-sm">
+        <a href="#" class="btn btn-default" onclick="scrollToToday()" role="button">Today</a>
+    </div>
+    <div class="btn-group btn-sm">
+        <a href="#" class="btn btn-default" onclick="zoom_tasks('fullyear', 'fullyear')">Years</a>
+        <a href="#" class="btn btn-default" onclick="zoom_tasks('year', 'year')">Months</a>
+        <a href="#" class="btn btn-default" onclick="zoom_tasks('trplweek', 'full_week')">Week</a>
+        {% if show_day is not defined or show_day == true %}
+            <a href="#" class="btn btn-default" onclick="zoom_tasks('week', 'full_day')">Day</a>
+        {% endif %}
+    </div>
+</div>
 
-        {% block javascripts %}
-            {% javascripts '@campaignchain_dhtmlxgantt_toolbar_absolute_dates_js' combine=true %}
-            <!-- @campaignchain_dhtmlxgantt_toolbar_js --><script src="{{ asset_url }}"></script>
-            {% endjavascripts %}
-        {% endblock %}
+    {% block javascripts %}
+    {% javascripts '@campaignchain_dhtmlxgantt_toolbar_absolute_dates_js' combine=true %}
+    <!-- @campaignchain_dhtmlxgantt_toolbar_js --><script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    {% endblock %}

@@ -272,6 +272,31 @@ function campaignchainToggleConnectLocation(id, status)
 //    tt=campaignchainUserDatetimeRefresh();
 //}
 
+var fullWindow = false;
+
+function campaignchainFullWindow(element){
+    // expanding the gantt to full screen
+    $(element).toggleClass('campaignchain-fullwindow');
+    $('.modal').css('z-index', '99999');
+    if(!window.fullWindow){
+        window.fullWindow = true;
+        $('.fa-expand').removeClass('fa-expand').addClass('fa-compress');
+
+        if(window.gantt) {
+            gantt.render();
+            $('#gantt_here').css('height', window.innerHeight + ' !important');
+            $("#campaignchain_gantt_today").css("height", $(".gantt_task_bg").innerHeight());
+        }
+    } else {
+        window.fullWindow = false;
+        $('.fa-compress').removeClass('fa-compress').addClass('fa-expand');
+    }
+
+    console.log(window.fullWindow);
+
+
+}
+
 $(document).ready(function() {
     $(document.body)
         .markExternalLinks()

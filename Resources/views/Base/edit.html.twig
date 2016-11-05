@@ -16,6 +16,10 @@ limitations under the License.
 
 {% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
 
+{% if campaignchain_body_col is not defined %}
+    {% set campaignchain_body_col = 8 %}
+{% endif %}
+
 {% block javascripts %}
     {{ parent() }}
     {{ form_javascript(form) }}
@@ -55,25 +59,27 @@ limitations under the License.
     {% block form_header %}{% endblock %}
 
     {% block form %}
-        <form method="POST" class="form-horizontal" role="form" enctype="multipart/form-data">
-            {{ bootstrap_set_style('horizontal') }}
-            {{ bootstrap_set_widget_col(6) }}
-            {{ bootstrap_set_label_col(2) }}
-            {{ form_widget(form) }}
-            <div class="form-group">
-                <div class="col-lg-8">
-                    <div class="btn-group pull-right" role="group" aria-label="...">
-                        {% block form_footer_btn_group %}{% endblock %}
-                        {% include 'CampaignChainCoreBundle:Base:form_footer_buttons.html.twig' %}
-                    </div>
+        {% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig'  with{
+        'boxtype': 'primary'
+        } %}
+            {% block box_before %}
+                <form method="POST" class="form-horizontal" role="form" enctype="multipart/form-data">
+                {{ bootstrap_set_style('horizontal') }}
+                {{ bootstrap_set_widget_col(8) }}
+                {{ bootstrap_set_label_col(4) }}
+            {% endblock %}
+            {% block box_body %}
+                {{ form_widget(form) }}
+            {% endblock %}
+            {% block box_footer %}
+                <div class="btn-group pull-right" role="group" aria-label="...">
+                    {% include 'CampaignChainCoreBundle:Base:form_footer_buttons.html.twig' %}
                 </div>
-            </div>
-        </form>
-        <script>
-            $(function () {
-                $('[data-tooltip="true"]').tooltip()
-            })
-        </script>
+            {% endblock %}
+            {% block box_after %}
+                </form>
+            {% endblock %}
+        {% endembed %}
     {% endblock %}
 
     {% block form_footer %}{% endblock %}

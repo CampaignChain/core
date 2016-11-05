@@ -18,11 +18,8 @@ limitations under the License.
 
 {% block javascripts %}
     {{ parent() }}
-    {% javascripts '@dhtmlxgantt_js' combine=true %}
+    {% javascripts '@dhtmlxgantt_js' %}
     <!-- @dhtmlxgantt_js --><script src="{{ asset_url }}"></script>
-    {% endjavascripts %}
-    {% javascripts '@dhtmlxgantt_tooltip_js' combine=true %}
-    <!-- @dhtmlxgantt_tooltip_js --><script src="{{ asset_url }}"></script>
     {% endjavascripts %}
 {% endblock %}
 

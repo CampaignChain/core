@@ -1,0 +1,90 @@
+{#
+Copyright 2016 CampaignChain, Inc. <info@campaignchain.com>
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+#}
+
+{% macro timeline(tasks, absolute_dates = true, open_tree = false, show_day = true) %}
+    {% block javascripts %}
+        {% javascripts '@dhtmlxgantt_js' %}
+        <!-- @dhtmlxgantt_js --><script src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+    {% endblock %}
+
+    {% block stylesheets %}
+        {% stylesheets '@dhtmlxgantt_css' combine=true %}
+        <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
+        {% endstylesheets %}
+    {% endblock %}
+
+    {% if absolute_dates == true %}
+        {% javascripts '@campaignchain_dhtmlxgantt_pre_init_absolute_dates_js' combine=true %}
+        <script src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+
+        {% javascripts '@campaignchain_dhtmlxgantt_pre_init_global_campaign_js' combine=true %}
+        <script src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+    {% else %}
+        {% javascripts '@campaignchain_dhtmlxgantt_pre_init_relative_dates_js' combine=true %}
+        <!-- pre init --><script src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+
+        {% javascripts '@campaignchain_dhtmlxgantt_pre_init_global_activity_js' combine=true %}
+        <script src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+    {% endif %}
+
+    {% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig' %}
+        {% block box_before %}<div id="campaignchain-timeline">{% endblock %}
+        {% block box_title %}
+            {% include 'CampaignChainCoreBundle:Plan/Timeline/Campaign:toolbar.html.twig' %}
+        {% endblock %}
+        {% block box_tools %}
+            <a href="javascript:void(0);" onclick="campaignchainFullWindow('#campaignchain-timeline')"><span class="fa fa-expand"></span></a>
+        {% endblock %}
+        {% block box_body %}
+            <div id="gantt_here" style='width:100%; height:600px;'></div>
+
+            <script type="text/javascript">
+                var tasks = {{ tasks|raw }}
+                        gantt.init("gantt_here");
+            </script>
+
+            {% if absolute_dates == true %}
+                {% javascripts '@campaignchain_dhtmlxgantt_post_init_absolute_dates_js' combine=true %}
+                <script src="{{ asset_url }}"></script>
+                {% endjavascripts %}
+            {% else %}
+                {% javascripts '@campaignchain_dhtmlxgantt_post_init_relative_dates_js' combine=true %}
+                <script src="{{ asset_url }}"></script>
+                {% endjavascripts %}
+            {% endif %}
+            <script type="text/javascript">
+                {% if open_tree == true %}
+                    gantt.config.open_tree_initially = true;
+                {% endif %}
+                gantt.config.autosize = "y";
+
+                gantt.parse (tasks);
+
+                {% if absolute_dates == true %}
+                    scrollToToday();
+                {% endif %}
+            </script>
+        {% endblock %}
+        {% block box_after %}</div>{% endblock %}
+    {% endembed %}
+
+    {% include 'CampaignChainCoreBundle:Base:modal_remote.html.twig' %}
+{% endmacro %}

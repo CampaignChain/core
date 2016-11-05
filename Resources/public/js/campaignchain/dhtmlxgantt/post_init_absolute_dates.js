@@ -16,6 +16,10 @@ function onGanttRender_todayLine(today) {
         if (!$today.length) {
             var elem = document.createElement("div");
             elem.id = "campaignchain_gantt_today";
+            elem.setAttribute('data-tooltip', 'true');
+            elem.setAttribute('data-placement', 'right');
+            elem.setAttribute('data-original-title', 'Today');
+
             gantt.$task_data.appendChild(elem);
             $today = $(elem);
         }
