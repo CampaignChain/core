@@ -20,6 +20,7 @@ limitations under the License.
     {% include 'CampaignChainCoreBundle:Base:datatable.html.twig' %}
 
     {% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig' %}
+        {% block box_title %}Reports{% endblock %}
         {% block box_body %}
             <!--<div class="table-responsive">-->
             <table id="example" class="table table-striped table-bordered dataTable">
