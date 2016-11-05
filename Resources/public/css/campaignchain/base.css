@@ -557,7 +557,7 @@ div.scrollable {
     padding-right: 4px;
 }
 
-.main-footer > .btn-campaignchain-footer:first-child {
+.main-footer > .btn-campaignchain-footer:first-of-type {
     padding-left: 0px;
 }
 
