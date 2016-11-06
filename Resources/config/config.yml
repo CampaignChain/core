@@ -68,6 +68,15 @@ assetic:
                 - "%kernel.root_dir%/../vendor/components/jquery/jquery.js"
             filters:
                 - "?yui_js"
+        jquery_ui_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/components/jquery-ui/jquery-ui.min.js"
+        jquery_ui_css:
+            inputs:
+                - "@CampaignChainCoreBundle//Resources/public/components/jquery-ui/themes/base/jquery-ui.min.css"
+        jquery_collision_detection_js:
+            inputs:
+                - "@CampaignChainCoreBundle/Resources/public/js/hnl.collision.detection.js"
         moment_js:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/components/moment/moment.js"
@@ -229,6 +238,7 @@ assetic:
                 - "@CampaignChainCoreBundle/Resources/public/components/flot/jquery.flot.time.js"
                 - "@CampaignChainCoreBundle/Resources/public/components/flot/jquery.flot.symbol.js"
                 - "@CampaignChainCoreBundle/Resources/public/components/flot/jquery.flot.crosshair.js"
+                - "@CampaignChainCoreBundle/Resources/public/components/flot/jquery.flot.resize.js"
         flot_comments_js:
             inputs:
                 - "@CampaignChainCoreBundle/Resources/public/components/jquery.flot.comments/jquery.flot.comments.js"

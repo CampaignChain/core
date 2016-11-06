@@ -48,9 +48,9 @@ class MenuListener
          * Get all dynamic routes from modules.
          */
         // Get all module routes for creating a new Campaign.
-        $campaignModules = $this->moduleService->getModulesByType(Module::REPOSITORY_CAMPAIGN);
+        $modules = $this->moduleService->getModulesByType(Module::REPOSITORY_CAMPAIGN);
         /** @var Module $module */
-        foreach($campaignModules as $module){
+        foreach($modules as $module){
             $extraRoutes['CreateCampaign'][] = $module->getRoutes()['new'];
         }
         $extraRoutes['CreateCampaign'][] = 'campaignchain_core_campaign_new';
@@ -59,9 +59,9 @@ class MenuListener
         $extraRoutes['PlanCampaigns'][] = 'campaignchain_core_plan_templates';
 
         // Get all module routes for creating a new Activity.
-        $campaignModules = $this->moduleService->getModulesByType(Module::REPOSITORY_ACTIVITY);
+        $modules = $this->moduleService->getModulesByType(Module::REPOSITORY_ACTIVITY);
         /** @var Module $module */
-        foreach($campaignModules as $module){
+        foreach($modules as $module){
             $extraRoutes['CreateActivity'][] = $module->getRoutes()['new'];
             if(isset($module->getRoutes()['edit'])) {
                 $extraRoutes['PlanActivities'][] = $module->getRoutes()['edit'];
@@ -75,9 +75,9 @@ class MenuListener
         $extraRoutes['PlanActivities'][] = 'campaignchain_core_activities';
 
         // Get all module routes for creating a new Milestone.
-        $campaignModules = $this->moduleService->getModulesByType(Module::REPOSITORY_MILESTONE);
+        $modules = $this->moduleService->getModulesByType(Module::REPOSITORY_MILESTONE);
         /** @var Module $module */
-        foreach($campaignModules as $module){
+        foreach($modules as $module){
             $extraRoutes['CreateMilestone'][] = $module->getRoutes()['new'];
             if(isset($module->getRoutes()['edit'])) {
                 $extraRoutes['PlanMilestones'][] = $module->getRoutes()['edit'];
@@ -88,6 +88,16 @@ class MenuListener
         }
         $extraRoutes['CreateMilestone'][] = 'campaignchain_core_milestone_new';
         $extraRoutes['PlanMilestones'][] = 'campaignchain_core_milestone';
+
+        // Get all module routes for reports.
+        $modules = $this->moduleService->getModulesByType(Module::REPOSITORY_REPORT);
+        /** @var Module $module */
+        foreach($modules as $module){
+            if(isset($module->getRoutes()['index'])) {
+                $extraRoutes['Monitor'][] = $module->getRoutes()['index'];
+            }
+        }
+        $extraRoutes['Monitor'][] = 'campaignchain_core_report';
 
         /*
          * Build menu.
@@ -229,7 +239,8 @@ class MenuListener
                     ]
                 )
                 ->setLabelAttribute('icon', 'fa fa-bar-chart')
-                ->setAttribute('data-step', '5');
+                ->setAttribute('data-step', '5')
+                ->setExtra('routes', $extraRoutes['Monitor']);
         }
     }
 }

@@ -235,7 +235,18 @@ iframe {
     text-decoration: none;
 }
 
+.alert-info .campaignchain-teaser a,
+.alert-warning .campaignchain-teaser a,
+.alert-danger .campaignchain-teaser a {
+    color: #fff;
+}
 
+.alert-info .campaignchain-teaser .icon,
+.alert-warning .campaignchain-teaser .icon,
+.alert-danger .campaignchain-teaser .icon {
+    filter: invert(100%);
+    -webkit-filter: invert(100%);
+}
 
 .select2-container .icon,
 .select2-result .icon,
@@ -561,6 +572,10 @@ div.scrollable {
     padding-left: 0px;
 }
 
+.timeline .time-start {
+    padding-bottom: 30px;
+}
+
 /* Fontawesome */
 
 .fa-stack {
@@ -589,7 +604,7 @@ div.scrollable {
     left: 0;
     bottom: 0;
     overflow: auto;
-    background-color: #000000;
+    background-color: #fff;
 }
 
 .box-title .btn-toolbar {

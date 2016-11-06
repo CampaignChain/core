@@ -1,0 +1,181 @@
+{#
+Copyright 2016 CampaignChain, Inc. <info@campaignchain.com>
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+#}
+
+{% macro metricsGraphJs() %}
+    {% javascripts '@flot_js' combine=true %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    {% javascripts '@flot_comments_js' %}
+    <!-- flot comments --><script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    {% javascripts '@flot_tooltip_js' %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    {% javascripts '@jquery_ui_js' %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    {% javascripts '@jquery_collision_detection_js' %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endmacro %}
+
+{% macro metricsGraphCss() %}
+    {% stylesheets '@campaignchain_flot_css' filter="cssrewrite" output="media/css/*.css"
+    'bundles/campaignchaincore/css/*'%}
+    <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
+    {% endstylesheets %}
+    {% stylesheets '@jquery_ui_css' combine=true %}
+    <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
+    {% endstylesheets %}
+{% endmacro %}
+
+{% macro metricsGraph(entity, metrics, report, campaign, milestones) %}
+    {% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig' %}
+        {% block box_before %}
+            <div id="campaignchain-chart-{{ entity.getId() }}">
+            <script type="text/javascript">
+                $(document).ready(function() {
+
+                    {% for dimension_name,dimension in report.dimensions %}
+                    var d_{{ entity.getId() }}_{{ dimension.id }} = {{ dimension.data|raw }};
+                    {% endfor %}
+                    window.plot{{ entity.getId() }} = $.plot("#placeholder_{{ entity.getId() }}", [
+                        {% for dimension_id,dimension in report.dimensions %}
+                        {
+                            label: "{{ metrics[dimension_id]|default(dimension_id) }}",
+                            data: d_{{ entity.getId() }}_{{ dimension.id }},
+                            lines: { colors: "#222222", fill: false },
+                            points: { colors: '#222222' },
+                        },
+                        {% endfor %}
+                    ], {
+                        grid: {
+                            show: true,
+                            hoverable: true
+                        },
+                        xaxis: {
+                            mode: "time",
+                            tickSize: [7, "day"],
+                            min: (new Date('{{ campaign.startDate }}')).getTime(),
+                            max: (new Date('{{ campaign.endDate }}')).getTime(),
+                        },
+                        yaxis: {
+                            min: 0,
+                            autoscaleMargin: 0.6,
+                        },
+                        lines: {
+                            show: true
+                        },
+                        points: {
+                            show: true,
+                            radius: 3
+                        },
+                        tooltip: {
+                            show: true
+                        },
+                        tooltipOpts: {
+                            xDateFormat:    '%a, %b %e, %Y',
+                            content:        "<label>%x</label><br/>%s: %y"
+                        },
+                        comment: {
+                            show: true,
+                            notch: {
+                                size: "10px"
+                            },
+                            position: {
+                                offsetX: -21,
+                                x: function (x) {
+                                    return {
+                                        "left": x + parseFloat(this.offsetX || 0)
+                                    };
+                                },
+                            }
+                        },
+                        comments: [
+                            {{ milestones|raw }}
+                        ],
+                        legend: {
+                            show: true,
+                            position: "nw",
+                            noColumns: 1,
+                            placement: 'outsideGrid'
+                        }
+                        //                        colors: ["#31708F"],
+                    });
+
+                    // Allows to drag a milestone.
+                    $( function() {
+                        $('.jquery-flot-comment').draggable({ axis: "y" });
+                    } );
+
+                    $('.jquery-flot-comment').css('top', '');
+                    $('#placeholder_{{ entity.getId() }} .jquery-flot-comment')
+                            .wrapAll('<div class="campaignchain-flot-comments" />');
+
+                    $('#placeholder_{{ entity.getId() }} .campaignchain-flot-comments')
+                            .CollisionDetection({spacing: -4});
+
+                    {#$('#placeholder_{{ entity.getId() }}').css('cursor', 'pointer');#}
+                    {#$('#placeholder_{{ entity.getId() }}').click(function(e){#}
+                        {#window.location.href = '{{ path('campaignchain_report_analytics_metrics_per_activity_activity',{'id':entity.getId()}) }}';#}
+                    {#});#}
+                });
+            </script>
+        {% endblock %}
+        {% block box_title %}
+            {{ entity|campaignchain_tpl_teaser({'only_icon': true, 'activity_name': 'activity'}) }}
+            {{ entity.getName() }}
+        {% endblock %}
+        {% block box_tools %}
+            <script type="application/javascript">
+                function campaignchainFullWindowFlot{{ entity.getId() }}(isFullWindow) {
+                    if(isFullWindow){
+                        $('#placeholder_{{ entity.getId() }}').css('height', '600px');
+                    } else {
+                        $('#placeholder_{{ entity.getId() }}').css('height', '300px');
+                    }
+
+                    window.plot{{ entity.getId() }}.resize();
+                    window.plot{{ entity.getId() }}.setupGrid();
+                    window.plot{{ entity.getId() }}.draw();
+                    // Allows to drag a milestone.
+                    $( function() {
+                        $('.jquery-flot-comment').draggable({ axis: "y" });
+                    } );
+
+                    $('.jquery-flot-comment').css('top', '');
+                    $('#placeholder_{{ entity.getId() }} .jquery-flot-comment')
+                            .wrapAll('<div class="campaignchain-flot-comments" />');
+
+                    $('#placeholder_{{ entity.getId() }} .campaignchain-flot-comments')
+                            .CollisionDetection({spacing: -4});
+                }
+            </script>
+            <a
+                href="javascript:void(0);"
+                onclick="campaignchainFullWindow('#campaignchain-chart-{{ entity.getId() }}', 'campaignchainFullWindowFlot{{ entity.getId() }}')"
+            >
+                <span class="fa fa-expand"></span>
+            </a>
+        {% endblock %}
+        {% block box_body %}
+            <div id="placeholder_{{ entity.getId() }}" style="width:100%; height:300px;" class="campaignchain-flot"></div>
+        {% endblock %}
+        {% block box_after %}
+            </div>
+        {% endblock %}
+    {% endembed %}
+{% endmacro %}

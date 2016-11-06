@@ -274,27 +274,23 @@ function campaignchainToggleConnectLocation(id, status)
 
 var fullWindow = false;
 
-function campaignchainFullWindow(element){
+function campaignchainFullWindow(element, callback){
     // expanding the gantt to full screen
     $(element).toggleClass('campaignchain-fullwindow');
     $('.modal').css('z-index', '99999');
     if(!window.fullWindow){
         window.fullWindow = true;
         $('.fa-expand').removeClass('fa-expand').addClass('fa-compress');
-
-        if(window.gantt) {
-            gantt.render();
-            $('#gantt_here').css('height', window.innerHeight + ' !important');
-            $("#campaignchain_gantt_today").css("height", $(".gantt_task_bg").innerHeight());
+        if(callback) {
+            window[callback](window.fullWindow);
         }
     } else {
         window.fullWindow = false;
         $('.fa-compress').removeClass('fa-compress').addClass('fa-expand');
+        if(callback) {
+            window[callback](window.fullWindow);
+        }
     }
-
-    console.log(window.fullWindow);
-
-
 }
 
 $(document).ready(function() {
