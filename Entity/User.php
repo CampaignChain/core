@@ -364,7 +364,11 @@ class User extends BaseUser
      */
     public function getAvatarImage()
     {
-        return $this->avatarImage;
+        if($this->avatarImage) {
+            return $this->avatarImage;
+        } else {
+            return 'default_user.png';
+        }
     }
 
     /**
