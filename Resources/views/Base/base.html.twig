@@ -321,6 +321,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <!-- Main content -->
         <section class="content">
 
+            {% block flashbag %}{% endblock %}
             {% include 'CampaignChainCoreBundle:Base:_flashbag.html.twig' %}
 
             <div class="page-content">

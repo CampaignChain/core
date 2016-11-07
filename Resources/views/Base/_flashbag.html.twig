@@ -14,6 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 #}
 
+{% for flashMessage in app.session.flashbag.get('danger') %}
+    <div class="alert alert-danger alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <h4><i class="icon fa fa-ban"></i> Danger</h4>
+        {{ flashMessage|raw }}
+    </div>
+{% endfor %}
 {% for flashMessage in app.session.flashbag.get('warning') %}
     <div class="alert alert-warning alert-dismissable">
         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
