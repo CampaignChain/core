@@ -49,10 +49,24 @@ limitations under the License.
             <script type="text/javascript">
                 $(document).ready(function() {
 
+                    function campaignchainFlotHookMilestones(plot, canvascontext) {
+                        // Allows to drag a milestone.
+                        $( function() {
+                            $('#flot_chart_{{ entity.getId() }} > .jquery-flot-comment').draggable({ axis: "y" });
+                        } );
+
+                        $('.jquery-flot-comment').css('top', '');
+                        $('#flot_chart_{{ entity.getId() }} > .jquery-flot-comment')
+                                .wrapAll('<div class="campaignchain-flot-comments" />');
+
+                        $('#flot_chart_{{ entity.getId() }} > .campaignchain-flot-comments')
+                                .CollisionDetection({spacing: -4});
+                    };
+
                     {% for dimension_name,dimension in report.dimensions %}
                     var d_{{ entity.getId() }}_{{ dimension.id }} = {{ dimension.data|raw }};
                     {% endfor %}
-                    window.plot{{ entity.getId() }} = $.plot("#placeholder_{{ entity.getId() }}", [
+                    window.plot{{ entity.getId() }} = $.plot("#flot_chart_{{ entity.getId() }}", [
                         {% for dimension_id,dimension in report.dimensions %}
                         {
                             label: "{{ metrics[dimension_id]|default(dimension_id) }}",
@@ -62,6 +76,7 @@ limitations under the License.
                         },
                         {% endfor %}
                     ], {
+                        hooks: { draw: [campaignchainFlotHookMilestones] },
                         grid: {
                             show: true,
                             hoverable: true
@@ -116,20 +131,8 @@ limitations under the License.
                         //                        colors: ["#31708F"],
                     });
 
-                    // Allows to drag a milestone.
-                    $( function() {
-                        $('.jquery-flot-comment').draggable({ axis: "y" });
-                    } );
-
-                    $('.jquery-flot-comment').css('top', '');
-                    $('#placeholder_{{ entity.getId() }} .jquery-flot-comment')
-                            .wrapAll('<div class="campaignchain-flot-comments" />');
-
-                    $('#placeholder_{{ entity.getId() }} .campaignchain-flot-comments')
-                            .CollisionDetection({spacing: -4});
-
-                    {#$('#placeholder_{{ entity.getId() }}').css('cursor', 'pointer');#}
-                    {#$('#placeholder_{{ entity.getId() }}').click(function(e){#}
+                    {#$('#flot_chart_{{ entity.getId() }}').css('cursor', 'pointer');#}
+                    {#$('#flot_chart_{{ entity.getId() }}').click(function(e){#}
                         {#window.location.href = '{{ path('campaignchain_report_analytics_metrics_per_activity_activity',{'id':entity.getId()}) }}';#}
                     {#});#}
                 });
@@ -143,25 +146,10 @@ limitations under the License.
             <script type="application/javascript">
                 function campaignchainFullWindowFlot{{ entity.getId() }}(isFullWindow) {
                     if(isFullWindow){
-                        $('#placeholder_{{ entity.getId() }}').css('height', '600px');
+                        $('#flot_chart_{{ entity.getId() }}').css('height', '600px');
                     } else {
-                        $('#placeholder_{{ entity.getId() }}').css('height', '300px');
+                        $('#flot_chart_{{ entity.getId() }}').css('height', '300px');
                     }
-
-                    window.plot{{ entity.getId() }}.resize();
-                    window.plot{{ entity.getId() }}.setupGrid();
-                    window.plot{{ entity.getId() }}.draw();
-                    // Allows to drag a milestone.
-                    $( function() {
-                        $('.jquery-flot-comment').draggable({ axis: "y" });
-                    } );
-
-                    $('.jquery-flot-comment').css('top', '');
-                    $('#placeholder_{{ entity.getId() }} .jquery-flot-comment')
-                            .wrapAll('<div class="campaignchain-flot-comments" />');
-
-                    $('#placeholder_{{ entity.getId() }} .campaignchain-flot-comments')
-                            .CollisionDetection({spacing: -4});
                 }
             </script>
             <a
@@ -172,7 +160,7 @@ limitations under the License.
             </a>
         {% endblock %}
         {% block box_body %}
-            <div id="placeholder_{{ entity.getId() }}" style="width:100%; height:300px;" class="campaignchain-flot"></div>
+            <div id="flot_chart_{{ entity.getId() }}" style="width:100%; height:300px;" class="campaignchain-flot"></div>
         {% endblock %}
         {% block box_after %}
             </div>
