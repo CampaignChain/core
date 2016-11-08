@@ -53,11 +53,9 @@ limitations under the License.
         {% block box_tools %}
             <script type="application/javascript">
                 function campaignchainFullWindowGantt(isFullWindow) {
-                    if(isFullWindow) {
+                        $('#gantt_here').css('width', '100% !important');
                         gantt.render();
-                        $('#gantt_here').css('height', window.innerHeight + ' !important');
                         $("#campaignchain_gantt_today").css("height", $(".gantt_task_bg").innerHeight());
-                    }
                 }
             </script>
             <a
