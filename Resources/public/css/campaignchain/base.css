@@ -607,6 +607,10 @@ div.scrollable {
     background-color: #fff;
 }
 
+.atwho-container .atwho-view {
+    z-index: 99999 !important;
+}
+
 .box-title .btn-toolbar {
     margin-left: -15px;
 }
