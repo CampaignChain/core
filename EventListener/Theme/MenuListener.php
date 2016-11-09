@@ -87,6 +87,7 @@ class MenuListener
             }
         }
         $extraRoutes['CreateMilestone'][] = 'campaignchain_core_milestone_new';
+        $extraRoutes['PlanMilestones'][] = 'campaignchain_core_plan_milestones';
         $extraRoutes['PlanMilestones'][] = 'campaignchain_core_milestone';
 
         // Get all module routes for reports.
@@ -210,7 +211,7 @@ class MenuListener
                 ->setExtra('routes', $extraRoutes['PlanActivities']);
 
             $menu->getChild('Plan')->addChild('PlanMilestones', [
-                    'route' => 'campaignchain_core_milestone',
+                    'route' => 'campaignchain_core_plan_milestones',
                     'label' => 'Milestones',
                     'childOptions' => $event->getChildOptions()
                 ]

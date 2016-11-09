@@ -50,6 +50,7 @@ class FullCalendar
             'module_identifier' => null,
             'campaign_id' => null,
             'only_activities' => false,
+            'only_milestones' => false,
         ));
 
         $this->options = $resolver->resolve($options);
@@ -98,7 +99,7 @@ class FullCalendar
         $campaignEvents = array();
 
         foreach($campaigns as $campaign) {
-            if (!$this->options['only_activities']) {
+            if (!$this->options['only_activities'] && !$this->options['only_milestones']) {
                 $campaignEvent['title'] = $campaign->getName();
 
                 // Retrieve the start and end date from the trigger hook.
@@ -160,104 +161,108 @@ class FullCalendar
             }
         }
 
-        // Retrieve all activities
-        $activityService = $this->container->get('campaignchain.core.activity');
-        $activities = $activityService->getAllActivities();
+        if (!$this->options['only_milestones']) {
+            // Retrieve all activities
+            $activityService = $this->container->get('campaignchain.core.activity');
+            $activities = $activityService->getAllActivities();
 
-        if(count($activities)){
+            if (count($activities)) {
 
-            $activityEvents = array();
+                $activityEvents = array();
 
-            foreach($activities as $activity){
-                $activityEvent['title'] = $activity->getName();
+                foreach ($activities as $activity) {
+                    $activityEvent['title'] = $activity->getName();
 
-                // Retrieve the start and end date from the trigger hook.
-                $hookService = $this->container->get($activity->getTriggerHook()->getServices()['entity']);
-                $hook = $hookService->getHook($activity);
-                $activityEvent['start'] = $hook->getStartDate()->format(self::FORMAT_CALENDAR_DATE);
-                // Provide the hook's start and end date form field names.
-                //$activityEvent['start_date_identifier'] = $hookService->getStartDateIdentifier();
-                //$activityEvent['end_date_identifier'] = $hookService->getEndDateIdentifier();
+                    // Retrieve the start and end date from the trigger hook.
+                    $hookService = $this->container->get($activity->getTriggerHook()->getServices()['entity']);
+                    $hook = $hookService->getHook($activity);
+                    $activityEvent['start'] = $hook->getStartDate()->format(self::FORMAT_CALENDAR_DATE);
+                    // Provide the hook's start and end date form field names.
+                    //$activityEvent['start_date_identifier'] = $hookService->getStartDateIdentifier();
+                    //$activityEvent['end_date_identifier'] = $hookService->getEndDateIdentifier();
 
-                $activityEvent['campaignchain_id'] = $activity->getId();
-                $activityEvent['type'] = 'activity';
-                $activityEvent['route_edit_api'] = $activity->getActivityModule()->getRoutes()['edit_api'];
-                //$activityEvent['trigger_identifier'] = str_replace('-', '_', $activity->getTriggerHook()->getIdentifier());
-                // Get activity icons path
-                $activityService = $this->container->get('campaignchain.core.activity');
-                $activityEvent['tpl_teaser'] = $activityService->tplTeaser($activity, array('only_icon' => true));
+                    $activityEvent['campaignchain_id'] = $activity->getId();
+                    $activityEvent['type'] = 'activity';
+                    $activityEvent['route_edit_api'] = $activity->getActivityModule()->getRoutes()['edit_api'];
+                    //$activityEvent['trigger_identifier'] = str_replace('-', '_', $activity->getTriggerHook()->getIdentifier());
+                    // Get activity icons path
+                    $activityService = $this->container->get('campaignchain.core.activity');
+                    $activityEvent['tpl_teaser'] = $activityService->tplTeaser($activity, array('only_icon' => true));
 
-                if($hook->getStartDate() < $userNow){
-                    $activityEvents['done'][] = $activityEvent;
-                } else {
-                    $activityEvents['upcoming'][] = $activityEvent;
+                    if ($hook->getStartDate() < $userNow) {
+                        $activityEvents['done'][] = $activityEvent;
+                    } else {
+                        $activityEvents['upcoming'][] = $activityEvent;
+                    }
                 }
-            }
 
-            if(isset($activityEvents['done'])){
-                $calendarEvents['activity_done']['data'] = $this->serializer->serialize($activityEvents['done'], 'json');
-                $calendarEvents['activity_done']['options'] = array(
-                    'className' => 'campaignchain-activity campaignchain-activity-done',
-                    'editable' => false,
-                );
-            }
-            if(isset($activityEvents['upcoming'])){
-                $calendarEvents['activity_upcoming']['data'] = $this->serializer->serialize($activityEvents['upcoming'], 'json');
-                $calendarEvents['activity_upcoming']['options'] = array(
-                    'className' => 'campaignchain-activity',
-                    'durationEditable' => false,
-                );
+                if (isset($activityEvents['done'])) {
+                    $calendarEvents['activity_done']['data'] = $this->serializer->serialize($activityEvents['done'], 'json');
+                    $calendarEvents['activity_done']['options'] = array(
+                        'className' => 'campaignchain-activity campaignchain-activity-done',
+                        'editable' => false,
+                    );
+                }
+                if (isset($activityEvents['upcoming'])) {
+                    $calendarEvents['activity_upcoming']['data'] = $this->serializer->serialize($activityEvents['upcoming'], 'json');
+                    $calendarEvents['activity_upcoming']['options'] = array(
+                        'className' => 'campaignchain-activity',
+                        'durationEditable' => false,
+                    );
+                }
             }
         }
 
-        // Retrieve all milestones
-        $repository = $this->em->getRepository('CampaignChainCoreBundle:Milestone');
-        $milestones = $repository->findAll();
+        if (!$this->options['only_activities']) {
+            // Retrieve all milestones
+            $repository = $this->em->getRepository('CampaignChainCoreBundle:Milestone');
+            $milestones = $repository->findAll();
 
-        if(count($milestones)){
+            if (count($milestones)) {
 
-            $milestoneEvents = array();
+                $milestoneEvents = array();
 
-            foreach($milestones as $milestone){
-                $milestoneEvent['title'] = $milestone->getName();
+                foreach ($milestones as $milestone) {
+                    $milestoneEvent['title'] = $milestone->getName();
 
-                // Retrieve the start and end date from the trigger hook.
-                $hookService = $this->container->get($milestone->getTriggerHook()->getServices()['entity']);
-                $hook = $hookService->getHook($milestone);
-                $milestoneEvent['start'] = $hook->getStartDate()->format(self::FORMAT_CALENDAR_DATE);
-                // Provide the hook's start and end date form field names.
-                //$milestoneEvent['start_date_identifier'] = $hookService->getStartDateIdentifier();
-                //$milestoneEvent['end_date_identifier'] = $hookService->getEndDateIdentifier();
+                    // Retrieve the start and end date from the trigger hook.
+                    $hookService = $this->container->get($milestone->getTriggerHook()->getServices()['entity']);
+                    $hook = $hookService->getHook($milestone);
+                    $milestoneEvent['start'] = $hook->getStartDate()->format(self::FORMAT_CALENDAR_DATE);
+                    // Provide the hook's start and end date form field names.
+                    //$milestoneEvent['start_date_identifier'] = $hookService->getStartDateIdentifier();
+                    //$milestoneEvent['end_date_identifier'] = $hookService->getEndDateIdentifier();
 
-                $milestoneEvent['type'] = 'milestone';
-                $milestoneEvent['campaignchain_id'] = $milestone->getId();
-                $milestoneEvent['route_edit_api'] = $milestone->getMilestoneModule()->getRoutes()['edit_api'];
-                //$milestoneEvent['trigger_identifier'] = str_replace('-', '_', $milestone->getTriggerHook()->getIdentifier());
-                // Get icons path
-                $milestoneService = $this->container->get('campaignchain.core.milestone');
-                $icons = $milestoneService->getIcons($milestone);
-                $milestoneEvent['icon_path_16px'] = $icons['16px'];
+                    $milestoneEvent['type'] = 'milestone';
+                    $milestoneEvent['campaignchain_id'] = $milestone->getId();
+                    $milestoneEvent['route_edit_api'] = $milestone->getMilestoneModule()->getRoutes()['edit_api'];
+                    //$milestoneEvent['trigger_identifier'] = str_replace('-', '_', $milestone->getTriggerHook()->getIdentifier());
+                    // Get icons path
+                    $milestoneService = $this->container->get('campaignchain.core.milestone');
+                    $icons = $milestoneService->getIcons($milestone);
+                    $milestoneEvent['icon_path_16px'] = $icons['16px'];
 
-                if($hook->getStartDate() < $userNow){
-                    $milestoneEvents['done'][] = $milestoneEvent;
-                } else {
-                    $milestoneEvents['upcoming'][] = $milestoneEvent;
+                    if ($hook->getStartDate() < $userNow) {
+                        $milestoneEvents['done'][] = $milestoneEvent;
+                    } else {
+                        $milestoneEvents['upcoming'][] = $milestoneEvent;
+                    }
                 }
-            }
 
-            if(isset($milestoneEvents['done'])){
-                $calendarEvents['milestone_done']['data'] = $this->serializer->serialize($milestoneEvents['done'], 'json');
-                $calendarEvents['milestone_done']['options'] = array(
-                    'className' => 'campaignchain-milestone campaignchain-milestone-done',
-                    'editable' => false,
-                );
-            }
-            if(isset($milestoneEvents['upcoming'])){
-                $calendarEvents['milestone_upcoming']['data'] = $this->serializer->serialize($milestoneEvents['upcoming'], 'json');
-                $calendarEvents['milestone_upcoming']['options'] = array(
-                    'className' => 'campaignchain-milestone',
-                    'durationEditable' => false,
-                );
+                if (isset($milestoneEvents['done'])) {
+                    $calendarEvents['milestone_done']['data'] = $this->serializer->serialize($milestoneEvents['done'], 'json');
+                    $calendarEvents['milestone_done']['options'] = array(
+                        'className' => 'campaignchain-milestone campaignchain-milestone-done',
+                        'editable' => false,
+                    );
+                }
+                if (isset($milestoneEvents['upcoming'])) {
+                    $calendarEvents['milestone_upcoming']['data'] = $this->serializer->serialize($milestoneEvents['upcoming'], 'json');
+                    $calendarEvents['milestone_upcoming']['options'] = array(
+                        'className' => 'campaignchain-milestone',
+                        'durationEditable' => false,
+                    );
+                }
             }
         }
 

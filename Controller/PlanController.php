@@ -51,12 +51,25 @@ class PlanController extends Controller
 
     public function activitiesAction(){
         return $this->render(
-            'CampaignChainCoreBundle:Plan/Calendar:index.html.twig',
+            'CampaignChainCoreBundle:Activity:calendar.html.twig',
             array(
-                'page_title' => 'Open Activities',
+                'page_title' => 'Activities Calendar',
                 'events' => $this->get('campaignchain.core.model.fullcalendar')->getEvents(
                     array(
                         'only_activities' => true
+                    )
+                ),
+            ));
+    }
+
+    public function milestonesAction(){
+        return $this->render(
+            'CampaignChainCoreBundle:Milestone:calendar.html.twig',
+            array(
+                'page_title' => 'Milestones Calendar',
+                'events' => $this->get('campaignchain.core.model.fullcalendar')->getEvents(
+                    array(
+                        'only_milestones' => true
                     )
                 ),
             ));

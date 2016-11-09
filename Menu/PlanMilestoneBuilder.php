@@ -36,9 +36,17 @@ class PlanMilestoneBuilder extends ContainerAware
         );
 
         $menu->addChild(
-            'All',
+            'Calendar',
             array(
-                'label' => '.icon-table All Milestones',
+                'label' => '.icon-calendar Calendar',
+                'route' => 'campaignchain_core_plan_milestones'
+            )
+        );
+
+        $menu->addChild(
+            'Table',
+            array(
+                'label' => '.icon-table Table',
                 'route' => 'campaignchain_core_milestone'
             )
         );

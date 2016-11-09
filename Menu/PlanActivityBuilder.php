@@ -36,17 +36,17 @@ class PlanActivityBuilder extends ContainerAware
         );
 
         $menu->addChild(
-            'Open',
+            'Calendar',
             array(
-                'label' => '.icon-calendar Open Activities',
+                'label' => '.icon-calendar Calendar',
                 'route' => 'campaignchain_core_plan_activities'
             )
         );
 
         $menu->addChild(
-            'All',
+            'Table',
             array(
-                'label' => '.icon-table All Activities',
+                'label' => '.icon-table Table',
                 'route' => 'campaignchain_core_activities'
             )
         );

@@ -60,7 +60,7 @@ campaignchain_core_plan_campaigns:
     defaults: { _controller: CampaignChainCoreBundle:Plan:campaigns }
     options:
         campaignchain:
-            description: Plan campaigns
+            description: Timeline of all open campaigns
             rest:
                 expose: true
 
@@ -69,7 +69,16 @@ campaignchain_core_plan_activities:
     defaults: { _controller: CampaignChainCoreBundle:Plan:activities }
     options:
         campaignchain:
-            description: Plan activities
+            description: Activities calendar
+            rest:
+                expose: true
+
+campaignchain_core_plan_milestones:
+    pattern:  /plan/milestones/
+    defaults: { _controller: CampaignChainCoreBundle:Plan:milestones }
+    options:
+        campaignchain:
+            description: Milestones calendar
             rest:
                 expose: true
 

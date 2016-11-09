@@ -38,7 +38,7 @@ class ActivityController extends Controller
         return $this->render(
             'CampaignChainCoreBundle:Activity:index.html.twig',
             array(
-                'page_title' => 'Activities',
+                'page_title' => 'Activities Table',
                 'activities' => $activities
             ));
     }

@@ -100,3 +100,88 @@ limitations under the License.
 
     {% include 'CampaignChainCoreBundle:Base:modal_remote.html.twig' %}
 {% endmacro %}
+
+{% macro calendar(events) %}
+        {% javascripts '@fullcalendar_js' combine=true %}
+        <script src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+
+        {% stylesheets '@fullcalendar_css' %}
+        <link href="{{ asset_url }}" type="text/css" rel="stylesheet" />
+        {% endstylesheets %}
+
+        <script>
+            $(document).ready(function() {
+
+                $('#calendar').fullCalendar({
+                    header: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'month,agendaWeek,agendaDay,week'
+                    },
+                    timeFormat: {
+                        month: 'H:mm',
+                        agendaWeek: 'H:mm',
+                        agendaDay: 'H:mm',
+                        week: 'H:mm'
+                    },
+                    defaultDate: new Date(),
+                    editable: true,
+                    height: 600,
+                    defaultTimedEventDuration: '00:01:00',
+                    eventRender: function(event, element) {
+                        // Render Milestone icon.
+                        if (event.icon_path_16px)
+                        {
+                            element.css({"background-image":"url('" + event.icon_path_16px +"')"});
+                        }
+
+                        // Render Activity and Campaign icons
+                        if (event.tpl_teaser)
+                        {
+                            element.prepend(event.tpl_teaser);
+                        }
+
+                        // Edit in modal.
+                        element.bind('dblclick', function() {
+                            // Done tasks cannot be edited.
+                            var today = campaignchainGetUserDateTime(moment());
+                            if(+event.start < +today && +event.end < +today){
+                                return false;
+                            }
+                            campaignchainShowModal(
+                                    event.type, event.campaignchain_id, event.route_edit_api,
+                                    event, 'campaignchainCalendarTaskDblClickSuccess'
+                            );
+                        });
+                    },
+                    eventDrop: function(event, delta, revertFunc) {
+                        var start_date = campaignchainCalendarNormalizeDate(event.start.format());
+                        var requestData = { id: event.campaignchain_id, start_date: start_date.format() };
+                        campaignchainMoveAction(event.type, requestData);
+                    },
+                    eventSources: [
+                        {% if events and events is iterable %}
+                        {% for event_type, event in events %}
+                        {
+                            events: {{ event.data|raw }},
+                {% for option_key, option_val in event.options %}
+                {{ option_key }}: '{{ option_val }}',
+                {% endfor %}
+            },
+                {% endfor %}
+                {% endif %}
+                ]
+            });
+            });
+
+        </script>
+
+        <div class="box box-default">
+            <div class="box-body no-padding">
+                <div id='calendar'></div>
+            </div>
+        </div>
+
+    {% include 'CampaignChainCoreBundle:Base:modal_remote.html.twig' %}
+{% endmacro %}

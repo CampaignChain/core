@@ -15,6 +15,7 @@ limitations under the License.
 #}
 
 {% extends 'CampaignChainCoreBundle:Base:base.html.twig' %}
+{% import 'CampaignChainCoreBundle:Macros:plan.html.twig' as planMacro %}
 
 {% block bodytabs %}
     {{ knp_menu_render(
@@ -27,5 +28,5 @@ limitations under the License.
 {% endblock %}
 
 {% block body %}
-    {% include 'CampaignChainCoreBundle:Plan/Calendar:calendar.html.twig' %}
+    {{ planMacro.calendar(events) }}
 {% endblock %}
