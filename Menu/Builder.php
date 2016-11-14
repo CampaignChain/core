@@ -63,7 +63,7 @@ class Builder extends ContainerAware
 
         $menu = $factory->createItem('root');
 
-        $menu->addChild('Settings', array('route' => 'campaignchain_core_profile_edit'));
+        $menu->addChild('Profile', array('route' => 'campaignchain_core_profile_edit'));
         $menu->addChild('Password', array('route' => 'campaignchain_core_profile_change_password'));
 
         return $menu;
