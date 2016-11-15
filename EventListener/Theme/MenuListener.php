@@ -52,6 +52,11 @@ class MenuListener
         /** @var Module $module */
         foreach($modules as $module){
             $extraRoutes['CreateCampaign'][] = $module->getRoutes()['new'];
+            $extraRoutes['PlanCampaigns'][] = $module->getRoutes()['edit'];
+            $extraRoutes['PlanCampaigns'][] = $module->getRoutes()['plan_detail'];
+            if(isset($module->getRoutes()['copy'])){
+                $extraRoutes['PlanCampaigns'][] = $module->getRoutes()['copy'];
+            }
         }
         $extraRoutes['CreateCampaign'][] = 'campaignchain_core_campaign_new';
         $extraRoutes['PlanCampaigns'][] = 'campaignchain_core_campaign';
