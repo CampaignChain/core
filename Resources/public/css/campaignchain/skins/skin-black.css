@@ -14,6 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+body {
+    font-family: "Lato","Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
 .content-wrapper .campaignchain-navbar-page {
     background-color: #222d32;
     border: 0px;
