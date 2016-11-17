@@ -134,12 +134,19 @@ class LocationService
         if(ParserUtil::urlExists($url)) {
             $urlParts = parse_url($url);
 
+            if($urlParts['scheme'] == 'http'){
+                $urlAltScheme = str_replace('http', 'https', $url);
+            } elseif($urlParts['scheme'] == 'https'){
+                $urlAltScheme = str_replace('https', 'http', $url);
+            }
+
             $repository = $this->em
                 ->getRepository('CampaignChainCoreBundle:Location');
 
             $query = $repository->createQueryBuilder('location')
                 ->where(
                     "(:url LIKE CONCAT('%', location.url, '%')) OR ".
+                    "(:url_alt_scheme LIKE CONCAT('%', location.url, '%')) OR ".
                     "(".
                     "location.identifier IS NOT NULL AND ".
                     ":url LIKE CONCAT('%', location.identifier, '%') AND ".
@@ -148,6 +155,7 @@ class LocationService
                 )
                 ->andWhere('location.parent IS NULL')
                 ->setParameter('url', $url)
+                ->setParameter('url_alt_scheme', $urlAltScheme)
                 ->setParameter('host', $urlParts['host'].'%')
                 ->getQuery();
 
@@ -164,7 +172,7 @@ class LocationService
                  */
                 if(!$alias){
                     // Done if the URL is exactly the same in the matching Location.
-                    if($matchingLocation->getUrl() == $url){
+                    if($matchingLocation->getUrl() == $url || $matchingLocation->getUrl() == $urlAltScheme){
                         return $matchingLocation;
                     }
 
@@ -197,7 +205,7 @@ class LocationService
                     // Done if the matching Location also matches the alias and URL.
                     if(
                         $matchingLocation->getLocationModule() == $locationModule &&
-                        $matchingLocation->getUrl() == $url
+                        ($matchingLocation->getUrl() == $url || $matchingLocation->getUrl() == $urlAltScheme)
                     ){
                         return $matchingLocation;
                     }
@@ -206,12 +214,19 @@ class LocationService
                      * See if there is already another Location that matches the
                      * aliase's Location module and the URL.
                      */
-                    $location = $this->em
-                        ->getRepository('CampaignChainCoreBundle:Location')
-                        ->findOneBy(array(
-                            'locationModule' => $locationModule,
-                            'url' => $url,
-                        ));
+                    $repository = $this->em
+                        ->getRepository('CampaignChainCoreBundle:Location');
+
+                    $query = $repository->createQueryBuilder('location')
+                        ->where('location.locationModule = :locationModule')
+                        ->andWhere('(location.url = :url OR location.url = :url_alt_scheme')
+                        ->setParameter('locationModule', $locationModule)
+                        ->setParameter('url', $url)
+                        ->setParameter('url_alt_scheme', $urlAltScheme)
+                        ->getQuery();
+
+                    /** @var Location $location */
+                    $location = $query->getOneOrNullResult();
 
                     // We found an existing Location, we're done.
                     if($location){
