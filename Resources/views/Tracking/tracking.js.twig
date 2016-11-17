@@ -131,10 +131,12 @@
                 }
                 if(this.mode != "dev-stay"){
                     if(this.ctaEvent) {
-                        this.ctaEvent.trigger('click');
-                    }
-                    if(this.target) {
-                        window.location.href = this.target;
+                        var events = $._data(this.ctaEvent, "events");
+                        if(events != null) {
+                            this.ctaEvent.trigger("click");
+                        } else {
+                            window.location.href = this.target;
+                        }
                     }
                 }
                 break;
