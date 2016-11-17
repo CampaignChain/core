@@ -468,7 +468,13 @@
              */
 
             // Has a link been clicked?
+            var aClickDone = false;
             jQuery("a").on('click', function(e){
+                if(aClickDone === true){
+                    aClickDone = false;
+                    return;
+                }
+
                 e.preventDefault();
 
                 if(tracker.mode == "dev" || tracker.mode == "dev-stay") {
@@ -485,7 +491,7 @@
 
                 tracker.sendUrlReport(jQuery(this).attr("href"), alias, "a[href]");
 
-                return false;
+                aClickDone = true;
             });
 
             // Has a form been submitted?
