@@ -132,7 +132,9 @@
                 if(this.mode != "dev-stay"){
                     if(this.ctaEvent) {
                         this.ctaEvent.trigger('click');
-                    } else {
+                    }
+
+                    if(this.target) {
                         window.location.href = this.target;
                     }
                 }
@@ -492,7 +494,6 @@
                 }
 
                 tracker.ctaEvent = jQuery(this);
-                console.log(tracker.ctaEvent);
 
                 tracker.sendUrlReport(jQuery(this).attr("href"), alias, "a[href]");
 
