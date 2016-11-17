@@ -87,6 +87,16 @@ EOT
         return $response;
     }
 
+    /**
+     * Sample URI for testing:
+     * /app_dev.php/test/trackingjs/b982b267f991e731a7453fe839a6e70d?cctid=1
+     *
+     * @param Request $request
+     * @param $channel
+     * @param $dev
+     * @param $old
+     * @return Response
+     */
     public function testTrackingJsAction(Request $request, $channel, $dev, $old)
     {
         if($dev) {
