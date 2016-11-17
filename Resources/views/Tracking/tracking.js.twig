@@ -127,10 +127,10 @@
         switch(targetSelector){
             case 'a[href]':
                 if(this.mode == "dev" || this.mode == "dev-stay"){
-                    console.log("Redirect to: " + this.target);
+                    console.log("Triggering stalled click event");
                 }
                 if(this.mode != "dev-stay"){
-                    window.location.href = this.target;
+                    this.ctaEvent.trigger('click');
                 }
                 break;
             case 'form > input[submit]':
@@ -468,7 +468,7 @@
              */
 
             // Has a link been clicked?
-            jQuery("a").click(function(e){
+            jQuery("a").on('click', function(e){
                 e.preventDefault();
 
                 if(tracker.mode == "dev" || tracker.mode == "dev-stay") {
@@ -480,6 +480,9 @@
                 } else {
                     var alias = "a";
                 }
+
+                tracker.ctaEvent = jQuery(this);
+
                 tracker.sendUrlReport(jQuery(this).attr("href"), alias, "a[href]");
 
                 return false;
