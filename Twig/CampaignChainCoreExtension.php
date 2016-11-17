@@ -458,6 +458,7 @@ class CampaignChainCoreExtension extends \Twig_Extension
             'campaignchain_core_scheduler_interval'  => $this->container->getParameter('campaignchain_core.scheduler.interval'),
             'campaignchain_relative_start_date'  => new \DateTime(Campaign::RELATIVE_START_DATE),
             'campaignchain_layout' => $this->getGlobalLayout(),
+            'campaignchain_is_first_login' => $this->isFirstLogin(),
         );
     }
 
@@ -554,5 +555,18 @@ class CampaignChainCoreExtension extends \Twig_Extension
         }
 
         throw new \Exception('No layout parameters defined for '.$paramParent);
+    }
+
+    public function isFirstLogin()
+    {
+        $session = $this->container->get('session');
+
+        $isFirstLogin = false;
+        if ($session->has('isFirstLogin')) {
+            $isFirstLogin = true;
+            $session->remove('isFirstLogin');
+        }
+
+        return $isFirstLogin;
     }
 }

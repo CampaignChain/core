@@ -23,26 +23,11 @@ class AboutController extends Controller
 {
     public function indexAction()
     {
-
-        // check if this is the first time a user logs in since registration
-        $session = $this->getRequest()->getSession();
-
-        if ($session->get('isFirstLogin', false)) {
-            $session->remove('isFirstLogin');
-
-            return $this->render(
-                'CampaignChainCoreBundle:About:index_with_intro.html.twig',
-                array(
-                    'page_title' => 'About CampaignChain'
-                )
-            );
-        } else {
-            return $this->render(
-                'CampaignChainCoreBundle:About:index.html.twig',
-                array(
-                    'page_title' => 'About CampaignChain'
-                )
-            );
-        }
+        return $this->render(
+            'CampaignChainCoreBundle:About:index.html.twig',
+            array(
+                'page_title' => 'About CampaignChain'
+            )
+        );
     }
 }
