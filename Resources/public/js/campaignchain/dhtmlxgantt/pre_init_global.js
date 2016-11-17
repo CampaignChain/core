@@ -53,7 +53,7 @@ if(window.campaignchainGanttShowButtons == true) {
 }
 
 function campaignchainGanttColButtons(task){
-    if(task.type == 'campaign' && gantt.getChildren(gantt.getParent(task)).length > 1) {
+    if(task.type == 'campaign') {
         return '<a href="' + Routing.generate(task.route_plan_detail, { id: task.campaignchain_id }) + '" class="btn btn-primary btn-xs">'
             + '<span class="fa fa-pencil"></span>'
             + '</a>';
