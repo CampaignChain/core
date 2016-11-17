@@ -130,7 +130,11 @@
                     console.log("Triggering stalled click event");
                 }
                 if(this.mode != "dev-stay"){
-                    this.ctaEvent.trigger('click');
+                    if(this.ctaEvent) {
+                        this.ctaEvent.trigger('click');
+                    } else {
+                        window.location.href = this.target;
+                    }
                 }
                 break;
             case 'form > input[submit]':
