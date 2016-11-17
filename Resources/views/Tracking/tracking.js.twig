@@ -132,11 +132,16 @@
                 if(this.mode != "dev-stay"){
                     if(this.ctaEvent) {
                         var events = jQuery._data(this.ctaEvent.get(0), "events");
-                        console.log(events);
                         if(events != null) {
-                            this.ctaEvent.trigger("click");
-                        } else {
-                            window.location.href = this.target;
+                            // If there's more than 1 event, then it's not just
+                            // a plain click, but at least one jQuery event is
+                            // bound to the click as well.
+                            console.log(events.click.size());
+                            if (events.click.size() > 1) {
+                                this.ctaEvent.trigger("click");
+                            } else {
+                                window.location.href = this.target;
+                            }
                         }
                     }
                 }
