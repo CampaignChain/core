@@ -132,6 +132,7 @@
                 if(this.mode != "dev-stay"){
                     if(this.ctaEvent) {
                         var events = jQuery._data(this.ctaEvent, "events");
+                        console.log(events);
                         if(events != null) {
                             this.ctaEvent.trigger("click");
                         } else {
