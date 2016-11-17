@@ -100,7 +100,7 @@ limitations under the License.
     </div>
 
     <h2>2. Include Tracking Code</h2>
-    <p>Include below JavaScript code in the HTML of the channel. Make sure it appears in all pages below each root Location which you'd like to utilize for CTA tracking.</p>
+    <p>Include below code in the HTML of the channel, ideally right before the closing &lt;/body&gt; tag. Make sure it appears in all pages below each root Location which you'd like to utilize for CTA tracking.</p>
 <pre>
 {% filter escape %}
 <script type="text/javascript" src="//{{ app.request.httpHost() }}{{ tracking_js_route|raw }}"></script>

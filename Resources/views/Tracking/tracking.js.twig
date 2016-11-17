@@ -393,6 +393,14 @@
         if (window.jQuery && window.Cookies){
             var tracker = new {{ tracking_js_class|raw }}();
 
+            if(!tracker.getTrackingId()){
+                if(tracker.mode == "dev" || tracker.mode == "dev-stay"){
+                    console.log("No tracking ID, exiting.");
+                }
+
+                return false;
+            }
+
             // Assign the channel ID.
             tracker.channel = channelId;
 
