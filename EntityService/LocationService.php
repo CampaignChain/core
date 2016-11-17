@@ -135,9 +135,9 @@ class LocationService
             $urlParts = parse_url($url);
 
             if($urlParts['scheme'] == 'http'){
-                $urlAltScheme = str_replace('http', 'https', $url);
+                $urlAltScheme = str_replace('http://', 'https://', $url);
             } elseif($urlParts['scheme'] == 'https'){
-                $urlAltScheme = str_replace('https', 'http', $url);
+                $urlAltScheme = str_replace('https://', 'http://', $url);
             }
 
             $repository = $this->em
