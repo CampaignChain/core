@@ -496,6 +496,8 @@
                 tracker.sendUrlReport(jQuery(this).attr("href"), alias, "a[href]");
 
                 aClickDone = true;
+
+                return false;
             });
 
             // Has a form been submitted?
