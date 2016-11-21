@@ -18,8 +18,10 @@
 namespace CampaignChain\CoreBundle\Repository;
 
 use CampaignChain\CoreBundle\Entity\Action;
+use CampaignChain\CoreBundle\Entity\Activity;
 use CampaignChain\CoreBundle\Entity\Campaign;
 use CampaignChain\CoreBundle\Entity\Job;
+use CampaignChain\CoreBundle\Entity\Milestone;
 use DateTime;
 use Doctrine\ORM\EntityRepository;
 
@@ -113,5 +115,96 @@ class CampaignRepository extends EntityRepository
             ->setParameter('periodStart', $periodStart->format('Y-m-d H:i:s'))
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * Get the first Action, i.e. Activity or Milestone.
+     *
+     * @param Campaign $campaign
+     * @return Activity|Milestone|null
+     */
+    public function getFirstAction(Campaign $campaign)
+    {
+        return $this->getEdgeAction($campaign, 'first');
+    }
+
+    /**
+     * Get the last Action, i.e. Activity or Milestone.
+     *
+     * @param Campaign $campaign
+     * @return Activity|Milestone|null
+     */
+    public function getLastAction(Campaign $campaign)
+    {
+        return $this->getEdgeAction($campaign, 'last');
+    }
+
+    /**
+     * Retrieve the first or last Action, i.e. an Activity or Milestone.
+     *
+     * @param Campaign $campaign
+     * @param string $position first|last
+     * @return Activity|Milestone|null
+     */
+    private function getEdgeAction(Campaign $campaign, $position)
+    {
+        if($position != 'first' && $position != 'last'){
+            throw new \Exception('Position must be either "first" or "last"');
+        }
+        if($position == 'first'){
+            $order = 'ASC';
+        } else {
+            $order = 'DESC';
+        }
+
+        // Get first Activity
+        /** @var Activity $firstActivity */
+        $firstActivity = $this->createQueryBuilder('c')
+            ->select('a')
+            ->from('CampaignChain\CoreBundle\Entity\Activity', 'a')
+            ->where('a.campaign = :campaign')
+            ->setParameter('campaign', $campaign)
+            ->orderBy('a.startDate', $order)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        // Get first Milestone
+        /** @var Milestone $firstMilestone */
+        $firstMilestone = $this->createQueryBuilder('c')
+            ->select('m')
+            ->from('CampaignChain\CoreBundle\Entity\Milestone', 'm')
+            ->where('m.campaign = :campaign')
+            ->setParameter('campaign', $campaign)
+            ->orderBy('m.startDate', $order)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        // Does Activity or Milestone exist?
+        if($firstActivity == null && $firstMilestone == null){
+            return null;
+        }
+        if($firstMilestone == null){
+            return $firstActivity;
+        }
+        if($firstActivity == null){
+            return $firstMilestone;
+        }
+
+        // Does Activity or Milestone come first/last?
+        if($position == 'first') {
+            if ($firstActivity->getStartDate() < $firstMilestone->getStartDate()) {
+                return $firstActivity;
+            } else {
+                return $firstMilestone;
+            }
+        } else {
+            if ($firstActivity->getStartDate() > $firstMilestone->getStartDate()) {
+                return $firstActivity;
+            } else {
+                return $firstMilestone;
+            }
+        }
     }
 }
