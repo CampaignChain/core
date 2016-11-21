@@ -24,6 +24,7 @@ use CampaignChain\CoreBundle\Entity\Channel;
 use CampaignChain\CoreBundle\Entity\Location;
 use CampaignChain\CoreBundle\Entity\Operation;
 use CampaignChain\CoreBundle\Entity\Activity;
+use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use CampaignChain\CoreBundle\Util\ParserUtil;
 use CampaignChain\CoreBundle\Twig\CampaignChainCoreExtension;
@@ -159,8 +160,12 @@ class LocationService
                 ->setParameter('host', $urlParts['host'].'%')
                 ->getQuery();
 
-            /** @var Location $matchingLocation */
-            $matchingLocation = $query->getOneOrNullResult();
+            try {
+                /** @var Location $matchingLocation */
+                $matchingLocation = $query->getOneOrNullResult();
+            } catch (NonUniqueResultException $e){
+                throw new \Exception('Internal Error: Found two matching Locations, but there should be only one in file '.__FILE__.' on line '.__LINE__);
+            }
 
             if($matchingLocation){
                 /*
