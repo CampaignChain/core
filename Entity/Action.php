@@ -108,6 +108,38 @@ class Action extends Meta
      */
     protected $triggerHook;
 
+    /**
+     * A date prior to the start date which limits how far the start date can
+     * be changed to an earlier date.
+     *
+     * @var \DateTime
+     */
+    protected $preStartDateLimit;
+
+    /**
+     * A date after the start date which limits how far the start date can be
+     * changed to a later date.
+     *
+     * @var \DateTime
+     */
+    protected $postStartDateLimit;
+
+    /**
+     * A date prior to the end date which limits how far the end date can
+     * be changed to an earlier date.
+     *
+     * @var \DateTime
+     */
+    protected $preEndDateLimit;
+
+    /**
+     * A date after the end date which limits how far the end date can be
+     * changed to a later date.
+     *
+     * @var \DateTime
+     */
+    protected $postEndDateLimit;
+
     public static function getStatuses()
     {
         return [
@@ -498,5 +530,101 @@ class Action extends Meta
         }
 
         return false;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getPreStartDateLimit()
+    {
+        return $this->preStartDateLimit;
+    }
+
+    /**
+     * @param \DateTime|null $preStartDateLimit
+     * @throws \Exception
+     */
+    public function setPreStartDateLimit(\DateTime $preStartDateLimit = null)
+    {
+        if($preStartDateLimit && $preStartDateLimit > $this->startDate){
+            throw new \Exception(
+                'Pre start date limit ('.$preStartDateLimit->format(\DateTime::ISO8601).')'.
+                'must be earlier than start date ('.$this->startDate->format(\DateTime::ISO8601).')'.
+                '.'
+            );
+        }
+        $this->preStartDateLimit = $preStartDateLimit;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getPostStartDateLimit()
+    {
+        return $this->postStartDateLimit;
+    }
+
+    /**
+     * @param \DateTime $postStartDateLimit
+     * @throws \Exception
+     */
+    public function setPostStartDateLimit(\DateTime $postStartDateLimit = null)
+    {
+        if($postStartDateLimit && $postStartDateLimit < $this->startDate){
+            throw new \Exception(
+                'Post start date limit ('.$postStartDateLimit->format(\DateTime::ISO8601).')'.
+                'must be later than start date ('.$this->startDate->format(\DateTime::ISO8601).')'.
+                '.'
+            );
+        }
+        $this->postStartDateLimit = $postStartDateLimit;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getPreEndDateLimit()
+    {
+        return $this->preEndDateLimit;
+    }
+
+    /**
+     * @param \DateTime $preEndDateLimit
+     * @throws \Exception
+     */
+    public function setPreEndDateLimit(\DateTime $preEndDateLimit = null)
+    {
+        if($preEndDateLimit && $preEndDateLimit > $this->endDate){
+            throw new \Exception(
+                'Pre end date limit ('.$preEndDateLimit->format(\DateTime::ISO8601).')'.
+                'must be earlier than end date ('.$this->endDate->format(\DateTime::ISO8601).')'.
+                '.'
+            );
+        }
+        $this->preEndDateLimit = $preEndDateLimit;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getPostEndDateLimit()
+    {
+        return $this->postEndDateLimit;
+    }
+
+    /**
+     * @param \DateTime $postEndDateLimit
+     * @throws \Exception
+     */
+    public function setPostEndDateLimit(\DateTime $postEndDateLimit = null)
+    {
+        if($postEndDateLimit && $postEndDateLimit > $this->endDate){
+            throw new \Exception(
+                'Post end date limit ('.$postEndDateLimit->format(\DateTime::ISO8601).')'.
+                'must be later than end date ('.$this->endDate->format(\DateTime::ISO8601).')'.
+                '.'
+            );
+        }
+        $this->postEndDateLimit = $postEndDateLimit;
     }
 }
