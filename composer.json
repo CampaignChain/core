@@ -17,8 +17,6 @@
         "docs": "http://doc.campaignchain.com"
     },
     "require": {
-        "php": ">=5.4",
-        "ext-intl": "*",
         "symfony/symfony": "~2.5",
         "doctrine/orm": "2.4.*@dev",
         "doctrine/doctrine-bundle": "~1.2",
