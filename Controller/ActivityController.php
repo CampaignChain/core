@@ -165,6 +165,11 @@ class ActivityController extends Controller
             $campaign = $formMultiple->getData()['campaign_multi'];
             $location = null;
             $activityModuleId = $formMultiple->get('activity_multi')->getData();
+        } elseif(
+            $formSingle->isSubmitted() ||
+            ($multiLocationActivities && $formMultiple->isSubmitted())
+        ) {
+            throw new \Exception('None of the forms is valid.');
         }
 
         if($formSingle->isValid() || ($multiLocationActivities && $formMultiple->isValid())) {

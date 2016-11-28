@@ -124,6 +124,7 @@ limitations under the License.
                 </div>
             {% endblock %}
             {% block box_after %}
+                {{ form_rest(form_single) }}
                 </form>
             {% endblock %}
         {% endembed %}
@@ -169,6 +170,7 @@ limitations under the License.
                 </div>
             {% endblock %}
             {% block box_after %}
+                {{ form_rest(form_multiple) }}
                 </form>
             {% endblock %}
         {% endembed %}
