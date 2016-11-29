@@ -192,9 +192,14 @@ class ActivityModuleController extends Controller
 
                 return $this->redirect($this->generateUrl('campaignchain_core_activities'));
             } catch(\Exception $e) {
+                if($this->get('kernel')->getEnvironment() == 'dev'){
+                    $message = $e->getMessage().' '.$e->getFile().' '.$e->getLine().'<br/>'.$e->getTraceAsString();
+                } else {
+                    $message = $e->getMessage();
+                }
                 $this->addFlash(
                     'warning',
-                    $e->getMessage()
+                    $message
                 );
 
                 $this->getLogger()->error($e->getMessage(), array(
