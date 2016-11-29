@@ -26,6 +26,7 @@ use CampaignChain\CoreBundle\Entity\Module;
 use CampaignChain\CoreBundle\EntityService\ActivityService;
 use CampaignChain\CoreBundle\Exception\ExternalApiException;
 use CampaignChain\CoreBundle\Validator\AbstractOperationValidator;
+use CampaignChain\CoreBundle\Wizard\ActivityWizard;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Form;
 use CampaignChain\CoreBundle\Entity\Operation;
@@ -153,8 +154,10 @@ class ActivityModuleController extends Controller
         /*
          * Set Activity's context from user's choice.
          */
+        /** @var ActivityWizard $wizard */
         $wizard = $this->get('campaignchain.core.activity.wizard');
         if (!$wizard->getCampaign()) {
+            dump($wizard);exit;
             return $this->redirectToRoute('campaignchain_core_activities_new');
         }
 
@@ -166,6 +169,7 @@ class ActivityModuleController extends Controller
         } else {
             $location = null;
         }
+
         $this->setActivityContext($campaign, $location);
 
         /** @var Activity $activity */
@@ -180,9 +184,9 @@ class ActivityModuleController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $activity = $wizard->end();
-
             try {
+                $activity = $wizard->end();
+
                 $activity = $this->createActivity($activity, $form);
 
                 $this->addFlash(
@@ -207,6 +211,14 @@ class ActivityModuleController extends Controller
                     'line' => $e->getLine(),
                     'trace' => $e->getTrace(),
                 ));
+
+                // Make sure we restart the Wizard.
+                $em = $this->getDoctrine()->getManager();
+                $wizard = $this->get('campaignchain.core.activity.wizard');
+                $wizard->start(
+                    $campaign, new Activity(),
+                    $activity->getActivityModule(), $location
+                );
             }
         }
 
