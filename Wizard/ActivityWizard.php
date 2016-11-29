@@ -17,6 +17,7 @@
 
 namespace CampaignChain\CoreBundle\Wizard;
 
+use CampaignChain\CoreBundle\Entity\Activity;
 use Symfony\Component\HttpFoundation\Request;
 use CampaignChain\CoreBundle\Wizard\Session;
 
@@ -30,11 +31,10 @@ class ActivityWizard
         $this->session = new Session($this->container->get('request'));
     }
 
-    public function start($campaign, $activity, $activityModule, $location = null){
+    public function start($campaign, $activityModule, $location = null){
         // Store in session
         $this->session->start();
         $this->session->set('campaignchain_campaign', $campaign);
-        $this->session->set('campaignchain_activity', $activity);
         $this->session->set('campaignchain_activityModule', $activityModule);
         $this->session->set('campaignchain_referrer', $_SERVER['HTTP_REFERER']);
 
@@ -82,11 +82,6 @@ class ActivityWizard
         $this->session->set('campaignchain_operation', $operation);
     }
 
-    public function getActivity(){
-        $this->session->resume();
-        return $this->session->get('campaignchain_activity');
-    }
-
     public function getActivityModule()
     {
         $this->session->resume();
@@ -111,20 +106,22 @@ class ActivityWizard
         $this->session->get('campaignchain_referrer');
     }
 
-    public function end(){
-        $this->session->resume();
-
+    public function getNewActivity(){
         // Reset memory of pre-selected campaign.
         $this->container->get('session')->set('campaignchain.campaign', null);
 
+        // Merge context with persistence manager.
         $repository = $this->container->get('doctrine')->getManager();
+        $this->session->resume();
 
         $campaign = $this->session->get('campaignchain_campaign');
         $campaign = $repository->merge($campaign);
 
         $activityModule = $this->session->get('campaignchain_activityModule');
         $activityModule = $repository->merge($activityModule);
-        $activity = $this->session->get('campaignchain_activity');
+
+        // Create new Activity.
+        $activity = new Activity();
         $activity->setActivityModule($activityModule);
         $activity->setCampaign($campaign);
 
@@ -138,8 +135,11 @@ class ActivityWizard
             $activity->setChannel($location->getChannel());
         }
 
-        $this->session->destroy();
-
         return $activity;
+    }
+
+    public function end()
+    {
+        $this->session->destroy();
     }
 }

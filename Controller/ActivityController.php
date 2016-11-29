@@ -19,7 +19,6 @@ namespace CampaignChain\CoreBundle\Controller;
 
 use CampaignChain\CoreBundle\Entity\Medium;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use CampaignChain\CoreBundle\Entity\Activity;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\HttpFoundation\Response;
@@ -173,8 +172,6 @@ class ActivityController extends Controller
         }
 
         if($formSingle->isValid() || ($multiLocationActivities && $formMultiple->isValid())) {
-            $activity = new Activity();
-
             // Get the activity module's activity.
             $activityService = $this->get('campaignchain.core.activity');
             $activityModule = $activityService->getActivityModule($activityModuleId);
@@ -183,7 +180,6 @@ class ActivityController extends Controller
             $wizard = $this->get('campaignchain.core.activity.wizard');
             $wizard->start(
                 $campaign,
-                $activity,
                 $activityModule,
                 $location
             );

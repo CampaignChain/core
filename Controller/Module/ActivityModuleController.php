@@ -172,9 +172,7 @@ class ActivityModuleController extends Controller
 
         $this->setActivityContext($campaign, $location);
 
-        /** @var Activity $activity */
-        $activity = $wizard->getActivity();
-        $activity->setActivityModule($wizard->getActivityModule());
+        $activity = $wizard->getNewActivity();
         $activity->setEqualsOperation($this->parameters['equals_operation']);
 
         $form = $this->createForm(
@@ -185,14 +183,14 @@ class ActivityModuleController extends Controller
 
         if ($form->isValid()) {
             try {
-                $activity = $wizard->end();
-
                 $activity = $this->createActivity($activity, $form);
 
                 $this->addFlash(
                     'success',
                     'Your new activity <a href="' . $this->generateUrl('campaignchain_core_activity_edit', array('id' => $activity->getId())) . '">' . $activity->getName() . '</a> was created successfully.'
                 );
+
+                $wizard->end();
 
                 return $this->redirect($this->generateUrl('campaignchain_core_activities'));
             } catch(\Exception $e) {
@@ -211,14 +209,6 @@ class ActivityModuleController extends Controller
                     'line' => $e->getLine(),
                     'trace' => $e->getTrace(),
                 ));
-
-                // Make sure we restart the Wizard.
-                $em = $this->getDoctrine()->getManager();
-                $wizard = $this->get('campaignchain.core.activity.wizard');
-                $wizard->start(
-                    $campaign, new Activity(),
-                    $activity->getActivityModule(), $location
-                );
             }
         }
 
