@@ -100,12 +100,10 @@ limitations under the License.
     </div>
 
     <h2>2. Include Tracking Code</h2>
-    <p>Include below code in the HTML of the channel, ideally right before the closing &lt;/body&gt; tag. Make sure it appears in all pages below each root Location which you'd like to utilize for CTA tracking.</p>
+    <p>Include below code in the HTML of the channel immediately after the opening &lt;body&gt; tag. Make sure it appears in all pages below each root Location which you'd like to utilize for CTA tracking.</p>
 <pre>
 {% filter escape %}
-<script type="text/javascript" src="//{{ app.request.httpHost() }}{{ tracking_js_route|raw }}"></script>
-<script type="text/javascript">
-    {{ tracking_js_init|raw }}('{{ channel.trackingId }}');
+<script>{{ tracking_snippet|raw }}
 </script>
 {% endfilter %}
 </pre>

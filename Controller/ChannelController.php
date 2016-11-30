@@ -148,13 +148,21 @@ class ChannelController extends Controller
         $channelService = $this->get('campaignchain.core.channel');
         $channel = $channelService->getChannel($id);
 
+        $trackingSnippet = $this->renderView(
+            'CampaignChainCoreBundle:Channel:_cta_tracking_snippet.js.twig',
+            array(
+                'channel' => $channel,
+                'tracking_js_init' => $this->getParameter('campaignchain_core.tracking.js_init'),
+                'tracking_js_route' => $this->getParameter('campaignchain.tracking.js_route')
+            )
+        );
+
         return $this->render(
             'CampaignChainCoreBundle:Channel:cta_tracking.html.twig',
             array(
                 'page_title' => 'Enable CTA Tracking',
                 'channel' => $channel,
-                'tracking_js_init' => $this->getParameter('campaignchain_core.tracking.js_init'),
-                'tracking_js_route' => $this->getParameter('campaignchain.tracking.js_route'),
+                'tracking_snippet' => $trackingSnippet,
             ));
     }
 
