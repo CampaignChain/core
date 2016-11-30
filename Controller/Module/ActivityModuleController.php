@@ -181,8 +181,12 @@ class ActivityModuleController extends Controller
 
         $form->handleRequest($request);
 
+        $em = $this->getDoctrine()->getManager();
+
         if ($form->isValid()) {
             try {
+                $em->getConnection()->beginTransaction();
+
                 $activity = $this->createActivity($activity, $form);
 
                 $this->addFlash(
@@ -192,8 +196,12 @@ class ActivityModuleController extends Controller
 
                 $wizard->end();
 
+                $em->getConnection()->commit();
+
                 return $this->redirect($this->generateUrl('campaignchain_core_activities'));
             } catch(\Exception $e) {
+                $em->getConnection()->rollback();
+
                 if($this->get('kernel')->getEnvironment() == 'dev'){
                     $message = $e->getMessage().' '.$e->getFile().' '.$e->getLine().'<br/>'.$e->getTraceAsString();
                 } else {
