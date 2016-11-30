@@ -97,7 +97,7 @@ EOT
      * @param $old
      * @return Response
      */
-    public function testTrackingJsAction(Request $request, $channel, $dev, $old)
+    public function testTrackingJsAction(Request $request, $trackingId, $dev, $old)
     {
         if($dev) {
             $trackingJsRoute = '/app_dev.php';
@@ -111,11 +111,24 @@ EOT
             $trackingJsRoute .= $this->getParameter('campaignchain.tracking.js_route');
         }
 
+        $channelService = $this->get('campaignchain.core.channel');
+        $channel = $channelService->getChannelByTrackingId($trackingId);
+
+        $trackingSnippet = $this->renderView(
+            'CampaignChainCoreBundle:Channel:_cta_tracking_snippet.js.twig',
+            array(
+                'channel' => $channel,
+                'tracking_js_init' => $this->getParameter('campaignchain_core.tracking.js_init'),
+                'tracking_js_route' => $this->getParameter('campaignchain.tracking.js_route')
+            )
+        );
+
         return $this->render(
             'CampaignChainCoreBundle:Tracking:test_tracking.js.html.twig',
             array(
                 'page_title' => 'Test Tracking JS',
-                'channel' => $channel,
+                'channel.trackingId' => $channel,
+                'tracking_snippet' => $trackingSnippet,
                 'tracking_js_init' => $this->getParameter('campaignchain_core.tracking.js_init'),
                 'tracking_js_route' => $trackingJsRoute,
                 'is_old_tracking_js_route' => $old,

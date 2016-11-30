@@ -23,6 +23,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityRepository;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use GK\JavascriptPacker;
 
 class ChannelController extends Controller
 {
@@ -156,6 +157,9 @@ class ChannelController extends Controller
                 'tracking_js_route' => $this->getParameter('campaignchain.tracking.js_route')
             )
         );
+
+        $packer = new JavascriptPacker($trackingSnippet, 'None');
+        $trackingSnippet = $packer->pack();
 
         return $this->render(
             'CampaignChainCoreBundle:Channel:cta_tracking.html.twig',

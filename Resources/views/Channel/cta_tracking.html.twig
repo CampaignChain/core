@@ -101,9 +101,19 @@ limitations under the License.
 
     <h2>2. Include Tracking Code</h2>
     <p>Include below code in the HTML of the channel immediately after the opening &lt;body&gt; tag. Make sure it appears in all pages below each root Location which you'd like to utilize for CTA tracking.</p>
+    <style>
+        pre {
+            white-space: pre-wrap;       /* css-3 */
+            white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+            white-space: -pre-wrap;      /* Opera 4-6 */
+            white-space: -o-pre-wrap;    /* Opera 7 */
+            word-wrap: break-word;       /* Internet Explorer 5.5+ */
+        }
+    </style>
 <pre>
 {% filter escape %}
-<script>{{ tracking_snippet|raw }}
+<script>
+{{ tracking_snippet|raw }}
 </script>
 {% endfilter %}
 </pre>

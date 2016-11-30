@@ -301,7 +301,7 @@ campaignchain_core_tracking_js_old:
     defaults: { _controller: CampaignChainCoreBundle:Tracking:trackingJs }
 
 campaignchain_core_tracking_js_test:
-    path:     /test/trackingjs/{channel}/{dev}/{old}
+    path:     /test/trackingjs/{trackingId}/{dev}/{old}
     defaults: { _controller: CampaignChainCoreBundle:Tracking:testTrackingJs, dev: 1, old: 0 }
     condition: "request.getScriptName() == '/app_dev.php'"
 

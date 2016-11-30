@@ -187,4 +187,19 @@ class ChannelService
 
         return $channel;
     }
+
+    public function getChannelByTrackingId($trackingId)
+    {
+        $channel = $this->em
+            ->getRepository('CampaignChainCoreBundle:Channel')
+            ->findOneByTrackingId($trackingId);
+
+        if (!$channel) {
+            throw new \Exception(
+                'No Channel found with tracking ID '.$trackingId
+            );
+        }
+
+        return $channel;
+    }
 }

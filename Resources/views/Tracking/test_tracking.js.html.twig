@@ -24,13 +24,13 @@ limitations under the License.
 
     {% if is_old_tracking_js_route == 1 %}
     <script type="text/javascript">
-        var campaignchainChannel = '{{ channel }}';
+        var campaignchainChannel = '{{ channel.trackingId }}';
     </script>
-    {% endif %}
     <script type="text/javascript" src="//{{ app.request.httpHost() }}{{ tracking_js_route|raw }}"></script>
+    {% endif %}
     {% if is_old_tracking_js_route == 0 %}
     <script type="text/javascript">
-            {{ tracking_js_init|raw }}('{{ channel }}');
+            {{ tracking_snippet|raw }}
     </script>
     {% endif %}
 {% endblock %}
