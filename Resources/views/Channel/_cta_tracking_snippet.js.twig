@@ -19,6 +19,6 @@ limitations under the License.
             o = d.createElement(t),
             s = d.getElementsByTagName(t)[0];
     o.src = '//{{ app.request.httpHost()|raw }}{{ tracking_js_route|raw }}';
-    o.addEventListener('load', function (e) { {{ tracking_js_init|raw }}('{{ channel.trackingId }}'); };
+    o.addEventListener('load', function (e) { {{ tracking_js_init|raw }}('{{ channel.trackingId }}'); });
     s.parentNode.insertBefore(o, s);
 })();
