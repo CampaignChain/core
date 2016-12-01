@@ -145,10 +145,8 @@ class ChannelController extends Controller
         return new Response($serializer->serialize($response, 'json'));
     }
 
-    public function ctaTrackingAction(Request $request, $id){
-        $channelService = $this->get('campaignchain.core.channel');
-        $channel = $channelService->getChannel($id);
-
+    private function getTrackingSnippet(Channel $channel)
+    {
         $trackingSnippet = $this->renderView(
             'CampaignChainCoreBundle:Channel:_cta_tracking_snippet.js.twig',
             array(
@@ -159,14 +157,19 @@ class ChannelController extends Controller
         );
 
         $packer = new JavascriptPacker($trackingSnippet, 'None');
-        $trackingSnippet = $packer->pack();
+        return $packer->pack();
+    }
+
+    public function ctaTrackingAction(Request $request, $id){
+        $channelService = $this->get('campaignchain.core.channel');
+        $channel = $channelService->getChannel($id);
 
         return $this->render(
             'CampaignChainCoreBundle:Channel:cta_tracking.html.twig',
             array(
                 'page_title' => 'Enable CTA Tracking',
                 'channel' => $channel,
-                'tracking_snippet' => $trackingSnippet,
+                'tracking_snippet' => $this->getTrackingSnippet($channel),
             ));
     }
 
@@ -192,27 +195,16 @@ class ChannelController extends Controller
     public function apiTestCtaTrackingAction(Request $request, $id){
         $response = array();
 
-        $channel = $this->getDoctrine()
-            ->getRepository('CampaignChainCoreBundle:Channel')
-            ->find($id);
-
-        if (!$channel) {
-            throw new \Exception(
-                'No channel found for id '.$id
-            );
-        }
-
         $channelService = $this->get('campaignchain.core.channel');
+        $channel = $channelService->getChannel($id);
         $locations = $channelService->getRootLocations($channel);
 
         if(count($locations)){
-            $trackingFileCode = 'src="//'.$request->getHttpHost().$this->getParameter('campaignchain.tracking.js_route').'"';
-            $trackingIdCode = 'cc(\''.$channel->getTrackingId().'\');';
             $trackingStatus = true;
 
             foreach($locations as $location){
                 $html = file_get_contents($location->getUrl());
-                if (strpos($html, $trackingFileCode) === false || strpos($html, $trackingIdCode) === false) {
+                if (strpos($html, $this->getTrackingSnippet($channel)) === false) {
                     $trackingStatus = false;
                     $response['root_location'][] = $location->getUrl();
                 }
