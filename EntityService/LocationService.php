@@ -354,15 +354,7 @@ class LocationService
     public function removeLocation($id)
     {
         /** @var Location $location */
-        $location = $this->em
-            ->getRepository('CampaignChainCoreBundle:Location')
-            ->find($id);
-
-        if (!$location) {
-            throw new \Exception(
-                'No location found for id ' . $id
-            );
-        }
+        $location = $this->getLocation($id);
         $removableActivities = new ArrayCollection();
         $notRemovableActivities = new ArrayCollection();
 
@@ -370,51 +362,62 @@ class LocationService
             ->getRepository('CampaignChainSecurityAuthenticationClientOAuthBundle:Token')
             ->findOneBy(['location' => $location]);
 
-        if ($accessToken) {
-            $this->em->remove($accessToken);
+        try {
+            $this->em->getConnection()->beginTransaction();
+
+            if ($accessToken) {
+                $this->em->remove($accessToken);
+                $this->em->flush();
+            }
+
+
+            foreach ($location->getActivities() as $activity) {
+                if ($this->isRemovable($location)) {
+                    $removableActivities->add($activity);
+                } else {
+                    $notRemovableActivities->add($activity);
+                }
+            }
+
+            foreach ($removableActivities as $activity) {
+                $this->activityService->removeActivity($activity);
+            }
+
+            //Hack to find the belonging entities which has to be deleted first
+            $bundleName = explode('/', $location->getLocationModule()->getBundle()->getName());
+            $classPrefix = 'CampaignChain\\' . implode('\\', array_map(function ($e) {
+                    return ucfirst($e);
+                }, explode('-', $bundleName[1]))) . 'Bundle';
+
+            $entitiesToDelete = [];
+            foreach ($this->em->getMetadataFactory()->getAllMetadata() as $metadataClass) {
+                if (strpos(strtolower($metadataClass->getName()), strtolower($classPrefix)) === 0) {
+                    $entitiesToDelete[] = $metadataClass;
+                }
+            };
+
+            foreach ($entitiesToDelete as $repo) {
+                $entities = $this->em->getRepository($repo->getName())->findBy(['location' => $location->getId()]);
+                foreach ($entities as $entityToDelete) {
+                    $this->em->remove($entityToDelete);
+                }
+            }
             $this->em->flush();
-        }
 
-
-        foreach ($location->getActivities() as $activity) {
-            if ($this->isRemovable($location)) {
-                $removableActivities->add($activity);
-            } else {
-                $notRemovableActivities->add($activity);
-            }
-        }
-
-        foreach ($removableActivities as $activity) {
-            $this->activityService->removeActivity($activity);
-        }
-
-        //Hack to find the belonging entities which hae to be deleted first
-        $bundleName = explode('/', $location->getLocationModule()->getBundle()->getName());
-        $classPrefix = 'CampaignChain\\'.implode('\\',array_map(function($e) {return ucfirst($e);},explode('-',$bundleName[1]))).'Bundle';
-
-        $entitiesToDelete = [];
-        foreach ($this->em->getMetadataFactory()->getAllMetadata() as $metadataClass) {
-            if (strpos(strtolower($metadataClass->getName()), strtolower($classPrefix)) === 0) {
-                $entitiesToDelete[] = $metadataClass;
-            }
-        };
-
-        foreach ($entitiesToDelete as $repo) {
-            $entities = $this->em->getRepository($repo->getName())->findBy(['location' => $location->getId()]);
-            foreach ($entities as $entityToDelete) {
-                $this->em->remove($entityToDelete);
-            }
-        }
-        $this->em->flush();
-
-        $this->em->remove($location);
-        $this->em->flush();
-
-        $channel = $location->getChannel();
-
-        if($channel->getLocations()->isEmpty()){
-            $this->em->remove($channel);
+            $this->em->remove($location);
             $this->em->flush();
+
+            $channel = $location->getChannel();
+
+            if ($channel->getLocations()->isEmpty()) {
+                $this->em->remove($channel);
+                $this->em->flush();
+            }
+
+            $this->em->getConnection()->commit();
+        } catch(\Exception $e) {
+            $this->em->getConnection()->rollback();
+            throw $e;
         }
     }
 

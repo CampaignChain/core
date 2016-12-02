@@ -21,7 +21,7 @@ class SchedulerReportLocation extends SchedulerReport
 {
     /**
      * @ORM\ManyToOne(targetEntity="Location", inversedBy="scheduledReports")
-     * @ORM\JoinColumn(referencedColumnName="id")
+     * @ORM\JoinColumn(referencedColumnName="id", onDelete="CASCADE")
      */
     protected $location;
 

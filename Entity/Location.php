@@ -105,6 +105,11 @@ class Location extends Medium
     protected $targetCtas;
 
     /**
+     * @ORM\OneToMany(targetEntity="ReportAnalyticsLocationFact", mappedBy="location")
+     */
+    protected $facts;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -115,6 +120,7 @@ class Location extends Medium
         $this->sourceCtas = new ArrayCollection();
         $this->targetCtas = new ArrayCollection();
         $this->children = new ArrayCollection();
+        $this->facts = new ArrayCollection();
     }
 
     /**
@@ -494,5 +500,39 @@ class Location extends Medium
     public function getParent()
     {
         return $this->parent;
+    }
+
+    /**
+     * Add fact.
+     *
+     * @param ReportAnalyticsLocationFact $fact
+     *
+     * @return Location
+     */
+    public function addFact(ReportAnalyticsLocationFact $fact)
+    {
+        $this->facts->add($fact);
+
+        return $this;
+    }
+
+    /**
+     * Remove fact.
+     *
+     * @param ReportAnalyticsLocationFact $fact
+     */
+    public function removeFact(ReportAnalyticsLocationFact $fact)
+    {
+        $this->facts->removeElement($fact);
+    }
+
+    /**
+     * Get fact.
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getFacts()
+    {
+        return $this->facts;
     }
 }

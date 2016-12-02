@@ -33,7 +33,8 @@ class ReportAnalyticsLocationFact
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Location")
+     * @ORM\ManyToOne(targetEntity="Location", inversedBy="facts")
+     * @ORM\JoinColumn(onDelete="CASCADE")
      */
     protected $location;
 
