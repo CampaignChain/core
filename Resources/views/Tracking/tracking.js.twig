@@ -115,7 +115,20 @@
          */
         this.reportBaseUrlName = "{{ tracking_report_base_url_name }}";
 
+        /**
+         * The JQuery object of the call to action.
+         *
+         * @type {null}
+         */
         this.ctaEvent = null;
+
+        /**
+         * Flag whether this is the first-time visit without anything having
+         * been clicked.
+         *
+         * @type {null}
+         */
+        this.isFirstVisit = null;
 
         if(this.mode == "dev" || this.mode == "dev-stay"){
             console.log("this.idName = " + this.idName);
@@ -126,10 +139,13 @@
     {
         switch(targetSelector){
             case 'a[href]':
-                if(this.newVisit() === true) {
+                if(this.isFirstVisit === true) {
                     if(this.mode == "dev" || this.mode == "dev-stay"){
                         console.log("New visit, so we don't redirect.");
                     }
+
+                    this.isFirstVisit = false;
+
                     return;
                 }
                 if(this.mode == "dev" || this.mode == "dev-stay"){
@@ -200,17 +216,24 @@
             } else {
                 var ajaxUrlMode = "";
             }
+
             // Compose the API URL.
             var ajaxUrl = ajaxBaseUrl + ajaxUrlMode + this.reportApiUri + "/" + this.channel;
-
             if(this.mode == "dev" || this.mode == "dev-stay"){
                 console.log("API URL: " + ajaxUrl);
+            }
+
+            // Compose REST API data.
+            var ajaxData = { id_name: this.idName, id_value: this.idValue, source: this.source, target: this.target, alias: alias };
+            if(this.mode == "dev" || this.mode == "dev-stay"){
+                console.log("REST data: ");
+                console.log(ajaxData);
             }
 
             // Pass the tracking data to the CampaignChain API.
             jQuery.ajax({
                 url: ajaxUrl,
-                data: { id_name: this.idName, id_value: this.idValue, source: this.source, target: this.target, alias: alias },
+                data: ajaxData,
                 dataType: "jsonp",
                 cache: false,
                 context: this,
@@ -442,6 +465,9 @@
              */
             if(tracker.newVisit() === true){
                 target = tracker.removeReportDevBaseUrl(window.location.href);
+
+                // Remember that this is the first visit.
+                tracker.isFirstVisit = true;
 
                 /*
                  We pass this page as the target. The tracking API will then
