@@ -130,20 +130,20 @@
                     console.log("Triggering stalled click event");
                 }
                 if(this.mode != "dev-stay"){
-                    if(this.ctaEvent) {
-                        var events = jQuery._data(this.ctaEvent.get(0), "events");
-                        if(events != null) {
-                            // If there's more than 1 event, then it's not just
-                            // a plain click, but at least one jQuery event is
-                            // bound to the click as well.
-                            if (events.click[1]) {
-                                this.ctaEvent.trigger("click");
-                                return;
-                            }
+                    var events = jQuery._data(this.ctaEvent.get(0), "events");
+                    if(events != null) {
+                        // If there's more than 1 event, then it's not just
+                        // a plain click, but at least one jQuery event is
+                        // bound to the click as well.
+                        if (events.click[1]) {
+                            this.ctaEvent.trigger("click");
+                            return true;
                         }
                     }
 
-                    window.location.href = this.target;
+                    if(this.newVisit() === false) {
+                        window.location.href = this.target;
+                    }
                 }
                 break;
             case 'form > input[submit]':
@@ -158,7 +158,7 @@
                         // bound to the click as well.
                         if (events.submit[1]) {
                             this.ctaEvent.trigger("submit");
-                            return;
+                            return true;
                         }
                     }
 
