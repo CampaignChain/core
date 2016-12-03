@@ -344,6 +344,7 @@ class DhtmlxGantt
                     $activity_data['type'] = 'activity';
 //                    $activity_data['form_root_name'] = $activity->getActivityModule()->getFormRootName();
                     $activity_data['route_edit_api'] = $activity->getActivityModule()->getRoutes()['edit_api'];
+                    $activity_data['route_read_modal'] = $activity->getActivityModule()->getRoutes()['read_modal'];
                     // Get activity icons path
                     $activityService = $this->container->get('campaignchain.core.activity');
                     $activity_data['tpl_teaser'] = $activityService->tplTeaser($activity, array('only_icon' => true));
@@ -395,6 +396,7 @@ class DhtmlxGantt
                     $milestone_data['parent'] = $campaign_data['id'];
                     $milestone_data['type'] = 'milestone';
                     $milestone_data['route_edit_api'] = $milestone->getMilestoneModule()->getRoutes()['edit_api'];
+                    $milestone_data['route_read_modal'] = $milestone->getMilestoneModule()->getRoutes()['edit_api'];
                     // Get icons path
                     $milestoneService = $this->container->get('campaignchain.core.milestone');
                     $icons = $milestoneService->getIcons($milestone);

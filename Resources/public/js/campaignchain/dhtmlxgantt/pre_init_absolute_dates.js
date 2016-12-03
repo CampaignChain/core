@@ -208,13 +208,19 @@ gantt.attachEvent("onTaskDblClick", function(id,e){
 
     var task = gantt.getTask(id);
 
-    // Done tasks cannot be edited.
     var today = campaignchainGetUserDateTime(moment());
     if(+campaignchainGetUserDateTime(task.start_date) < +today && +campaignchainGetUserDateTime(task.end_date) < +today){
-        return false;
+        // Task is in the past, show read view, but only for Activites and Milestones.
+        if(task.type != "campaign") {
+            var $route = Routing.generate(task.route_read_modal, {id: id});
+            campaignchainShowReadModal($route);
+
+            return false;
+        }
     }
 
-    campaignchainShowModal(
+    // Task is in the future, show edit view.
+    campaignchainShowEditModal(
         task.type, task.campaignchain_id, task.route_edit_api,
         task, 'campaignchainGanttTaskDblClickSuccess'
     );

@@ -116,7 +116,7 @@ gantt.attachEvent("onTaskDblClick", function(id,e){
 
     var task = gantt.getTask(id);
 
-    campaignchainShowModal(
+    campaignchainShowEditModal(
         task.type, task.campaignchain_id, task.route_edit_api,
         task, 'campaignchainGanttTaskDblClickSuccess'
     );

@@ -151,11 +151,13 @@ abstract class AbstractActivityHandler
      *
      * Called in these views:
      * - read
+     * - read_modal
      *
      * @param Operation $operation
+     * @param bool $isModal Modal view yes or no?
      * @return mixed
      */
-    abstract public function readAction(Operation $operation);
+    abstract public function readAction(Operation $operation, $isModal = false);
 
     /**
      * The Activity controller calls this method after the form was submitted

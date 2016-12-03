@@ -65,7 +65,7 @@ function campaignchainGetUserDateTime(datetime){
     return moment.tz(datetime, window.campaignchainTimezone);
 }
 
-function campaignchainShowModal(type, id, api_route, action, successFunction){
+function campaignchainShowEditModal(type, id, api_route, action, successFunction){
 
     $('#remoteModal').on('hidden.bs.modal', function () {
         // Clean up submitted data before showing this modal.
@@ -177,6 +177,22 @@ function campaignchainShowModal(type, id, api_route, action, successFunction){
             $(this).attr("clicked", "true");
         });
     }
+}
+
+function campaignchainShowReadModal(route){
+
+    $('#remoteModal').on('hidden.bs.modal', function () {
+        // Clean up submitted data before showing this modal.
+        $(this).removeData('bs.modal');
+        // Make sure we always show the actual remote content
+        // and not always the same remote modal content.
+        $(this).find(".modal-content").empty();
+    });
+
+    $('#remoteModal').modal({
+        show: true,
+        remote: route
+    });
 }
 
 function campaignchainMoveAction(type, requestData, task, successFunction){

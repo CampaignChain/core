@@ -665,6 +665,7 @@ class ActivityModuleController extends Controller
         // Make sure that data stays intact by using transactions.
         try {
             $em->getConnection()->beginTransaction();
+
             if($this->parameters['equals_operation']) {
                 /** @var Operation $operation */
                 $operation = $activityService->getOperation($id);
@@ -678,6 +679,8 @@ class ActivityModuleController extends Controller
                         $this->operations[0],
                         $data[$this->contentModuleFormName]
                     );
+                } else {
+                    $content = null;
                 }
             } else {
                 throw new \Exception(
@@ -703,7 +706,7 @@ class ActivityModuleController extends Controller
             $em->flush();
 
             // The module tries to execute the job immediately.
-            $this->handler->postPersistNewEvent($operation, $content);
+            $this->handler->postPersistEditEvent($operation, $content);
 
             $responseData['start_date'] =
             $responseData['end_date'] =
@@ -716,8 +719,14 @@ class ActivityModuleController extends Controller
 
             $this->addFlash(
                 'warning',
-                $e->getMessage()
+                $e->getMessage().' '.$e->getFile().' '.$e->getLine().' '.$e->getTraceAsString()
             );
+
+            $this->getLogger()->error($e->getMessage(), array(
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTrace(),
+            ));
 
             $responseData['message'] = $e->getMessage();
             $responseData['success'] = false;
@@ -733,10 +742,11 @@ class ActivityModuleController extends Controller
      *
      * @param Request $request
      * @param $id
+     * @param bool $isModal Modal view yes or no?
      * @return mixed
      * @throws \Exception
      */
-    public function readAction(Request $request, $id)
+    public function readAction(Request $request, $id, $isModal = false)
     {
         $activityService = $this->get('campaignchain.core.activity');
         $this->activity = $activityService->getActivity($id);
@@ -751,10 +761,24 @@ class ActivityModuleController extends Controller
         }
 
         if($this->handler){
-            return $this->handler->readAction($this->operations[0]);
+            return $this->handler->readAction($this->operations[0], $isModal);
         } else {
             throw new \Exception('No read handler defined.');
         }
+    }
+
+    /**
+     * Symfony controller action for viewing the data of a CampaignChain Activity
+     * in a modal.
+     *
+     * @param Request $request
+     * @param $id
+     * @return mixed
+     * @throws \Exception
+     */
+    public function readModalAction(Request $request, $id)
+    {
+        return $this->readAction($request, $id, true);
     }
 
     /**

@@ -56,30 +56,28 @@ limitations under the License.
 
     {% block form_header %}{% endblock %}
 
-    <form method="POST" class="form-horizontal" role="form">
-        {{ bootstrap_set_style('horizontal') }}
-        {{ bootstrap_set_widget_col(9) }}
-        {{ bootstrap_set_label_col(3) }}
-        {{ form_widget(form) }}
-        <div class="form-group">
-            <div class="col-lg-offset-3 col-lg-9">
-                <div class="btn-group pull-right" role="group" aria-label="...">
-                    {% block form_footer_btn_group %}{% endblock %}
-                    {% if form_submit_label is defined %}
-                        {% if form_submit_label == 'Save' %}
-                            <button class="btn btn-primary" type="submit" data-tooltip="true" data-placement="top" data-original-title="Save"><i class="fa fa-save"></i></button>
-                        {% elseif form_submit_label == 'Upload' %}
-                            <button class="btn btn-primary" type="submit" data-tooltip="true" data-placement="top" data-original-title="Upload"><i class="fa fa-upload"></i></button>
-                        {% elseif form_submit_label == 'Next' %}
-                            <button class="btn btn-primary" type="submit" data-tooltip="true" data-placement="top" data-original-title="Next"><i class="fa fa-arrow-right"></i></button>
-                        {% endif %}
-                    {% else %}
-                        <button class="btn btn-primary" type="submit" data-tooltip="true" data-placement="top" data-original-title="Save"><i class="fa fa-save"></i></button>
-                    {% endif %}
-                </div>
+    {% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig'  with{
+    'boxtype': 'primary'
+    } %}
+        {% block box_before %}
+            <form method="POST" class="form-horizontal" role="form" enctype="multipart/form-data">
+            {{ bootstrap_set_style('horizontal') }}
+            {{ bootstrap_set_widget_col(9) }}
+            {{ bootstrap_set_label_col(3) }}
+        {% endblock %}
+        {% block box_body %}
+            {{ form_widget(form) }}
+        {% endblock %}
+        {% block box_footer %}
+            <div class="btn-group pull-right" role="group" aria-label="...">
+                {% include 'CampaignChainCoreBundle:Base:form_footer_buttons.html.twig' %}
             </div>
-        </div>
-        {{ form_rest(form) }}
-    </form>
+        {% endblock %}
+        {% block box_after %}
+            {{ form_rest(form) }}
+            </form>
+        {% endblock %}
+    {% endembed %}
+
     {% block form_footer %}{% endblock %}
 {% endblock %}

@@ -42,3 +42,15 @@ body {
 .campaignchain-navbar-page .dropdown-menu {
     background-color: #222d32;
 }
+
+.modal-content {
+    background-color: #ecf0f5;
+}
+
+.modal-header {
+    border-bottom-color: #fff;
+}
+
+.modal-footer {
+    border-top-color: #fff;
+}
