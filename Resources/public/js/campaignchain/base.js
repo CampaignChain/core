@@ -98,7 +98,7 @@ function campaignchainShowModal(type, id, api_route, action, successFunction){
         window.apiUrl = Routing.generate(api_route, { id: id });
 
         // Note that we use .one instead of .on here, to make sure the event is fired only once per modal.
-        $('.modal').one('submit', 'form', function(e) {
+        $('.modal').on('submit', 'form', function(e) {
             var $form = $(this);
             var enctype = $form.attr('id')
             var taskId = id + '_' + type;
@@ -139,11 +139,29 @@ function campaignchainShowModal(type, id, api_route, action, successFunction){
                     cache: false,
 
                     success: function(data, status) {
-                        if(successFunction !== undefined){
-                            window[successFunction](action, $.parseJSON(data));
-                        }
+                        var response = $.parseJSON(data);
+                        console.log(data);
+                        if(response["success"] === false){
+                             // Remove existing warning
+                            $('#remoteModal .modal-body .alert').remove();
+                            // Create new warning
+                            $('#remoteModal .modal-body').prepend(
+                                '<div class="alert alert-warning alert-dismissable">' +
+                                    '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' +
+                                    '<h4><i class="icon fa fa-warning"></i> Warning</h4>'
+                                    + response["message"] +
+                                '</div>'
+                                );
+                            $('html, body').animate({
+                                scrollTop: $('#remoteModal').offset().top
+                            }, 1000);
+                        } else {
+                            if (successFunction !== undefined) {
+                                window[successFunction](action, response);
+                            }
 
-                        $('#remoteModal').modal('hide');
+                            $('#remoteModal').modal('hide');
+                        }
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                         alert('URL: ' + apiUrl + ', status: ' + xhr.status + ', message: ' +thrownError);

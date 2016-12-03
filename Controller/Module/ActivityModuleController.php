@@ -430,7 +430,7 @@ class ActivityModuleController extends Controller
         }
 
         // The module tries to execute the job immediately.
-        $this->handler->postPersistNewEvent($operation, $form, $content);
+        $this->handler->postPersistNewEvent($operation, $content);
 
         return $activity;
     }
@@ -573,7 +573,7 @@ class ActivityModuleController extends Controller
             $em->flush();
 
             // The module tries to execute the job immediately.
-            $this->handler->postPersistEditEvent($this->operations[0], $form, $content);
+            $this->handler->postPersistEditEvent($this->operations[0], $content);
 
             $em->getConnection()->commit();
 
@@ -654,48 +654,74 @@ class ActivityModuleController extends Controller
 
         $activityService = $this->get('campaignchain.core.activity');
         $this->activity = $activityService->getActivity($id);
-        $this->activity->setName($data['name']);
-
-        if($this->parameters['equals_operation']) {
-            /** @var Operation $operation */
-            $operation = $activityService->getOperation($id);
-            // The activity equals the operation. Thus, we update the operation
-            // with the same data.
-            $operation->setName($data['name']);
-            $this->operations[0] = $operation;
-
-            if($this->handler->hasContent('editModal')){
-                $content = $this->handler->processContent(
-                    $this->operations[0],
-                    $data[$this->contentModuleFormName]
-                );
-            }
-        } else {
-            throw new \Exception(
-                'Multiple Operations for one Activity not implemented yet.'
-            );
-        }
-
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($this->activity);
-        $em->persist($this->operations[0]);
-        if($this->handler->hasContent('editModal')) {
-            $em->persist($content);
-        }
-
-        $hookService = $this->get('campaignchain.core.hook');
-        $this->activity = $hookService->processHooks(
-            $this->parameters['bundle_name'],
-            $this->parameters['module_identifier'],
-            $this->activity,
-            $data
-        );
-
-        $em->flush();
-
+        // Remember original dates.
         $responseData['start_date'] =
         $responseData['end_date'] =
             $this->activity->getStartDate()->format(\DateTime::ISO8601);
+        $this->activity->setName($data['name']);
+
+        $em = $this->getDoctrine()->getManager();
+
+        // Make sure that data stays intact by using transactions.
+        try {
+            $em->getConnection()->beginTransaction();
+            if($this->parameters['equals_operation']) {
+                /** @var Operation $operation */
+                $operation = $activityService->getOperation($id);
+                // The activity equals the operation. Thus, we update the operation
+                // with the same data.
+                $operation->setName($data['name']);
+                $this->operations[0] = $operation;
+
+                if($this->handler->hasContent('editModal')){
+                    $content = $this->handler->processContent(
+                        $this->operations[0],
+                        $data[$this->contentModuleFormName]
+                    );
+                }
+            } else {
+                throw new \Exception(
+                    'Multiple Operations for one Activity not implemented yet.'
+                );
+            }
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($this->activity);
+            $em->persist($this->operations[0]);
+            if($this->handler->hasContent('editModal')) {
+                $em->persist($content);
+            }
+
+            $hookService = $this->get('campaignchain.core.hook');
+            $this->activity = $hookService->processHooks(
+                $this->parameters['bundle_name'],
+                $this->parameters['module_identifier'],
+                $this->activity,
+                $data
+            );
+
+            $em->flush();
+
+            // The module tries to execute the job immediately.
+            $this->handler->postPersistNewEvent($operation, $content);
+
+            $responseData['start_date'] =
+            $responseData['end_date'] =
+                $this->activity->getStartDate()->format(\DateTime::ISO8601);
+            $responseData['success'] = true;
+
+            $em->getConnection()->commit();
+        } catch (\Exception $e) {
+            $em->getConnection()->rollback();
+
+            $this->addFlash(
+                'warning',
+                $e->getMessage()
+            );
+
+            $responseData['message'] = $e->getMessage();
+            $responseData['success'] = false;
+        }
 
         $serializer = $this->get('campaignchain.core.serializer.default');
         

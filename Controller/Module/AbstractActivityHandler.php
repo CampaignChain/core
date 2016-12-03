@@ -176,11 +176,10 @@ abstract class AbstractActivityHandler
      * - new
      *
      * @param Operation $operation
-     * @param Form $form
      * @param $content The Activity's content object.
      * @return null
      */
-    public function postPersistNewEvent(Operation $operation, Form $form, $content = null)
+    public function postPersistNewEvent(Operation $operation, $content = null)
     {
         return null;
     }
@@ -207,11 +206,10 @@ abstract class AbstractActivityHandler
      * - edit
      *
      * @param Operation $operation
-     * @param Form $form
      * @param $content The Activity's content object.
      * @return null
      */
-    public function postPersistEditEvent(Operation $operation, Form $form, $content = null)
+    public function postPersistEditEvent(Operation $operation, $content = null)
     {
         return null;
     }

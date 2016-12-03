@@ -51,11 +51,8 @@ limitations under the License.
         <script src="{{ asset_url }}"></script>
     {% endjavascripts %}
 
-    {% for flashMessage in app.session.flashbag.get('success') %}
-        <div class="alert alert-success">
-            {{ flashMessage|raw }}
-        </div>
-    {% endfor %}
+    {% block flashbag %}{% endblock %}
+    {% include 'CampaignChainCoreBundle:Base:_flashbag.html.twig' %}
 
     {% block form_header %}{% endblock %}
 
