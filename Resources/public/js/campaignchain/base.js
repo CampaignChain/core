@@ -142,7 +142,7 @@ function campaignchainShowEditModal(type, id, api_route, action, successFunction
                         var response = $.parseJSON(data);
                         console.log(data);
                         if(response["success"] === false){
-                             // Remove existing warning
+                            // Remove existing warning
                             $('#remoteModal .modal-body .alert').remove();
                             // Create new warning
                             $('#remoteModal .modal-body').prepend(
@@ -160,7 +160,18 @@ function campaignchainShowEditModal(type, id, api_route, action, successFunction
                                 window[successFunction](action, response);
                             }
 
-                            $('#remoteModal').modal('hide');
+                            if(type == "campaign" || type == "milestone"){
+                                $('#remoteModal').modal('hide');
+                            } else {
+                                // Avoid that previous form gets submitted again.
+                                $('.modal').off('submit');
+
+                                if (response["status"] == 'closed') {
+                                    $('#remoteModal .modal-content').load(modalForm);
+                                } else {
+                                    $('#remoteModal').modal('hide');
+                                }
+                            }
                         }
                     },
                     error: function (xhr, ajaxOptions, thrownError) {

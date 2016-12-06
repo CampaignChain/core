@@ -654,11 +654,15 @@ class ActivityModuleController extends Controller
 
         $activityService = $this->get('campaignchain.core.activity');
         $this->activity = $activityService->getActivity($id);
+        $this->activity->setName($data['name']);
+
         // Remember original dates.
         $responseData['start_date'] =
         $responseData['end_date'] =
             $this->activity->getStartDate()->format(\DateTime::ISO8601);
-        $this->activity->setName($data['name']);
+
+        // Clear all flash bags.
+        $this->get('session')->getFlashBag()->clear();
 
         $em = $this->getDoctrine()->getManager();
 
@@ -731,6 +735,8 @@ class ActivityModuleController extends Controller
             $responseData['message'] = $e->getMessage();
             $responseData['success'] = false;
         }
+
+        $responseData['status'] = $this->activity->getStatus();
 
         $serializer = $this->get('campaignchain.core.serializer.default');
         

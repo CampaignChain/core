@@ -89,7 +89,7 @@ class LocationController extends BaseController
     }
 
     /**
-     * Toggle the status of a Module to active or inactive.
+     * Toggle the status of a Location to active or inactive.
      *
      * Example Request
      * ===============

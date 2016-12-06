@@ -17,7 +17,9 @@
 
 namespace CampaignChain\CoreBundle\Controller;
 
+use CampaignChain\CoreBundle\Entity\Activity;
 use CampaignChain\CoreBundle\Entity\Medium;
+use CampaignChain\CoreBundle\EntityService\ActivityService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityRepository;
@@ -243,19 +245,36 @@ class ActivityController extends Controller
 
     public function editModalAction(Request $request, $id)
     {
-        // TODO: If an activity is done, it cannot be edited.
+        /** @var ActivityService $activityService */
         $activityService = $this->get('campaignchain.core.activity');
-        $activityModule = $activityService->getActivityModuleByActivity($id);
-        $routes = $activityModule->getRoutes();
+        /** @var Activity $activity */
+        $activity = $activityService->getActivity($id);
+        $routes = $activity->getActivityModule()->getRoutes();
 
-        return $this->redirect(
-            $this->generateUrl(
-                $routes['edit_modal'],
-                array(
-                    'id' => $id,
+        if($activity->getStatus() == Action::STATUS_CLOSED){
+            return $this->redirect(
+                $this->generateUrl(
+                    $routes['read_modal'],
+                    array(
+                        'id' => $id,
+                    )
                 )
-            )
-        );
+            );
+        } else {
+            return $this->redirect(
+                $this->generateUrl(
+                    $routes['edit_modal'],
+                    array(
+                        'id' => $id,
+                    )
+                )
+            );
+        }
+    }
+
+    public function readModalAction(Request $request, $id)
+    {
+        return $this->editModalAction($request, $id);
     }
 
     public function removeAction(Request $request, $id)
