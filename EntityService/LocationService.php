@@ -31,6 +31,7 @@ use CampaignChain\CoreBundle\Twig\CampaignChainCoreExtension;
 use Doctrine\Common\Collections\ArrayCollection;
 use CampaignChain\CoreBundle\EntityService\ActivityService;
 use CampaignChain\CoreBundle\EntityService\ChannelService;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class LocationService
 {
@@ -116,12 +117,26 @@ class LocationService
      * does not exist and if the respective Location module supports auto
      * generation of Locations.
      **
-     * @param $url
-     * @param $operation Operation
+     * @param URL $url
+     * @param Operation $operation
+     * @param string $alias Tracking alias
+     * @param array $options    'graceful_url_exists':
+     *                              Gracefully handles URL check if there's a
+     *                              timeout.
      * @return bool|Location|null|object
      */
-    public function findLocationByUrl($url, $operation, $alias = null)
+    public function findLocationByUrl($url, Operation $operation, $alias = null, array $options = array())
     {
+        /*
+         * Set default options.
+         */
+        $resolver = new OptionsResolver();
+        $resolver->setDefaults(array(
+            'graceful_url_exists' => true,
+        ));
+
+        $options = $resolver->resolve($options);
+
         $url = ParserUtil::sanitizeUrl($url);
 
         /*
@@ -132,7 +147,7 @@ class LocationService
          * - The Location identifier is included in the CTA URL as well
          *   as the domain
          */
-        if(ParserUtil::urlExists($url)) {
+        if(ParserUtil::urlExists($url, $options['graceful_url_exists'])) {
             $urlParts = parse_url($url);
 
             if($urlParts['scheme'] == 'http'){

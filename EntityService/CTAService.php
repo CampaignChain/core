@@ -90,6 +90,9 @@ class CTAService
      *                              shortened URL will be created (if a connected
      *                              Location exists), or an existing one returned.
      *                              Overrides 'shorten_all'.
+     *                          'graceful_url_exists':
+     *                              Gracefully handles URL check if there's a
+     *                              timeout.
      * @return CTAParserData
      *
      * @todo Manage links to Locations that will be created by CampaignChain once an Operation gets executed
@@ -104,6 +107,7 @@ class CTAService
             'format' => self::FORMAT_TXT,
             'shorten_all' => false,
             'shorten_all_unique' => false,
+            'graceful_url_exists' => true,
         ));
 
         // Option 'shorten_all_unique' overrides 'shorten_all'.
@@ -129,7 +133,9 @@ class CTAService
         // process each url
         foreach ($contentUrls as $url) {
             $location = $this->locationService->findLocationByUrl(
-                $this->expandUrl($url), $operation
+                $this->expandUrl($url), $operation, null, array(
+                    'graceful_url_exists' => $options['graceful_url_exists']
+                )
             );
 
             if(!$location){

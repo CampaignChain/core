@@ -54,6 +54,12 @@ class ParserUtil
     }
 
     static function extractURLsFromText($text){
+        // If this is HTML, then get the content within the <body> tag.
+        preg_match("/<body[^>]*>(.*?)<\/body>/is", $text, $matches);
+        if(count($matches) && isset($matches[1])){
+            $text = $matches[1];
+        }
+
         preg_match_all(self::REGEX_URL, $text, $matches);
         return $matches[0];
     }
@@ -348,7 +354,7 @@ class ParserUtil
         return $text;
     }
 
-    static function urlExists($url)
+    static function urlExists($url, $graceful = true)
     {
         // If not a valid URL, return false.
         if(!self::validateUrl($url)){
@@ -361,18 +367,23 @@ class ParserUtil
         }
 
         try {
-            $expandedUrlHeaders = get_headers($url);
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_NOBODY, true);
+            curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            if( $httpCode == 200 ){
+                return true;
+            }
+
+            return false;
         } catch (\Exception $e) {
+            if($graceful){
+                return true;
+            }
             return false;
         }
-
-        $status = $expandedUrlHeaders[0];
-
-        if(strpos($status,"404")) {
-            return false;
-        }
-
-        return true;
     }
 
     /**
