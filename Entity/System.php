@@ -84,6 +84,11 @@ class System extends Meta
     protected $bitlyAccessToken;
 
     /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    protected $includeInHead;
+
+    /**
      * Get id
      *
      * @return integer
@@ -310,4 +315,26 @@ class System extends Meta
         return $this->bitlyAccessToken;
     }
 
+    /**
+     * Set text to include after <body> tag.
+     *
+     * @param string $includeInHead
+     * @return System
+     */
+    public function setIncludeInHead($includeInHead)
+    {
+        $this->includeInHead = $includeInHead;
+
+        return $this;
+    }
+
+    /**
+     * Get bitly access token
+     *
+     * @return string
+     */
+    public function getIncludeInHead()
+    {
+        return $this->includeInHead;
+    }
 }
