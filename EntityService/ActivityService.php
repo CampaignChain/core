@@ -17,6 +17,7 @@
 
 namespace CampaignChain\CoreBundle\EntityService;
 
+use CampaignChain\CoreBundle\Controller\Module\AbstractActivityHandler;
 use CampaignChain\CoreBundle\Entity\Action;
 use CampaignChain\CoreBundle\Entity\Activity;
 use CampaignChain\CoreBundle\Entity\Campaign;
@@ -276,6 +277,15 @@ class ActivityService
 
         /** @var Activity $activity */
         $activity = $hookService->processHook($activity, $hook);
+
+        // Let the module handler do its work (e.g. REST API calls to change
+        // remote content).
+        $activityServices = $activity->getActivityModule()->getServices();
+        if($activityServices !== null && isset($activityServices['handler'])){
+            /** @var AbstractActivityHandler $activityHandler */
+            $activityHandler = $this->container->get($activityServices['handler']);
+            $activityHandler->moveActivity($activity);
+        }
 
         $this->em->persist($activity);
 

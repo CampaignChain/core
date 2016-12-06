@@ -286,4 +286,15 @@ abstract class AbstractActivityHandler
     {
         return true;
     }
+
+    /**
+     * This method is being called if an Activity gets moved on the timeline.
+     *
+     * @param Activity $activity
+     * @return bool
+     */
+    public function moveActivity(Activity $activity)
+    {
+        return true;
+    }
 }
