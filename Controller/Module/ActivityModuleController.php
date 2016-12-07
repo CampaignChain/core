@@ -721,9 +721,15 @@ class ActivityModuleController extends Controller
         } catch (\Exception $e) {
             $em->getConnection()->rollback();
 
+            if($this->get('kernel')->getEnvironment() == 'dev'){
+                $message = $e->getMessage().' '.$e->getFile().' '.$e->getLine().'<br/>'.$e->getTraceAsString();
+            } else {
+                $message = $e->getMessage();
+            }
+
             $this->addFlash(
                 'warning',
-                $e->getMessage().' '.$e->getFile().' '.$e->getLine().' '.$e->getTraceAsString()
+                $message
             );
 
             $this->getLogger()->error($e->getMessage(), array(
