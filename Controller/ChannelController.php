@@ -160,6 +160,14 @@ class ChannelController extends Controller
         return $packer->pack();
     }
 
+    private function getTrackingUrl()
+    {
+        return
+            '//'.
+            $this->getParameter('router.request_context.host').
+            $this->getParameter('campaignchain.tracking.js_route');
+    }
+
     public function ctaTrackingAction(Request $request, $id){
         $channelService = $this->get('campaignchain.core.channel');
         $channel = $channelService->getChannel($id);
@@ -203,10 +211,26 @@ class ChannelController extends Controller
             $trackingStatus = true;
 
             foreach($locations as $location){
-                $html = file_get_contents($location->getUrl());
+                $url = $location->getUrl();
+                $html = file_get_contents($url);
+
+                // Check if snippet was included directly.
                 if (strpos($html, $this->getTrackingSnippet($channel)) === false) {
-                    $trackingStatus = false;
-                    $response['root_location'][] = $location->getUrl();
+                    // Check if snippet is in Google Tag Manager.
+                    if (strpos($html, 'www.googletagmanager.com') !== false) {
+                        preg_match('/\bwww\.googletagmanager.com\/ns\.html\?id=[-A-Z0-9]+/i', $html, $matches);
+                        $gtmUrlParts = parse_url(($matches[0]));
+                        $gtmScriptContent = file_get_contents(
+                            'http://www.googletagmanager.com/gtm.js?'.$gtmUrlParts['query']
+                        );
+                        if (strpos($gtmScriptContent, $this->getTrackingUrl()) === false) {
+                            $trackingStatus = false;
+                            $response['root_location'][] = $location->getUrl();
+                        }
+                    } else {
+                        $trackingStatus = false;
+                        $response['root_location'][] = $location->getUrl();
+                    }
                 }
             }
         } else {
