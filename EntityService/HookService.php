@@ -25,7 +25,8 @@ class HookService
     protected $em;
     protected $container;
     protected $view = 'default';
-
+    protected $errorCodes = array();
+    protected $entity = null;
 
     public function __construct(ManagerRegistry $managerRegistry, ContainerInterface $container)
     {
@@ -72,6 +73,7 @@ class HookService
             foreach($hooks as $identifier => $active){
                 if($active){
                     $hookModule = $this->em->getRepository('CampaignChainCoreBundle:Hook')->findOneByIdentifier($identifier);
+                    /** @var HookServiceDefaultInterface $hookService */
                     $hookService = $this->container->get($hookModule->getServices()['entity']);
 
                     // If the entity is new and the hook is of type "trigger", then define it for the entity.
@@ -96,7 +98,9 @@ class HookService
                     }
 
                     if($hasHookData){
-                        $entity = $hookService->processHook($entity, $hook);
+                        if(!$hookService->processHook($entity, $hook)){
+                            $this->addErrorCode($hookService->getErrorCodes());
+                        }
                     }
                 }
             }
@@ -115,7 +119,13 @@ class HookService
             }
         }
 
-        return $entity;
+        $this->setEntity($entity);
+
+        if($this->hasErrors()){
+            return false;
+        }
+
+        return true;
     }
 
     public function getHook($identifier)
@@ -127,5 +137,42 @@ class HookService
         }
 
         return $hook;
+    }
+
+    /**
+     * @param $entity   An Action (Campaign, Activity, Milestone) or Medium
+     *                  (Channel, Location).
+     */
+    protected function setEntity($entity)
+    {
+        $this->entity = $entity;
+    }
+
+    /**
+     * @throws \Exception
+     * @return object The entity object.
+     */
+    public function getEntity()
+    {
+        if($this->entity === null){
+            throw new \Exception('Please execute processHook() first.');
+        }
+
+        return $this->entity;
+    }
+
+    protected function addErrorCode($errorCode)
+    {
+        $this->errorCodes = array_merge($this->errorCodes, $errorCode);
+    }
+
+    public function getErrorCodes()
+    {
+        return $this->errorCodes;
+    }
+
+    public function hasErrors()
+    {
+        return count($this->errorCodes);
     }
 }

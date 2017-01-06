@@ -572,7 +572,7 @@ class Action extends Meta
     {
         if($postStartDateLimit && $postStartDateLimit < $this->startDate){
             throw new \Exception(
-                'Post start date limit ('.$postStartDateLimit->format(\DateTime::ISO8601).')'.
+                'Post start date limit ('.$postStartDateLimit->format(\DateTime::ISO8601).') '.
                 'must be later than start date ('.$this->startDate->format(\DateTime::ISO8601).')'.
                 '.'
             );

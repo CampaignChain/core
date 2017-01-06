@@ -25,22 +25,22 @@ use CampaignChain\CoreBundle\Entity\Hook;
  * @author Sandro Groganz <sandro@campaignchain.com>
  * @package CampaignChain\CoreBundle\EntityService
  */
-interface HookServiceTriggerInterface extends HookServiceDefaultInterface
+abstract class HookServiceTriggerInterface extends HookServiceDefaultInterface
 {
     /**
      * @param $entity
      * @param $mode
      * @return object The hook object.
      */
-    public function getHook($entity, $mode = Hook::MODE_DEFAULT);
+    public function getHook($entity, $mode = Hook::MODE_DEFAULT){}
 
     /**
      * @return string The hook's start date field attribute name as specified in the respective form type.
      */
-    public function getStartDateIdentifier();
+    abstract public function getStartDateIdentifier();
 
     /**
      * @return string The hook's end date field attribute name as specified in the respective form type.
      */
-    public function getEndDateIdentifier();
+    abstract public function getEndDateIdentifier();
 }

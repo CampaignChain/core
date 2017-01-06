@@ -94,7 +94,8 @@ class OperationService
             }
         }
 
-        $operation = $hookService->processHook($operation, $hook);
+        $hookService->processHook($operation, $hook);
+        $operation =$hookService->getEntity();
 
         $this->em->persist($operation);
         $this->em->flush();

@@ -105,7 +105,8 @@ class MilestoneService
             $hook->setEndDate(new \DateTime($hook->getEndDate()->add($interval)->format(\DateTime::ISO8601)));
         }
 
-        $milestone = $hookService->processHook($milestone, $hook);
+        $hookService->processHook($milestone, $hook);
+        $milestone = $hookService->getEntity();
 
         $this->em->persist($milestone);
         $this->em->flush();

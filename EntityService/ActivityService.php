@@ -275,8 +275,9 @@ class ActivityService
             $hook->setEndDate(new \DateTime($hook->getEndDate()->add($interval)->format(\DateTime::ISO8601)));
         }
 
+        $hookService->processHook($activity, $hook);
         /** @var Activity $activity */
-        $activity = $hookService->processHook($activity, $hook);
+        $activity = $hookService->getEntity();
 
         // Let the module handler do its work (e.g. REST API calls to change
         // remote content).

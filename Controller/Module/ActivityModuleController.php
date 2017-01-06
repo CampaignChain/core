@@ -24,6 +24,7 @@ use CampaignChain\CoreBundle\Entity\Location;
 use CampaignChain\CoreBundle\Entity\Medium;
 use CampaignChain\CoreBundle\Entity\Module;
 use CampaignChain\CoreBundle\EntityService\ActivityService;
+use CampaignChain\CoreBundle\EntityService\HookService;
 use CampaignChain\CoreBundle\Exception\ExternalApiException;
 use CampaignChain\CoreBundle\Validator\AbstractOperationValidator;
 use CampaignChain\CoreBundle\Wizard\ActivityWizard;
@@ -399,15 +400,17 @@ class ActivityModuleController extends Controller
             // flush here.
             $em->flush();
 
+            /** @var HookService $hookService */
             $hookService = $this->get('campaignchain.core.hook');
-            /** @var Activity $activity */
-            $activity = $hookService->processHooks(
+            $hookService->processHooks(
                 $this->parameters['bundle_name'],
                 $this->parameters['module_identifier'],
                 $activity,
                 $form,
                 true
             );
+            /** @var Activity $activity */
+            $activity = $hookService->getEntity();
 
             // Check if the content can be executed.
             if(isset($this->validators['operations']) && $content){
@@ -547,14 +550,16 @@ class ActivityModuleController extends Controller
                 $em->persist($content);
             }
 
+            /** @var HookService $hookService */
             $hookService = $this->get('campaignchain.core.hook');
-            /** @var Activity $activity */
-            $activity = $hookService->processHooks(
+            $hookService->processHooks(
                 $this->activityBundleName,
                 $this->activityModuleIdentifier,
                 $activity,
                 $form
             );
+            /** @var Activity $activity */
+            $activity = $hookService->getEntity();
 
             // Check if the content can be executed.
             if(isset($this->validators['operations'])) {
@@ -699,13 +704,17 @@ class ActivityModuleController extends Controller
                 $em->persist($content);
             }
 
+            /** @var HookService $hookService */
             $hookService = $this->get('campaignchain.core.hook');
-            $this->activity = $hookService->processHooks(
+            $hookService->processHooks(
                 $this->parameters['bundle_name'],
                 $this->parameters['module_identifier'],
                 $this->activity,
                 $data
             );
+
+            /** @var Activity activity */
+            $this->activity = $hookService->getEntity();
 
             $em->flush();
 

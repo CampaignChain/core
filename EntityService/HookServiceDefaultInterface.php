@@ -16,6 +16,7 @@
  */
 
 namespace CampaignChain\CoreBundle\EntityService;
+use CampaignChain\CoreBundle\Entity\Meta;
 
 /**
  * Interface HookServiceDefaultInterface
@@ -23,18 +24,70 @@ namespace CampaignChain\CoreBundle\EntityService;
  * @author Sandro Groganz <sandro@campaignchain.com>
  * @package CampaignChain\CoreBundle\EntityService
  */
-interface HookServiceDefaultInterface
+abstract class HookServiceDefaultInterface
 {
     /**
-     * @param $entity
-     * @return object The hook object.
+     * @var Meta
      */
-    public function getHook($entity);
+    protected $entity;
 
     /**
-     * @param $entity
+     * @var string
+     */
+    protected $errorCodes = array();
+
+    /**
+     * @param $entity   An Action (Campaign, Activity, Milestone) or Medium
+     *                  (Channel, Location).
+     * @return object   The hook object.
+     */
+    abstract public function getHook($entity);
+
+    /**
+     * @param $entity   An Action (Campaign, Activity, Milestone) or Medium
+     *                  (Channel, Location).
      * @param $hook
+     * @return bool     True, if the hook was processed successfully, false if not.
+     */
+    public function processHook($entity, $hook)
+    {
+        return true;
+    }
+
+    /**
+     * @param $entity   An Action (Campaign, Activity, Milestone) or Medium
+     *                  (Channel, Location).
+     */
+    protected function setEntity($entity)
+    {
+        $this->entity = $entity;
+    }
+
+    /**
+     * @throws \Exception
      * @return object The entity object.
      */
-    public function processHook($entity, $hook);
+    public function getEntity()
+    {
+        if($this->entity === null){
+            throw new \Exception('Please execute processHook() first.');
+        }
+
+        return $this->entity;
+    }
+
+    protected function addErrorCode($errorCode)
+    {
+        $this->errorCodes[] = $errorCode;
+    }
+
+    public function getErrorCodes()
+    {
+        return $this->errorCodes;
+    }
+
+    public function hasErrors()
+    {
+        return count($this->errorCodes);
+    }
 }

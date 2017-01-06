@@ -25,6 +25,7 @@ use CampaignChain\CoreBundle\Entity\Action;
 use CampaignChain\CoreBundle\Entity\Campaign;
 use CampaignChain\CoreBundle\Twig\CampaignChainCoreExtension;
 use Symfony\Component\Serializer\SerializerInterface;
+use CampaignChain\CoreBundle\Exception\ErrorCode;
 
 class CampaignService
 {
@@ -155,7 +156,8 @@ class CampaignService
                 }
             }
 
-            $campaign = $hookService->processHook($campaign, $hook);
+            $hookService->processHook($campaign, $hook);
+            $campaign = $hookService->getEntity();
 
             if($status != null){
                 $campaign->setStatus($status);
@@ -294,5 +296,59 @@ class CampaignService
         return array(
             'status' => true,
         );
+    }
+
+    /**
+     * Find out if the start date was changed. If so, then make sure that while
+     * editing, no Actions have been added prior or after the respective date.
+     *
+     * @param Campaign $campaign
+     * @param \DateTime $startDate
+     * @throws \Exception
+     */
+    public function isValidStartDate(Campaign $campaign, \DateTime $startDate)
+    {
+        if($startDate != $campaign->getStartDate()){
+            /*
+             * While changing the campaign start date, has an earlier
+             * Action been added by someone else?
+             */
+            /** @var Action $firstAction */
+            $firstAction = $this->em->getRepository('CampaignChain\CoreBundle\Entity\Campaign')
+                ->getFirstAction($campaign);
+
+            if($firstAction && $startDate > $firstAction->getStartDate()){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Find out if the end date was changed. If so, then make sure that while
+     * editing, no Actions have been added prior or after the respective date.
+     *
+     * @param Campaign $campaign
+     * @param \DateTime $endDate
+     * @throws \Exception
+     */
+    public function isValidEndDate(Campaign $campaign, \DateTime $endDate)
+    {
+        if($endDate != $campaign->getEndDate()){
+            /*
+             * While changing the campaign end date, has a later
+             * Action been added by someone else?
+             */
+            /** @var Action $firstAction */
+            $lastAction = $this->em->getRepository('CampaignChain\CoreBundle\Entity\Campaign')
+                ->getLastAction($campaign);
+
+            if($lastAction && $endDate < $lastAction->getStartDate()){
+                return false;
+            }
+        }
+
+        return true;
     }
 }

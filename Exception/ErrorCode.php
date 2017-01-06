@@ -24,6 +24,8 @@ class ErrorCode
     const ACTIVITY_NOT_EXECUTABLE_IN_LOCATION = 1003;
     const MILESTONE_NOT_EXECUTABLE_IN_LOCATION = 1004;
     const CONNECTION_TO_REST_API_FAILED = 1005;
+    const CAMPAIGN_CONCURRENT_EDIT_START_DATE = 1006;
+    const CAMPAIGN_CONCURRENT_EDIT_END_DATE = 1007;
 
     static function getMessageByCode($code)
     {
@@ -32,7 +34,9 @@ class ErrorCode
             1002 => 'The Operation cannot be executed in the Location.',
             1003 => 'The Activity cannot be executed in the Location.',
             1004 => 'The Milestone cannot be executed in the Location.',
-            1005 => 'The connection to the REST API failed.'
+            1005 => 'The connection to the REST API failed.',
+            1006 => 'While you edited the campaign, someone else added or changed an Activity or Milestone which now has an earlier start date than the campaign.',
+            1007 => 'While you edited the campaign, someone else added or changed an Activity or Milestone which now has a later start date than the campaign end date.',
         );
 
         if(isset($messages[$code])){
