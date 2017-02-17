@@ -340,7 +340,7 @@ class CampaignService
              * While changing the campaign end date, has a later
              * Action been added by someone else?
              */
-            /** @var Action $firstAction */
+            /** @var Action $lastAction */
             $lastAction = $this->em->getRepository('CampaignChain\CoreBundle\Entity\Campaign')
                 ->getLastAction($campaign);
 
@@ -350,5 +350,112 @@ class CampaignService
         }
 
         return true;
+    }
+
+    public function getMinTimespan(Campaign $campaign)
+    {
+        // Endless campaign if no end date.
+        if(!$campaign->getEndDate()){
+            return -1;
+        }
+
+        /** @var Action $firstAction */
+        $firstAction = $this->em->getRepository('CampaignChain\CoreBundle\Entity\Campaign')
+            ->getFirstAction($campaign);
+
+        /** @var Action $lastAction */
+        $lastAction = $this->em->getRepository('CampaignChain\CoreBundle\Entity\Campaign')
+            ->getLastAction($campaign);
+
+        // If no first and last action return the full campaign timespan.
+        if(!$firstAction && !$lastAction){
+            return $campaign->getStartDate()->diff($campaign->getEndDate());
+        }
+
+        // If both first and last action exist, return the timespan between them.
+        if($firstAction && $lastAction){
+            if($lastAction->getEndDate()){
+                $endDate = $lastAction->getEndDate();
+            } else {
+                $endDate = $lastAction->getStartDate();
+            }
+
+            return $firstAction->getStartDate()->diff($endDate);
+        }
+
+        // Only first Action exists.
+        if($firstAction && !$lastAction) {
+            $action = $firstAction;
+        } else {
+            $action = $lastAction;
+        }
+
+        // If the action has no end date, then any timespan will do.
+        if(!$action->getEndDate()){
+            return true;
+        }
+
+        $actionInterval = $action->getStartDate()->diff($action->getEndDate());
+
+        return $campaignInterval >= $actionInterval;
+    }
+
+    /**
+     * Calculates whether the given timespan covers the first and last action
+     * in a campaign.
+     *
+     * @param Campaign $campaign
+     * @param \DateInterval $campaignInterval
+     * @return bool
+     */
+    public function isValidTimespan(Campaign $campaign, \DateInterval $campaignInterval)
+    {
+        /** @var Action $firstAction */
+        $firstAction = $this->em->getRepository('CampaignChain\CoreBundle\Entity\Campaign')
+            ->getFirstAction($campaign);
+
+        /** @var Action $lastAction */
+        $lastAction = $this->em->getRepository('CampaignChain\CoreBundle\Entity\Campaign')
+            ->getLastAction($campaign);
+
+        // If no first and last action, any timespan is fine.
+        if(!$firstAction && !$lastAction){
+            return true;
+        }
+
+        /*
+         * If first and last action exist, make sure the timespan stretches from
+         * the start of the first to the start or end of the last action.
+         */
+        if($firstAction && $lastAction){
+            if($lastAction->getEndDate()){
+                $endDate = $lastAction->getEndDate();
+            } else {
+                $endDate = $lastAction->getStartDate();
+            }
+
+            $actionsInterval = $firstAction->getStartDate()->diff($endDate);
+
+            return $campaignInterval >= $actionsInterval;
+        }
+
+        /*
+         * If only first action or last action, make sure the timespan covers
+         * the duration of the action.
+         */
+        if($firstAction && !$lastAction) {
+            $action = $firstAction;
+        } else {
+            $action = $lastAction;
+        }
+
+        // If the action has no end date, then any timespan will do.
+        if(!$action->getEndDate()){
+            return true;
+        }
+
+        $actionInterval = $action->getStartDate()->diff($action->getEndDate());
+
+        return $campaignInterval >= $actionInterval;
     }
 }

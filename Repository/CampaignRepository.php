@@ -136,7 +136,18 @@ class CampaignRepository extends EntityRepository
      */
     public function getLastAction(Campaign $campaign)
     {
-        return $this->getEdgeAction($campaign, 'last');
+        $lastAction = $this->getEdgeAction($campaign, 'last');
+
+        // If there is a last action, make sure it does not equal the first action.
+        if($lastAction){
+            $firstAction = $this->getFirstAction($campaign);
+
+            if($lastAction->getId() == $firstAction->getId()){
+                return null;
+            } else {
+                return $lastAction;
+            }
+        }
     }
 
     /**
@@ -158,8 +169,8 @@ class CampaignRepository extends EntityRepository
         }
 
         // Get first Activity
-        /** @var Activity $firstActivity */
-        $firstActivity = $this->createQueryBuilder('c')
+        /** @var Activity $activity */
+        $activity = $this->createQueryBuilder('c')
             ->select('a')
             ->from('CampaignChain\CoreBundle\Entity\Activity', 'a')
             ->where('a.campaign = :campaign')
@@ -170,8 +181,8 @@ class CampaignRepository extends EntityRepository
             ->getOneOrNullResult();
 
         // Get first Milestone
-        /** @var Milestone $firstMilestone */
-        $firstMilestone = $this->createQueryBuilder('c')
+        /** @var Milestone $milestone */
+        $milestone = $this->createQueryBuilder('c')
             ->select('m')
             ->from('CampaignChain\CoreBundle\Entity\Milestone', 'm')
             ->where('m.campaign = :campaign')
@@ -182,28 +193,28 @@ class CampaignRepository extends EntityRepository
             ->getOneOrNullResult();
 
         // Does Activity or Milestone exist?
-        if($firstActivity == null && $firstMilestone == null){
+        if($activity == null && $milestone == null){
             return null;
         }
-        if($firstMilestone == null){
-            return $firstActivity;
+        if($milestone == null){
+            return $activity;
         }
-        if($firstActivity == null){
-            return $firstMilestone;
+        if($activity == null){
+            return $milestone;
         }
 
         // Does Activity or Milestone come first/last?
         if($position == 'first') {
-            if ($firstActivity->getStartDate() < $firstMilestone->getStartDate()) {
-                return $firstActivity;
+            if ($activity->getStartDate() < $milestone->getStartDate()) {
+                return $activity;
             } else {
-                return $firstMilestone;
+                return $milestone;
             }
         } else {
-            if ($firstActivity->getStartDate() > $firstMilestone->getStartDate()) {
-                return $firstActivity;
+            if ($activity->getStartDate() > $milestone->getStartDate()) {
+                return $activity;
             } else {
-                return $firstMilestone;
+                return $milestone;
             }
         }
     }

@@ -26,6 +26,7 @@ class ErrorCode
     const CONNECTION_TO_REST_API_FAILED = 1005;
     const CAMPAIGN_CONCURRENT_EDIT_START_DATE = 1006;
     const CAMPAIGN_CONCURRENT_EDIT_END_DATE = 1007;
+    const CAMPAIGN_TIMESPAN_INSUFFICIENT = 1008;
 
     static function getMessageByCode($code)
     {
@@ -37,6 +38,7 @@ class ErrorCode
             1005 => 'The connection to the REST API failed.',
             1006 => 'While you edited the campaign, someone else added or changed an Activity or Milestone which now has an earlier start date than the campaign.',
             1007 => 'While you edited the campaign, someone else added or changed an Activity or Milestone which now has a later start date than the campaign end date.',
+            1008 => 'The timespan is too short.',
         );
 
         if(isset($messages[$code])){
