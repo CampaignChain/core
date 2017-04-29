@@ -55,7 +55,7 @@
         "nelmio/api-doc-bundle": "dev-master",
         "friendsofsymfony/rest-bundle": "dev-master",
         "jms/serializer-bundle": "dev-master",
-        "mremi/url-shortener": "dev-master",
+        "mremi/url-shortener": "dev-master#e4e7745796064104a568c01883d350d20994553e",
         "knplabs/knp-gaufrette-bundle": "^0.3.0",
         "gkralik/php-uglifyjs": "dev-master",
         "campaignchain/location-website": "dev-master",
