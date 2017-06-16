@@ -28,7 +28,7 @@
         "symfony/serializer": "~2.0",
         "symfony/stopwatch": "~2.5",
         "symfony/process": "~2.5",
-        "sensio/distribution-bundle": "^5.0",
+        "sensio/distribution-bundle": "^4.0",
         "sensio/framework-extra-bundle": "~3.0",
         "sensio/generator-bundle": "~2.5",
         "components/jquery": "1.11.*",
