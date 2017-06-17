@@ -37,7 +37,7 @@ limitations under the License.
         {% endjavascripts %}
     {% else %}
         {% javascripts '@campaignchain_dhtmlxgantt_pre_init_relative_dates_js' combine=true %}
-        <!-- pre init --><script src="{{ asset_url }}"></script>
+        <!-- pre init relative --><script src="{{ asset_url }}"></script>
         {% endjavascripts %}
 
         {% javascripts '@campaignchain_dhtmlxgantt_pre_init_global_activity_js' combine=true %}
@@ -48,7 +48,33 @@ limitations under the License.
     {% embed 'AvanzuAdminThemeBundle:Widgets:box-widget.html.twig' %}
         {% block box_before %}<div id="campaignchain-timeline">{% endblock %}
         {% block box_title %}
-            {% include 'CampaignChainCoreBundle:Plan/Timeline/Campaign:toolbar.html.twig' %}
+            <div class="btn-toolbar" role="toolbar">
+                {% if absolute_dates == true %}
+                    <div class="btn-group btn-sm">
+                        <a href="#" class="btn btn-default" onclick="scrollToToday()" role="button">Today</a>
+                    </div>
+                {% endif %}
+                <div class="btn-group btn-sm">
+                    <a href="#" class="btn btn-default" onclick="zoom_tasks('fullyear', 'fullyear')">Years</a>
+                    <a href="#" class="btn btn-default" onclick="zoom_tasks('year', 'year')">Months</a>
+                    <a href="#" class="btn btn-default" onclick="zoom_tasks('trplweek', 'full_week')">Week</a>
+                    {% if show_day is not defined or show_day == true %}
+                        <a href="#" class="btn btn-default" onclick="zoom_tasks('week', 'full_day')">Day</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% block javascripts %}
+                {% if absolute_dates == true %}
+                    {% javascripts '@campaignchain_dhtmlxgantt_toolbar_absolute_dates_js' combine=true %}
+                    <!-- @campaignchain_dhtmlxgantt_toolbar_absolute_dates_js --><script src="{{ asset_url }}"></script>
+                    {% endjavascripts %}
+                {% else %}
+                    {% javascripts '@campaignchain_dhtmlxgantt_toolbar_relative_dates_js' combine=true %}
+                    <!-- @campaignchain_dhtmlxgantt_toolbar_relative_dates_js --><script src="{{ asset_url }}"></script>
+                    {% endjavascripts %}
+                {% endif %}
+            {% endblock %}
         {% endblock %}
         {% block box_tools %}
             <script type="application/javascript">
@@ -79,6 +105,7 @@ limitations under the License.
                 {% endjavascripts %}
             {% else %}
                 {% javascripts '@campaignchain_dhtmlxgantt_post_init_relative_dates_js' combine=true %}
+                <!-- post init relative -->
                 <script src="{{ asset_url }}"></script>
                 {% endjavascripts %}
             {% endif %}
