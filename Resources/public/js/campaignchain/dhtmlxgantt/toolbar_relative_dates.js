@@ -18,7 +18,7 @@ function zoom_tasks(node, scale_count){
     scale_count = typeof scale_count !== 'undefined' ? scale_count : 1;
 
     switch(node){
-        case "hours":
+        case "week":
             gantt.config.scale_unit = "day";
             gantt.config.date_scale = "";
             gantt.config.scale_height = 60;
@@ -42,7 +42,7 @@ function zoom_tasks(node, scale_count){
                 {unit:"hour", step:1, date:"%H:%i"}
             ];
             break;
-        case "days":
+        case "trplweek":
             gantt.config.min_column_width = 70;
             gantt.config.scale_unit = "week";
             gantt.config.date_scale = "";
@@ -50,6 +50,7 @@ function zoom_tasks(node, scale_count){
 
             // Main scale
             var scale_string = '';
+            var scale_count = 1;
             gantt.templates.date_scale = function(date) {
                 if(+date < +moment(campaign_start_date).subtract(1, 'weeks')){
                     scale_count = 1;
@@ -81,7 +82,7 @@ function zoom_tasks(node, scale_count){
             ];
 
             break;
-        case "weeks":
+        case "year":
             gantt.config.min_column_width = 70;
             gantt.config.scale_unit = "month";
             gantt.config.date_scale = "";
@@ -120,7 +121,7 @@ function zoom_tasks(node, scale_count){
             ];
 
             break;
-        case "months":
+        case "fullyear":
             gantt.config.scale_unit = "year";
             gantt.config.date_scale = "";
             gantt.config.min_column_width = 50;
@@ -172,4 +173,4 @@ gantt.attachEvent("onTaskCreated", function(obj){
     obj.progress = 0.25;
 })
 
-zoom_tasks('months', 0)
+zoom_tasks('fullyear', 0)
