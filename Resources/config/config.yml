@@ -464,4 +464,12 @@ avanzu_admin_theme:
             bordered: false
             use_footer: false
     knp_menu:                         # knp menu integration
-        enable         : true
+        enable: true
+
+fos_elastica:
+    clients:
+        default: { host: localhost, port: 9200 }
+    indexes:
+        campaignchain:
+            index_name: campaignchain
+            client: default
