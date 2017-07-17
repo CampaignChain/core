@@ -59,7 +59,8 @@
         "knplabs/knp-gaufrette-bundle": "^0.3.0",
         "gkralik/php-uglifyjs": "dev-master",
         "campaignchain/location-website": "dev-master",
-        "campaignchain/form-type-textarea-count": "dev-master"
+        "campaignchain/form-type-textarea-count": "dev-master",
+        "campaignchain/core-esp": "dev-master"
     },
     "autoload": {
         "psr-4": { "CampaignChain\\CoreBundle\\": "" }
