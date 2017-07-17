@@ -465,11 +465,3 @@ avanzu_admin_theme:
             use_footer: false
     knp_menu:                         # knp menu integration
         enable: true
-
-fos_elastica:
-    clients:
-        default: { host: "%elasticsearch_host%", port: "%elasticsearch_port%" }
-    indexes:
-        default:
-            index_name: "%elasticsearch_index%"
-            client: default
