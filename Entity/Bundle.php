@@ -131,7 +131,7 @@ class Bundle extends Meta
     /**
      * The bundle class.
      *
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected $class;
 
