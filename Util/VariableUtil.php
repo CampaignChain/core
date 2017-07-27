@@ -82,4 +82,9 @@ class VariableUtil
 
         return $array;
     }
+
+    static function json2Array($json)
+    {
+        return json_decode(json_encode($json), true);
+    }
 }
