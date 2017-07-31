@@ -138,4 +138,20 @@ class BaseController extends FOSRestController
 
         return $qb;
     }
+
+    public function throwException($msg, $params = array())
+    {
+        $this->logError($msg, $params);
+        throw new \Exception($msg);
+    }
+
+    public function logError($msg, $params = array())
+    {
+        $this->getLogger()->error($msg, $params);
+    }
+
+    protected function getLogger()
+    {
+        return $this->has('monolog.logger.external') ? $this->get('monolog.logger.external') : $this->get('monolog.logger');
+    }
 }
