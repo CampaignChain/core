@@ -20,6 +20,7 @@ namespace CampaignChain\CoreBundle\Controller\REST;
 use CampaignChain\CoreBundle\Entity\Activity;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations as REST;
+use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -150,8 +151,15 @@ class BaseController extends FOSRestController
         $this->getLogger()->error($msg, $params);
     }
 
+    public function logDebug($msg)
+    {
+        $this->getLogger()->debug($msg);
+    }
+
     protected function getLogger()
     {
-        return $this->has('monolog.logger.external') ? $this->get('monolog.logger.external') : $this->get('monolog.logger');
+        /** @var Logger $logger */
+        $logger = $this->has('monolog.logger.external') ? $this->get('monolog.logger.external') : $this->get('monolog.logger');
+        return $logger;
     }
 }
