@@ -87,4 +87,52 @@ class VariableUtil
     {
         return json_decode(json_encode($json), true);
     }
+
+    /**
+     * Exact match of string in 1 value of the array.
+     *
+     * @param $string
+     * @param array $array
+     * @return bool
+     */
+    static function stringIsInArray($string, array $array)
+    {
+        $match = array_search($string, $array);
+
+        return $match !== false;
+    }
+
+    /**
+     * At least 1 value in 1 array is identical with 1 value in the other array.
+     *
+     * @param array $array1
+     * @param array $array2
+     * @return bool
+     */
+    static function arraysIntersect(array $array1, array $array2)
+    {
+        $match = array_intersect($array1, $array2);
+        if(is_array($match) && count($match)){
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Minimum 1 word in the array can be found in the string.
+     *
+     * @param $str
+     * @param array $arr
+     * @return bool
+     */
+    static function stringContainsWord($str, array $arr)
+    {
+        foreach($arr as $a) {
+            if (stripos($str,$a) !== false) return true;
+        }
+        return false;
+    }
+
+
 }
