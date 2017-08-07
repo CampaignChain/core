@@ -69,6 +69,7 @@ class BundleConfig
                         ->getRepository('CampaignChainCoreBundle:Bundle')
                         ->findOneByName($bundle->getName());
                     // Update the existing bundle's data.
+                    $registeredBundle->setType($bundle->getType());
                     $registeredBundle->setDescription($bundle->getDescription());
                     $registeredBundle->setLicense($bundle->getLicense());
                     $registeredBundle->setAuthors($bundle->getAuthors());
