@@ -50,7 +50,10 @@ limitations under the License.
                                 <i class="fa {% if  channel_module.status == "inactive" %}fa-toggle-off{% else %}fa-toggle-on{% endif %} fa-lg  "></i>
                             </a>
                         </td>
-                        <td><img src="{{ asset( channel_module|campaignchain_channel_asset_path~'/images/icons/16x16/'~channel_module|campaignchain_channel_icon_name ) }}" /> {{ channel_module.getDisplayName() }}</td>
+                        <td>
+                            <div><img src="{{ asset( channel_module|campaignchain_channel_asset_path~'/images/icons/16x16/'~channel_module|campaignchain_channel_icon_name ) }}" /> {{ channel_module.getDisplayName() }}</div>
+                            <div class="help-block">{{ channel_module.getDescription() }}</div>
+                        </td>
                         <td>
                             <ul>
                             {% if
