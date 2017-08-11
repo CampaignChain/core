@@ -48,7 +48,7 @@
         "h4cc/alice-fixtures-bundle": "dev-master",
         "friendsofsymfony/jsrouting-bundle": "dev-master",
         "sp/bower-bundle": "dev-master",
-        "sonata-project/admin-bundle": "~2.2",
+        "sonata-project/admin-bundle": "~3.0",
         "sonata-project/block-bundle": "~2.2",
         "guzzle/guzzle": "~3.9",
         "guzzlehttp/guzzle": "^6.0",
