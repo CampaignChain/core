@@ -20,7 +20,7 @@ namespace CampaignChain\CoreBundle\Util;
 class VariableUtil
 {
     /**
-     * Merges two arrays recursively, either by allowing four duplicate values
+     * Merges two arrays recursively, either by allowing for duplicate values
      * for a key or by overwriting identical values.
      *
      * @param $array1
