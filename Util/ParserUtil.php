@@ -17,7 +17,7 @@
 
 namespace CampaignChain\CoreBundle\Util;
 
-use Guzzle\Http\Client;
+use GuzzleHttp\Client;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -41,15 +41,16 @@ class ParserUtil
             $page = $website;
         }
         // Grab the HTML
-        $client = new Client($website);
-        $request = $client->get($page);
+        $client = new Client([
+            'base_uri' => $website,
+        ]);
         try {
-            $response = $request->send();
+            $response = $client->get($page);
         } catch (\Exception $e) {
             return $website;
         }
         // Crawl the DOM tree
-        $crawler = new Crawler($response->getBody(true));
+        $crawler = new Crawler($response->getBody()->getContents());
         return $crawler->filter('title')->first()->text();
     }
 
