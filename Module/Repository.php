@@ -18,7 +18,7 @@
 namespace CampaignChain\CoreBundle\Module;
 
 use CampaignChain\CoreBundle\EntityService\SystemService;
-use Guzzle\Http\Client;
+use GuzzleHttp\Client;
 
 /**
  * Class Repository
@@ -95,10 +95,11 @@ class Repository
 
         foreach($this->repositories as $repository){
             // Retrieve compatible modules.
-            $client = new Client($repository);
-            $request = $client->get('d/'.$system->getPackage().'/'.$this->distributionVersion.'.json');
-            $response = $request->send();
-            $compatibleModules = json_decode($response->getBody(true));
+            $client = new Client([
+                'base_uri' => $repository,
+            ]);
+            $response = $client->get('d/'.$system->getPackage().'/'.$this->distributionVersion.'.json');
+            $compatibleModules = json_decode($response->getBody());
             // TODO: What to do if same module exists in different repositories?
             $modules = array_merge($modules, $compatibleModules->results);
         }
