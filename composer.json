@@ -26,7 +26,7 @@
         "symfony/polyfill-apcu": "~1.0",
         "symfony/swiftmailer-bundle": "~2.0",
         "symfony/symfony": "~3.0",
-        "twig/twig": "~2.0",
+        "twig/twig": "~1.0",
         "twig/extensions": "~1.0",
         "symfony/assetic-bundle": "~2.0",
         "symfony/finder": "~3.0",
