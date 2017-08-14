@@ -75,7 +75,7 @@ services:
 
     campaignchain.core.listener.entry_point:
         class: CampaignChain\CoreBundle\EventListener\EntryPoint
-        arguments: [ @router ]
+        arguments: [ '@router' ]
 
     campaignchain.core.listener.datetime:
         class: CampaignChain\CoreBundle\EventListener\DatetimeListener
