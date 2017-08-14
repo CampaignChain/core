@@ -18,8 +18,8 @@
 
 namespace CampaignChain\CoreBundle\Wizard;
 
-use Sensio\Bundle\DistributionBundle\Configurator\Configurator;
-use Sensio\Bundle\DistributionBundle\Configurator\Step\StepInterface;
+use CampaignChain\CoreBundle\Wizard\Configurator;
+use CampaignChain\CoreBundle\Wizard\StepInterface;
 
 class InstallWizard extends Configurator
 {
@@ -28,8 +28,7 @@ class InstallWizard extends Configurator
 
     public function __construct($kernelDir)
     {
-        $this->kernelDir = $kernelDir;
-        $this->steps = array();
+        parent::__construct($kernelDir);
     }
 
     /**
@@ -43,7 +42,7 @@ class InstallWizard extends Configurator
             $this->steps[$priority] = array();
         }
 
-        $this->steps[$priority][] = $step;
+        $this->steps[$priority] = $step;
         $this->sortedSteps = null;
     }
 

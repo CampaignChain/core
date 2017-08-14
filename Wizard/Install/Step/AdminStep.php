@@ -18,8 +18,8 @@
 namespace CampaignChain\CoreBundle\Wizard\Install\Step;
 
 use CampaignChain\CoreBundle\Util\SystemUtil;
-use Sensio\Bundle\DistributionBundle\Configurator\Step\StepInterface;
 use CampaignChain\CoreBundle\Util\CommandUtil;
+use CampaignChain\CoreBundle\Wizard\StepInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use CampaignChain\CoreBundle\Wizard\Install\Form\AdminStepType;
 
@@ -59,6 +59,8 @@ class AdminStep implements StepInterface
     private $context;
 
     private $command;
+
+    public function __construct(array $parameters = array()){}
 
     public function setContext(array $context){
         $this->context = $context;
@@ -104,7 +106,7 @@ class AdminStep implements StepInterface
      */
     public function getFormType()
     {
-        return new AdminStepType();
+        return AdminStepType::class;
     }
 
     /**

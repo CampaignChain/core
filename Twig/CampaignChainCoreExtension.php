@@ -27,7 +27,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class CampaignChainCoreExtension extends \Twig_Extension
+class CampaignChainCoreExtension extends \Twig_Extension implements \Twig_Extension_GlobalsInterface
 {
     const DEFAULT_LAYOUT_NAME = 'default';
 
@@ -40,6 +40,13 @@ class CampaignChainCoreExtension extends \Twig_Extension
         $this->em = $managerRegistry->getManager();
         $this->container = $container;
         $this->datetime = $this->container->get('campaignchain.core.util.datetime');
+    }
+
+    private $environment = null;
+
+    public function initRuntime(\Twig_Environment $environment)
+    {
+        $this->environment = $environment;
     }
 
     private function loggedIn()

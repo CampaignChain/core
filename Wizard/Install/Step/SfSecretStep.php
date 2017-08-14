@@ -17,12 +17,13 @@
 
 namespace CampaignChain\CoreBundle\Wizard\Install\Step;
 
-use Sensio\Bundle\DistributionBundle\Configurator\Step\SecretStep;
 use CampaignChain\CoreBundle\Wizard\Install\Driver\YamlConfig;
 
 class SfSecretStep extends SecretStep
 {
     private $context;
+
+    public function __construct(array $parameters = array()){}
 
     public function setContext(array $context){
         $this->context = $context;
