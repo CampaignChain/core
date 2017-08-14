@@ -36,7 +36,7 @@
         "sensio/generator-bundle": "~3.0",
         "components/jquery": "1.11.*",
         "oyejorge/less.php": "~1.5",
-        "braincrafted/bootstrap-bundle": "~2.0",
+        "braincrafted/bootstrap-bundle": "dev-master",
         "twbs/bootstrap": "~3.0",
         "knplabs/knp-menu": "dev-master",
         "knplabs/knp-paginator-bundle": "dev-master",
