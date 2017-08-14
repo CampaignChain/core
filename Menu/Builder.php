@@ -18,7 +18,8 @@
 namespace CampaignChain\CoreBundle\Menu;
 
 use Knp\Menu\FactoryInterface;
-use Symfony\Component\DependencyInjection\ContainerAware;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
  * Navigation menus for pages.
@@ -29,8 +30,10 @@ use Symfony\Component\DependencyInjection\ContainerAware;
  * Class Builder
  * @package CampaignChain\CoreBundle\Menu
  */
-class Builder extends ContainerAware
+class Builder implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     public function executeListTab(FactoryInterface $factory, array $options)
     {
         $menu = $factory->createItem('root');
@@ -94,12 +97,12 @@ class Builder extends ContainerAware
         $menu->addChild('Edit User', array(
             'route' => 'campaignchain_core_user_edit',
             'routeParameters' => array(
-                'id' => $this->container->get('request')->get('id')
+                'id' => $this->container->get('request_stack')->getCurrentRequest()->get('id')
             )));
         $menu->addChild('Change Password', array(
             'route' => 'campaignchain_core_user_change_password',
             'routeParameters' => array(
-                'id' => $this->container->get('request')->get('id')
+                'id' => $this->container->get('request_stack')->getCurrentRequest()->get('id')
             )));
 
         return $menu;

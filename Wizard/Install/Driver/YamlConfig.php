@@ -92,7 +92,7 @@ class YamlConfig
 //            $filename = $this->getCacheFilename();
 //        }
 
-        $ret = Yaml::parse($filename);
+        $ret = Yaml::parse(file_get_contents($filename));
         if (false === $ret || array() === $ret) {
             throw new \InvalidArgumentException(sprintf('The %s file is not valid.', $filename));
         }

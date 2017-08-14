@@ -430,7 +430,7 @@ class RootController extends BaseController
     {
         $response = array();
 
-        $schemeAndHost = $this->get('request')->getSchemeAndHttpHost();
+        $schemeAndHost = $this->get('request_stack')->getCurrentRequest()->getSchemeAndHttpHost();
         // Get rid of dev environment (app_dev.php).
         $baseUrl = $this->get('router')->getContext()->getBaseUrl();
         $this->get('router')->getContext()->setBaseUrl('');

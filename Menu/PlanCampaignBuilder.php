@@ -17,15 +17,14 @@
 
 namespace CampaignChain\CoreBundle\Menu;
 
-use CampaignChain\CoreBundle\Entity\Campaign;
-use CampaignChain\CoreBundle\Entity\Module;
-use CampaignChain\CoreBundle\EntityService\CampaignService;
-use CampaignChain\CoreBundle\EntityService\ModuleService;
 use Knp\Menu\FactoryInterface;
-use Symfony\Component\DependencyInjection\ContainerAware;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
-class PlanCampaignBuilder extends ContainerAware
+class PlanCampaignBuilder implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     public function navbar(FactoryInterface $factory, array $options)
     {
         $menu = $factory->createItem('root');

@@ -192,10 +192,10 @@ class Kernel
      */
     protected function registerConfigs()
     {
+        $hasNewConfigs = false;
+
         $yamlConfig = new YamlConfig('', $this->configFiles['config']);
         $parameters = $yamlConfig->read();
-
-        $hasNewConfigs = false;
 
         $configs = $this->kernelConfig->getConfigs();
 
@@ -205,7 +205,7 @@ class Kernel
 
         foreach ($configs as $config) {
             // Check if the config is already being imported.
-            if ($this->recursiveArraySearch($config, $parameters['imports']) === false) {
+            if (VariableUtil::recursiveArraySearch($config, $parameters['imports']) === false) {
                 $hasNewConfigs = true;
 
                 // Add the config to the imports
@@ -298,20 +298,5 @@ class Kernel
         $yamlConfig = new YamlConfig('', $this->configFiles['routing']);
         $yamlConfig->write($parameters);
         $yamlConfig->clean();
-    }
-
-    private function recursiveArraySearch($needle, $haystack) {
-        if (!is_array($haystack) || !count($haystack)) {
-            return false;
-        }
-
-        foreach ($haystack as $key => $value) {
-            $currentKey = $key;
-            if ($needle === $value || (is_array($value) && $this->recursiveArraySearch($needle, $value) !== false)) {
-                return $currentKey;
-            }
-        }
-
-        return false;
     }
 }

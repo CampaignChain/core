@@ -14,16 +14,16 @@
 
 # installation wizard routes
 campaignchain_core_install:
-    pattern: /install/
+    path: /install/
     defaults: { _controller: CampaignChainCoreBundle:Install:check }
 
 campaignchain_core_install_step:
-    pattern: /install/step/{index}
+    path: /install/step/{index}
     defaults: { _controller: CampaignChainCoreBundle:Install:step }
 
 # main routes
 campaignchain_core_homepage:
-    pattern:  /
+    path:  /
     defaults:
         _controller: FrameworkBundle:Redirect:redirect
         route: campaignchain_core_plan
@@ -35,7 +35,7 @@ campaignchain_core_homepage:
                 expose: true
 
 campaignchain_core_about:
-    pattern:  /about/
+    path:  /about/
     defaults: { _controller: CampaignChainCoreBundle:About:index }
     options:
         campaignchain:
@@ -44,7 +44,7 @@ campaignchain_core_about:
                 expose: true
 
 campaignchain_core_plan:
-    pattern:  /plan/
+    path:  /plan/
     defaults:
         _controller: FrameworkBundle:Redirect:redirect
         route: campaignchain_core_plan_campaigns
@@ -56,7 +56,7 @@ campaignchain_core_plan:
                 expose: true
 
 campaignchain_core_plan_campaigns:
-    pattern:  /plan/campaigns/
+    path:  /plan/campaigns/
     defaults: { _controller: CampaignChainCoreBundle:Plan:campaigns }
     options:
         campaignchain:
@@ -65,7 +65,7 @@ campaignchain_core_plan_campaigns:
                 expose: true
 
 campaignchain_core_plan_activities:
-    pattern:  /plan/activities/
+    path:  /plan/activities/
     defaults: { _controller: CampaignChainCoreBundle:Plan:activities }
     options:
         campaignchain:
@@ -74,7 +74,7 @@ campaignchain_core_plan_activities:
                 expose: true
 
 campaignchain_core_plan_milestones:
-    pattern:  /plan/milestones/
+    path:  /plan/milestones/
     defaults: { _controller: CampaignChainCoreBundle:Plan:milestones }
     options:
         campaignchain:
@@ -83,7 +83,7 @@ campaignchain_core_plan_milestones:
                 expose: true
 
 campaignchain_core_plan_templates:
-    pattern:  /plan/templates/
+    path:  /plan/templates/
     defaults: { _controller: CampaignChainCoreBundle:Plan:templates }
     options:
         campaignchain:
@@ -92,7 +92,7 @@ campaignchain_core_plan_templates:
                 expose: true
 
 campaignchain_core_execute:
-    pattern:  /execute/
+    path:  /execute/
     defaults: { _controller: CampaignChainCoreBundle:Execute:index }
     options:
         campaignchain:
@@ -102,11 +102,11 @@ campaignchain_core_execute:
 
 # campaign routes
 campaignchain_core_campaign:
-    pattern:  /campaigns/
+    path:  /campaigns/
     defaults: { _controller: CampaignChainCoreBundle:Campaign:index }
 
 campaignchain_core_campaign_new:
-    pattern:  /campaign/new/
+    path:  /campaign/new/
     defaults: { _controller: CampaignChainCoreBundle:Campaign:new }
     options:
         expose: true
@@ -116,18 +116,18 @@ campaignchain_core_campaign_new:
                 expose: true
 
 campaignchain_core_campaign_edit:
-    pattern:  /campaign/{id}/edit
+    path:  /campaign/{id}/edit
     defaults: { _controller: CampaignChainCoreBundle:Campaign:edit }
 
 campaignchain_core_campaign_edit_modal:
-    pattern:  /modal/campaign/{id}/edit
+    path:  /modal/campaign/{id}/edit
     defaults: { _controller: CampaignChainCoreBundle:Campaign:editModal }
     options:
         expose: true
 
 # activity routes
 campaignchain_core_activities:
-    pattern:  /activities/
+    path:  /activities/
     defaults: { _controller: CampaignChainCoreBundle:Activity:index }
     options:
         campaignchain:
@@ -136,7 +136,7 @@ campaignchain_core_activities:
                 expose: true
 
 campaignchain_core_activities_new:
-    pattern:  /activity/new/
+    path:  /activity/new/
     defaults: { _controller: CampaignChainCoreBundle:Activity:new }
     options:
         campaignchain:
@@ -145,30 +145,30 @@ campaignchain_core_activities_new:
                 expose: true
 
 campaignchain_core_activity_remove:
-    pattern:  /activity/{id}/remove
+    path:  /activity/{id}/remove
     defaults: { _controller: CampaignChainCoreBundle:Activity:remove }
 
 campaignchain_core_activity_edit:
-    pattern:  /activity/{id}/edit
+    path:  /activity/{id}/edit
     defaults: { _controller: CampaignChainCoreBundle:Activity:edit }
 
 campaignchain_core_activity_edit_modal:
-    pattern:  /modal/activity/{id}/edit
+    path:  /modal/activity/{id}/edit
     defaults: { _controller: CampaignChainCoreBundle:Activity:editModal }
     options:
         expose: true
 
 campaignchain_core_activity_read:
-    pattern:  /activity/{id}
+    path:  /activity/{id}
     defaults: { _controller: CampaignChainCoreBundle:Activity:read }
 
 campaignchain_core_activity_read_modal:
-    pattern:  /modal/activity/{id}
+    path:  /modal/activity/{id}
     defaults: { _controller: CampaignChainCoreBundle:Activity:readModal }
 
 # milestone routes
 campaignchain_core_milestone:
-    pattern:  /milestones/
+    path:  /milestones/
     defaults: { _controller: CampaignChainCoreBundle:Milestone:index }
     options:
         campaignchain:
@@ -177,7 +177,7 @@ campaignchain_core_milestone:
                 expose: true
 
 campaignchain_core_milestone_new:
-    pattern:  /milestone/new/
+    path:  /milestone/new/
     defaults: { _controller: CampaignChainCoreBundle:Milestone:new }
     options:
         campaignchain:
@@ -186,22 +186,22 @@ campaignchain_core_milestone_new:
                 expose: true
 
 campaignchain_core_milestone_edit:
-    pattern:  /milestone/{id}/edit
+    path:  /milestone/{id}/edit
     defaults: { _controller: CampaignChainCoreBundle:Milestone:edit }
 
 campaignchain_core_milestone_edit_modal:
-    pattern:  /modal/milestone/{id}/edit
+    path:  /modal/milestone/{id}/edit
     defaults: { _controller: CampaignChainCoreBundle:Milestone:editModal }
     options:
         expose: true
 
 campaignchain_core_milestone_remove:
-    pattern:  /milestone/{id}/remove
+    path:  /milestone/{id}/remove
     defaults: { _controller: CampaignChainCoreBundle:Milestone:remove }
 
 # report routes
 campaignchain_core_report:
-    pattern:  /reports
+    path:  /reports
     defaults: { _controller: CampaignChainCoreBundle:Report:index }
     options:
         campaignchain:
@@ -210,12 +210,12 @@ campaignchain_core_report:
                 expose: true
 
 campaignchain_core_report_show:
-    pattern:  /report/{id}
+    path:  /report/{id}
     defaults: { _controller: CampaignChainCoreBundle:Report:show }
 
 # module routes
 campaignchain_core_module:
-    pattern:  /modules/
+    path:  /modules/
     defaults: { _controller: CampaignChainCoreBundle:Module:index }
     options:
         campaignchain:
@@ -224,7 +224,7 @@ campaignchain_core_module:
                 expose: true
 
 campaignchain_core_module_new:
-    pattern:  /modules/new/
+    path:  /modules/new/
     defaults: { _controller: CampaignChainCoreBundle:Module:new }
     options:
         campaignchain:
@@ -234,7 +234,7 @@ campaignchain_core_module_new:
 
 # channel routes
 campaignchain_core_channel:
-    pattern:  /channels/
+    path:  /channels/
     defaults: { _controller: CampaignChainCoreBundle:Channel:indexChannelModules }
     options:
         campaignchain:
@@ -243,7 +243,7 @@ campaignchain_core_channel:
                 expose: true
 
 campaignchain_core_channel_tracking:
-    pattern:  /channels/tracking/
+    path:  /channels/tracking/
     defaults: { _controller: CampaignChainCoreBundle:Channel:indexTracking }
     options:
         campaignchain:
@@ -252,7 +252,7 @@ campaignchain_core_channel_tracking:
                 expose: true
 
 campaignchain_core_channel_accounts:
-    pattern:  /channels/accounts/
+    path:  /channels/accounts/
     defaults: { _controller: CampaignChainCoreBundle:Channel:indexAccounts }
     options:
         campaignchain:
@@ -261,7 +261,7 @@ campaignchain_core_channel_accounts:
                 expose: true
 
 campaignchain_core_channel_new:
-    pattern:  /channel/new/{id}
+    path:  /channel/new/{id}
     defaults: { _controller: CampaignChainCoreBundle:Channel:new }
     options:
         campaignchain:
@@ -270,20 +270,20 @@ campaignchain_core_channel_new:
                 expose: true
 
 campaignchain_core_channel_cta_test:
-    pattern: channel/{id}/cta-tracking/
+    path: channel/{id}/cta-tracking/
     defaults: { _controller: CampaignChainCoreBundle:Channel:ctaTracking, id: 0  }
 
 campaignchain_core_channel_remove:
-    pattern:  /channel/{id}/remove
+    path:  /channel/{id}/remove
     defaults: { _controller: CampaignChainCoreBundle:Channel:remove }
 
 campaignchain_core_channel_toggle_status:
-    pattern:  /channel/{id}/toggleStatus
+    path:  /channel/{id}/toggleStatus
     defaults: { _controller: CampaignChainCoreBundle:Channel:toggleStatus }
 
 # location routes
 campaignchain_core_location:
-    pattern:  /locations/
+    path:  /locations/
     defaults: { _controller: CampaignChainCoreBundle:Location:index }
     options:
         campaignchain:
@@ -292,7 +292,7 @@ campaignchain_core_location:
                 expose: true
 
 campaignchain_core_location_remove:
-    pattern:  /location/{id}/remove
+    path:  /location/{id}/remove
     defaults: { _controller: CampaignChainCoreBundle:Location:remove }
 
 # tracking routes
@@ -301,7 +301,7 @@ campaignchain_core_tracking_js:
     type: trackingjs
 
 campaignchain_core_tracking_js_old:
-    pattern:  /bundles/campaignchaincore/js/campaignchain/campaignchain_tracking.js
+    path:  /bundles/campaignchaincore/js/campaignchain/campaignchain_tracking.js
     defaults: { _controller: CampaignChainCoreBundle:Tracking:trackingJs }
 
 campaignchain_core_tracking_js_test:
@@ -311,23 +311,23 @@ campaignchain_core_tracking_js_test:
 
 # developer tools
 campaignchain_development_sample_data:
-    pattern:  /development/sample-data
+    path:  /development/sample-data
     defaults: { _controller: CampaignChainCoreBundle:Development:sampleData }
     condition: "request.getScriptName() == '/app_dev.php'"
 
 campaignchain_development_reset_system:
-    pattern:  /development/reset-system
+    path:  /development/reset-system
     defaults: { _controller: CampaignChainCoreBundle:Development:resetSystem }
     condition: "request.getScriptName() == '/app_dev.php'"
 
 # theme settings
 campaignchain_core_theme_settings:
-    pattern:  /theme/settings
+    path:  /theme/settings
     defaults: { _controller: CampaignChainCoreBundle:Theme:settings }
 
 # user management routes
 campaignchain_core_user:
-    pattern:  /user/list
+    path:  /user/list
     defaults: { _controller: CampaignChainCoreBundle:User:index }
     options:
         campaignchain:
@@ -345,21 +345,21 @@ campaignchain_core_user_new:
                 expose: true
 
 campaignchain_core_user_edit:
-    pattern:  /user/edit/{id}
+    path:  /user/edit/{id}
     defaults: { _controller: CampaignChainCoreBundle:User:edit }
 
 campaignchain_core_theme_profile:
-    pattern:  /user/edit/{ident}
+    path:  /user/edit/{ident}
     defaults: { _controller: CampaignChainCoreBundle:User:edit }
     options:
         avanzu_admin_route: profile
 
 campaignchain_core_user_change_password:
-    pattern:  /user/change_password/{id}
+    path:  /user/change_password/{id}
     defaults: { _controller: CampaignChainCoreBundle:User:changePassword }
 
 campaignchain_core_user_toggle_enabling:
-    pattern:  /user/toggle_enable/{id}
+    path:  /user/toggle_enable/{id}
     defaults: { _controller: CampaignChainCoreBundle:User:toggleEnabling }
     options:
         campaignchain:
@@ -369,24 +369,24 @@ campaignchain_core_user_toggle_enabling:
 
 # profile routes
 campaignchain_core_profile_edit:
-    pattern:  /profile/edit
+    path:  /profile/edit
     defaults: { _controller: CampaignChainCoreBundle:Profile:edit }
 
 campaignchain_core_profile_change_password:
-    pattern:  /profile/change_password
+    path:  /profile/change_password
     defaults: { _controller: CampaignChainCoreBundle:Profile:changePassword }
 
 campaignchain_core_profile_grab_gavatar:
-    pattern: /profile/grab_gravatar
+    path: /profile/grab_gravatar
     defaults: { _controller: CampaignChainCoreBundle:Profile:grabGravatar }
     methods: [POST]
 
 campaignchain_core_profile_preview_gravatar:
-    pattern: /profile/preview_gravatar
+    path: /profile/preview_gravatar
     defaults: { _controller: CampaignChainCoreBundle:Profile:previewGravatar }
 
 campaignchain_core_profile_crop_avatar:
-    pattern: /profile/crop_avatar
+    path: /profile/crop_avatar
     defaults: { _controller: CampaignChainCoreBundle:Profile:cropAvatar }
     methods: [POST]
 
@@ -400,7 +400,7 @@ fos_user_resetting:
     prefix: /user/resetting
 
 campaignchain_core_security_resume:
-    pattern:  /resume
+    path:  /resume
     defaults: { _controller: CampaignChainCoreBundle:Security:resume }
     options:
         expose: true

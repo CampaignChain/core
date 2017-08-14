@@ -17,7 +17,7 @@
 #
 
 campaignchain_core_plan_timeline_nested_campaigns_api:
-    pattern:  /plan/timeline/campaign/{id}
+    path:  /plan/timeline/campaign/{id}
     defaults: { _controller: CampaignChainCoreBundle:Campaign:getNestedCampaignsForTimelineApi }
     methods:  [GET]
     options:
@@ -28,7 +28,7 @@ campaignchain_core_plan_timeline_nested_campaigns_api:
 #
 
 campaignchain_core_campaign_move_api:
-    pattern:  /campaign/move
+    path:  /campaign/move
     defaults: { _controller: CampaignChainCoreBundle:Campaign:moveApi }
     methods:  [POST]
     options:
@@ -39,7 +39,7 @@ campaignchain_core_campaign_move_api:
 #
 
 campaignchain_core_activity_move_api:
-    pattern:  /activity/move
+    path:  /activity/move
     defaults: { _controller: CampaignChainCoreBundle:Activity:moveApi }
     methods:  [POST]
     options:
@@ -50,7 +50,7 @@ campaignchain_core_activity_move_api:
 #
 
 campaignchain_core_milestone_move_api:
-    pattern:  /milestone/move
+    path:  /milestone/move
     defaults: { _controller: CampaignChainCoreBundle:Milestone:moveApi }
     methods:  [POST]
     options:
@@ -61,7 +61,7 @@ campaignchain_core_milestone_move_api:
 #
 
 campaignchain_core_location_list_activities_api:
-    pattern:  /location/{id}/activities
+    path:  /location/{id}/activities
     defaults: { _controller: CampaignChainCoreBundle:Location:apiListActivities }
     methods:  [GET]
     options:
@@ -72,7 +72,7 @@ campaignchain_core_location_list_activities_api:
 #
 
 campaignchain_core_report_list_cta_locations_per_campaign_api:
-    pattern:  /report/cta/campaign/{id}/locations
+    path:  /report/cta/campaign/{id}/locations
     defaults: { _controller: CampaignChainCoreBundle:Report:apiListCtaLocationsPerCampaign }
     methods:  [GET]
     options:
@@ -83,6 +83,6 @@ campaignchain_core_report_list_cta_locations_per_campaign_api:
 #
 
 campaignchain_core_channel_cta_tracking_test:
-    pattern:  /channel/{id}/cta-tracking/test
+    path:  /channel/{id}/cta-tracking/test
     defaults: { _controller: CampaignChainCoreBundle:Channel:apiTestCtaTracking, id: 0 }
     methods:  [GET]

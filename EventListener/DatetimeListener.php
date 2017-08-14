@@ -35,7 +35,7 @@ class DatetimeListener {
 
     public function postLoad(LifecycleEventArgs $args) {
         // Only execute if HTTP request and not called as command.
-        if($this->container->isScopeActive('request')){
+        if($this->container->get('request_stack')->getCurrentRequest()){
             $entity = $args->getEntity();
 
             $reflect = new \ReflectionObject($entity);
@@ -49,7 +49,7 @@ class DatetimeListener {
                 }
 
                 // Don't execute this upon login.
-                if( $this->container->get('request')->get('_route') != 'fos_user_security_check' ){
+                if( $this->container->get('request_stack')->getCurrentRequest()->get('_route') != 'fos_user_security_check' ){
                     $value = $this->datetime->setUserTimezone($value);
                 }
 
@@ -61,14 +61,14 @@ class DatetimeListener {
 
     public function prePersist(LifecycleEventArgs $args) {
         // Only execute if HTTP request and not called as command.
-        if($this->container->isScopeActive('request')){
+        if($this->container->get('request_stack')->getCurrentRequest()){
             $this->locale2UTC($args);
         }
     }
 
     public function preUpdate(LifecycleEventArgs $args) {
         // Only execute if HTTP request and not called as command.
-        if($this->container->isScopeActive('request')){
+        if($this->container->get('request_stack')->getCurrentRequest()){
             $this->locale2UTC($args);
         }
     }

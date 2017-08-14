@@ -134,5 +134,18 @@ class VariableUtil
         return false;
     }
 
+    static function recursiveArraySearch($needle, $haystack) {
+        if (!is_array($haystack) || !count($haystack)) {
+            return false;
+        }
 
+        foreach ($haystack as $key => $value) {
+            $currentKey = $key;
+            if ($needle === $value || (is_array($value) && self::recursiveArraySearch($needle, $value) !== false)) {
+                return $currentKey;
+            }
+        }
+
+        return false;
+    }
 }

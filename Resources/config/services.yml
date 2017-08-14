@@ -512,7 +512,6 @@ services:
         class: CampaignChain\CoreBundle\Fixture\FileLoader
         arguments:
             - '@campaignchain.core.user'
-            - '@h4cc_alice_fixtures.manager'
             - '@doctrine'
             - '@liip_imagine.mime_type_guesser'
             - '@liip_imagine.extension_guesser'

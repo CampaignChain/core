@@ -106,5 +106,5 @@ campaignchain_core_rest_user_get_users_user:
 #
 
 campaignchain_core_tracking_new_api:
-    pattern:  /report/cta/new/{channel}
+    path:  /report/cta/new/{channel}
     defaults: { _controller: CampaignChainCoreBundle:Tracking:newApi }

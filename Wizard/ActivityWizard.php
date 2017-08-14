@@ -28,7 +28,7 @@ class ActivityWizard
 
     public function setContainer($container){
         $this->container = $container;
-        $this->session = new Session($this->container->get('request'));
+        $this->session = new Session($this->container->get('request_stack')->getCurrentRequest());
     }
 
     public function start($campaign, $activityModule, $location = null){

@@ -21,6 +21,7 @@ use CampaignChain\CoreBundle\EntityService\UserService;
 use CampaignChain\CoreBundle\Util\SystemUtil;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use h4cc\AliceFixturesBundle\Fixtures\FixtureManager;
+use Nelmio\Alice\Loader\NativeLoader;
 use Symfony\Component\HttpFoundation\File\MimeType\ExtensionGuesserInterface;
 use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesserInterface;
 
@@ -32,12 +33,12 @@ class FileLoader
     private $userService;
 
     /**
-     * @var FixtureManager
+     * @var NativeLoader
      */
     private $fixtureManager;
 
     /**
-     * @var Registry
+     * @var ManagerRegistry
      */
     private $em;
 
@@ -59,19 +60,19 @@ class FileLoader
     /**
      * SampleDataUtil constructor.
      * @param UserService $userService
-     * @param FixtureManager $fixtureManager
+     * @param NativeLoader $fixtureManager
      * @param ManagerRegistry $managerRegistry
      * @param MimeTypeGuesserInterface $mimeTypeGuesser
      * @param ExtensionGuesserInterface $extensionGuesser
      */
     public function __construct(
-        UserService $userService, FixtureManager $fixtureManager,
+        UserService $userService,
         ManagerRegistry $managerRegistry, MimeTypeGuesserInterface $mimeTypeGuesser,
         ExtensionGuesserInterface $extensionGuesser
     )
     {
         $this->userService = $userService;
-        $this->fixtureManager = $fixtureManager;
+        $this->fixtureManager = new NativeLoader();
         $this->em = $managerRegistry->getManager();
         $this->mimeTypeGuesser = $mimeTypeGuesser;
         $this->extensionGuesser = $extensionGuesser;

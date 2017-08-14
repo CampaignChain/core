@@ -17,7 +17,8 @@
 
 namespace CampaignChain\CoreBundle\Controller;
 
-use Symfony\Component\DependencyInjection\ContainerAware;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -29,8 +30,10 @@ use Symfony\Component\HttpFoundation\Request;
  * @author Sandro Groganz <sandro@campaignchain.com>
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class InstallController extends ContainerAware
+class InstallController implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     public function checkAction()
     {
         $installWizard = $this->container->get('campaignchain.core.install.wizard');

@@ -22,13 +22,16 @@ use CampaignChain\CoreBundle\Entity\Module;
 use CampaignChain\CoreBundle\EntityService\CampaignService;
 use CampaignChain\CoreBundle\EntityService\ModuleService;
 use Knp\Menu\FactoryInterface;
-use Symfony\Component\DependencyInjection\ContainerAware;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
-class PlanCampaignDetailBuilder extends ContainerAware
+class PlanCampaignDetailBuilder implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     public function navbar(FactoryInterface $factory, array $options)
     {
-        $id = $this->container->get('request')->get('id');
+        $id = $this->container->get('request_stack')->getCurrentRequest()->get('id');
         /** @var CampaignService $campaignService */
         $campaignService = $this->container->get('campaignchain.core.campaign');
         /** @var Campaign $campaign */
