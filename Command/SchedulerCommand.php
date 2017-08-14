@@ -38,7 +38,7 @@ use Symfony\Component\Stopwatch\Stopwatch;
  * Class SchedulerCommand.
  *
  * Usage:
- * php app/console campaignchain:scheduler
+ * php bin/console campaignchain:scheduler
  *
  * Configuration:
  * Create a cron job that runs this command every minute.
@@ -764,7 +764,7 @@ class SchedulerCommand extends ContainerAwareCommand
     {
         $job->setStartDate($this->now);
 
-        $command = 'php app/console campaignchain:job '.$job->getId().' --env='.$this->getContainer()->get(
+        $command = 'php bin/console campaignchain:job '.$job->getId().' --env='.$this->getContainer()->get(
                 'kernel'
             )->getEnvironment();
         $process = new Process($command);

@@ -173,7 +173,7 @@ class SystemUtil
         chdir(self::getRootDir());
         ob_start();
         // Drop all tables
-        $command = 'php app/console doctrine:schema:drop --force --full-database';
+        $command = 'php bin/console doctrine:schema:drop --force --full-database';
         system($command, $output);
         // Run composer post install command.
         $command = 'composer run-script post-install-cmd';

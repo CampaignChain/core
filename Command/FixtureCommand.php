@@ -31,7 +31,7 @@ use Symfony\Component\Console\Input\ArrayInput;
  * @author Sandro Groganz <sandro@campaignchain.com>
  *
  * Usage:
- * php app/console campaignchain:fixture
+ * php bin/console campaignchain:fixture
  */
 class FixtureCommand extends ContainerAwareCommand
 {

@@ -86,7 +86,7 @@ class CommandUtil
          *
          * TODO: Fix this.
          */
-        $command = 'php app/console campaignchain:schema:update';
+        $command = 'php bin/console campaignchain:schema:update';
 
         return $this->shell($command);
     }
@@ -108,20 +108,20 @@ class CommandUtil
          *
          * TODO: Fix this.
          */
-        $command = 'php app/console doctrine:schema:update --force';
+        $command = 'php bin/console doctrine:schema:update --force';
 
         return $this->shell($command);
     }
 
     public function assetsInstallWeb()
     {
-        $command = 'php app/console assets:install web';
+        $command = 'php bin/console assets:install web';
 
         return $this->shell($command);
 
         /*$this->application->add(new AssetsInstallCommand());
 
-        // app/console assets:install web
+        // bin/console assets:install web
         $command = $this->application->find('assets:install');
         $arguments = array(
             'assets:install',
@@ -132,7 +132,7 @@ class CommandUtil
 
     public function asseticDump()
     {
-        $command = 'php app/console assetic:dump --env=prod --no-debug';
+        $command = 'php bin/console assetic:dump --env=prod --no-debug';
 
         return $this->shell($command);
 
@@ -190,7 +190,7 @@ class CommandUtil
 
     public function clearCache($warmup = true)
     {
-        $command = 'php app/console cache:clear --env=prod --no-debug';
+        $command = 'php bin/console cache:clear --env=prod --no-debug';
 
         return $this->shell($command);
 
@@ -221,7 +221,7 @@ class CommandUtil
 
     public function bowerInstall()
     {
-        $command = 'php app/console sp:bower:install --interactive=false';
+        $command = 'php bin/console sp:bower:install --interactive=false';
 
         return $this->shell($command);
     }

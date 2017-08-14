@@ -141,7 +141,7 @@ class ModuleController extends Controller
             $logger->info('Output of assets:install web');
             $logger->info($output);
 
-            // app/console assetic:dump --no-debug
+            // bin/console assetic:dump --no-debug
             $output = $command->asseticDump();
             $logger->info('Output of assetic:dump --no-debug');
             $logger->info($output);

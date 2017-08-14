@@ -30,7 +30,7 @@ use Symfony\Component\HttpFoundation\Request;
  * @author Sandro Groganz <sandro@campaignchain.com>
  *
  * Usage:
- * php app/console campaignchain:module:update
+ * php bin/console campaignchain:module:update
  */
 class ModuleUpdateCommand extends ContainerAwareCommand
 {
@@ -42,7 +42,7 @@ class ModuleUpdateCommand extends ContainerAwareCommand
             ->setHelp(<<<EOT
 The <info>campaignchain:module:update</info> command updates CampaignChain modules:
 
-  <info>php app/console campaignchain:module:update</info>
+  <info>php bin/console campaignchain:module:update</info>
 EOT
             );
     }

@@ -35,10 +35,10 @@ use Symfony\Component\Stopwatch\Stopwatch;
  * @author Sandro Groganz <sandro@campaignchain.com>
  *
  * Usage:
- * php app/console campaignchain:job <jobId>
+ * php bin/console campaignchain:job <jobId>
  *
  * Example:
- * php app/console campaignchain:job 42
+ * php bin/console campaignchain:job 42
  */
 class JobCommand extends ContainerAwareCommand
 {

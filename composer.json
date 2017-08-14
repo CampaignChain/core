@@ -28,7 +28,7 @@
         "symfony/symfony": "~3.0",
         "twig/twig": "~2.0",
         "twig/extensions": "~1.0",
-        "symfony/assetic-bundle": "~2.3",
+        "symfony/assetic-bundle": "~2.0",
         "symfony/finder": "~3.0",
         "symfony/serializer": "~3.0",
         "symfony/stopwatch": "~3.0",
