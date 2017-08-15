@@ -298,6 +298,7 @@ assetic:
     bundles:
         - "CampaignChainCoreBundle"
         - "FOSUserBundle"
+
 braincrafted_bootstrap:
     output_dir: null
     assets_dir: "%kernel.root_dir%/../vendor/twbs/bootstrap"
@@ -317,6 +318,7 @@ braincrafted_bootstrap:
 
 sc_datetimepicker:
     picker: null
+
 fos_user:
     db_driver: "orm"
     firewall_name: "main"
@@ -464,3 +466,10 @@ avanzu_admin_theme:
             use_footer: false
     knp_menu:                         # knp menu integration
         enable: true
+
+fidry_alice_data_fixtures:
+    db_drivers:
+        doctrine_orm: true
+        doctrine_mongodb_odm: false
+        doctrine_phpcr_odm: false
+        eloquent_orm: false
