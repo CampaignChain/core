@@ -511,10 +511,17 @@ services:
     campaignchain.core.fixture:
         class: CampaignChain\CoreBundle\Fixture\FileLoader
         arguments:
-            - '@campaignchain.core.user'
+            - '@fidry_alice_data_fixtures.doctrine.persister_loader'
             - '@doctrine'
+
+    campaignchain.core.fixture.user_processor:
+        class: CampaignChain\CoreBundle\Fixture\UserProcessor
+        arguments:
+            - '%kernel.root_dir%/../vendor'
+            - '@campaignchain.core.user'
             - '@liip_imagine.mime_type_guesser'
             - '@liip_imagine.extension_guesser'
+        tags: [ { name: 'fidry_alice_data_fixtures.processor' } ]
 
     # External
     mremi.url_shortener.provider.bitly.bitly_provider:

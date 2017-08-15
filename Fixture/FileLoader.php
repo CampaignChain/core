@@ -17,21 +17,13 @@
 
 namespace CampaignChain\CoreBundle\Fixture;
 
-use CampaignChain\CoreBundle\EntityService\UserService;
-use CampaignChain\CoreBundle\Util\SystemUtil;
 use Doctrine\Common\Persistence\ManagerRegistry;
-use h4cc\AliceFixturesBundle\Fixtures\FixtureManager;
+use Fidry\AliceDataFixtures\LoaderInterface;
 use Nelmio\Alice\Loader\NativeLoader;
-use Symfony\Component\HttpFoundation\File\MimeType\ExtensionGuesserInterface;
 use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesserInterface;
 
 class FileLoader
 {
-    /**
-     * @var UserService
-     */
-    private $userService;
-
     /**
      * @var NativeLoader
      */
@@ -43,39 +35,23 @@ class FileLoader
     private $em;
 
     /**
-     * @var MimeTypeGuesserInterface
-     */
-    private $mimeTypeGuesser;
-
-    /**
-     * @var ExtensionGuesserInterface
-     */
-    private $extensionGuesser;
-
-    /**
      * @var \Exception
      */
     private $exception;
 
     /**
-     * SampleDataUtil constructor.
-     * @param UserService $userService
-     * @param NativeLoader $fixtureManager
+     * FileLoader constructor.
+     *
+     * @param LoaderInterface $fixtureManager
      * @param ManagerRegistry $managerRegistry
-     * @param MimeTypeGuesserInterface $mimeTypeGuesser
-     * @param ExtensionGuesserInterface $extensionGuesser
      */
     public function __construct(
-        UserService $userService,
-        ManagerRegistry $managerRegistry, MimeTypeGuesserInterface $mimeTypeGuesser,
-        ExtensionGuesserInterface $extensionGuesser
+        LoaderInterface $fixtureManager,
+        ManagerRegistry $managerRegistry
     )
     {
-        $this->userService = $userService;
-        $this->fixtureManager = new NativeLoader();
+        $this->fixtureManager = $fixtureManager;
         $this->em = $managerRegistry->getManager();
-        $this->mimeTypeGuesser = $mimeTypeGuesser;
-        $this->extensionGuesser = $extensionGuesser;
     }
 
     /**
@@ -87,32 +63,11 @@ class FileLoader
         try {
             $this->em->getConnection()->beginTransaction();
 
-            $userProcessor = new UserProcessor(
-                realpath(
-                    SystemUtil::getRootDir().DIRECTORY_SEPARATOR.
-                    'vendor'.DIRECTORY_SEPARATOR
-                ),
-                $this->userService, $this->mimeTypeGuesser, $this->extensionGuesser
-            );
-
-            // Create Alice manager and fixture set
-            $this->fixtureManager->addProcessor($userProcessor);
-            $set = $this->fixtureManager->createFixtureSet();
-
-            // Add the fixture files
-            foreach($files as $file) {
-                $set->addFile($file, 'yaml');
-            }
-
-            $set->setDoDrop($doDrop);
-            $set->setDoPersist(true);
-            $set->setSeed(1337 + 42);
-
             // TODO Keep Module data intact
             $bundles =   $this->em->getRepository("CampaignChain\CoreBundle\Entity\Bundle")->findAll();
             $modules = $this->em->getRepository("CampaignChain\CoreBundle\Entity\Module")->findAll();
 
-            if($this->fixtureManager->load($set)){
+            if($this->fixtureManager->load($files)){
                 // TODO: Restore modules data
                 foreach($bundles as $bundle){
                     $this->em->persist($bundle);

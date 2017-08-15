@@ -19,8 +19,8 @@ namespace CampaignChain\CoreBundle\Fixture;
 
 use CampaignChain\CoreBundle\Entity\User;
 use CampaignChain\CoreBundle\EntityService\UserService;
+use Fidry\AliceDataFixtures\ProcessorInterface;
 use Liip\ImagineBundle\Model\Binary;
-use Nelmio\Alice\ProcessorInterface;
 use Symfony\Component\HttpFoundation\File\MimeType\ExtensionGuesserInterface;
 use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesserInterface;
 
@@ -47,12 +47,12 @@ class UserProcessor implements ProcessorInterface
     }
 
 
-    public function preProcess($object)
+    public function preProcess(string $id, $object)
     {
 
     }
 
-    public function postProcess($object)
+    public function postProcess(string $id, $object)
     {
         if (!($object instanceof User)) {
             return;
