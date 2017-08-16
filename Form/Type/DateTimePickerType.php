@@ -87,7 +87,7 @@ class DateTimePickerType extends AbstractType
         return 'collot_datetime';
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'campaignchain_datetimepicker';
     }

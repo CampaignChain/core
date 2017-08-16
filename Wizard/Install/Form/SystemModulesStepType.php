@@ -26,7 +26,7 @@ class SystemModulesStepType extends AbstractType
     {
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'campaignchain_core_install_step_system_modules';
     }

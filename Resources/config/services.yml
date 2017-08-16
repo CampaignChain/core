@@ -251,14 +251,14 @@ services:
     campaignchain.core.form.type.theme:
         class: CampaignChain\CoreBundle\Form\Type\ThemeType
         tags:
-            - { name: form.type, alias: campaignchain_core_theme }
+            - { name: form.type }
 
     campaignchain.core.form.type.user:
         class: CampaignChain\CoreBundle\Form\Type\UserType
         arguments:
             - '%campaignchain_core%'
         tags:
-            - { name: form.type, alias: campaignchain_core_user }
+            - { name: form.type }
 
     campaignchain.core.form.type.activity:
         class: CampaignChain\CoreBundle\Form\Type\ActivityType
@@ -273,19 +273,19 @@ services:
         arguments:
             - '@campaignchain.core.util.datetime'
         tags:
-            - { name: form.type, alias: campaignchain_datetime }
+            - { name: form.type }
 
     campaignchain.core.form.type.datetimepicker:
         class: CampaignChain\CoreBundle\Form\Type\DateTimePickerType
         arguments:
             - '@campaignchain.core.util.datetime'
         tags:
-            - { name: form.type, alias: campaignchain_datetimepicker }
+            - { name: form.type }
 
     campaignchain.core.form.type.daterangepicker:
         class: CampaignChain\CoreBundle\Form\Type\DateRangePickerType
         tags:
-            - { name: form.type, alias: campaignchain_daterangepicker }
+            - { name: form.type }
 
     # Model
     campaignchain.core.model.dhtmlxgantt:

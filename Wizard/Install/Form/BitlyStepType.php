@@ -27,7 +27,7 @@ class BitlyStepType extends AbstractType
         $builder->add('access_token', 'text');
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'campaignchain_core_install_step_bitly';
     }

@@ -17,6 +17,7 @@
 
 namespace CampaignChain\CoreBundle\Controller;
 
+use CampaignChain\CoreBundle\Form\Type\UserType;
 use FOS\UserBundle\Event\UserEvent;
 use FOS\UserBundle\FOSUserEvents;
 use FOS\UserBundle\Model\UserInterface;
@@ -45,7 +46,7 @@ class ProfileController extends Controller
             throw $this->createAccessDeniedException('This user does not have access to this section.');
         }
 
-        $form = $this->createForm('campaignchain_core_user', $user);
+        $form = $this->createForm(UserType::class, $user);
 
         $form->handleRequest($request);
 

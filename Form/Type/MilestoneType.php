@@ -59,7 +59,7 @@ class MilestoneType extends HookListenerType
         ));
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'campaignchain_core_milestone';
     }

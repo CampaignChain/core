@@ -20,6 +20,7 @@ namespace CampaignChain\CoreBundle\Form\Type;
 use Symfony\Component\Form\AbstractType;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 abstract class HookListenerType extends AbstractType
 {
@@ -67,6 +68,16 @@ abstract class HookListenerType extends AbstractType
         if(isset($options['hooks_options'])){
             $this->setHooksOptions($options['hooks_options']);
         }
+    }
+
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults(array(
+            'view' => 'default',
+            'bundle_name' => null,
+            'module_identifier' => null,
+            'hooks_options' => null,
+        ));
     }
 
     public function getHookListener($builder)

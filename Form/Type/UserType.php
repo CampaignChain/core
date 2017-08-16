@@ -150,7 +150,7 @@ class UserType extends AbstractType
         ));
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'campaignchain_core_user';
     }

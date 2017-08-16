@@ -19,6 +19,7 @@ namespace CampaignChain\CoreBundle\Controller;
 
 use CampaignChain\CoreBundle\Entity\Theme;
 use CampaignChain\CoreBundle\Entity\User;
+use CampaignChain\CoreBundle\Form\Type\ThemeType;
 use CampaignChain\CoreBundle\Service\FileUploadService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -45,7 +46,7 @@ class ThemeController extends Controller
             ->getRepository('CampaignChainCoreBundle:Theme')
             ->find(1);
 
-        $form = $this->createForm('campaignchain_core_theme', $theme);
+        $form = $this->createForm(ThemeType::class, $theme);
 
         $form->handleRequest($request);
 

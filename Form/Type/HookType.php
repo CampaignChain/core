@@ -18,6 +18,7 @@
 namespace CampaignChain\CoreBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 abstract class HookType extends AbstractType
 {
@@ -35,5 +36,27 @@ abstract class HookType extends AbstractType
 
     public function setHooksOptions(array $hooksOptions){
         $this->hooksOptions = $hooksOptions;
+    }
+
+    public function setDefaultOptions($options)
+    {
+        if(isset($options['view'])){
+            $this->setView($options['view']);
+        }
+        if(isset($options['campaign'])){
+            $this->setCampaign($options['campaign']);
+        }
+        if(isset($options['hooks_options'])){
+            $this->setHooksOptions($options['hooks_options']);
+        }
+    }
+
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults(array(
+            'view' => 'default',
+            'campaign' => null,
+            'hooks_options' => null,
+        ));
     }
 }

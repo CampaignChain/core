@@ -60,7 +60,7 @@ class ThemeType extends AbstractType
         ));
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'campaignchain_core_theme';
     }

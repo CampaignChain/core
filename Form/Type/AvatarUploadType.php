@@ -10,7 +10,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class AvatarUploadType extends AbstractType
 {
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'avatar_upload';
     }

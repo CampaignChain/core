@@ -30,10 +30,10 @@ class DateRangePickerType extends AbstractType
 
     public function getParent()
     {
-        return 'campaignchain_datetime';
+        return DateTimeType::class;
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'campaignchain_daterangepicker';
     }

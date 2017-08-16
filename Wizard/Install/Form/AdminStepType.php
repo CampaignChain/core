@@ -48,7 +48,7 @@ class AdminStepType extends AbstractType
     /**
      * @return string
      */
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'campaignchain_core_install_step_admin';
     }

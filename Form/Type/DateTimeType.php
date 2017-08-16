@@ -56,7 +56,7 @@ class DateTimeType extends AbstractType
         return SymfonyDateTimeType::class;
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'campaignchain_datetime';
     }

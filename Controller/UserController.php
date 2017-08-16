@@ -18,6 +18,7 @@
 namespace CampaignChain\CoreBundle\Controller;
 
 use CampaignChain\CoreBundle\Entity\User;
+use CampaignChain\CoreBundle\Form\Type\UserType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -55,7 +56,7 @@ class UserController extends Controller
      */
     public function editAction(Request $request, User $userToEdit)
     {
-        $form = $this->createForm('campaignchain_core_user', $userToEdit);
+        $form = $this->createForm(UserType::class, $userToEdit);
 
         $form->handleRequest($request);
 
@@ -136,7 +137,7 @@ class UserController extends Controller
         /** @var User $user */
         $user = $userManager->createUser();
 
-        $form = $this->createForm('campaignchain_core_user', $user, ['new' => true]);
+        $form = $this->createForm(UserType::class, $user, ['new' => true]);
         $form->handleRequest($request);
 
         if ($form->isValid()) {

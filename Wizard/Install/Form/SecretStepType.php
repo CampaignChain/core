@@ -26,7 +26,7 @@ class SecretStepType extends AbstractType
         $builder->add('secret', 'text');
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'distributionbundle_secret_step';
     }

@@ -504,7 +504,7 @@ class CampaignChainCoreExtension extends \Twig_Extension implements \Twig_Extens
         }
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'campaignchain_core_extension';
     }

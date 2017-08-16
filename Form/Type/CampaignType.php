@@ -19,6 +19,7 @@ namespace CampaignChain\CoreBundle\Form\Type;
 
 use CampaignChain\CoreBundle\Util\DateTimeUtil;
 use CampaignChain\TextareaCountFormTypeBundle\Form\Type\TextareaCountType;
+use PhpOption\Option;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -26,6 +27,8 @@ class CampaignType extends HookListenerType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $this->setDefaultOptions($options);
+
         /** @var DateTimeUtil $dateTimeUtil */
         $dateTimeUtil = $this->container->get('campaignchain.core.util.datetime');
         $builder
@@ -55,13 +58,15 @@ class CampaignType extends HookListenerType
 
     public function configureOptions(OptionsResolver $resolver)
     {
+        call_user_func_array('parent::' . __FUNCTION__, func_get_args());
+
         $resolver->setDefaults(array(
             'data_class' => 'CampaignChain\CoreBundle\Entity\Campaign',
         ));
     }
 
 
-    public function getName()
+    public function getBlockPrefix()
     {
         if ($this->view == 'rest') {
             return 'campaign';

@@ -78,7 +78,7 @@ class LocationType extends HookListenerType
         ));
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'campaignchain_location';
     }

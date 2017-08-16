@@ -125,7 +125,7 @@ class ActivityType extends HookListenerType
         ));
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         if($this->view == 'rest'){
             return 'activity';

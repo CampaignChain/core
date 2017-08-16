@@ -141,19 +141,16 @@ class HookListener implements EventSubscriberInterface
         if($hasHooks){
             foreach($this->hooks[$hookView] as $identifier => $active){
                 if($active){
+                    $hooksOptions = null;
+
                     $hookConfig = $this->em->getRepository('CampaignChainCoreBundle:Hook')->findOneByIdentifier($identifier);
                     $hookForm = $this->container->get($hookConfig->getServices()['form']);
-                    $hookForm->setView($this->view);
-                    if(isset($this->hooksOptions[$identifier])){
-                        $hookForm->setHooksOptions($this->hooksOptions[$identifier]);
-                    }
+
                     switch($this->bundle->getType()){
                         case 'campaignchain-milestone':
                         case 'campaignchain-activity':
                             if(!$this->campaign){
                                 // TODO: Throw exception.
-                            } else {
-                                $hookForm->setCampaign($this->campaign);
                             }
                             break;
                     }
@@ -174,7 +171,7 @@ class HookListener implements EventSubscriberInterface
                     }
 
                     $hookFormIdentifier = str_replace('-', '_', $hookConfig->getIdentifier());
-                    $form->add('campaignchain_hook_'.$hookFormIdentifier, $hookForm, array(
+                    $form->add('campaignchain_hook_'.$hookFormIdentifier, get_class($hookForm), array(
                         'label' => $hookLabel,
                         'mapped' => false,
                         'data' => $hookData,
@@ -182,6 +179,9 @@ class HookListener implements EventSubscriberInterface
                             'id' => 'campaignchain_hook_'.$hookFormIdentifier,
                             'help_text' => $hookHelpText,
                         ),
+                        'view' => $this->view,
+                        'campaign' => $this->campaign,
+                        'hooks_options' => $hooksOptions,
                     ));
 
                     // Does the hook have a form listener?
