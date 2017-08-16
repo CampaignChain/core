@@ -84,7 +84,7 @@ class DateTimePickerType extends AbstractType
 
     public function getParent()
     {
-        return 'collot_datetime';
+        return \SC\DatetimepickerBundle\Form\Type\DatetimeType::class;
     }
 
     public function getBlockPrefix()
