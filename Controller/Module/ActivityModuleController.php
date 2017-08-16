@@ -26,6 +26,7 @@ use CampaignChain\CoreBundle\Entity\Module;
 use CampaignChain\CoreBundle\EntityService\ActivityService;
 use CampaignChain\CoreBundle\EntityService\HookService;
 use CampaignChain\CoreBundle\Exception\ExternalApiException;
+use CampaignChain\CoreBundle\Form\Type\ActivityType;
 use CampaignChain\CoreBundle\Validator\AbstractOperationValidator;
 use CampaignChain\CoreBundle\Wizard\ActivityWizard;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -158,7 +159,6 @@ class ActivityModuleController extends Controller
         /** @var ActivityWizard $wizard */
         $wizard = $this->get('campaignchain.core.activity.wizard');
         if (!$wizard->getCampaign()) {
-            dump($wizard);exit;
             return $this->redirectToRoute('campaignchain_core_activities_new');
         }
 
@@ -177,7 +177,9 @@ class ActivityModuleController extends Controller
         $activity->setEqualsOperation($this->parameters['equals_operation']);
 
         $form = $this->createForm(
-            $this->getActivityFormType('new'), $activity
+            ActivityType::class,
+            $activity,
+            $this->getActivityFormTypeOptions('new')
         );
 
         $form->handleRequest($request);
@@ -465,7 +467,9 @@ class ActivityModuleController extends Controller
         $content = $this->handler->preFormSubmitEditEvent($this->operations[0]);
 
         $form = $this->createForm(
-            $this->getActivityFormType('edit'), $this->activity
+            ActivityType::class,
+            $this->activity,
+            $this->getActivityFormTypeOptions('edit')
         );
 
         $form->handleRequest($request);
@@ -619,7 +623,11 @@ class ActivityModuleController extends Controller
 
         $this->handler->preFormSubmitEditModalEvent($this->operations[0]);
 
-        $form = $this->createForm($activityFormType, $this->activity);
+        $form = $this->createForm(
+            ActivityType::class,
+            $this->activity,
+            $this->getActivityFormTypeOptions('default')
+        );
 
         $form->handleRequest($request);
 
@@ -807,27 +815,20 @@ class ActivityModuleController extends Controller
      *
      * @return object
      */
-    public function getActivityFormType($view = 'default')
+    public function getActivityFormTypeOptions($view = 'default')
     {
-        $this->view = $view;
-
-        $activityFormType = $this->get('campaignchain.core.form.type.activity');
-        $activityFormType->setView($this->view);
-        $activityFormType->setBundleName($this->parameters['bundle_name']);
-        $activityFormType->setModuleIdentifier(
-            $this->parameters['module_identifier']
-        );
+        $options['view'] = $this->view = $view;
+        $options['bundle_name'] = $this->parameters['bundle_name'];
+        $options['module_identifier'] = $this->parameters['module_identifier'];
         if (isset($this->parameters['hooks_options'])) {
-            $activityFormType->setHooksOptions($this->parameters['hooks_options']);
+            $options['hooks_options'] = $this->parameters['hooks_options'];
         }
         if($this->handler->hasContent($this->view)) {
-            $activityFormType->setContentForms(
-                $this->getContentFormTypes()
-            );
+            $options['content_forms'] = $this->getContentFormTypes();
         }
-        $activityFormType->setCampaign($this->campaign);
+        $options['campaign'] = $this->campaign;
 
-        return $activityFormType;
+        return $options;
     }
 
     /**

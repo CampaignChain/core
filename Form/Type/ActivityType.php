@@ -44,6 +44,16 @@ class ActivityType extends HookListenerType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $this->setDefaultOptions($options);
+
+        if(isset($options['campaign'])){
+            $this->setCampaign($options['campaign']);
+        }
+
+        if(isset($options['content_forms'])){
+            $this->setContentForms($options['content_forms']);
+        }
+
         if(is_array($this->contentForms) && count($this->contentForms)){
             foreach($this->contentForms as $form){
                 $form['form']->setActivityModule($options['data']->getActivityModule());
@@ -73,11 +83,11 @@ class ActivityType extends HookListenerType
             $builder
                 ->add('location', 'entity', array(
                 'class' => 'CampaignChain\CoreBundle\Entity\Location',
-                'property' => 'id'
+                'choice_label' => 'id'
                 ))
                 ->add('campaign', 'entity', array(
                     'class' => 'CampaignChain\CoreBundle\Entity\Campaign',
-                    'property' => 'id'
+                    'choice_label' => 'id'
                 ))
                 ->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
                     $activity = $event->getData();
@@ -94,7 +104,7 @@ class ActivityType extends HookListenerType
 
                     $form->add('channel', 'entity', array(
                         'class' => 'CampaignChain\CoreBundle\Entity\Channel',
-                        'property' => 'id'
+                        'choice_label' => 'id'
                     ));
 
                     $event->setData($activity);

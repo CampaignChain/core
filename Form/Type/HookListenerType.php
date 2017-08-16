@@ -53,6 +53,22 @@ abstract class HookListenerType extends AbstractType
         $this->hooksOptions = $hooksOptions;
     }
 
+    public function setDefaultOptions($options)
+    {
+        if(isset($options['view'])){
+            $this->setView($options['view']);
+        }
+        if(isset($options['bundle_name'])){
+            $this->setBundleName($options['bundle_name']);
+        }
+        if(isset($options['module_identifier'])){
+            $this->setModuleIdentifier($options['module_identifier']);
+        }
+        if(isset($options['hooks_options'])){
+            $this->setHooksOptions($options['hooks_options']);
+        }
+    }
+
     public function getHookListener($builder)
     {
         $hookListener = $this->container->get('campaignchain.core.listener.hook');

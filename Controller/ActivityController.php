@@ -58,8 +58,8 @@ class ActivityController extends Controller
                             ->setParameter('statusBackgroundProcess', Action::STATUS_BACKGROUND_PROCESS)
                             ->orderBy('campaign.startDate', 'ASC');
                     },
-                'property' => 'name',
-                'empty_value' => 'Select a Campaign',
+                'choice_label' => 'name',
+                'placeholder' => 'Select a Campaign',
                 'empty_data' => null,
                 'attr' => array(
                     'selected' => $this->get('session')->get('campaignchain.campaign'),
@@ -92,8 +92,8 @@ class ActivityController extends Controller
                                     ->setParameter('status_unpublished', Medium::STATUS_UNPUBLISHED)
                                     ->setParameter('status_inactive', Medium::STATUS_INACTIVE);
                     },
-                'property' => 'name',
-                'empty_value' => 'Select a Location',
+                'choice_label' => 'name',
+                'placeholder' => 'Select a Location',
                 'empty_data' => null,
                 'attr' => array(
                     'show_image' => true,
@@ -133,8 +133,8 @@ class ActivityController extends Controller
                             ->setParameter('statusBackgroundProcess', Action::STATUS_BACKGROUND_PROCESS)
                             ->orderBy('campaign.startDate', 'ASC');
                     },
-                    'property' => 'name',
-                    'empty_value' => 'Select a Campaign',
+                    'choice_label' => 'name',
+                    'placeholder' => 'Select a Campaign',
                     'empty_data' => null,
                     'attr' => array(
                         'selected' => $this->get('session')->get('campaignchain.campaign'),
@@ -146,8 +146,8 @@ class ActivityController extends Controller
                     'label' => 'Activity',
                     'class' => 'CampaignChainCoreBundle:ActivityModule',
                     'choices' => $multiLocationActivities,
-                    'property' => 'displayName',
-                    'empty_value' => 'Select an Activity',
+                    'choice_label' => 'displayName',
+                    'placeholder' => 'Select an Activity',
                     'empty_data' => null,
                     'attr' => array(
                         'selected' => $this->get('session')->get('campaignchain.campaign'),

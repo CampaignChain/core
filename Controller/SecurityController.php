@@ -42,7 +42,7 @@ class SecurityController extends BaseSecurityController
     public function resumeAction(Request $request)
     {
         return $this->render(
-            $this->getRequest()->isXmlHttpRequest() ? 'CampaignChainCoreBundle:Security:resume_modal.html.twig' : 'CampaignChainCoreBundle:Security:resume.html.twig',
+            $request->isXmlHttpRequest() ? 'CampaignChainCoreBundle:Security:resume_modal.html.twig' : 'CampaignChainCoreBundle:Security:resume.html.twig',
             array(
                 'page_title' => 'Resume',
             ));

@@ -28,7 +28,7 @@ limitations under the License.
             {% set attr = attr|merge({ 'class': (attr.class|default('') ~ ' form-control')|trim }) %}
 
             <select class="form-control {{ id }}-select2" {{ block('widget_attributes') }}{% if multiple %} multiple="multiple"{% endif %}>
-                {% if empty_value is not none %}
+                {% if placeholder is not none %}
                     <option></option>
                 {% endif %}
                 {% if preferred_choices|length > 0 %}
@@ -55,8 +55,8 @@ limitations under the License.
                     }
                 {% endif %}
                 $('.{{ id }}-select2').select2({
-                    {% if empty_value is not none %}
-                        placeholder: "{{ empty_value|trans({}, translation_domain) }}", allowClear: true,
+                    {% if placeholder is not none %}
+                        placeholder: "{{ placeholder|trans({}, translation_domain) }}", allowClear: true,
                     {% endif %}
                     {% if attr.show_image is defined and attr.show_image == true %}
                         formatResult: format,

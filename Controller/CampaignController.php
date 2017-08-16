@@ -53,8 +53,8 @@ class CampaignController extends BaseController
                     return $er->createQueryBuilder('cm')
                         ->orderBy('cm.displayName', 'ASC');
                 },
-                'property' => 'displayName',
-                'empty_value' => 'Select the type of campaign',
+                'choice_label' => 'displayName',
+                'placeholder' => 'Select the type of campaign',
                 'empty_data' => null,
             ))
             ->getForm();
@@ -68,7 +68,7 @@ class CampaignController extends BaseController
 
             $routes = $campaignModule->getRoutes();
 
-            if ($this->getRequest()->isXmlHttpRequest()) {
+            if ($request->isXmlHttpRequest()) {
                 return new JsonResponse(array(
                     'step' => 1,
                     'next_step' => $routes['new'],
@@ -79,7 +79,7 @@ class CampaignController extends BaseController
         }
 
         return $this->render(
-            $this->getRequest()->isXmlHttpRequest() ? 'CampaignChainCoreBundle:Base:new_modal.html.twig' : 'CampaignChainCoreBundle:Base:new.html.twig',
+            $request->isXmlHttpRequest() ? 'CampaignChainCoreBundle:Base:new_modal.html.twig' : 'CampaignChainCoreBundle:Base:new.html.twig',
             array(
                 'page_title' => 'Create New Campaign',
                 'form' => $form->createView(),

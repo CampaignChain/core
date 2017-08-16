@@ -57,8 +57,8 @@ class MilestoneController extends Controller
                         return $er->createQueryBuilder('mm')
                             ->orderBy('mm.displayName', 'ASC');
                     },
-                'property' => 'displayName',
-                'empty_value' => 'Select the type of milestone',
+                'choice_label' => 'displayName',
+                'placeholder' => 'Select the type of milestone',
                 'empty_data' => null,
             ))
             ->add('campaign', 'entity', array(
@@ -72,8 +72,8 @@ class MilestoneController extends Controller
                             ->setParameter('statusBackgroundProcess', Action::STATUS_BACKGROUND_PROCESS)
                             ->orderBy('campaign.startDate', 'ASC');
                     },
-                'property' => 'name',
-                'empty_value' => 'Select a Campaign',
+                'choice_label' => 'name',
+                'placeholder' => 'Select a Campaign',
                 'empty_data' => null,
             ))
             ->getForm();

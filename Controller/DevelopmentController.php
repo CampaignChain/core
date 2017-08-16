@@ -41,7 +41,7 @@ class DevelopmentController extends Controller
                 'choices' => $dataFiles,
                 'multiple' => false,
                 'required' => false,
-                'empty_value' => 'Choose the sample data package to be imported',
+                'placeholder' => 'Choose the sample data package to be imported',
                 'attr' => array(
                     'help_text' => "You can install data packages through Composer commands, e.g.'composer require amariki/data-test'",
                 )

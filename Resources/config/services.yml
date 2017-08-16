@@ -229,18 +229,24 @@ services:
         arguments:
             - '@doctrine'
             - '@service_container'
+        tags:
+            - { name: form.type }
 
     campaignchain.core.form.type.milestone:
         class: CampaignChain\CoreBundle\Form\Type\MilestoneType
         arguments:
             - '@doctrine'
             - '@service_container'
+        tags:
+            - { name: form.type }
 
     campaignchain.core.form.type.location:
         class: CampaignChain\CoreBundle\Form\Type\LocationType
         arguments:
             - '@doctrine'
             - '@service_container'
+        tags:
+            - { name: form.type }
 
     campaignchain.core.form.type.theme:
         class: CampaignChain\CoreBundle\Form\Type\ThemeType
@@ -259,6 +265,8 @@ services:
         arguments:
             - '@doctrine'
             - '@service_container'
+        tags:
+            - { name: form.type }
 
     campaignchain.core.form.type.datetime:
         class: CampaignChain\CoreBundle\Form\Type\DateTimeType
