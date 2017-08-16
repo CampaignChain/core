@@ -59,9 +59,9 @@
         "mremi/url-shortener": "^2.0",
         "knplabs/knp-gaufrette-bundle": "^0.3.0",
         "gkralik/php-uglifyjs": "dev-master",
-        "campaignchain/location-website": "dev-master",
-        "campaignchain/form-type-textarea-count": "dev-master",
-        "campaignchain/core-esp": "dev-master"
+        "campaignchain/location-website": "1.0.x-dev",
+        "campaignchain/form-type-textarea-count": "1.0.x-dev",
+        "campaignchain/core-esp": "1.0.x-dev"
     },
     "autoload": {
         "psr-4": { "CampaignChain\\CoreBundle\\": "" }
