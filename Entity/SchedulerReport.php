@@ -134,6 +134,13 @@ abstract class SchedulerReport extends Meta
     protected $prolongation;
 
     /**
+     * They Symfony service name of the scheduler report job.
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    protected $service;
+
+    /**
      * A string defining the interval range of the scheduler running with in the
      * prolonged period of time.
      *
@@ -430,6 +437,30 @@ abstract class SchedulerReport extends Meta
     protected function setEndActivity(Activity $endActivity = null)
     {
         $this->endActivity = $endActivity;
+
+        return $this;
+    }
+
+    /**
+     * Get service.
+     *
+     * @return string
+     */
+    public function getService()
+    {
+        return $this->service;
+    }
+
+    /**
+     * Set service.
+     *
+     * @param string $service
+     *
+     * @return SchedulerReport
+     */
+    public function setService($service)
+    {
+        $this->service = $service;
 
         return $this;
     }

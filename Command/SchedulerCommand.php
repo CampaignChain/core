@@ -588,25 +588,41 @@ class SchedulerCommand extends ContainerAwareCommand
         $this->io->text($text);
         $this->logger->info($text);
 
-        // Has a report job been defined for the module?
-        $moduleServices = $module->getServices();
-        if (!is_array($moduleServices) || !isset($moduleServices['report'])) {
-            $msg = 'No report service defined for module "'
-                .$module->getIdentifier()
-                .'" in bundle "'
-                .$module->getBundle()->getName().'".';
+        /*
+         * Does the provided service exist?
+         *
+         * 1. Check if one was explicitly defined for the report job.
+         * 2. If not, use the one defined for the action's module.
+         */
 
-            $this->logger->error($msg);
-            if ($this->getContainer()->getParameter('campaignchain.env') == 'dev') {
-                throw new \Exception($msg);
+        $service = null;
+
+        // Explicit service name?
+        if($scheduledReport->getService()){
+            $service = $scheduledReport->getService();
+        } else {
+            // Has a report job been defined for the module?
+            $moduleServices = $module->getServices();
+            if (!is_array($moduleServices) || !isset($moduleServices['report'])) {
+                $msg = 'No report service defined for module "'
+                    . $module->getIdentifier()
+                    . '" in bundle "'
+                    . $module->getBundle()->getName() . '".';
+
+                $this->logger->error($msg);
+                if ($this->getContainer()->getParameter('campaignchain.env') == 'dev') {
+                    throw new \Exception($msg);
+                }
+                $this->logger->error($msg);
+            } else {
+                $service = $moduleServices['report'];
             }
-            $this->logger->error($msg);
         }
 
         $this->queueJob(
             $type,
             $id,
-            $module->getServices()['report'],
+            $service,
             'report'
         );
 
