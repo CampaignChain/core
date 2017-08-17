@@ -107,13 +107,15 @@ class BundleConfig
         }
 
         /*
-         * Checking for dev-* ensures that the status is being registered
+         * Checking for dev-* or *-dev ensures that the status is being registered
          * properly not just for dev-master, but also for branches (e.g.
-         * dev-campaignchain-42).
+         * dev-campaignchain-42 or 1.0.x-dev).
          */
         if (
-            substr( $registeredBundle->getVersion(), 0, 4 ) === "dev-" &&
-            substr( $newBundle->getVersion(), 0, 4 ) === "dev-"
+            (substr( $registeredBundle->getVersion(), 0, 4 ) === "dev-" &&
+            substr( $newBundle->getVersion(), 0, 4 ) === "dev-") ||
+            (substr( $registeredBundle->getVersion(), -4 ) === "-dev" &&
+                substr( $newBundle->getVersion(), -4 ) === "-dev")
         ) {
             return Installer::STATUS_REGISTERED_OLDER;
         }
