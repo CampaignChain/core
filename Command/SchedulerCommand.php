@@ -517,7 +517,10 @@ class SchedulerCommand extends ContainerAwareCommand
 
             // Are we within the regular scheduled period?
             if (
-                $scheduledReport->getEndDate() > $this->now &&
+                (
+                    $scheduledReport->getEndDate() > $this->now ||
+                    is_null($scheduledReport->getEndDate())
+                ) &&
                 $scheduledReport->getInterval() != null
             ) {
                 $interval = \DateInterval::createFromDateString($scheduledReport->getInterval());
@@ -663,7 +666,10 @@ class SchedulerCommand extends ContainerAwareCommand
 
             // Are we within the regular scheduled period?
             if (
-                $scheduledReport->getEndDate() > $this->now &&
+                (
+                    $scheduledReport->getEndDate() > $this->now ||
+                    is_null($scheduledReport->getEndDate())
+                ) &&
                 $scheduledReport->getInterval() != null
             ) {
                 $interval = \DateInterval::createFromDateString($scheduledReport->getInterval());
