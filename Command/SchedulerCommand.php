@@ -27,6 +27,7 @@ use Doctrine\Common\Persistence\ManagerRegistry;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\LockHandler;
@@ -132,12 +133,18 @@ class SchedulerCommand extends ContainerAwareCommand
     {
         $this
             ->setName('campaignchain:scheduler')
-            ->setDescription('Executes scheduled campaigns, activities, operations, etc.');
+            ->setDescription('Executes scheduled campaigns, activities, operations, etc.')
+            ->addOption(
+                'campaignchain.env',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                '"prod" or "dev" environment for CampaignChain.'
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->initializeVariables();
+        $this->initializeVariables($input->getOption('campaignchain.env'));
 
         $this->io = new SymfonyStyle($input, $output);
         $this->io->title('CampaignChain Scheduler');
@@ -190,14 +197,18 @@ class SchedulerCommand extends ContainerAwareCommand
     /**
      * Initialize the variables for the command.
      */
-    protected function initializeVariables()
+    protected function initializeVariables($env)
     {
         // Capture duration of scheduler with Symfony's Stopwatch component.
         $this->stopwatchScheduler = new Stopwatch();
         $this->stopwatchScheduler->start('scheduler');
 
         // If in dev mode, use a long interval to make testing the scheduler easier.
-        if ($this->getContainer()->getParameter('campaignchain.env') == 'dev') {
+        if(is_null($env)){
+            $env = $this->getContainer()->getParameter('campaignchain.env');
+        }
+
+        if ($env == 'dev') {
             $this->interval = $this->getContainer()->getParameter('campaignchain_core.scheduler.interval_dev');
         } else {
             $this->interval = $this->getContainer()->getParameter('campaignchain_core.scheduler.interval');
