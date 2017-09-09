@@ -23,6 +23,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 abstract class OperationType extends AbstractType
 {
@@ -61,6 +62,8 @@ abstract class OperationType extends AbstractType
      */
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
+        $this->setOptions($options);
+
         if($this->location){
             $view->vars['location'] = $this->location;
         } elseif(isset($options['data'])) {
@@ -69,5 +72,31 @@ abstract class OperationType extends AbstractType
         if(!isset($options['data']) || !$view->vars['location']){
             $view->vars['activity_module'] = $this->activityModule;
         }
+    }
+
+    public function setOptions($options)
+    {
+        if(isset($options['view'])){
+            $this->setView($options['view']);
+        }
+        if(isset($options['content'])){
+            $this->setContent($options['content']);
+        }
+        if(isset($options['location'])){
+            $this->setLocation($options['location']);
+        }
+        if(isset($options['activity_module'])){
+            $this->setActivityModule($options['activity_module']);
+        }
+    }
+
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults(array(
+            'view' => null,
+            'content' => null,
+            'location' => null,
+            'activity_module' => null,
+        ));
     }
 }

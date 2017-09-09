@@ -27,7 +27,7 @@ class CampaignType extends HookListenerType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $this->setDefaultOptions($options);
+        $this->setOptions($options);
 
         /** @var DateTimeUtil $dateTimeUtil */
         $dateTimeUtil = $this->container->get('campaignchain.core.util.datetime');

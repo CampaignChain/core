@@ -19,6 +19,7 @@ namespace CampaignChain\CoreBundle\Controller\REST;
 
 use CampaignChain\CoreBundle\Entity\Action;
 use CampaignChain\CoreBundle\Entity\Activity;
+use CampaignChain\CoreBundle\Form\Type\ActivityType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -119,8 +120,9 @@ class BaseModuleController extends BaseController
             $moduleControllerService->setActivityContext($campaign, $location);
 
             $form = $this->createForm(
-                $moduleControllerService->getActivityFormType('rest'),
-                $activity
+                ActivityType::class,
+                $activity,
+                $moduleControllerService->getActivityFormTypeOptions('rest')
             );
 
             $form->handleRequest($request);
@@ -143,6 +145,10 @@ class BaseModuleController extends BaseController
                 );
             }
         } catch (\Exception $e) {
+            $this->logError($e->getMessage(), array(
+                'code' => $e->getCode(),
+                'trace' => $e->getTraceAsString(),
+            ));
             return $this->errorResponse($e->getMessage(), $e->getCode());
         }
     }

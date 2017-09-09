@@ -268,6 +268,14 @@ services:
         tags:
             - { name: form.type }
 
+    campaignchain.core.form.type.operation:
+        class: CampaignChain\CoreBundle\Form\Type\OperationType
+        arguments:
+            - '@doctrine'
+            - '@service_container'
+        tags:
+            - { name: form.type }
+
     campaignchain.core.form.type.datetime:
         class: CampaignChain\CoreBundle\Form\Type\DateTimeType
         arguments:

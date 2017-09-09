@@ -18,7 +18,7 @@
 namespace CampaignChain\CoreBundle\Form\Type;
 
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class LocationType extends HookListenerType
 {
@@ -71,7 +71,7 @@ class LocationType extends HookListenerType
         $builder->addEventSubscriber($hookListener);
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
             'data_class' => 'CampaignChain\CoreBundle\Entity\Location',

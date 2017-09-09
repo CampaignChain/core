@@ -38,7 +38,7 @@ abstract class HookType extends AbstractType
         $this->hooksOptions = $hooksOptions;
     }
 
-    public function setDefaultOptions($options)
+    public function setOptions($options)
     {
         if(isset($options['view'])){
             $this->setView($options['view']);

@@ -21,7 +21,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class ActivityType extends HookListenerType
 {
@@ -44,21 +43,13 @@ class ActivityType extends HookListenerType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $this->setDefaultOptions($options);
-
-        if(isset($options['campaign'])){
-            $this->setCampaign($options['campaign']);
-        }
-
-        if(isset($options['content_forms'])){
-            $this->setContentForms($options['content_forms']);
-        }
+        $this->setOptions($options);
 
         if(is_array($this->contentForms) && count($this->contentForms)){
             foreach($this->contentForms as $form){
-                $form['form']->setActivityModule($options['data']->getActivityModule());
                 $builder
-                    ->add($form['identifier'], $form['form'], array(
+                    ->add($form['identifier'], get_class($form['form']), array(
+                        'activity_module' => $options['data']->getActivityModule(),
                         'mapped' => false,
                         'label' => false,
                         'attr' => array(
@@ -118,10 +109,26 @@ class ActivityType extends HookListenerType
         $builder->addEventSubscriber($hookListener);
     }
 
+    public function setOptions($options)
+    {
+        parent::setOptions($options);
+
+        if(isset($options['campaign'])){
+            $this->setCampaign($options['campaign']);
+        }
+        if(isset($options['content_forms'])){
+            $this->setContentForms($options['content_forms']);
+        }
+    }
+
     public function configureOptions(OptionsResolver $resolver)
     {
+        parent::configureOptions($resolver);
+
         $resolver->setDefaults(array(
             'data_class' => 'CampaignChain\CoreBundle\Entity\Activity',
+            'campaign' => null,
+            'content_forms' => null,
         ));
     }
 
