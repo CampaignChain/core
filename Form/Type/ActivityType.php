@@ -48,13 +48,15 @@ class ActivityType extends HookListenerType
         if(is_array($this->contentForms) && count($this->contentForms)){
             foreach($this->contentForms as $form){
                 $builder
-                    ->add($form['identifier'], get_class($form['form']), array(
+                    ->add($form['identifier'], $form['options']['class'], array(
                         'activity_module' => $options['data']->getActivityModule(),
                         'mapped' => false,
                         'label' => false,
                         'attr' => array(
                             'widget_col' => 12,
                         ),
+                        'data' => $form['options']['data'],
+                        'location' => $form['options']['location'],
                     ));
             }
         }

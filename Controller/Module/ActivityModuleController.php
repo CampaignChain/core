@@ -618,9 +618,6 @@ class ActivityModuleController extends Controller
             );
         }
 
-        $activityFormType = $this->getActivityFormType('editModal');
-        $activityFormType->setView('default');
-
         $this->handler->preFormSubmitEditModalEvent($this->operations[0]);
 
         $form = $this->createForm(
@@ -824,7 +821,7 @@ class ActivityModuleController extends Controller
             $options['hooks_options'] = $this->parameters['hooks_options'];
         }
         if($this->handler->hasContent($this->view)) {
-            $options['content_forms'] = $this->getContentFormTypes();
+            $options['content_forms'] = $this->getContentFormTypesOptions();
         }
         $options['campaign'] = $this->campaign;
 
@@ -837,24 +834,21 @@ class ActivityModuleController extends Controller
      * @return array
      * @throws \Exception
      */
-    private function getContentFormTypes()
+    private function getContentFormTypesOptions()
     {
         foreach($this->parameters['operations'] as $operationParams){
-            $operationForms[] = $this->getContentFormType($operationParams);
+            $operationForms[] = $this->getContentFormTypeOptions($operationParams);
         }
 
         return $operationForms;
     }
 
-    private function getContentFormType($params)
+    private function getContentFormTypeOptions($params)
     {
-        $contentFormType = new $params['form_type'](
-            $this->getDoctrine(),
-            $this->get('service_container')
-        );
+        $options['class'] = $params['form_type'];
 
         if($this->location) {
-            $contentFormType->setLocation($this->location);
+            $options['location'] = $this->location;
         }
 
         if($this->handler){
@@ -865,14 +859,14 @@ class ActivityModuleController extends Controller
             } else {
                 $content = $this->handler->createContent($this->location, $this->campaign);
             }
-            $contentFormType->setContent($content);
+            $options['data'] = $content;
         }
 
         $formName = str_replace('-', '_', $params['module_identifier']);
 
         return array(
             'identifier' => $formName,
-            'form' => $contentFormType
+            'options' => $options
         );
     }
 

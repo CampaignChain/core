@@ -27,7 +27,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 abstract class OperationType extends AbstractType
 {
-    protected $content;
     protected $view = 'default';
     protected $em;
     protected $container;
@@ -38,10 +37,6 @@ abstract class OperationType extends AbstractType
     {
         $this->em = $managerRegistry->getManager();
         $this->container = $container;
-    }
-
-    public function setContent($content){
-        $this->content = $content;
     }
 
     public function setView($view){
@@ -79,9 +74,6 @@ abstract class OperationType extends AbstractType
         if(isset($options['view'])){
             $this->setView($options['view']);
         }
-        if(isset($options['content'])){
-            $this->setContent($options['content']);
-        }
         if(isset($options['location'])){
             $this->setLocation($options['location']);
         }
@@ -94,7 +86,6 @@ abstract class OperationType extends AbstractType
     {
         $resolver->setDefaults(array(
             'view' => null,
-            'content' => null,
             'location' => null,
             'activity_module' => null,
         ));
