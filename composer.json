@@ -61,7 +61,8 @@
         "gkralik/php-uglifyjs": "dev-master",
         "campaignchain/location-website": "1.0.x-dev",
         "campaignchain/form-type-textarea-count": "1.0.x-dev",
-        "campaignchain/core-esp": "1.0.x-dev"
+        "campaignchain/core-esp": "1.0.x-dev",
+        "friendsofsymfony/elastica-bundle": "~4.0"
     },
     "autoload": {
         "psr-4": { "CampaignChain\\CoreBundle\\": "" }
