@@ -223,6 +223,14 @@ services:
         arguments:
             - '@mremi.url_shortener.provider.bitly.bitly_provider'
 
+    campaignchain.core.service.elasticsearch:
+        class: CampaignChain\CoreBundle\Service\Elasticsearch
+        arguments:
+            - '%elasticsearch_scheme%'
+            - '%elasticsearch_host%'
+            - '%elasticsearch_port%'
+            - '@kernel'
+
     # Forms
     campaignchain.core.form.type.campaign:
         class: CampaignChain\CoreBundle\Form\Type\CampaignType

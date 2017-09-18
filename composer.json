@@ -62,6 +62,7 @@
         "campaignchain/location-website": "1.0.x-dev",
         "campaignchain/form-type-textarea-count": "1.0.x-dev",
         "campaignchain/core-esp": "1.0.x-dev",
+        "elasticsearch/elasticsearch": "~5.0",
         "friendsofsymfony/elastica-bundle": "~4.0"
     },
     "autoload": {
@@ -87,7 +88,8 @@
                     "FOS\\RestBundle\\FOSRestBundle",
                     "Oneup\\UploaderBundle\\OneupUploaderBundle",
                     "Liip\\ImagineBundle\\LiipImagineBundle",
-                    "Knp\\Bundle\\GaufretteBundle\\KnpGaufretteBundle"
+                    "Knp\\Bundle\\GaufretteBundle\\KnpGaufretteBundle",
+                    "FOS\\ElasticaBundle\\FOSElasticaBundle"
                 ]
             }
         }
