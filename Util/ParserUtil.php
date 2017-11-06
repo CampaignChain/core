@@ -423,4 +423,15 @@ class ParserUtil
 
         return $url;
     }
+
+    static function getDomainFromEmail($email)
+    {
+        return substr(strrchr($email, "@"), 1);
+    }
+
+    static function getIpFromEmail($email)
+    {
+        $domain = self::getDomainFromEmail($email);
+        return gethostbyname($domain);
+    }
 }
