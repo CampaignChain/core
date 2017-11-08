@@ -20,8 +20,11 @@ namespace CampaignChain\CoreBundle\Command;
 use CampaignChain\CoreBundle\Entity\Action;
 use CampaignChain\CoreBundle\Entity\Job;
 use CampaignChain\CoreBundle\Entity\Scheduler;
+use CampaignChain\CoreBundle\Entity\SchedulerReport;
 use CampaignChain\CoreBundle\Entity\SchedulerReportLocation;
 use CampaignChain\CoreBundle\Entity\SchedulerReportOperation;
+use CampaignChain\CoreBundle\Exception\ErrorCode;
+use CampaignChain\CoreBundle\Util\DateTimeUtil;
 use DateTime;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Psr\Log\LoggerInterface;
@@ -60,6 +63,11 @@ class SchedulerCommand extends ContainerAwareCommand
      * @var int Process timeout in seconds.
      */
     protected $timeout = 600;
+
+    /**
+     * @var \DateTime Start time of scheduler's time period.
+     */
+    protected $periodStart;
 
     /**
      * The order of actions to be executed.
@@ -144,10 +152,15 @@ class SchedulerCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        // Initialize variables.
         $this->initializeVariables($input->getOption('campaignchain.env'));
 
+        // Intialize command line.
         $this->io = new SymfonyStyle($input, $output);
         $this->io->title('CampaignChain Scheduler');
+
+        // Clean up scheduler and job configs.
+        $this->cleanUp();
 
         // Prevent multiple console runs
         $lock = new LockHandler('campaignchain:scheduler');
@@ -163,7 +176,7 @@ class SchedulerCommand extends ContainerAwareCommand
         $this->logger->info(self::LOGGER_MSG_START);
         $this->logger->info('Scheduler with ID {id} started', ['id' => $this->scheduler->getId()]);
 
-        $this->io->text('Running scheduler with:');
+        $this->io->section('Running Schedulers');
         $this->io->listing(
             [
                 'Scheduler ID: '.$this->scheduler->getId(),
@@ -199,6 +212,11 @@ class SchedulerCommand extends ContainerAwareCommand
      */
     protected function initializeVariables($env)
     {
+        $this->now = new \DateTime('now', new \DateTimeZone('UTC'));
+
+        $this->periodStart = clone $this->now;
+        $this->periodStart->modify('-'.$this->interval.' minutes');
+
         // Capture duration of scheduler with Symfony's Stopwatch component.
         $this->stopwatchScheduler = new Stopwatch();
         $this->stopwatchScheduler->start('scheduler');
@@ -228,21 +246,123 @@ class SchedulerCommand extends ContainerAwareCommand
     }
 
     /**
+     * Update next run date.
+     *
+     * @param SchedulerReport $scheduledReport
+     * @return SchedulerReport
+     */
+    protected function updateNextRun(SchedulerReport $scheduledReport)
+    {
+        // Are we within the regular scheduled period?
+        if (
+            (
+                $scheduledReport->getEndDate() > $this->now ||
+                is_null($scheduledReport->getEndDate())
+            ) &&
+            $scheduledReport->getInterval() != null
+        ) {
+            $interval = \DateInterval::createFromDateString($scheduledReport->getInterval());
+            $nextRun = clone $scheduledReport->getNextRun();
+            $scheduledReport->setNextRun($nextRun->add($interval));
+            // ... or are we within the prolonged period?
+        } elseif (
+            isset($prolongedEndDate) &&
+            $prolongedEndDate > $this->now &&
+            $scheduledReport->getProlongationInterval() != null
+        ) {
+            $interval = \DateInterval::createFromDateString($scheduledReport->getProlongationInterval());
+            /*
+             * The prolongation interval starts with the end date.
+             * Hence, if this is the first interval within the
+             * prolonged period, then we add the interval on top of
+             * the end date. If not, then on top of the next run date.
+             */
+            if ($scheduledReport->getNextRun() < $scheduledReport->getEndDate()) {
+                $nextRun = clone $scheduledReport->getEndDate();
+            } else {
+                $nextRun = clone $scheduledReport->getNextRun();
+            }
+            $scheduledReport->setNextRun($nextRun->add($interval));
+        }
+
+        return $scheduledReport;
+    }
+
+    protected function cleanUp()
+    {
+        /*
+         * Do we have stalled jobs?
+         */
+        $this->io->section('Clean Up Stalled Jobs');
+
+        $timeoutDate = clone $this->now;
+        $timeoutDate->modify('-'.$this->timeout.' seconds');
+        $stalledJobs = $this->em
+            ->getRepository('CampaignChainCoreBundle:Job')
+            ->getStalledReportJobs($timeoutDate);
+
+        if(count($stalledJobs)){
+            /** @var Job $stalledJob */
+            foreach($stalledJobs as $stalledJob){
+                $msg = 'Found stalled job for service "'.$stalledJob->getName().'" with ID "'.$stalledJob->getId().'"';
+                $this->io->writeln($msg);
+                $this->logger->info($msg);
+
+                // Change the status of the job from "open" to "error" with
+                // message "Runtime error" and related error code
+                $stalledJob->setStatus(Job::STATUS_ERROR);
+                $stalledJob->setErrorCode(ErrorCode::PHP_EXCEPTION);
+                $stalledJob->setMessage('PHP runtime error');
+
+                switch ($stalledJob->getJobType()){
+                    case 'report':
+                        // Fix the nextRun date of the report scheduler
+                        /** @var SchedulerReport $scheduler */
+                        $scheduledReport = $this->em
+                            ->getRepository('CampaignChainCoreBundle:SchedulerReport')
+                            ->findOneBy(array(
+                                'service' => $stalledJob->getName(),
+
+                            ));
+
+                        // Find the nextRun date which is within or after
+                        // this scheduler's time period.
+                        $nextRunDateFound = false;
+                        while($nextRunDateFound == false){
+                            $scheduledReport = $this->updateNextRun($scheduledReport);
+                            if($scheduledReport->getNextRun() >= $this->periodStart){
+                                $nextRunDateFound = true;
+                            }
+                        }
+
+                        $this->em->flush();
+
+                        $msg = 'Set next run date to "'.$scheduledReport->getNextRun()->format(DateTime::ISO8601).'" '
+                            .'for scheduler with ID "'.$scheduledReport->getId().'"';
+                        $this->io->writeln($msg);
+                        $this->logger->info($msg);
+
+                        break;
+                    case 'action':
+                        throw new \Exception('Stalled job for Action not being handled, yet.');
+                        break;
+                }
+            }
+        }
+
+    }
+
+    /**
      * Create a new scheduler instance.
      *
      * @return Scheduler
      */
     protected function startScheduler()
     {
-        $this->now = new \DateTime('now', new \DateTimeZone('UTC'));
-
-        $periodStart = clone $this->now;
-        $periodStart->modify('-'.$this->interval.' minutes');
-
         $scheduler = new Scheduler();
         $scheduler->setStatus(Scheduler::STATUS_RUNNING);
         $scheduler->setExecutionStart($this->now);
-        $scheduler->setPeriodStart($periodStart);
+        $scheduler->setPeriodStart($this->periodStart);
         $scheduler->setPeriodEnd($this->now);
         $scheduler->setPeriodInterval($this->interval);
 
@@ -522,50 +642,8 @@ class SchedulerCommand extends ContainerAwareCommand
 
             $this->queueReportJob($scheduledReport);
 
-            /*
-             * Update next run.
-             */
-
-            // Are we within the regular scheduled period?
-            if (
-                (
-                    $scheduledReport->getEndDate() > $this->now ||
-                    is_null($scheduledReport->getEndDate())
-                ) &&
-                $scheduledReport->getInterval() != null
-            ) {
-                $interval = \DateInterval::createFromDateString($scheduledReport->getInterval());
-                $nextRun = clone $scheduledReport->getNextRun();
-                $scheduledReport->setNextRun($nextRun->add($interval));
-
-                $txt = 'Regular period. Next run is in '.$scheduledReport->getInterval();
-                $this->io->text($txt);
-                $this->logger->info($txt);
-
-                // ... or are we within the prolonged period?
-            } elseif (
-                isset($prolongedEndDate) &&
-                $prolongedEndDate > $this->now &&
-                $scheduledReport->getProlongationInterval() != null
-            ) {
-                $interval = \DateInterval::createFromDateString($scheduledReport->getProlongationInterval());
-                /*
-                 * The prolongation interval starts with the end date.
-                 * Hence, if this is the first interval within the
-                 * prolonged period, then we add the interval on top of
-                 * the end date. If not, then on top of the next run date.
-                 */
-                if ($scheduledReport->getNextRun() < $scheduledReport->getEndDate()) {
-                    $nextRun = clone $scheduledReport->getEndDate();
-                } else {
-                    $nextRun = clone $scheduledReport->getNextRun();
-                }
-                $scheduledReport->setNextRun($nextRun->add($interval));
-
-                $txt = 'Prolonged period. Next run is in '.$scheduledReport->getProlongationInterval();
-                $this->io->text($txt);
-                $this->logger->info($txt);
-            }
+            // Update next run date.
+            $scheduledReport = $this->updateNextRun($scheduledReport);
 
             $this->em->persist($scheduledReport);
         }
@@ -675,22 +753,8 @@ class SchedulerCommand extends ContainerAwareCommand
              * Update next run.
              */
 
-            // Are we within the regular scheduled period?
-            if (
-                (
-                    $scheduledReport->getEndDate() > $this->now ||
-                    is_null($scheduledReport->getEndDate())
-                ) &&
-                $scheduledReport->getInterval() != null
-            ) {
-                $interval = \DateInterval::createFromDateString($scheduledReport->getInterval());
-                $nextRun = clone $scheduledReport->getNextRun();
-                $scheduledReport->setNextRun($nextRun->add($interval));
-
-                $txt = 'Regular period. Next run is in '.$scheduledReport->getInterval();
-                $this->io->text($txt);
-                $this->logger->info($txt);
-            }
+            // Update next run date.
+            $scheduledReport = $this->updateNextRun($scheduledReport);
 
             $this->em->persist($scheduledReport);
         }

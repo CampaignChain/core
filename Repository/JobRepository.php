@@ -56,4 +56,24 @@ class JobRepository extends EntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Find stalled jobs. These are jobs that were not executed due to a
+     * PHP runtime error and now are still in status "open", which will
+     * prevent the scheduler to run future jobs. Plus, the aborted job
+     * will prevent the scheduler's nextRun date to be changed to the upcoming
+     * date. Thus, the scheduler won't be executed either.
+     *
+     * @param \DateTime $timeoutDate
+     * @return array
+     */
+    public function getStalledReportJobs(\DateTime $timeoutDate)
+    {
+        return $this->createQueryBuilder('j')
+            ->select('j')
+            ->where("j.jobType = 'report' AND j.status = 'open' AND j.endDate IS NULL AND j.errorCode IS NULL AND j.startDate < :timeoutDate")
+            ->setParameter('timeoutDate', $timeoutDate)
+            ->getQuery()
+            ->getResult();
+    }
 }
