@@ -159,9 +159,6 @@ class SchedulerCommand extends ContainerAwareCommand
         $this->io = new SymfonyStyle($input, $output);
         $this->io->title('CampaignChain Scheduler');
 
-        // Clean up scheduler and job configs.
-        $this->cleanUp();
-
         // Prevent multiple console runs
         $lock = new LockHandler('campaignchain:scheduler');
 
@@ -171,9 +168,13 @@ class SchedulerCommand extends ContainerAwareCommand
             return 0;
         }
 
+        $this->logger->info(self::LOGGER_MSG_START);
+
+        // Clean up scheduler and job configs.
+        $this->cleanUp();
+
         $this->scheduler = $this->startScheduler();
 
-        $this->logger->info(self::LOGGER_MSG_START);
         $this->logger->info('Scheduler with ID {id} started', ['id' => $this->scheduler->getId()]);
 
         $this->io->section('Running Schedulers');
